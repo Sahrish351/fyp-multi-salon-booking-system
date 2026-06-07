@@ -19,7 +19,6 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            // Foreign key constraint (agar salons table hai to)
             $table->foreign('salon_id')->references('id')->on('salons')->onDelete('cascade');
         });
     }
