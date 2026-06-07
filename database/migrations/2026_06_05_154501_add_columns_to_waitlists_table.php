@@ -9,18 +9,38 @@ return new class extends Migration
     public function up()
     {
         Schema::table('waitlists', function (Blueprint $table) {
-            $table->time('preferred_time')->nullable();
-            $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
-            $table->enum('status', ['pending', 'notified', 'cancelled'])->default('pending');
-            $table->text('notes')->nullable();
-            $table->timestamp('notified_at')->nullable();
+            // ✅ Check if column exists before adding
+            if (!Schema::hasColumn('waitlists', 'preferred_time')) {
+                $table->time('preferred_time')->nullable()->after('preferred_date');
+            }
+            
+            if (!Schema::hasColumn('waitlists', 'priority')) {
+                $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
+            }
+            
+            if (!Schema::hasColumn('waitlists', 'status')) {
+                $table->enum('status', ['pending', 'notified', 'cancelled'])->default('pending');
+            }
+            
+            if (!Schema::hasColumn('waitlists', 'notes')) {
+                $table->text('notes')->nullable();
+            }
+            
+            if (!Schema::hasColumn('waitlists', 'notified_at')) {
+                $table->timestamp('notified_at')->nullable();
+            }
         });
     }
 
     public function down()
     {
         Schema::table('waitlists', function (Blueprint $table) {
-            $table->dropColumn(['preferred_time', 'priority', 'status', 'notes', 'notified_at']);
+            $columns = ['preferred_time', 'priority', 'status', 'notes', 'notified_at'];
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('waitlists', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
         });
     }
 };

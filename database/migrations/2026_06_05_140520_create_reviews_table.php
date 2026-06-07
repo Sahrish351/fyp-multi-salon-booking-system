@@ -10,13 +10,14 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('salon_id')->constrained('salons')->onDelete('cascade');
-            $table->foreignId('appointment_id')->constrained('appointments')->onDelete('cascade');
-            $table->unsignedTinyInteger('rating');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('appointment_id')->nullable();
+            // Foreign key ko comment kar diya - baad mein manually add karenge
+            // $table->foreignId('appointment_id')->constrained('appointments')->onDelete('cascade');
+            $table->integer('rating');
             $table->text('comment')->nullable();
-            $table->boolean('is_approved')->default(true);
-            $table->boolean('is_flagged')->default(false);
+            $table->boolean('is_approved')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
