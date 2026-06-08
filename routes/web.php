@@ -85,7 +85,10 @@ use App\Http\Controllers\Client\PaymentController;
 */
 
 // ==================== PUBLIC ROUTES ====================
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
+// Fallback route for salon search
+Route::get('/salons/search', [App\Http\Controllers\Frontend\PublicSalonController::class, 'search'])->name('salons.search');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
@@ -94,12 +97,9 @@ Route::post('/contact', [ContactController::class, 'send'])->name('contact.send'
 // Google Login Routes
 Route::get('/auth/google', [App\Http\Controllers\Auth\GoogleAuthController::class, 'redirect'])->name('auth.google');
 Route::get('/auth/google/callback', [App\Http\Controllers\Auth\GoogleAuthController::class, 'callback'])->name('auth.google.callback');
-
-// Salon Routes 
+// Salon Routes
 Route::get('/salons', [PublicSalonController::class, 'index'])->name('salons.index');
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
-
-Route::get('/salons/{slug}/gallery', [PublicSalonController::class, 'gallery'])->name('salons.gallery');
 
 // Service Routes
 Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
@@ -361,7 +361,8 @@ Route::prefix('owner')->middleware(['auth'])->name('owner.')->group(function () 
     Route::post('/services/categories', [OwnerServiceController::class, 'categoriesStore'])->name('services.categories.store');
     Route::put('/services/categories/{id}', [OwnerServiceController::class, 'categoriesUpdate'])->name('services.categories.update');
     Route::delete('/services/categories/{id}', [OwnerServiceController::class, 'categoriesDestroy'])->name('services.categories.destroy');
-
+// ========== CATEGORIES INDEX ROUTE (for link) ==========
+Route::get('/categories', [OwnerServiceController::class, 'categories'])->name('categories.index');
     // ========== 8. STYLISTS (YEH SAHI HAI) ==========
     Route::resource('stylists', OwnerStylistController::class);
     

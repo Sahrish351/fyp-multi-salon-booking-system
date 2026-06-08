@@ -11,7 +11,16 @@ class LoginController extends Controller
     // Show login form
     public function showLoginForm()
     {
-        return view('auth.user-login');
+        // Check which route was called
+        if (url()->current() == route('client.login.form')) {
+            return view('auth.client-login');
+        } elseif (url()->current() == route('owner.login.form')) {
+            return view('auth.owner-login');
+        } elseif (url()->current() == route('admin.login.form')) {
+            return view('auth.admin-login');
+        }
+        
+        return view('auth.login-selector');
     }
 
     // Handle login
