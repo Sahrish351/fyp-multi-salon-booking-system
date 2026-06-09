@@ -513,4 +513,4 @@ Route::get('/booking/{salon}/dates', [BookingStepController::class, 'getAvailabl
         Route::get('/profile', [ClientProfileController::class, 'index'])->name('profile.index');
         Route::post('/profile', [ClientProfileController::class, 'update'])->name('profile.update');
     });
-});
+});     
