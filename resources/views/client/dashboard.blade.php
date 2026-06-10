@@ -452,6 +452,7 @@ body {
 .fav-rating i { color: var(--gold); font-size: .6rem; }
 .fav-heart { margin-left: auto; color: var(--pink); font-size: .78rem; }
  
+
 .act-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); }
 .act-item { display: flex; align-items: flex-start; gap: .65rem; padding: .7rem 1.1rem; border-bottom: 1px solid #FDF5FB; }
 .act-item:last-child { border-bottom: none; }
@@ -460,14 +461,17 @@ body {
 .act-sub  { font-size: .67rem; color: var(--text-lt); margin-top: 1px; }
 .act-time { font-size: .62rem; color: var(--text-lt); white-space: nowrap; flex-shrink: 0; margin-top: 4px; }
  
+
 .empty-box { text-align: center; padding: 2rem 1rem; color: var(--text-lt); }
 .empty-box i { font-size: 2rem; color: var(--pink-bg); margin-bottom: .6rem; display: block; }
 .empty-box a { color: var(--pink); text-decoration: none; font-weight: 600; }
  
+
 @media(max-width:1100px) { .dash-grid { grid-template-columns: 1fr; } .exp-grid { grid-template-columns: repeat(2,1fr); } }
 @media(max-width:900px)  { .ms-grid { grid-template-columns: repeat(3,1fr); } .ab-grid { grid-template-columns: repeat(2,1fr); } .rev-grid { grid-template-columns: 1fr; } }
 @media(max-width:768px)  { .gl-sidebar { transform: translateX(-100%); } .gl-main { margin-left: 0; } .ms-grid { grid-template-columns: repeat(2,1fr); } .cat-grid { grid-template-columns: repeat(2,1fr); } }
  
+
 @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 .fu   { animation: fadeUp .4s ease both; }
 .d1   { animation-delay:.06s; } .d2 { animation-delay:.12s; }
@@ -478,26 +482,338 @@ body {
  
 @section('content')
  
+
 <div class="gl-topnav">
     <div class="tn-search">
         <i class="fas fa-search"></i>
         <input type="text" placeholder="Search services or salons...">
     </div>
     <div class="tn-actions">
-        {{-- ========== NOTIFICATION BELL - FIXED ========== --}}
-        <a href="#" class="tn-btn" style="text-decoration:none;">
+        <a href="{{ route('client.notifications.index') }}" class="tn-btn" style="text-decoration:none;">
             <i class="fas fa-bell"></i>
-            @php 
-                use Illuminate\Support\Facades\DB;
-                $unreadCount = DB::table('notifications')
-                    ->where(function($q) {
-                        $q->where('recipient_type', 'client')
-                          ->orWhere('recipient_type', 'all');
-                    })
-                    ->where('sent', 1)
-                    ->whereNull('read_at')
-                    ->count();
-            @endphp
-            @if($unreadCount > 0)
-                <span class="tn-notif">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
+            @php $unread = auth()->user()->unreadNotifications->count(); @endphp
+            @if($unread > 0)<span class="tn-notif">{{ $unread }}</span>@endif
+        </a>
+        <a href="{{ route('client.favorites.index') }}" class="tn-btn" style="text-decoration:none;"><i class="fas fa-heart"></i></a>
+        <a href="{{ route('client.appointments.index') }}" class="tn-btn" style="text-decoration:none;"><i class="fas fa-calendar"></i></a>
+        <div class="tn-avatar">
+            @if(auth()->user()->avatar)
+                <img src="{{ auth()->user()->avatar_url }}" alt="">
+            @else
+                <div class="tn-avatar-ph">{{ substr(auth()->user()->name,0,1) }}</div>
             @endif
+        </div>
+    </div>
+</div>
+ 
+{{-- ── BODY ───────────────────────────────────────────────────── --}}
+<div class="gl-body">
+ 
+    {{-- WELCOME ─────────────────────────────────────────────── --}}
+    <div class="wc fu">
+        <div class="wc-text">
+            <h2 class="wc-greeting">
+                Good {{ now()->hour < 12 ? 'morning' : (now()->hour < 17 ? 'afternoon' : 'evening') }}, {{ explode(' ',auth()->user()->name)[0] }}.
+            </h2>
+            <p class="wc-sub">Welcome back to your luxury sanctuary. You have <strong>{{ $stats['upcoming'] ?? 0 }}</strong> appointments scheduled for today.</p>
+            @php
+                $u = auth()->user();
+                $fields = [$u->name,$u->email,$u->phone,$u->city,$u->avatar];
+                $pct = round(collect($fields)->filter()->count()/count($fields)*100);
+            @endphp
+            <div class="wc-prog-lbl"><span>Profile Completion</span><span>{{ $pct }}%</span></div>
+            <div class="wc-prog-bar"><div class="wc-prog-fill" style="width:{{ $pct }}%"></div></div>
+            <a href="{{ route('client.profile.index') }}" class="wc-cta">Complete Profile →</a>
+        </div>
+        <div class="wc-img">🌸</div>
+    </div>
+ 
+    {{-- MINI STATS ────────────────────────────────────────────── --}}
+    @php
+        $upcoming  = ($appointments ?? collect())->where('status','confirmed')->where('appointment_date','>=',today())->count();
+        $pending   = ($appointments ?? collect())->whereIn('status',['pending_payment','payment_submitted'])->count();
+        $wlCount   = $waitlistCount ?? 0;
+        $favCount  = $favoritesCount ?? 0;
+        $alerts    = auth()->user()->unreadNotifications->count();
+    @endphp
+    <div class="ms-grid fu d1">
+        @foreach([
+    ['fa-calendar-check', $upcoming, 'Upcoming'],
+    ['fa-clock', $pending, 'Pending'],
+    ['fa-list', $wlCount, 'Waitlist'],
+    ['fa-heart', $favCount, 'Favorites'],
+    ['fa-credit-card', 0, 'Payments'],
+    ['fa-bell', $alerts, 'Alerts'],
+] as $i => [$ico, $num, $lbl])
+        <div class="ms-card">
+            <div class="ms-ico"><i class="fas {{ $ico }}"></i></div>
+            <div class="ms-num">{{ str_pad($num,2,'0',STR_PAD_LEFT) }}</div>
+            <div class="ms-lbl">{{ $lbl }}</div>
+        </div>
+        @endforeach
+    </div>
+ 
+    {{-- ACTION BUTTONS ────────────────────────────────────────── --}}
+    <div class="ab-grid fu d2">
+        <a href="{{ route('salons.index') }}" class="ab-btn ab-primary">
+            <div class="ab-ico"><i class="fas fa-plus-circle"></i></div>
+            <div class="ab-lbl">Book Appointment</div>
+        </a>
+        <a href="{{ route('salons.index') }}" class="ab-btn">
+            <div class="ab-ico"><i class="fas fa-search"></i></div>
+            <div class="ab-lbl">Search Salons</div>
+        </a>
+        <a href="{{ route('client.appointments.index') }}" class="ab-btn">
+            <div class="ab-ico"><i class="fas fa-upload"></i></div>
+            <div class="ab-lbl">Upload Payment</div>
+        </a>
+        <a href="{{ route('client.waitlist.index') }}" class="ab-btn">
+            <div class="ab-ico"><i class="fas fa-list-ul"></i></div>
+            <div class="ab-lbl">Join Waitlist</div>
+        </a>
+    </div>
+ 
+    {{-- 2-COL GRID ─────────────────────────────────────────────── --}}
+    <div class="dash-grid">
+ 
+        {{-- ── LEFT COL ──────────────────────────────────────────── --}}
+        <div>
+ 
+            {{-- Next Appointment --}}
+            <div class="g-card fu d3">
+                <div class="g-hdr">
+                    <p class="g-title"><i class="fas fa-calendar-star"></i> Next Appointment</p>
+                    @if($nextAppointment ?? false)<span class="na-status">{{ strtoupper(str_replace('_',' ',$nextAppointment->status)) }}</span>@endif
+                </div>
+                @if($nextAppointment ?? false)
+                <div class="na-wrap">
+                    <div class="na-img">
+                        @if($nextAppointment->salon->cover_photo)
+                        <img src="{{ $nextAppointment->salon->cover_photo_url }}" alt="">
+                        @else💆@endif
+                    </div>
+                    <div class="na-info">
+                        <div class="na-salon">{{ $nextAppointment->salon->name }}</div>
+                        <div class="na-loc"><i class="fas fa-map-marker-alt"></i>{{ $nextAppointment->salon->address }}, {{ $nextAppointment->salon->city }}</div>
+                        <div class="na-meta">
+                            <div class="na-meta-i"><i class="fas fa-spa"></i> {{ $nextAppointment->service->name }}</div>
+                            <div class="na-meta-i"><i class="fas fa-user"></i> {{ $nextAppointment->stylist->name }}</div>
+                            <div class="na-meta-i"><i class="fas fa-calendar"></i> {{ $nextAppointment->appointment_date->format('M d, Y') }}</div>
+                            <div class="na-meta-i"><i class="fas fa-clock"></i> {{ \Carbon\Carbon::parse($nextAppointment->start_time)->format('h:i A') }}</div>
+                        </div>
+                        <div class="na-btns">
+                            <a href="{{ route('client.appointments.reschedule',$nextAppointment->id) }}" class="na-btn na-btn-out">Reschedule</a>
+                            <a href="https://maps.google.com/?q={{ urlencode($nextAppointment->salon->address) }}" target="_blank" class="na-btn na-btn-pink">Get Directions</a>
+                        </div>
+                    </div>
+                </div>
+                @else
+                <div class="empty-box"><i class="fas fa-calendar-times"></i><p>No upcoming appointments.<br><a href="{{ route('salons.index') }}">Book one now!</a></p></div>
+                @endif
+            </div>
+ 
+            {{-- Active Waitlists --}}
+            @if(isset($waitlists) && $waitlists->count() > 0)
+            <div class="g-card fu d3">
+                <div class="g-hdr">
+                    <p class="g-title"><i class="fas fa-list-ul"></i> Active Waitlists</p>
+                    <a href="{{ route('client.waitlist.index') }}" class="g-link">View All →</a>
+                </div>
+                <table class="g-table">
+                    <thead><tr><th>Position</th><th>Salon Name</th><th>Requested Slot</th><th>Status</th></tr></thead>
+                    <tbody>
+                        @foreach($waitlists->take(3) as $w)
+                        <tr>
+                            <td><div class="wl-pos">#{{ $w->position }}</div></td>
+                            <td style="font-weight:600;">{{ $w->salon->name }}</td>
+                            <td style="color:var(--text-mid);">{{ $w->preferred_date?->format('l, g:i A') ?? '—' }}</td>
+                            <td><span class="pill {{ ['waiting'=>'pill-grey','notified'=>'pill-mu','accepted'=>'pill-green','expired'=>'pill-red'][$w->status]??'pill-grey' }}">{{ ucfirst($w->status) }}</span></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
+ 
+            {{-- Explore Categories --}}
+            <div class="g-card fu d4">
+                <div class="g-hdr">
+                    <p class="g-title"><i class="fas fa-th-large"></i> Explore Categories</p>
+                    <a href="{{ route('salons.index') }}" class="g-link">SEE ALL</a>
+                </div>
+                <div class="cat-grid">
+                    @foreach([['✂️','Hair'],['💄','Makeup'],['💍','Bridal'],['🛁','Spa'],['💅','Nails'],['🧴','Skincare'],['🌿','Wellness'],['✨','All']] as [$ico,$lbl])
+                    <a href="{{ route('salons.index') }}" class="cat-item">
+                        <span class="cat-ico">{{ $ico }}</span>
+                        <span class="cat-lbl">{{ $lbl }}</span>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+ 
+            {{-- Your Recent Reviews --}}
+            @if(isset($myReviews) && $myReviews->count() > 0)
+            <div class="g-card fu d4">
+                <div class="g-hdr">
+                    <p class="g-title"><i class="fas fa-star"></i> Your Recent Reviews</p>
+                </div>
+                <div class="rev-grid">
+                    @foreach($myReviews->take(2) as $rev)
+                    <div class="rev-item">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.2rem;">
+                            <div class="rev-stars">@for($i=1;$i<=5;$i++)<i class="fas fa-star{{ $i>$rev->rating?'-empty':'' }}"></i>@endfor</div>
+                            <div class="rev-date">{{ $rev->created_at->diffForHumans() }}</div>
+                        </div>
+                        <p class="rev-text">"{{ Str::limit($rev->comment,90) }}"</p>
+                        <div class="rev-salon-row">
+                            <div class="rev-av">{{ substr($rev->salon->name,0,1) }}</div>
+                            <div class="rev-sname">{{ $rev->salon->name }}</div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+ 
+            {{-- Curated For You --}}
+            <div class="g-card fu d5">
+                <div class="g-hdr">
+                    <p class="g-title"><i class="fas fa-sparkles"></i> Curated for Your Glow</p>
+                    <span style="font-size:.7rem;color:var(--text-lt);">Based on your recent services</span>
+                </div>
+                <div class="exp-grid">
+                    @forelse(isset($recommendedSalons) ? $recommendedSalons->take(4) : collect() as $s)
+                    <a href="{{ route('salons.show',$s->slug) }}" class="exp-card">
+                        <div class="exp-img">
+                            @if($s->cover_photo)<img src="{{ $s->cover_photo_url }}" alt="">@else💆@endif
+                            <div class="exp-fav"><i class="fas fa-heart"></i></div>
+                            <div class="exp-rating"><i class="fas fa-star"></i> {{ number_format($s->rating,1) }}</div>
+                        </div>
+                        <div class="exp-body">
+                            <div class="exp-name">{{ Str::limit($s->name,18) }}</div>
+                            <div class="exp-type">{{ $s->category->name ?? 'Salon' }}</div>
+                            <div class="exp-price">Rs. {{ number_format($s->services->min('price')) }} – {{ number_format($s->services->max('price')) }}</div>
+                        </div>
+                    </a>
+                    @empty
+                    @foreach([['💆','Radiance Medispa','Skincare','1,200–4,500'],['✂️','Gloss & Glamour','Hair','800–3,500'],['💍','The Bridal Room','Bridal','2,000–12,000'],['🧴','Pure Wellness','Spa','900–4,000']] as [$ico,$n,$t,$p])
+                    <a href="{{ route('salons.index') }}" class="exp-card">
+                        <div class="exp-img"><div style="font-size:2rem;">{{ $ico }}</div><div class="exp-fav"><i class="fas fa-heart"></i></div><div class="exp-rating"><i class="fas fa-star"></i> 4.8</div></div>
+                        <div class="exp-body"><div class="exp-name">{{ $n }}</div><div class="exp-type">{{ $t }}</div><div class="exp-price">Rs. {{ $p }}</div></div>
+                    </a>
+                    @endforeach
+                    @endforelse
+                </div>
+            </div>
+        </div>
+ 
+        {{-- ── RIGHT COL ─────────────────────────────────────────── --}}
+        <div>
+ 
+            {{-- Calendar --}}
+            <div class="cal-card fu d2">
+                <div class="cal-hdr">
+                    <div class="cal-title">Calendar</div>
+                    <div class="cal-nav">
+                        <button><i class="fas fa-chevron-left"></i></button>
+                        <button><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="cal-dgrid">
+                    @foreach(['S','M','T','W','T','F','S'] as $d)<div class="cal-dlbl">{{ $d }}</div>@endforeach
+                    @php
+                        $today = now();
+                        $startDay = $today->copy()->startOfMonth()->dayOfWeek;
+                        $daysInMonth = $today->daysInMonth;
+                        $apptDays = isset($appointments) ? $appointments->pluck('appointment_date')->map(fn($d)=>$d->day)->toArray() : [];
+                    @endphp
+                    @for($i=0;$i<$startDay;$i++)<div class="cal-d empty"></div>@endfor
+                    @for($d=1;$d<=$daysInMonth;$d++)<div class="cal-d {{ $d==$today->day?'today':'' }} {{ in_array($d,$apptDays)&&$d!=$today->day?'has-a':'' }}">{{ $d }}</div>@endfor
+                </div>
+                <div class="cal-events">
+                    @if(isset($appointments) && $appointments->where('appointment_date',today())->count())
+                        @foreach($appointments->where('appointment_date',today())->take(2) as $ev)
+                        <div class="cal-ev">
+                            <span class="cal-ev-time">{{ \Carbon\Carbon::parse($ev->start_time)->format('g:i A') }}</span>
+                            <span class="cal-ev-name">{{ $ev->service->name }} · {{ $ev->salon->name }}</span>
+                        </div>
+                        @endforeach
+                    @else
+                    <div class="cal-ev"><span class="cal-ev-time">—</span><span class="cal-ev-name">No appointments today</span></div>
+                    @endif
+                </div>
+            </div>
+ 
+            {{-- Payment Activity --}}
+            <div class="pay-card fu d3">
+                <div class="g-hdr">
+                    <p class="g-title"><i class="fas fa-credit-card"></i> Payment Activity</p>
+                </div>
+                @forelse(isset($recentPayments) ? $recentPayments->take(3) : collect() as $pay)
+                <div class="pay-item">
+                    <div class="pay-dot {{ ['approved'=>'pd-green','pending'=>'pd-orange','rejected'=>'pd-red'][$pay->status]??'pd-orange' }}">
+                        <i class="fas {{ ['approved'=>'fa-check','pending'=>'fa-clock','rejected'=>'fa-times'][$pay->status]??'fa-clock' }}"></i>
+                    </div>
+                    <div style="flex:1">
+                        <div class="pay-name">{{ $pay->appointment->service->name ?? 'Service' }}</div>
+                        <div class="pay-date">{{ $pay->created_at->format('M d') }} · Rs.{{ number_format($pay->amount) }}</div>
+                    </div>
+                    <span class="pill {{ ['approved'=>'pill-green','pending'=>'pill-orange','rejected'=>'pill-red'][$pay->status]??'pill-orange' }}">{{ ucfirst($pay->status) }}</span>
+                </div>
+                @empty
+                @foreach([['Nail Art Session','Oct 18','Rs.865','approved','pd-green','fa-check','pill-green'],['Bridal Trial Deposit','Today','Rs.1,500','pending','pd-orange','fa-clock','pill-orange'],['Skincare Bundle','Oct 12','Rs.890','rejected','pd-red','fa-times','pill-red']] as [$n,$dt,$a,$s,$dc,$ic,$pc])
+                <div class="pay-item">
+                    <div class="pay-dot {{ $dc }}"><i class="fas {{ $ic }}"></i></div>
+                    <div style="flex:1"><div class="pay-name">{{ $n }}</div><div class="pay-date">{{ $dt }} · {{ $a }}</div></div>
+                    <span class="pill {{ $pc }}">{{ ucfirst($s) }}</span>
+                </div>
+                @endforeach
+                @endforelse
+                <a href="{{ route('client.appointments.index') }}" class="pay-all">View All Transactions →</a>
+            </div>
+ 
+            {{-- Favorite Havens --}}
+            <div class="fav-card fu d4">
+                <div class="g-hdr">
+                    <p class="g-title"><i class="fas fa-heart"></i> Favorite Havens</p>
+                    <a href="{{ route('client.favorites.index') }}" class="g-link">All →</a>
+                </div>
+                @forelse(isset($favorites) ? $favorites->take(3) : collect() as $fav)
+                <div class="fav-item">
+                    <div class="fav-img">
+                        @if($fav->salon->cover_photo)<img src="{{ $fav->salon->cover_photo_url }}" alt="">@else💆@endif
+                    </div>
+                    <div style="flex:1">
+                        <div class="fav-name">{{ $fav->salon->name }}</div>
+                        <div class="fav-rating"><i class="fas fa-star"></i> {{ number_format($fav->salon->rating??4.5,1) }}</div>
+                    </div>
+                    <i class="fas fa-heart fav-heart"></i>
+                </div>
+                @empty
+                @foreach([['Vogue Coiffure','4.9','(21k)'],['Silken Touch Spa','5.0','(840)'],['Bloom Therapeutics','4.7','(1.2k)']] as [$n,$r,$c])
+                <div class="fav-item">
+                    <div class="fav-img">💆</div>
+                    <div style="flex:1"><div class="fav-name">{{ $n }}</div><div class="fav-rating"><i class="fas fa-star"></i> {{ $r }} {{ $c }}</div></div>
+                    <i class="fas fa-heart fav-heart"></i>
+                </div>
+                @endforeach
+                @endforelse
+            </div>
+ 
+           
+ 
+        </div>{{-- /right col --}}
+    </div>{{-- /dash-grid --}}
+ 
+</div>{{-- /gl-body --}}
+ 
+@endsection
+ 
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fill = document.querySelector('.wc-prog-fill');
+    if(fill){ const w=fill.style.width; fill.style.width='0%'; setTimeout(()=>fill.style.width=w,400); }
+});
+</script>
+@endpush

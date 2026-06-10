@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Waitlist;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;  // ← SIRF YEH LINE ADD KARNI HAI (Notifications ke liye)
 
 class ClientDashboardController extends Controller
 {
@@ -14,7 +13,6 @@ class ClientDashboardController extends Controller
     {
         $client = Auth::user();
 
-        // ========== EXISTING CODE (Bilkul same) ==========
         $upcomingAppointments = Appointment::with(['salon', 'stylist', 'service', 'payment'])
             ->where('client_id', $client->id)
             ->whereIn('status', ['confirmed', 'payment_submitted', 'payment_approved'])
@@ -29,11 +27,12 @@ class ClientDashboardController extends Controller
             ->take(5)
             ->get();
 
+        // ✅ FIX: Use get() instead of take() to get a collection
         $waitlists = Waitlist::with(['salon', 'service'])
             ->where('client_id', $client->id)
             ->where('status', 'waiting')
             ->latest()
-            ->get();
+            ->get();  // Changed from take(3) to get()
 
         $stats = [
             'total_bookings'    => Appointment::where('client_id', $client->id)->count(),
@@ -42,30 +41,10 @@ class ClientDashboardController extends Controller
             'favorite_salons'   => $client->favorites()->count(),
         ];
 
+        // Extra variables for blade template
         $appointments = Appointment::where('client_id', $client->id)->get();
         $waitlistCount = Waitlist::where('client_id', $client->id)->where('status', 'waiting')->count();
         $favoritesCount = $client->favorites()->count();
-        // ========== EXISTING CODE END ==========
-
-        // ========== NEW CODE - NOTIFICATIONS (SIRF YEH ADD KARNA HAI) ==========
-        // Apni custom notifications table se data fetch karna
-        $notifications = DB::table('notifications')
-            ->where('recipient_type', 'client')
-            ->orWhere('recipient_type', 'all')
-            ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
-
-        // Unread notifications count
-        $unreadCount = DB::table('notifications')
-            ->where(function($query) {
-                $query->where('recipient_type', 'client')
-                      ->orWhere('recipient_type', 'all');
-            })
-            ->where('sent', 1)
-            ->whereNull('read_at')
-            ->count();
-        // ========== NEW CODE END ==========
 
         return view('client.dashboard', compact(
             'upcomingAppointments', 
@@ -74,9 +53,7 @@ class ClientDashboardController extends Controller
             'stats',
             'appointments',
             'waitlistCount',
-            'favoritesCount',
-            'notifications',     // ← YEH ADD KARNA HAI
-            'unreadCount'        // ← YEH ADD KARNA HAI
+            'favoritesCount'
         ));
     }
 }
