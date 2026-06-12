@@ -3,25 +3,28 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\ForgotPasswordRequest;
-use App\Models\User;
-use App\Mail\PasswordResetMail;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 
 class ForgotPasswordController extends Controller
 {
-    public function showForm()
+    public function showLinkRequestForm()
     {
         return view('auth.forgot-password');
     }
 
-    public function sendLink(ForgotPasswordRequest $request)
+    public function sendResetLinkEmail(Request $request)
     {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
         $status = Password::sendResetLink($request->only('email'));
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('success', 'Password reset link sent to your email.')
-            : back()->withErrors(['email' => 'No account found with this email.']);
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('status', 'Password reset link sent to your email!');
+        }
+
+        return back()->withErrors(['email' => 'No account found with this email address.']);
     }
 }

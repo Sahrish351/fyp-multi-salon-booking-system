@@ -139,16 +139,16 @@ Route::middleware('guest')->group(function () {
     Route::redirect('/login', '/select-login')->name('login');
 
     // ========== CLIENT LOGIN ==========
-    Route::get('/client/login', [App\Http\Controllers\Client\Auth\LoginController::class, 'showLoginForm'])->name('client.login.form');
-    Route::post('/client/login', [App\Http\Controllers\Client\Auth\LoginController::class, 'login'])->name('client.login.submit');
+    Route::get('/client/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('client.login.form');
+Route::post('/client/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('client.login.submit');
 
     // ========== OWNER LOGIN ==========
-    Route::get('/owner/login', [App\Http\Controllers\Owner\Auth\LoginController::class, 'showLoginForm'])->name('owner.login.form');
-    Route::post('/owner/login', [App\Http\Controllers\Owner\Auth\LoginController::class, 'login'])->name('owner.login.submit');
+    Route::get('/owner/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('owner.login.form');
+Route::post('/owner/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('owner.login.submit');
 
     // ========== ADMIN LOGIN ==========
-    Route::get('/admin/login', [App\Http\Controllers\Admin\Auth\LoginController::class, 'showLoginForm'])->name('admin.login.form');
-    Route::post('/admin/login', [App\Http\Controllers\Admin\Auth\LoginController::class, 'login'])->name('admin.login.submit');
+    Route::get('/admin/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('admin.login.form');
+Route::post('/admin/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('admin.login.submit');
 
     // ========== REGISTRATION ==========
     Route::get('/register/client', [App\Http\Controllers\Auth\RegisterController::class, 'showClientForm'])->name('register.client');
@@ -161,7 +161,7 @@ Route::middleware('guest')->group(function () {
         return view('auth.forgot-password');
     })->name('password.request');
     
-    Route::post('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
+    Route::post('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
     
     Route::get('/reset-password/{token}', function ($token) {
         return view('auth.reset-password', ['token' => $token]);
