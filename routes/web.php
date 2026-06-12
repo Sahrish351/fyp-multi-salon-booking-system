@@ -18,6 +18,7 @@ use App\Http\Controllers\Frontend\PublicStylistController;
 use App\Http\Controllers\Frontend\PublicGalleryController;
 use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\ContactController;
+use App\Http\Controllers\Frontend\BookingController; 
 
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\SalonRequestController;
@@ -65,7 +66,6 @@ use App\Http\Controllers\Owner\OwnerSalonInfoController;
 use App\Http\Controllers\Client\ClientDashboardController;
 use App\Http\Controllers\Client\SalonSearchController;
 use App\Http\Controllers\Client\SalonDetailController;
-use App\Http\Controllers\Client\BookingController;
 use App\Http\Controllers\Client\BookingStepController;
 use App\Http\Controllers\Client\PaymentSubmitController;
 use App\Http\Controllers\Client\AppointmentManageController;
@@ -100,6 +100,30 @@ Route::get('/auth/google/callback', [App\Http\Controllers\Auth\GoogleAuthControl
 // Salon Routes
 Route::get('/salons', [PublicSalonController::class, 'index'])->name('salons.index');
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
+Route::get('/salons/{slug}/gallery', [PublicSalonController::class, 'gallery'])->name('salons.gallery');
+
+// ==================== PUBLIC BOOKING ROUTES ====================
+Route::prefix('booking')->name('booking.')->group(function () {
+    
+    // Step 1: Services
+    Route::get('/services/{salon_id}', [BookingController::class, 'step1Services'])->name('step1');
+    Route::post('/services/{salon_id}', [BookingController::class, 'postStep1Services'])->name('step1.post');
+    
+    // Step 2: Stylist
+    Route::get('/stylist/{salon_id}', [BookingController::class, 'step2Stylist'])->name('step2');
+    Route::post('/stylist/{salon_id}', [BookingController::class, 'postStep2Stylist'])->name('step2.post');
+    
+    // Step 3: Date & Time
+    Route::get('/datetime/{salon_id}', [BookingController::class, 'step3DateTime'])->name('step3');
+    Route::post('/datetime/{salon_id}', [BookingController::class, 'postStep3DateTime'])->name('step3.post');
+    
+    // Step 4: Payment
+    Route::get('/payment/{salon_id}', [BookingController::class, 'step4Payment'])->name('step4');
+    Route::post('/payment/{salon_id}', [BookingController::class, 'postPayment'])->name('payment.post');
+    
+    // Confirmation
+    Route::get('/confirmation/{booking_id}', [BookingController::class, 'confirmation'])->name('confirmation');
+});
 
 // Service Routes
 Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');

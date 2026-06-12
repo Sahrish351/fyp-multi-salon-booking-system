@@ -748,8 +748,8 @@
                             <div class="sr-duration">{{ $service->duration_text }}</div>
                             <div class="sr-price">Rs. {{ number_format($service->price) }}</div>
                         </div>
-                        <a href="{{ route('client.booking.step1', $salon->id) }}?service={{ $service->id }}"
-                           class="btn-book-service">Book</a>
+                        <a href="{{ route('booking.step1', $salon->id) }}?service={{ $service->id }}"
+   class="btn-book-service">Book</a>
                     </div>
                     @empty
                     <div style="color:#888;font-size:0.88rem;padding:20px 0;">No services listed yet.</div>
@@ -1035,9 +1035,9 @@
                 <div class="bs-featured">Featured</div>
                 @endif
  
-                <a href="{{ route('client.booking.step1', $salon->id) }}" class="btn-book-now" style="display:block;text-align:center;color:#fff;">
-                    Book now
-                </a>
+               <a href="{{ route('booking.step1', $salon->id) }}" class="btn-book-now">
+    Book now
+</a>
  
                 <div class="bs-info-row" onclick="toggleHours()">
                     <i class="fas fa-clock" style="color:#E91E8C;"></i>
@@ -1089,10 +1089,10 @@
  
     {{-- Mobile Book Now button --}}
     <div class="d-lg-none" style="position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid #f0f0f0;z-index:500;">
-        <a href="{{ route('client.booking.step1', $salon->id) }}"
-           style="display:block;text-align:center;background:#1a1a1a;color:#fff;border-radius:12px;padding:14px;font-size:1rem;font-weight:700;">
-            Book now
-        </a>
+        <a href="{{ route('booking.step1', $salon->id) }}"
+   style="display:block;text-align:center;background:#1a1a1a;color:#fff;border-radius:12px;padding:14px;font-size:1rem;font-weight:700;">
+    Book now
+</a>
     </div>
  
 </div>{{-- end detail-wrap --}}
