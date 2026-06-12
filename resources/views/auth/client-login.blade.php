@@ -329,9 +329,9 @@
         </div>
 
         <div class="social-buttons">
-            <button type="button" class="social-btn google" onclick="alert('Google login coming soon!')">
+            <a href="{{ route('auth.google') }}" class="social-btn google" style="text-decoration: none; display: inline-block; text-align: center;">
                 <i class="fab fa-google me-2"></i>Google
-            </button>
+            </a>
             <button type="button" class="social-btn facebook" onclick="alert('Facebook login coming soon!')">
                 <i class="fab fa-facebook-f me-2"></i>Facebook
             </button>
