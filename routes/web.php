@@ -93,10 +93,6 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
-
-// Google Login Routes
-Route::get('/auth/google', [App\Http\Controllers\Auth\GoogleAuthController::class, 'redirect'])->name('auth.google');
-Route::get('/auth/google/callback', [App\Http\Controllers\Auth\GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 // Salon Routes
 Route::get('/salons', [PublicSalonController::class, 'index'])->name('salons.index');
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
@@ -199,8 +195,8 @@ Route::post('/admin/login', [App\Http\Controllers\Auth\LoginController::class, '
     Route::post('/otp/resend', [App\Http\Controllers\Auth\OtpController::class, 'resend'])->name('otp.resend');
 
     // ========== GOOGLE LOGIN ==========
-    Route::get('/auth/google', [App\Http\Controllers\Auth\GoogleAuthController::class, 'redirect'])->name('auth.google');
-    Route::get('/auth/google/callback', [App\Http\Controllers\Auth\GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+    Route::get('/auth/google', [App\Http\Controllers\Auth\SocialLoginController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [App\Http\Controllers\Auth\SocialLoginController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 });
 
 // ==================== AUTHENTICATED ROUTES ====================
@@ -537,4 +533,4 @@ Route::get('/booking/{salon}/dates', [BookingStepController::class, 'getAvailabl
         Route::get('/profile', [ClientProfileController::class, 'index'])->name('profile.index');
         Route::post('/profile', [ClientProfileController::class, 'update'])->name('profile.update');
     });
-});     
+});
