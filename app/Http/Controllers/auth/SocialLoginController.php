@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Hash;
 
 class SocialLoginController extends Controller
 {
-    // Google Login
+    // ==================== GOOGLE LOGIN ====================
+    
     public function redirectToGoogle()
     {
         // SSL verification temporarily disable for localhost testing
@@ -28,7 +29,7 @@ class SocialLoginController extends Controller
                 ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
                 ->user();
             
-            // Check if user exists
+            // Check if user exists by email
             $user = User::where('email', $googleUser->getEmail())->first();
             
             if (!$user) {
@@ -36,13 +37,19 @@ class SocialLoginController extends Controller
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
+                    'google_id' => $googleUser->getId(),
                     'avatar_url' => $googleUser->getAvatar(),
                     'password' => Hash::make(Str::random(16)),
                     'email_verified_at' => now(),
                     'role' => 'client',
                 ]);
             } else {
-                // Agar user exist karta hai aur role null hai toh set karo
+                // Update google_id if missing
+                if (is_null($user->google_id)) {
+                    $user->google_id = $googleUser->getId();
+                    $user->save();
+                }
+                // Update role if null
                 if (is_null($user->role)) {
                     $user->role = 'client';
                     $user->save();
@@ -51,27 +58,22 @@ class SocialLoginController extends Controller
             
             Auth::login($user);
             
-            // Redirect based on role
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->role === 'owner') {
-                return redirect()->route('owner.dashboard');
-            } else {
-                return redirect()->route('client.dashboard');
-            }
+            // ✅ DIRECT CLIENT DASHBOARD PE REDIRECT
+            return redirect('/client/dashboard');
             
         } catch (\Exception $e) {
             return redirect()->route('client.login.form')->with('error', 'Google login failed! ' . $e->getMessage());
         }
     }
 
-    // Facebook Login
+    // ==================== FACEBOOK LOGIN ====================
+    
     public function redirectToFacebook()
     {
         // SSL verification temporarily disable for localhost testing
         $socialite = Socialite::driver('facebook');
         $socialite->setHttpClient(new \GuzzleHttp\Client(['verify' => false]));
-        return $socialite->redirect();
+        return $socialite->scopes(['email'])->redirect();
     }
 
     public function handleFacebookCallback()
@@ -82,18 +84,29 @@ class SocialLoginController extends Controller
                 ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
                 ->user();
             
-            $user = User::where('email', $facebookUser->getEmail())->first();
+            // Check if user exists by email OR facebook_id
+            $user = User::where('email', $facebookUser->getEmail())
+                ->orWhere('facebook_id', $facebookUser->getId())
+                ->first();
             
             if (!$user) {
+                // Create new user
                 $user = User::create([
                     'name' => $facebookUser->getName(),
                     'email' => $facebookUser->getEmail(),
+                    'facebook_id' => $facebookUser->getId(),
                     'avatar_url' => $facebookUser->getAvatar(),
                     'password' => Hash::make(Str::random(16)),
                     'email_verified_at' => now(),
                     'role' => 'client',
                 ]);
             } else {
+                // Update facebook_id if missing
+                if (is_null($user->facebook_id)) {
+                    $user->facebook_id = $facebookUser->getId();
+                    $user->save();
+                }
+                // Update role if null
                 if (is_null($user->role)) {
                     $user->role = 'client';
                     $user->save();
@@ -102,13 +115,8 @@ class SocialLoginController extends Controller
             
             Auth::login($user);
             
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->role === 'owner') {
-                return redirect()->route('owner.dashboard');
-            } else {
-                return redirect()->route('client.dashboard');
-            }
+            //  DIRECT CLIENT DASHBOARD  REDIRECT
+            return redirect('/client/dashboard');
             
         } catch (\Exception $e) {
             return redirect()->route('client.login.form')->with('error', 'Facebook login failed! ' . $e->getMessage());
