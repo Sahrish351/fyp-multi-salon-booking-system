@@ -363,4 +363,29 @@ function togglePassword() {
     }
 }
 </script>
+
+@if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: '{{ session('success') }}',
+        confirmButtonColor: '#E91E8C',
+        confirmButtonText: 'Login Now'
+    });
+</script>
+@endif
+
+@if(session('error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops!',
+        text: '{{ session('error') }}',
+        confirmButtonColor: '#E91E8C',
+        confirmButtonText: 'Try Again'
+    });
+</script>
+@endif
+
 @endsection

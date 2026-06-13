@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class ResetPasswordController extends Controller
 {
@@ -29,7 +30,7 @@ class ResetPasswordController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('success', 'Password reset successfully!')
+            ? redirect()->route('client.login.form')->with('success', 'Your password has been reset successfully! Please login with your new password.')
             : back()->withErrors(['email' => [__($status)]]);
     }
 }
