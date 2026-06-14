@@ -1,30 +1,62 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Models;
 
-return new class extends Migration
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class TimeSlot extends Model
 {
-    public function up(): void
-    {
-        Schema::create('time_slots', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('salon_id')->constrained('salons')->onDelete('cascade');
-            $table->foreignId('stylist_id')->constrained('stylists')->onDelete('cascade');
-            $table->date('slot_date');
-            $table->time('start_time');
-            $table->time('end_time');
-            $table->enum('status', ['available', 'locked', 'booked', 'blocked'])->default('available');
-            $table->foreignId('locked_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamp('locked_at')->nullable();
-            $table->timestamp('lock_expires_at')->nullable();
-            $table->timestamps();
-        });
-    }
+    protected $fillable = [
+        'salon_id',
+        'stylist_id',
+        'slot_date',
+        'start_time',
+        'end_time',
+        'status',
+        'locked_by',
+        'locked_at',
+        'lock_expires_at',
+    ];
 
-    public function down(): void
+    protected $casts = [
+        'slot_date' => 'date',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+        'locked_at' => 'datetime',
+        'lock_expires_at' => 'datetime',
+    ];
+
+    // ✅ YEH METHOD ADD KARO
+    public function isAvailable()
     {
-        Schema::dropIfExists('time_slots');
+        // If status is 'booked', not available
+        if ($this->status === 'booked') {
+            return false;
+        }
+        
+        // If status is 'locked', check if lock expired
+        if ($this->status === 'locked') {
+            // If lock expired, it's available again
+            if ($this->lock_expires_at && now()->greaterThan($this->lock_expires_at)) {
+                return true;
+            }
+            return false;
+        }
+        
+        // 'available' or 'blocked' status check
+        return $this->status === 'available';
     }
-};
+    
+    // Relationship with salon
+    public function salon(): BelongsTo
+    {
+        return $this->belongsTo(Salon::class);
+    }
+    
+    // Relationship with stylist
+    public function stylist(): BelongsTo
+    {
+        return $this->belongsTo(Stylist::class);
+    }
+}

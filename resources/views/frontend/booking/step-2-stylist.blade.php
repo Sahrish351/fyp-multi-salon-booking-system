@@ -57,7 +57,7 @@
 </head>
 <body>
     <div class="top-nav">
-        <a href="{{ route('client.booking.step1', $salon->id) }}" class="nav-btn"><i class="fas fa-arrow-left"></i></a>
+        <a href="{{ route('booking.step1', $salon->id) }}" class="nav-btn"><i class="fas fa-arrow-left"></i></a>
         <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#aaa;">
             <span style="color:#aaa;">Services</span><span style="color:#ccc;">›</span>
             <span style="color:#1a1a1a;font-weight:700;">Professional</span><span style="color:#ccc;">›</span>
@@ -133,7 +133,7 @@
                     </div>
                 </div>
  
-                <form action="{{ route('client.booking.step2.post', $salon->id) }}" method="POST" id="step2Form">
+                <form action="{{ route('booking.step2.post', $salon->id) }}" method="POST" id="step2Form">
     @csrf
     <input type="hidden" name="stylist_id" id="stylistInput" value="">
     <button type="submit" class="continue-btn" id="continueBtn" disabled>

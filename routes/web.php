@@ -98,26 +98,24 @@ Route::get('/salons', [PublicSalonController::class, 'index'])->name('salons.ind
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
 Route::get('/salons/{slug}/gallery', [PublicSalonController::class, 'gallery'])->name('salons.gallery');
 
+
 // ==================== PUBLIC BOOKING ROUTES ====================
+// Steps 1,2,3 (bina login ke)
 Route::prefix('booking')->name('booking.')->group(function () {
-    
-    // Step 1: Services
     Route::get('/services/{salon_id}', [BookingController::class, 'step1Services'])->name('step1');
     Route::post('/services/{salon_id}', [BookingController::class, 'postStep1Services'])->name('step1.post');
     
-    // Step 2: Stylist
     Route::get('/stylist/{salon_id}', [BookingController::class, 'step2Stylist'])->name('step2');
     Route::post('/stylist/{salon_id}', [BookingController::class, 'postStep2Stylist'])->name('step2.post');
     
-    // Step 3: Date & Time
     Route::get('/datetime/{salon_id}', [BookingController::class, 'step3DateTime'])->name('step3');
     Route::post('/datetime/{salon_id}', [BookingController::class, 'postStep3DateTime'])->name('step3.post');
-    
-    // Step 4: Payment
+});
+
+// Steps 4 and Confirmation (login required)
+Route::prefix('booking')->name('booking.')->middleware('auth')->group(function () {
     Route::get('/payment/{salon_id}', [BookingController::class, 'step4Payment'])->name('step4');
     Route::post('/payment/{salon_id}', [BookingController::class, 'postPayment'])->name('payment.post');
-    
-    // Confirmation
     Route::get('/confirmation/{booking_id}', [BookingController::class, 'confirmation'])->name('confirmation');
 });
 
@@ -466,26 +464,26 @@ Route::get('/categories', [OwnerServiceController::class, 'categories'])->name('
 
                           // ==================== BOOKING FLOW ====================
 
-// Step 1 - Select Service
-Route::get('/booking/{salon}/step1', [BookingController::class, 'step1'])->name('booking.step1');
-Route::post('/booking/{salon}/step1', [BookingController::class, 'step1Post'])->name('booking.step1.post');
+// // Step 1 - Select Service
+// Route::get('/booking/{salon}/step1', [BookingController::class, 'step1'])->name('booking.step1');
+// Route::post('/booking/{salon}/step1', [BookingController::class, 'step1Post'])->name('booking.step1.post');
 
-// Step 2 - Select Stylist
-Route::get('/booking/{salon}/step2', [BookingController::class, 'step2'])->name('booking.step2');
-Route::post('/booking/{salon}/step2', [BookingController::class, 'step2Post'])->name('booking.step2.post');
+// // Step 2 - Select Stylist
+// Route::get('/booking/{salon}/step2', [BookingController::class, 'step2'])->name('booking.step2');
+// Route::post('/booking/{salon}/step2', [BookingController::class, 'step2Post'])->name('booking.step2.post');
 
-// Step 3 - Select Time
-Route::get('/booking/{salon}/step3', [BookingController::class, 'step3'])->name('booking.step3');
-Route::post('/booking/{salon}/step3', [BookingController::class, 'step3Post'])->name('booking.step3.post');
+// // Step 3 - Select Time
+// Route::get('/booking/{salon}/step3', [BookingController::class, 'step3'])->name('booking.step3');
+// Route::post('/booking/{salon}/step3', [BookingController::class, 'step3Post'])->name('booking.step3.post');
 
-// Step 4 - Payment
-Route::get('/booking/{salon}/step4', [BookingController::class, 'step4'])->name('booking.step4');
-Route::post('/booking/{salon}/step4', [BookingController::class, 'step4Post'])->name('booking.step4.post');
+// // Step 4 - Payment
+// Route::get('/booking/{salon}/step4', [BookingController::class, 'step4'])->name('booking.step4');
+// Route::post('/booking/{salon}/step4', [BookingController::class, 'step4Post'])->name('booking.step4.post');
 
-Route::post('/stripe/payment', [App\Http\Controllers\Client\PaymentController::class, 'stripePost'])->name('stripe.post');
+// Route::post('/stripe/payment', [App\Http\Controllers\Client\PaymentController::class, 'stripePost'])->name('stripe.post');
 
-// Step 5 - Confirm (Optional, if you have separate confirm page)
-Route::get('/booking/{salon}/confirm/{appointment}', [BookingController::class, 'confirm'])->name('booking.confirm');
+// // Step 5 - Confirm (Optional, if you have separate confirm page)
+// Route::get('/booking/{salon}/confirm/{appointment}', [BookingController::class, 'confirm'])->name('booking.confirm');
 
 // Booking AJAX endpoints
 Route::get('/booking/{salon}/slots', [BookingStepController::class, 'getSlots'])->name('booking.slots');

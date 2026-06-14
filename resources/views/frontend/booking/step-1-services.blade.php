@@ -154,7 +154,7 @@
                 </div>
  
                 <!-- Desktop Form -->
-<form action="{{ route('client.booking.step1.post', $salon->id) }}" method="POST" id="step1Form">
+<form action="{{ route('booking.step1.post', $salon->id) }}" method="POST" id="step1Form">
     @csrf
     <div id="selectedServicesInputs"></div>
     <input type="hidden" name="service_id" id="serviceIdInput">
@@ -168,7 +168,7 @@
  
     <!-- Mobile Form -->
 <div class="mobile-bar">
-    <form action="{{ route('client.booking.step1.post', $salon->id) }}" method="POST" id="mobileForm">
+<form action="{{ route('booking.step1.post', $salon->id) }}" method="POST" id="mobileForm">
         @csrf
         <div id="mobileSelectedServicesInputs"></div>
         <button type="submit" class="continue-btn" id="mobileContinueBtn">

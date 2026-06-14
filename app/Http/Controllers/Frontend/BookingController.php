@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Session;
 
 class BookingController extends Controller
 {
+    
     // Step 1 - Show Service Selection Form (GET)
     public function step1Services($salon_id)
     {
@@ -110,6 +111,8 @@ class BookingController extends Controller
     // Step 4 - Show Payment Page (GET)
     public function step4Payment($salon_id)
     {
+
+    
         $salon = Salon::findOrFail($salon_id);
         $timeSlotId = Session::get('booking_slot_id');
 
