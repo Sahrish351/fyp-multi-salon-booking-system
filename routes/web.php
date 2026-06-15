@@ -195,6 +195,9 @@ Route::post('/admin/login', [App\Http\Controllers\Auth\LoginController::class, '
     // ========== GOOGLE LOGIN ==========
     Route::get('/auth/google', [App\Http\Controllers\Auth\SocialLoginController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [App\Http\Controllers\Auth\SocialLoginController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+    // Facebook Login Routes
+Route::get('/auth/facebook', [App\Http\Controllers\Auth\SocialLoginController::class, 'redirectToFacebook'])->name('facebook.redirect');
+Route::get('/auth/facebook/callback', [App\Http\Controllers\Auth\SocialLoginController::class, 'handleFacebookCallback'])->name('facebook.callback');
 });
 
 // ==================== AUTHENTICATED ROUTES ====================

@@ -332,9 +332,9 @@
             <a href="{{ route('auth.google') }}" class="social-btn google" style="text-decoration: none; display: inline-block; text-align: center;">
                 <i class="fab fa-google me-2"></i>Google
             </a>
-            <button type="button" class="social-btn facebook" onclick="alert('Facebook login coming soon!')">
-                <i class="fab fa-facebook-f me-2"></i>Facebook
-            </button>
+            <a href="{{ route('facebook.redirect') }}" class="social-btn facebook" style="text-decoration: none; display: inline-block; text-align: center;">
+    <i class="fab fa-facebook-f me-2"></i>Facebook
+</a>
         </div>
 
         <div class="register-link">
