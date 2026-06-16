@@ -129,14 +129,14 @@
             </div>
  
             <!-- Waitlist -->
-            <div class="waitlist-section" id="waitlistSection">
+            <!-- <div class="waitlist-section" id="waitlistSection">
                 <i class="fas fa-list-ol fa-2x" style="color:#f97316;margin-bottom:10px;display:block;"></i>
                 <h4>No available slots?</h4>
                 <p>Join the waitlist and get notified when a slot opens up</p>
                 <button type="button" class="btn-waitlist" onclick="joinWaitlist()">
                     <i class="fas fa-plus-circle"></i> Join Waitlist
                 </button>
-            </div>
+            </div> -->
         </div>
  
         <!-- SIDEBAR -->
@@ -335,10 +335,10 @@ function clearSelection() {
     document.getElementById('waitlistSection').style.display = 'none';
 }
  
-function joinWaitlist() {
-    if (!selectedDate) { alert('Please select a date first'); return; }
-    window.location.href = "{{ route('client.waitlist.index') }}?salon_id={{ $salon->id }}&date=" + selectedDate + "&service_id={{ $service->id }}&stylist_id={{ $stylist->id }}";
-}
+// function joinWaitlist() {
+//     if (!selectedDate) { alert('Please select a date first'); return; }
+//     window.location.href = "{{ route('client.waitlist.index') }}?salon_id={{ $salon->id }}&date=" + selectedDate + "&service_id={{ $service->id }}&stylist_id={{ $stylist->id }}";
+// }
 </script>
 </body>
 </html>

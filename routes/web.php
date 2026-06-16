@@ -96,31 +96,30 @@ Route::get('/stylists', fn() => redirect()->route('salons.index'))->name('stylis
 Route::get('/gallery',  fn() => redirect()->route('salons.index'))->name('gallery.index');
  
 // ============================================================
-// ✅ BOOKING ROUTES — Steps 1,2,3 PUBLIC (no login needed)
-//    Step 4 (payment) needs login
+// ✅ BOOKING ROUTES — ALL STEPS REQUIRE LOGIN
 // ============================================================
-Route::prefix('booking')->name('booking.')->group(function () {
- 
+Route::prefix('booking')->name('booking.')->middleware('auth')->group(function () {
+
     // Step 1 — Select Service
     Route::get('/services/{salon_id}',  [BookingController::class, 'step1Services'])->name('step1');
     Route::post('/services/{salon_id}', [BookingController::class, 'postStep1Services'])->name('step1.post');
- 
+
     // Step 2 — Select Stylist
     Route::get('/stylist/{salon_id}',  [BookingController::class, 'step2Stylist'])->name('step2');
     Route::post('/stylist/{salon_id}', [BookingController::class, 'postStep2Stylist'])->name('step2.post');
- 
+
     // Step 3 — Select Date & Time
     Route::get('/datetime/{salon_id}',  [BookingController::class, 'step3DateTime'])->name('step3');
     Route::post('/datetime/{salon_id}', [BookingController::class, 'postStep3DateTime'])->name('step3.post');
- 
-    // Step 4 — Payment (auth required)
-    Route::get('/payment/{salon_id}',  [BookingController::class, 'step4Payment'])->middleware('auth')->name('step4');
-    Route::post('/payment/{salon_id}', [BookingController::class, 'postPayment'])->middleware('auth')->name('payment.post');
- 
+
+    // Step 4 — Payment
+    Route::get('/payment/{salon_id}',  [BookingController::class, 'step4Payment'])->name('step4');
+    Route::post('/payment/{salon_id}', [BookingController::class, 'postPayment'])->name('payment.post');
+
     // Confirmation page
-    Route::get('/confirmation/{booking_id}', [BookingController::class, 'confirmation'])->middleware('auth')->name('confirmation');
- 
-    // ✅ AJAX: Get available time slots
+    Route::get('/confirmation/{booking_id}', [BookingController::class, 'confirmation'])->name('confirmation');
+
+    // AJAX: Get available time slots
     Route::get('/slots/{salon_id}', [BookingController::class, 'getSlots'])->name('slots');
 });
  
@@ -431,11 +430,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/reschedule/{appointment}',  [RescheduleController::class, 'create'])->name('reschedule.create');
         Route::post('/reschedule/{appointment}', [RescheduleController::class, 'store'])->name('reschedule.store');
  
-        // Waitlist
-        Route::get('/waitlist',                      [WaitlistJoinController::class, 'index'])->name('waitlist.index');
-        Route::post('/waitlist/join',                [WaitlistJoinController::class, 'join'])->name('waitlist.join');
-        Route::post('/waitlist/{waitlist}/accept',   [WaitlistJoinController::class, 'accept'])->name('waitlist.accept');
-        Route::post('/waitlist/{waitlist}/reject',   [WaitlistJoinController::class, 'reject'])->name('waitlist.reject');
+        // // Waitlist
+        // Route::get('/waitlist',                      [WaitlistJoinController::class, 'index'])->name('waitlist.index');
+        // Route::post('/waitlist/join',                [WaitlistJoinController::class, 'join'])->name('waitlist.join');
+        // Route::post('/waitlist/{waitlist}/accept',   [WaitlistJoinController::class, 'accept'])->name('waitlist.accept');
+        // Route::post('/waitlist/{waitlist}/reject',   [WaitlistJoinController::class, 'reject'])->name('waitlist.reject');
  
         // Favorites
         Route::get('/favorites',                     [FavoriteSalonController::class, 'index'])->name('favorites.index');

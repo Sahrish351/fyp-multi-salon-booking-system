@@ -55,6 +55,28 @@ class LoginController extends Controller
         ])->onlyInput('email');
     }
 
+    // ✅ ADD THIS METHOD (Login ke baad redirect handle karega)
+    protected function authenticated(Request $request, $user)
+    {
+        // Check if there was an intended URL (booking page)
+        $intendedUrl = session('url.intended', url()->previous());
+        
+        // If intended URL contains 'booking', redirect to that
+        if (str_contains($intendedUrl, '/booking/')) {
+            session()->forget('url.intended');
+            return redirect()->to($intendedUrl);
+        }
+        
+        // Default redirect based on role
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'owner') {
+            return redirect()->route('owner.dashboard');
+        } else {
+            return redirect()->route('client.dashboard');
+        }
+    }
+
     // Logout
     public function logout(Request $request)
     {
