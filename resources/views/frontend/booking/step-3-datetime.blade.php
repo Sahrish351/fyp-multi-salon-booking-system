@@ -176,15 +176,14 @@
             </div>
  
             {{-- ✅ FIXED FORM: sends time string + date ─────────────── --}}
-            <form action="{{ route('booking.step3.post', $salon->id) }}" method="POST" id="step3Form">
-                @csrf
-                {{-- time_slot_id = "10:00 AM" string --}}
-                <input type="hidden" name="time_slot_id"     id="slotInput"     value="">
-                <input type="hidden" name="appointment_date" id="dateInput"     value="">
-                <button type="button" class="continue-btn" id="continueBtn" onclick="submitStep3()">
-                    Continue <i class="fas fa-arrow-right"></i>
-                </button>
-            </form>
+<form action="{{ url('/booking/datetime/' . $salon->id) }}" method="POST" id="step3Form">
+    @csrf
+    <input type="hidden" name="time_slot_id"     id="slotInput"     value="">
+    <input type="hidden" name="appointment_date" id="dateInput"     value="">
+    <button type="button" class="continue-btn" id="continueBtn" onclick="submitStep3()">
+        Continue <i class="fas fa-arrow-right"></i>
+    </button>
+</form>
         </div>
     </div>
 </div>

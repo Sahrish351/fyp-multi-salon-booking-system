@@ -192,7 +192,7 @@ class BookingController extends Controller
                 // Generate booking ref
                 $bookingRef = 'GLM-' . strtoupper(substr(uniqid(), -6));
  
-                // Create appointment
+              
                 $appointment = Appointment::create([
                     'booking_ref'      => $bookingRef,
                     'client_id'        => Auth::id(),
@@ -207,20 +207,20 @@ class BookingController extends Controller
                     'status'           => 'payment_submitted',
                 ]);
  
-                // Screenshot upload
+            
                 $screenshotPath = null;
                 if ($request->hasFile('screenshot')) {
                     $screenshotPath = $request->file('screenshot')
                         ->store('payment-screenshots', 'public');
                 }
  
-                // Stripe payment method id
+                
                 $stripeId = null;
                 if ($request->payment_method === 'stripe') {
                     $stripeId = $request->stripe_payment_method_id;
                 }
  
-                // Create payment
+            
                 Payment::create([
                     'appointment_id'    => $appointment->id,
                     'client_id'         => Auth::id(),
@@ -234,14 +234,14 @@ class BookingController extends Controller
                     'stripe_payment_id' => $stripeId,
                 ]);
  
-                // Clear session
+             
                 Session::forget([
                     'booking_service_id', 'booking_service_ids',
                     'booking_stylist_id', 'booking_time', 'booking_date',
                     'booking_slot_id',
                 ]);
  
-                // Notify salon owner
+            
                 try {
                     $salon->owner->notify(
                         new \App\Notifications\NewPaymentAlert($appointment)
@@ -260,7 +260,7 @@ class BookingController extends Controller
         }
     }
  
-    // ── AJAX: Get Available Slots ────────────────────────────────
+    
     public function getSlots(Request $request, $salon_id)
     {
         $salon     = Salon::findOrFail($salon_id);
@@ -268,7 +268,7 @@ class BookingController extends Controller
         $stylistId = $request->stylist_id ?? Session::get('booking_stylist_id');
         $serviceId = $request->service_id ?? Session::get('booking_service_id');
  
-        // Get already booked times
+       
         $bookedTimes = Appointment::where('salon_id', $salon->id)
             ->where('stylist_id', $stylistId)
             ->where('appointment_date', $date)
@@ -277,7 +277,6 @@ class BookingController extends Controller
             ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
             ->toArray();
  
-        // Check stylist holidays
         $isHoliday = \App\Models\StylistHoliday::where('stylist_id', $stylistId)
             ->whereDate('date', $date)
             ->exists();

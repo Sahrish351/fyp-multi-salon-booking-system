@@ -13,7 +13,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f5f5f5; min-height: 100vh; -webkit-font-smoothing: antialiased; }
  
-    /* TOP NAV */
+   
     .top-nav {
         position: fixed; top: 0; left: 0; right: 0;
         display: flex; align-items: center; justify-content: space-between;
@@ -30,7 +30,7 @@
     .breadcrumb-bar { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #aaa; }
     .breadcrumb-bar .active { color: #1a1a1a; font-weight: 700; }
  
-    /* LAYOUT */
+   
     .pay-layout {
         display: grid;
         grid-template-columns: 1fr 380px;
@@ -45,12 +45,11 @@
         .pay-sidebar { display: none; }
     }
  
-    /* LEFT PANEL */
     .pay-left { padding-right: 52px; }
     .pay-left h1 { font-size: 2rem; font-weight: 900; color: #1a1a1a; letter-spacing: -1px; margin-bottom: 6px; }
     .pay-sub { font-size: .85rem; color: #888; margin-bottom: 24px; }
  
-    /* SECURE BADGE */
+    
     .secure-badge {
         display: inline-flex; align-items: center; gap: 6px;
         background: #f0fdf4; border: 1px solid #bbf7d0;
@@ -238,7 +237,7 @@
  
 <div class="pay-layout">
  
-    <!-- ── LEFT PANEL ──────────────────────────────────────────── -->
+   
     <div class="pay-left">
         <h1>Complete payment</h1>
         <p class="pay-sub">Pay Rs.100 advance to secure your appointment</p>
@@ -247,7 +246,7 @@
             <i class="fas fa-shield-alt"></i> 256-bit SSL Encrypted & Secure
         </div>
  
-        <!-- METHOD TABS -->
+    
         <div class="method-tabs">
             <div class="method-tab active" onclick="switchMethod('stripe',this)">
                 <i class="fas fa-credit-card"></i>
@@ -267,7 +266,7 @@
             </div>
         </div>
  
-        <!-- ══ STRIPE CARD ══════════════════════════════════════ -->
+      
         <div class="pay-section show" id="sec-stripe">
             <div class="step-info">
                 <i class="fas fa-info-circle"></i>
@@ -301,7 +300,7 @@
             </form>
         </div>
  
-        <!-- ══ EASYPAISA ════════════════════════════════════════ -->
+       
         <div class="pay-section" id="sec-easypaisa">
             <div class="pay-account-box pab-ep">
                 <div class="pab-label">Send Rs.100 to EasyPaisa</div>
@@ -340,7 +339,7 @@
             </form>
         </div>
  
-        <!-- ══ JAZZCASH ══════════════════════════════════════════ -->
+      
         <div class="pay-section" id="sec-jazzcash">
             <div class="pay-account-box pab-jc">
                 <div class="pab-label">Send Rs.100 to JazzCash</div>
@@ -379,7 +378,7 @@
             </form>
         </div>
  
-        <!-- ══ BANK TRANSFER ════════════════════════════════════ -->
+      
         <div class="pay-section" id="sec-bank">
             <div class="pay-account-box pab-bk">
                 <div class="pab-label">Bank Transfer Details</div>
@@ -418,12 +417,12 @@
             </form>
         </div>
  
-    </div><!-- /pay-left -->
+    </div>
  
-    <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
+   
     <div class="pay-sidebar">
  
-        <!-- Salon -->
+   
         <div class="salon-card">
             <div class="salon-img">
                 @if($salon->cover_photo)
@@ -436,7 +435,7 @@
             </div>
         </div>
  
-        <!-- Order Summary -->
+       
         <div class="order-box">
             <div class="order-hdr">Booking Summary</div>
  
@@ -473,7 +472,7 @@
             </div>
         </div>
  
-        <!-- Advance Notice -->
+        
         <div class="advance-box">
             <i class="fas fa-info-circle"></i>
             <div>
@@ -481,7 +480,7 @@
             </div>
         </div>
  
-        <!-- Booking Details -->
+      
         <div class="info-box">
             <div style="font-size:.7rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Appointment Details</div>
             @if(isset($slot) && $slot)
@@ -508,12 +507,12 @@
             </div>
         </div>
  
-    </div><!-- /sidebar -->
+    </div>
  
-</div><!-- /pay-layout -->
+</div>
  
 <script>
-// ── STRIPE INIT ──────────────────────────────────────────────────
+
 @if(config('services.stripe.key'))
 const stripe = Stripe('{{ config("services.stripe.key") }}');
 const elements = stripe.elements();
@@ -566,7 +565,7 @@ document.getElementById('stripeForm').addEventListener('submit', async function(
 document.getElementById('card-element').innerHTML = '<p style="color:#888;font-size:.82rem;padding:8px 0;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> Stripe key not configured. Add STRIPE_KEY to .env</p>';
 @endif
  
-// ── SWITCH METHOD ────────────────────────────────────────────────
+
 function switchMethod(method, tab) {
     document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
@@ -574,7 +573,7 @@ function switchMethod(method, tab) {
     document.getElementById('sec-' + method).classList.add('show');
 }
  
-// ── COPY NUMBER ──────────────────────────────────────────────────
+
 function copyNum(num, btn) {
     navigator.clipboard.writeText(num).then(() => {
         const orig = btn.innerHTML;
@@ -583,7 +582,7 @@ function copyNum(num, btn) {
     });
 }
  
-// ── IMAGE PREVIEW ────────────────────────────────────────────────
+
 function previewImg(input, prevId, boxId) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
