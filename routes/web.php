@@ -98,6 +98,7 @@ Route::get('/gallery',  fn() => redirect()->route('salons.index'))->name('galler
 // ============================================================
 // ✅ BOOKING ROUTES — ALL STEPS REQUIRE LOGIN
 // ============================================================
+// ============================================================
 Route::prefix('booking')->name('booking.')->middleware('auth')->group(function () {
 
     // Step 1 — Select Service
@@ -108,19 +109,25 @@ Route::prefix('booking')->name('booking.')->middleware('auth')->group(function (
     Route::get('/stylist/{salon_id}',  [BookingController::class, 'step2Stylist'])->name('step2');
     Route::post('/stylist/{salon_id}', [BookingController::class, 'postStep2Stylist'])->name('step2.post');
 
-    // Step 3 — Select Date & Time
+    // Step 3 — Select Date & Time (+ Waitlist join)
     Route::get('/datetime/{salon_id}',  [BookingController::class, 'step3DateTime'])->name('step3');
     Route::post('/datetime/{salon_id}', [BookingController::class, 'postStep3DateTime'])->name('step3.post');
 
-    // Step 4 — Payment
+    // Step 4 — Payment (creates pending appointment + redirects to PayFast)
     Route::get('/payment/{salon_id}',  [BookingController::class, 'step4Payment'])->name('step4');
     Route::post('/payment/{salon_id}', [BookingController::class, 'postPayment'])->name('payment.post');
 
     // Confirmation page
     Route::get('/confirmation/{booking_id}', [BookingController::class, 'confirmation'])->name('confirmation');
 
-    // AJAX: Get available time slots
+    // ✅ AJAX: Get available time slots for a given date
     Route::get('/slots/{salon_id}', [BookingController::class, 'getSlots'])->name('slots');
+});
+
+Route::prefix('payfast')->name('payfast.')->group(function () {
+    Route::get('/return',  [BookingController::class, 'payfastReturn'])->name('return');
+    Route::get('/cancel',  [BookingController::class, 'payfastCancel'])->name('cancel');
+    Route::post('/notify', [BookingController::class, 'payfastNotify'])->name('notify');
 });
  
 // ============================================================

@@ -1,62 +1,36 @@
 <?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-class TimeSlot extends Model
+ 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+ 
+return new class extends Migration
 {
-    protected $fillable = [
-        'salon_id',
-        'stylist_id',
-        'slot_date',
-        'start_time',
-        'end_time',
-        'status',
-        'locked_by',
-        'locked_at',
-        'lock_expires_at',
-    ];
-
-    protected $casts = [
-        'slot_date' => 'date',
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
-        'locked_at' => 'datetime',
-        'lock_expires_at' => 'datetime',
-    ];
-
-    // ✅ YEH METHOD ADD KARO
-    public function isAvailable()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
-        // If status is 'booked', not available
-        if ($this->status === 'booked') {
-            return false;
-        }
-        
-        // If status is 'locked', check if lock expired
-        if ($this->status === 'locked') {
-            // If lock expired, it's available again
-            if ($this->lock_expires_at && now()->greaterThan($this->lock_expires_at)) {
-                return true;
-            }
-            return false;
-        }
-        
-        // 'available' or 'blocked' status check
-        return $this->status === 'available';
+        Schema::create('time_slots', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('salon_id')->constrained('salons')->cascadeOnDelete();
+            $table->foreignId('stylist_id')->nullable()->constrained('stylists')->nullOnDelete();
+            $table->date('slot_date');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->string('status')->default('available'); // available, locked, booked, blocked
+            $table->foreignId('locked_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('locked_at')->nullable();
+            $table->timestamp('lock_expires_at')->nullable();
+            $table->timestamps();
+        });
     }
-    
-    // Relationship with salon
-    public function salon(): BelongsTo
+ 
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
-        return $this->belongsTo(Salon::class);
+        Schema::dropIfExists('time_slots');
     }
-    
-    // Relationship with stylist
-    public function stylist(): BelongsTo
-    {
-        return $this->belongsTo(Stylist::class);
-    }
-}
+};

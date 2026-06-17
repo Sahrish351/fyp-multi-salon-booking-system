@@ -48,4 +48,12 @@ return [
     'redirect' => env('FACEBOOK_REDIRECT_URI'),
 ],
 
+ 'payfast' => [
+        'merchant_id'  => env('PAYFAST_MERCHANT_ID', '10000'),       // sandbox default test ID
+        'merchant_key' => env('PAYFAST_MERCHANT_KEY', 'sandboxkey'), // sandbox default test key
+        'sandbox_url'  => env('PAYFAST_SANDBOX_URL', 'https://sandbox.payfast.pk/order/request'),
+        'live_url'     => env('PAYFAST_LIVE_URL', 'https://www.payfast.pk/order/request'),
+        'mode'         => env('PAYFAST_MODE', 'sandbox'), 
+    ],
+
 ];
