@@ -1,8 +1,7 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/complaints/index.blade.php --}}
-{{-- ============================================================ --}}
 @extends('layouts.client')
+
 @section('title', 'My Complaints — Glamora')
+
 @section('content')
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
@@ -13,14 +12,14 @@
         <p style="color:#aaa;font-size:0.85rem;margin:0;">Track status of your filed complaints</p>
     </div>
     <a href="{{ url('/client/complaints/create') }}" class="btn btn-sm rounded-pill px-4" style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-weight:600;">
-        <i class="fas fa-plus me-1"></i>File New Complaint
+    <i class="fas fa-plus me-1"></i>File New Complaint
+
     </a>
 </div>
 
-{{-- Status Tabs --}}
 <div class="d-flex gap-2 mb-4 flex-wrap">
     @foreach(['all'=>'All','open'=>'Open','in_review'=>'In Review','resolved'=>'Resolved','closed'=>'Closed'] as $val=>$lbl)
-    <a href="{{ route('client.complaints.index',['status'=>$val]) }}"
+    <a href="{{ route('client.complaints.index', ['status' => $val]) }}"
        class="btn btn-sm rounded-pill"
        style="{{ request('status')===$val || (!request('status') && $val==='all') ? 'background:#E91E8C;color:#fff;border:none;font-weight:600;' : 'background:#fff;color:#888;border:1px solid #fce4ec;' }}font-size:0.82rem;padding:6px 16px;">
         {{ $lbl }}
@@ -45,12 +44,12 @@
                 <div class="col-md-6">
                     <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                         <h6 class="fw-bold mb-0" style="color:#333;">{{ $complaint->subject }}</h6>
-                        {!! $complaint->priority_badge !!}
+                        {!! $complaint->priority_badge ?? '<span class="badge bg-secondary">Normal</span>' !!}
                     </div>
                     <div style="color:#888;font-size:0.82rem;margin-bottom:0.5rem;">
-                        <i class="fas fa-store me-1" style="color:#E91E8C;font-size:0.75rem;"></i>{{ $complaint->salon->name }}
+                        <i class="fas fa-store me-1" style="color:#E91E8C;font-size:0.75rem;"></i>{{ $complaint->salon->name ?? 'N/A' }}
                         &nbsp;·&nbsp;
-                        <span style="text-transform:capitalize;">{{ str_replace('_',' ',$complaint->type) }}</span>
+                        <span style="text-transform:capitalize;">{{ str_replace('_',' ',$complaint->type ?? 'general') }}</span>
                     </div>
                     <p style="color:#aaa;font-size:0.82rem;line-height:1.6;margin:0;">{{ Str::limit($complaint->description, 120) }}</p>
                 </div>
@@ -64,10 +63,10 @@
                 </div>
                 <div class="col-md-2 text-center">
                     <div style="color:#aaa;font-size:0.72rem;margin-bottom:4px;">Replies</div>
-                    <div style="color:#333;font-size:1.2rem;font-weight:700;">{{ $complaint->replies->count() }}</div>
+                    <div style="color:#333;font-size:1.2rem;font-weight:700;">{{ $complaint->replies->count() ?? 0 }}</div>
                 </div>
                 <div class="col-md-1 text-end">
-                    <a href="{{ route('client.complaints.show',$complaint->id) }}" class="btn btn-sm" style="background:#fff0f7;color:#E91E8C;border:1px solid #fce4ec;border-radius:8px;font-size:0.78rem;">
+                    <a href="{{ route('client.complaints.show', $complaint->id) }}" class="btn btn-sm" style="background:#fff0f7;color:#E91E8C;border:1px solid #fce4ec;border-radius:8px;font-size:0.78rem;">
                         <i class="fas fa-eye me-1"></i>View
                     </a>
                 </div>
@@ -84,7 +83,9 @@
     </div>
     @endforelse
 </div>
+
 @if($complaints->hasPages())
 <div class="mt-4">{{ $complaints->links() }}</div>
 @endif
+
 @endsection
