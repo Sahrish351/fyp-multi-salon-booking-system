@@ -333,7 +333,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/stylists/{id}/availability', [OwnerStylistController::class, 'storeAvailability'])->name('stylists.availability.store');
         Route::post('/stylists/{id}/holiday',      [OwnerStylistController::class, 'storeHoliday'])->name('stylists.holiday.store');
  
-        // ✅ Stylist Availability & Holidays (these are used in owner layout navbar)
+        // Stylist Availability & Holidays (these are used in owner layout navbar)
         Route::get('/stylists/{stylist}/availability',        [OwnerStylistController::class, 'availability'])->name('stylists.availability.index');
         Route::delete('/stylists/{stylist}/availability/{day}',[OwnerStylistController::class, 'destroyAvailability'])->name('stylists.availability.destroy');
         Route::get('/stylists/{stylist}/holidays',            [OwnerHolidayController::class, 'index'])->name('stylists.holidays.index');
@@ -382,11 +382,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/waitlist/{id}/notify', [OwnerWaitlistController::class, 'notify'])->name('waitlist.notify');
         Route::get('/waitlist/{waitlist}',   [OwnerWaitlistController::class, 'show'])->name('waitlist.show');
         Route::delete('/waitlist/{waitlist}',[OwnerWaitlistController::class, 'remove'])->name('waitlist.remove');
- 
+
         // Clients
         Route::get('/clients/export',        [OwnerClientController::class, 'export'])->name('clients.export');
         Route::resource('clients', OwnerClientController::class);
- 
+        // Waitlist
+        
         // Notifications
         Route::get('/notifications',                    [OwnerNotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/{id}/read',         [OwnerNotificationController::class, 'markAsRead'])->name('notifications.read');
@@ -412,7 +413,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/search',        [SalonSearchController::class, 'index'])->name('search');
         Route::get('/salons/{slug}', [SalonDetailController::class, 'show'])->name('salons.show');
  
-        // ✅ AJAX slots (client panel)
+        // AJAX slots (client panel)
         Route::get('/booking/{salon}/slots', [BookingStepController::class, 'getSlots'])->name('booking.slots');
         Route::get('/booking/{salon}/dates', [BookingStepController::class, 'getAvailableDates'])->name('booking.dates');
  
@@ -430,11 +431,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/reschedule/{appointment}',  [RescheduleController::class, 'create'])->name('reschedule.create');
         Route::post('/reschedule/{appointment}', [RescheduleController::class, 'store'])->name('reschedule.store');
  
-        // // Waitlist
-        // Route::get('/waitlist',                      [WaitlistJoinController::class, 'index'])->name('waitlist.index');
-        // Route::post('/waitlist/join',                [WaitlistJoinController::class, 'join'])->name('waitlist.join');
-        // Route::post('/waitlist/{waitlist}/accept',   [WaitlistJoinController::class, 'accept'])->name('waitlist.accept');
-        // Route::post('/waitlist/{waitlist}/reject',   [WaitlistJoinController::class, 'reject'])->name('waitlist.reject');
+        // Waitlist
+        Route::get('/waitlist',                      [WaitlistJoinController::class, 'index'])->name('waitlist.index');
+        Route::post('/waitlist/join',                [WaitlistJoinController::class, 'join'])->name('waitlist.join');
+        Route::post('/waitlist/{waitlist}/accept',   [WaitlistJoinController::class, 'accept'])->name('waitlist.accept');
+        Route::post('/waitlist/{waitlist}/reject',   [WaitlistJoinController::class, 'reject'])->name('waitlist.reject');
  
         // Favorites
         Route::get('/favorites',                     [FavoriteSalonController::class, 'index'])->name('favorites.index');
