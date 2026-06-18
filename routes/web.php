@@ -256,13 +256,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/reviews/{review}/toggle',         [ReviewManagementController::class, 'toggleApproval'])->name('reviews.toggle');
         Route::delete('/reviews/{review}',              [ReviewManagementController::class, 'destroy'])->name('reviews.destroy');
  
-    
-       // Complaints
-Route::get('/complaints', [ComplaintSubmitController::class, 'index'])->name('complaints.index');
-Route::get('/complaints/create', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
-Route::post('/complaints', [ComplaintSubmitController::class, 'store'])->name('complaints.store');
-Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show'])->name('complaints.show');
 
+// COMPLAINT ROUTES
+
+Route::prefix('client')->group(function () {
+    Route::get('/complaints', [ComplaintSubmitController::class, 'index'])->name('complaints.index');
+    Route::get('/complaints/create', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
+    Route::post('/complaints', [ComplaintSubmitController::class, 'store'])->name('complaints.store');
+    Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show'])->name('complaints.show');
+});
         // Notifications
         Route::get('/notifications',                       [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/send-to-all',          [NotificationController::class, 'sendToAll'])->name('notifications.send-to-all');
@@ -470,4 +472,12 @@ Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show']
     });
  
 }); // end auth middleware
+
+
+Route::get('/test-complaint', function () {
+    return 'Test route is working!';
+});
+
+
+
  

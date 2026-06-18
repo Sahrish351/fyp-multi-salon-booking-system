@@ -16,7 +16,7 @@
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    <form action="{{ route('client.complaints.store') }}" method="POST">
+                    <form action="/client/complaints" method="POST">
                         @csrf
 
                         <div class="form-group mb-3">
@@ -51,7 +51,7 @@
                         </div>
 
                         <button type="submit" class="btn" style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;border-radius:50px;padding:10px 30px;font-weight:600;">Submit Complaint</button>
-                        <a href="{{ route('client.complaints.index') }}" class="btn" style="background:#f0f0f0;color:#555;border:none;border-radius:50px;padding:10px 30px;">Cancel</a>
+                        <a href="/client/complaints" class="btn" style="background:#f0f0f0;color:#555;border:none;border-radius:50px;padding:10px 30px;">Cancel</a>
                     </form>
                 </div>
             </div>

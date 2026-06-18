@@ -21,14 +21,14 @@ class ComplaintSubmitController extends Controller
     }
 
     public function create()
-    {
-        $appointments = Appointment::where('client_id', Auth::id())
-            ->where('status', 'completed')
-            ->latest()
-            ->get();
+{
+    $appointments = Appointment::where('client_id', Auth::id())
+        ->where('status', 'completed')
+        ->latest()
+        ->get();
 
-        return view('client.complaints.create', compact('appointments'));
-    }
+    return view('client.complaints.create', compact('appointments'));
+}
 
     public function store(Request $request)
     {

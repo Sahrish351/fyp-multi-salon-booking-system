@@ -11,8 +11,9 @@
         </h4>
         <p style="color:#aaa;font-size:0.85rem;margin:0;">Track status of your filed complaints</p>
     </div>
-    <a href="{{ url('/client/complaints/create') }}" class="btn btn-sm rounded-pill px-4" style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-weight:600;">
+   <a href="/client/complaints/create" class="btn btn-sm rounded-pill px-4" style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-weight:600;">
     <i class="fas fa-plus me-1"></i>File New Complaint
+</a>
 
     </a>
 </div>
