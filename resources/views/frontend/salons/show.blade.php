@@ -1,8 +1,4 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/public/salon-detail.blade.php --}}
-{{-- Exact Fresha style salon detail page --}}
-{{-- MODIFIED: Photos tab removed, Features tab added --}}
-{{-- ============================================================ --}}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +15,6 @@
     body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; -webkit-font-smoothing: antialiased; }
     a { text-decoration: none; color: inherit; }
  
-    /* ============================
-       NAVBAR - same as home
-    ============================ */
     .g-nav {
         background: #fff;
         border-bottom: 1px solid #ebebeb;
@@ -188,11 +181,7 @@
     .salon-meta-row .address { color: #555; }
     .salon-meta-row .directions { color: #E91E8C; font-weight: 600; cursor: pointer; }
     .salon-meta-row .directions:hover { text-decoration: underline; }
-    .action-btns {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+    .action-btns { display: flex; align-items: center; gap: 8px; }
     .btn-icon-round {
         width: 38px;
         height: 38px;
@@ -222,30 +211,11 @@
         position: relative;
     }
     @media(max-width:768px) { .photo-grid { grid-template-columns: 1fr; grid-template-rows: 280px; height: auto; } }
-    .photo-grid .main-photo {
-        grid-row: 1 / 3;
-        overflow: hidden;
-        position: relative;
-        cursor: pointer;
-    }
-    .photo-grid .main-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform .4s;
-    }
+    .photo-grid .main-photo { grid-row: 1 / 3; overflow: hidden; position: relative; cursor: pointer; }
+    .photo-grid .main-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
     .photo-grid .main-photo:hover img { transform: scale(1.03); }
-    .photo-grid .side-photo {
-        overflow: hidden;
-        position: relative;
-        cursor: pointer;
-    }
-    .photo-grid .side-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform .4s;
-    }
+    .photo-grid .side-photo { overflow: hidden; position: relative; cursor: pointer; }
+    .photo-grid .side-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
     .photo-grid .side-photo:hover img { transform: scale(1.04); }
     .photo-grid .side-photo.last { position: relative; }
     .see-all-photos {
@@ -275,6 +245,7 @@
     }
     @media(max-width:992px) { .content-grid { grid-template-columns: 1fr; } }
  
+    /* ✅ Tabs are now pure scroll-navigation, not show/hide controllers */
     .salon-tabs {
         display: flex;
         align-items: center;
@@ -286,6 +257,7 @@
         background: #fff;
         z-index: 100;
         padding: 0;
+        overflow-x: auto;
     }
     .salon-tab {
         padding: 14px 20px;
@@ -300,16 +272,18 @@
         border-right: none;
         background: none;
         margin-bottom: -1px;
+        white-space: nowrap;
     }
     .salon-tab:hover { color: #1a1a1a; }
     .salon-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
  
-    .services-cat-tabs {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-bottom: 24px;
-    }
+    /* ✅ Each section now has spacing + a scroll-margin so the sticky
+         tab bar doesn't cover the heading when we scroll to it */
+    .page-section { margin-bottom: 56px; scroll-margin-top: 130px; }
+    .page-section:last-child { margin-bottom: 0; }
+    .page-section h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 16px; }
+ 
+    .services-cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
     .svc-cat-btn {
         border: 1.5px solid #e0e0e0;
         border-radius: 50px;
@@ -358,12 +332,8 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 20px;
-        margin-bottom: 32px;
     }
-    .team-member {
-        text-align: center;
-        cursor: pointer;
-    }
+    .team-member { text-align: center; cursor: pointer; }
     .team-member .tm-avatar {
         width: 90px;
         height: 90px;
@@ -384,19 +354,7 @@
     .team-member .tm-name { font-size: 0.88rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2px; }
     .team-member .tm-role { font-size: 0.78rem; color: #888; }
  
-    .review-row {
-        display: flex;
-        gap: 24px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-    }
-    .review-item {
-        flex: 1;
-        min-width: 280px;
-        border: 1px solid #f0f0f0;
-        border-radius: 12px;
-        padding: 16px;
-    }
+    .review-item { border: 1px solid #f0f0f0; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
     .review-item .ri-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
     .review-item .ri-av {
         width: 38px;
@@ -420,7 +378,6 @@
     .big-rating .br-stars { color: #ffc107; font-size: 1.5rem; }
     .big-rating .br-count { font-size: 0.85rem; color: #888; }
  
-    .about-section h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 12px; }
     .about-section p { font-size: 0.9rem; color: #555; line-height: 1.8; margin-bottom: 24px; }
     .map-placeholder {
         width: 100%;
@@ -441,6 +398,7 @@
         justify-content: center;
         background: #e8e4f5;
         gap: 8px;
+        cursor: pointer;
     }
     .address-line { font-size: 0.88rem; color: #555; margin-bottom: 24px; }
     .address-line a { color: #E91E8C; font-weight: 600; }
@@ -460,8 +418,7 @@
     .add-info-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #555; margin-bottom: 10px; }
     .add-info-item i { color: #7c3aed; width: 16px; }
  
-    .nearby-section { margin-top: 40px; padding-top: 32px; border-top: 1px solid #f0f0f0; }
-    .nearby-section h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 20px; }
+    .nearby-section { margin-top: 8px; }
     .nearby-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     @media(max-width:768px) { .nearby-grid { grid-template-columns: 1fr 1fr; } }
     @media(max-width:480px) { .nearby-grid { grid-template-columns: 1fr; } }
@@ -476,7 +433,6 @@
     .nearby-card .nc-name { font-size: 0.85rem; font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
     .nearby-card .nc-meta { font-size: 0.75rem; color: #888; }
  
-    .other-biz-section { margin-top: 40px; padding-top: 32px; border-top: 1px solid #f0f0f0; }
     .other-biz-section h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 16px; }
     .other-biz-btn {
         background: #1a1a1a;
@@ -489,6 +445,7 @@
         cursor: pointer;
         margin-bottom: 24px;
         transition: background .15s;
+        display: inline-block;
     }
     .other-biz-btn:hover { background: #E91E8C; }
     .other-biz-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px 40px; }
@@ -532,30 +489,37 @@
         width: 100%;
         cursor: pointer;
         transition: all .2s;
-        margin-bottom: 20px;
+        margin-bottom: 22px;
+        display: block;
+        text-align: center;
     }
     .btn-book-now:hover { background: #E91E8C; transform: translateY(-1px); }
+ 
+    /* ✅ FIX: Open/Closed status row — was overlapping the Book now
+       button because the dash + hours text could wrap onto a second
+       line with no extra spacing. Now uses flex-wrap with a proper
+       line-height and bottom margin so it never visually touches the
+       button above it, however many lines it wraps to. */
     .bs-info-row {
         display: flex;
         align-items: flex-start;
         gap: 10px;
-        margin-bottom: 14px;
+        margin-bottom: 16px;
         cursor: pointer;
     }
     .bs-info-row i { font-size: 0.9rem; margin-top: 2px; flex-shrink: 0; }
-    .bs-info-row .bs-info-text { font-size: 0.85rem; color: #555; line-height: 1.5; }
+    .bs-info-row .bs-info-text {
+        font-size: 0.85rem;
+        color: #555;
+        line-height: 1.6;
+        flex-wrap: wrap;
+    }
     .bs-info-row .bs-info-text .status-open { color: #22c55e; font-weight: 600; }
     .bs-info-row .bs-info-text .status-closed { color: #E91E8C; font-weight: 600; }
-    .bs-info-row .bs-info-text .bs-toggle { color: #888; cursor: pointer; font-size: 0.78rem; }
+    .bs-info-row .bs-info-text .bs-toggle { color: #888; cursor: pointer; font-size: 0.78rem; margin-left: 4px; }
     .bs-info-row .directions-link { color: #E91E8C; font-weight: 600; font-size: 0.82rem; }
     .bs-info-row .directions-link:hover { text-decoration: underline; }
-    .bs-hours-expand {
-        background: #f9f9f9;
-        border-radius: 10px;
-        padding: 12px;
-        margin-bottom: 14px;
-        display: none;
-    }
+    .bs-hours-expand { background: #f9f9f9; border-radius: 10px; padding: 12px; margin-bottom: 16px; display: none; }
     .bs-hours-expand.show { display: block; }
     .bs-hours-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; color: #555; }
     .bs-hours-row.today { font-weight: 700; color: #1a1a1a; }
@@ -569,9 +533,6 @@
 </head>
 <body>
  
-{{-- ===================================================== --}}
-{{-- NAVBAR with search --}}
-{{-- ===================================================== --}}
 <nav class="g-nav">
     <a href="{{ route('home') }}" class="brand" style="flex-shrink:0;">glamora</a>
  
@@ -643,7 +604,7 @@
                             {{ $i <= round($salon->rating) ? '★' : '☆' }}
                         @endfor
                     </span>
-                    <span class="review-count" onclick="switchTab('reviews')">({{ $salon->total_reviews * 10 + 250 }})</span>
+                    <span class="review-count" onclick="scrollToSection('reviews')">({{ $salon->total_reviews * 10 + 250 }})</span>
                     <span class="dot">·</span>
                     @php
                         $now = now();
@@ -651,6 +612,23 @@
                         $openTime = $salon->open_time ? \Carbon\Carbon::parse($salon->open_time) : null;
                         $closeTime = $salon->close_time ? \Carbon\Carbon::parse($salon->close_time) : null;
                         $isOpen = $openTime && $closeTime && $now->format('H:i') >= $openTime->format('H:i') && $now->format('H:i') <= $closeTime->format('H:i');
+ 
+                        // ✅ Build a precise Google Maps URL. If lat/lng exist on the
+                        // salon, use them directly (most accurate — pinpoints the
+                        // exact spot). Otherwise fall back to a clean text search
+                        // query, avoiding duplicate city names in the string.
+                        $hasCoords = !empty($salon->latitude) && !empty($salon->longitude);
+                        if ($hasCoords) {
+                            $mapsUrl = "https://www.google.com/maps/search/?api=1&query={$salon->latitude},{$salon->longitude}";
+                        } else {
+                            $addressForMap = trim($salon->address);
+                            // avoid "Lahore, Lahore" style duplication if address already ends with the city name
+                            if (!str_ends_with(strtolower($addressForMap), strtolower($salon->city))) {
+                                $addressForMap .= ', ' . $salon->city;
+                            }
+                            $addressForMap .= ', Pakistan';
+                            $mapsUrl = "https://www.google.com/maps/search/?api=1&query=" . urlencode($addressForMap);
+                        }
                     @endphp
                     @if($isOpen)
                         <span class="status-open">Open</span>
@@ -662,7 +640,7 @@
                     @endif
                     <span class="dot">·</span>
                     <span class="address">{{ $salon->address }}, {{ $salon->city }}</span>
-                    <a class="directions" href="https://maps.google.com/?q={{ urlencode($salon->address.', '.$salon->city) }}" target="_blank">
+                    <a class="directions" href="{{ $mapsUrl }}" target="_blank" rel="noopener">
                         Get directions
                     </a>
                 </div>
@@ -704,37 +682,35 @@
                  alt="{{ $salon->name }}"
                  onerror="this.src='https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=70'">
             <a href="{{ route('salons.gallery', $salon->slug) }}" class="see-all-photos" style="text-decoration:none; color:#1a1a1a;" onclick="event.stopPropagation()">
-    See all images
-</a>
+                See all images
+            </a>
         </div>
     </div>
  
     {{-- CONTENT GRID --}}
     <div class="content-grid">
  
-        {{-- LEFT: Tabs + Content --}}
+        {{-- LEFT: Tabs (scroll-nav only) + all sections stacked --}}
         <div>
-            {{-- TABS --}}
+            {{-- ✅ TABS now just scroll to the matching section.
+                 Nothing is hidden — every section stays on the page. --}}
             <div class="salon-tabs" id="salonTabs">
-                {{-- ❌ PHOTOS TAB REMOVED ❌ --}}
-                <button class="salon-tab active" onclick="switchTab('services')">Services</button>
-                <button class="salon-tab" onclick="switchTab('team')">Team</button>
-                <button class="salon-tab" onclick="switchTab('reviews')">Reviews</button>
-                <button class="salon-tab" onclick="switchTab('about')">About</button>
-                <button class="salon-tab" onclick="switchTab('features')">Features</button>
+                <button class="salon-tab active" data-section="services" onclick="scrollToSection('services')">Services</button>
+                <button class="salon-tab" data-section="team" onclick="scrollToSection('team')">Team</button>
+                <button class="salon-tab" data-section="reviews" onclick="scrollToSection('reviews')">Reviews</button>
+                <button class="salon-tab" data-section="about" onclick="scrollToSection('about')">About</button>
+                <button class="salon-tab" data-section="features" onclick="scrollToSection('features')">Features</button>
             </div>
  
-            {{-- ===== PHOTOS TAB REMOVED - Ab photos grid upar hi hai ===== --}}
- 
-            {{-- ===== SERVICES TAB ===== --}}
-            <div id="tab-services">
-                <h3 style="font-size:1.1rem;font-weight:800;color:#1a1a1a;margin-bottom:16px;">Services</h3>
+            {{-- ===== SERVICES SECTION ===== --}}
+            <div id="section-services" class="page-section">
+                <h3>Services</h3>
  
                 @php $serviceCategories = $salon->services->groupBy('category.name'); @endphp
                 <div class="services-cat-tabs">
+                    <button class="svc-cat-btn active" onclick="filterServiceCat('all',this)">All</button>
                     @foreach($serviceCategories as $catName => $services)
-                    <button class="svc-cat-btn {{ $loop->first ? 'active' : '' }}"
-                            onclick="filterServiceCat('{{ Str::slug($catName) }}',this)">
+                    <button class="svc-cat-btn" onclick="filterServiceCat('{{ Str::slug($catName) }}',this)">
                         {{ $catName }}
                     </button>
                     @endforeach
@@ -745,11 +721,10 @@
                     <div class="service-row" data-cat="{{ Str::slug($service->category->name ?? 'general') }}">
                         <div class="sr-left">
                             <div class="sr-name">{{ $service->name }}</div>
-                            <div class="sr-duration">{{ $service->duration_text }}</div>
+                            <div class="sr-duration">{{ $service->duration ?? 60 }} min</div>
                             <div class="sr-price">Rs. {{ number_format($service->price) }}</div>
                         </div>
-                        <a href="{{ route('booking.step1', $salon->id) }}?service={{ $service->id }}"
-   class="btn-book-service">Book</a>
+                        <a href="{{ route('booking.step1', $salon->id) }}?service={{ $service->id }}" class="btn-book-service">Book</a>
                     </div>
                     @empty
                     <div style="color:#888;font-size:0.88rem;padding:20px 0;">No services listed yet.</div>
@@ -757,11 +732,10 @@
                 </div>
             </div>
  
-            {{-- ===== TEAM TAB ===== --}}
-            <div id="tab-team" style="display:none;">
+            {{-- ===== TEAM SECTION ===== --}}
+            <div id="section-team" class="page-section">
                 <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h3 style="font-size:1.1rem;font-weight:800;color:#1a1a1a;margin:0;">Team</h3>
-                    <a href="#" style="color:#E91E8C;font-size:0.85rem;font-weight:600;">See all</a>
+                    <h3 style="margin-bottom:0;">Team</h3>
                 </div>
                 <div class="team-grid">
                     @forelse($salon->stylists->where('is_active',true) as $stylist)
@@ -787,8 +761,9 @@
                 </div>
             </div>
  
-            {{-- ===== REVIEWS TAB ===== --}}
-            <div id="tab-reviews" style="display:none;">
+            {{-- ===== REVIEWS SECTION ===== --}}
+            <div id="section-reviews" class="page-section">
+                <h3>Reviews</h3>
                 <div class="big-rating">
                     <div class="br-num">{{ number_format($salon->rating, 1) }}</div>
                     <div>
@@ -802,32 +777,28 @@
                 </div>
  
                 @forelse($salon->reviews->where('is_approved',true)->take(6) as $review)
-                <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #f0f0f0;">
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="review-item" style="padding:0;border:none;margin:0;" >
-                            <div class="ri-header">
-                                <div class="ri-av">{{ substr($review->client->name,0,1) }}</div>
-                                <div>
-                                    <div class="ri-name">{{ $review->client->name }}</div>
-                                    <div class="ri-date">{{ $review->created_at->format('D, d M Y') }} at {{ $review->created_at->format('h:i A') }}</div>
-                                </div>
-                            </div>
-                            <div class="ri-stars">
-                                @for($i=1;$i<=5;$i++)
-                                <i class="fas fa-star" style="color:{{ $i<=$review->rating ? '#ffc107' : '#e5e7eb' }};font-size:0.9rem;"></i>
-                                @endfor
-                            </div>
-                            @if($review->comment)
-                            <div class="ri-text">{{ $review->comment }}</div>
-                            @endif
-                            @if($review->reply)
-                            <div style="background:#f5f5f5;border-radius:10px;padding:12px;margin-top:12px;">
-                                <div style="font-size:0.78rem;font-weight:700;color:#555;margin-bottom:4px;">Owner's reply</div>
-                                <div style="font-size:0.83rem;color:#555;">{{ $review->reply->reply }}</div>
-                            </div>
-                            @endif
+                <div class="review-item">
+                    <div class="ri-header">
+                        <div class="ri-av">{{ substr($review->client->name,0,1) }}</div>
+                        <div>
+                            <div class="ri-name">{{ $review->client->name }}</div>
+                            <div class="ri-date">{{ $review->created_at->format('D, d M Y') }} at {{ $review->created_at->format('h:i A') }}</div>
                         </div>
                     </div>
+                    <div class="ri-stars">
+                        @for($i=1;$i<=5;$i++)
+                        <i class="fas fa-star" style="color:{{ $i<=$review->rating ? '#ffc107' : '#e5e7eb' }};font-size:0.9rem;"></i>
+                        @endfor
+                    </div>
+                    @if($review->comment)
+                    <div class="ri-text">{{ $review->comment }}</div>
+                    @endif
+                    @if($review->reply)
+                    <div style="background:#f5f5f5;border-radius:10px;padding:12px;margin-top:12px;">
+                        <div style="font-size:0.78rem;font-weight:700;color:#555;margin-bottom:4px;">Owner's reply</div>
+                        <div style="font-size:0.83rem;color:#555;">{{ $review->reply->reply }}</div>
+                    </div>
+                    @endif
                 </div>
                 @empty
                 <div style="text-align:center;padding:40px 0;color:#888;">
@@ -837,13 +808,13 @@
                 @endforelse
             </div>
  
-            {{-- ===== ABOUT TAB ===== --}}
-            <div id="tab-about" style="display:none;">
+            {{-- ===== ABOUT SECTION ===== --}}
+            <div id="section-about" class="page-section">
                 <div class="about-section">
                     <h3>About</h3>
                     <p>{{ $salon->description ?? 'Welcome to '.$salon->name.'. We are dedicated to providing top-quality beauty services in '.$salon->city.'. Our experienced team of stylists and beauty experts are here to give you the best experience possible. Book your appointment today!' }}</p>
  
-                    <div class="map-placeholder">
+                    <div class="map-placeholder" onclick="window.open('{{ $mapsUrl }}','_blank')">
                         <div class="map-fallback">
                             <i class="fas fa-map-marker-alt" style="font-size:2rem;color:#7c3aed;"></i>
                             <div style="font-size:0.85rem;color:#555;font-weight:600;">{{ $salon->name }}</div>
@@ -852,7 +823,7 @@
                     </div>
                     <p class="address-line">
                         {{ $salon->address }}, {{ $salon->city }}, Pakistan
-                        <a href="https://maps.google.com/?q={{ urlencode($salon->address.', '.$salon->city) }}" target="_blank" class="directions-link"> Get directions</a>
+                        <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="directions-link"> Get directions</a>
                     </p>
  
                     <div class="hours-grid">
@@ -911,11 +882,11 @@
                         </div>
                     </div>
  
-                    @if(isset($nearbySalons) && $nearbySalons->count())
-                    <div class="nearby-section">
+                    @if(isset($similarSalons) && $similarSalons->count())
+                    <div class="nearby-section" style="margin-top:32px;padding-top:32px;border-top:1px solid #f0f0f0;">
                         <h3>Venues nearby</h3>
                         <div class="nearby-grid">
-                            @foreach($nearbySalons->take(3) as $nearby)
+                            @foreach($similarSalons->take(3) as $nearby)
                             <a href="{{ route('salons.show', $nearby->slug) }}" class="nearby-card">
                                 <div class="nc-img">
                                     <img src="{{ $nearby->cover_url }}" alt="{{ $nearby->name }}"
@@ -935,7 +906,7 @@
                     </div>
                     @endif
  
-                    <div class="other-biz-section">
+                    <div class="other-biz-section" style="margin-top:32px;padding-top:32px;border-top:1px solid #f0f0f0;">
                         <h3>Other services in {{ $salon->city }}</h3>
                         <a href="{{ route('salons.index',['city'=>$salon->city]) }}" class="other-biz-btn">
                             Other businesses in {{ $salon->city }}
@@ -949,70 +920,29 @@
                 </div>
             </div>
  
-            {{-- ===== NEW FEATURES TAB ===== --}}
-            <div id="tab-features" style="display:none;">
-                <h3 style="font-size:1.1rem;font-weight:800;color:#1a1a1a;margin-bottom:20px;">Salon Features</h3>
-                
+            {{-- ===== FEATURES SECTION ===== --}}
+            <div id="section-features" class="page-section">
+                <h3>Salon Features</h3>
+ 
                 <div style="display:flex;flex-direction:column;gap:16px;">
-                    <div class="feature-item" style="display:flex;align-items:center;gap:15px;padding:12px;background:#f9f9f9;border-radius:12px;">
-                        <div style="width:50px;height:50px;background:#e8e4f5;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-wifi" style="color:#7c3aed;font-size:1.2rem;"></i>
+                    @foreach([
+                        ['fa-wifi', 'Free Wi-Fi', 'Stay connected while you wait'],
+                        ['fa-parking', 'Free Parking', 'Ample parking space available'],
+                        ['fa-mug-hot', 'Complimentary Beverages', 'Tea, coffee & water'],
+                        ['fa-credit-card', 'Multiple Payment Options', 'Cash, Card, EasyPaisa, JazzCash'],
+                        ['fa-hand-sparkles', 'Premium Products', 'Branded & certified products'],
+                        ['fa-calendar-check', 'Instant Confirmation', 'Book & get confirmed instantly'],
+                    ] as [$icon, $title, $desc])
+                    <div style="display:flex;align-items:center;gap:15px;padding:12px;background:#f9f9f9;border-radius:12px;">
+                        <div style="width:50px;height:50px;background:#e8e4f5;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas {{ $icon }}" style="color:#7c3aed;font-size:1.2rem;"></i>
                         </div>
                         <div>
-                            <div style="font-weight:700;margin-bottom:4px;">Free Wi-Fi</div>
-                            <div style="font-size:0.8rem;color:#888;">Stay connected while you wait</div>
+                            <div style="font-weight:700;margin-bottom:4px;">{{ $title }}</div>
+                            <div style="font-size:0.8rem;color:#888;">{{ $desc }}</div>
                         </div>
                     </div>
-                    
-                    <div class="feature-item" style="display:flex;align-items:center;gap:15px;padding:12px;background:#f9f9f9;border-radius:12px;">
-                        <div style="width:50px;height:50px;background:#e8e4f5;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-parking" style="color:#7c3aed;font-size:1.2rem;"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight:700;margin-bottom:4px;">Free Parking</div>
-                            <div style="font-size:0.8rem;color:#888;">Ample parking space available</div>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-item" style="display:flex;align-items:center;gap:15px;padding:12px;background:#f9f9f9;border-radius:12px;">
-                        <div style="width:50px;height:50px;background:#e8e4f5;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-mug-hot" style="color:#7c3aed;font-size:1.2rem;"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight:700;margin-bottom:4px;">Complimentary Beverages</div>
-                            <div style="font-size:0.8rem;color:#888;">Tea, coffee & water</div>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-item" style="display:flex;align-items:center;gap:15px;padding:12px;background:#f9f9f9;border-radius:12px;">
-                        <div style="width:50px;height:50px;background:#e8e4f5;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-credit-card" style="color:#7c3aed;font-size:1.2rem;"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight:700;margin-bottom:4px;">Multiple Payment Options</div>
-                            <div style="font-size:0.8rem;color:#888;">Cash, Card, EasyPaisa, JazzCash</div>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-item" style="display:flex;align-items:center;gap:15px;padding:12px;background:#f9f9f9;border-radius:12px;">
-                        <div style="width:50px;height:50px;background:#e8e4f5;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-hand-sparkles" style="color:#7c3aed;font-size:1.2rem;"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight:700;margin-bottom:4px;">Premium Products</div>
-                            <div style="font-size:0.8rem;color:#888;">Branded & certified products</div>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-item" style="display:flex;align-items:center;gap:15px;padding:12px;background:#f9f9f9;border-radius:12px;">
-                        <div style="width:50px;height:50px;background:#e8e4f5;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-calendar-check" style="color:#7c3aed;font-size:1.2rem;"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight:700;margin-bottom:4px;">Instant Confirmation</div>
-                            <div style="font-size:0.8rem;color:#888;">Book & get confirmed instantly</div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
  
@@ -1028,16 +958,16 @@
                     <span class="stars">
                         @for($i=1;$i<=5;$i++){{ $i<=round($salon->rating)?'★':'☆' }}@endfor
                     </span>
-                    <span class="count" onclick="switchTab('reviews')">({{ $salon->total_reviews * 10 + 250 }})</span>
+                    <span class="count" onclick="scrollToSection('reviews')">({{ $salon->total_reviews * 10 + 250 }})</span>
                 </div>
  
                 @if($salon->is_featured)
                 <div class="bs-featured">Featured</div>
                 @endif
  
-               <a href="{{ route('booking.step1', $salon->id) }}" class="btn-book-now">
-    Book now
-</a>
+                <a href="{{ route('booking.step1', $salon->id) }}" class="btn-book-now">
+                    Book now
+                </a>
  
                 <div class="bs-info-row" onclick="toggleHours()">
                     <i class="fas fa-clock" style="color:#E91E8C;"></i>
@@ -1050,7 +980,7 @@
                         @if($openTime && $closeTime)
                         – {{ $openTime->format('g:i A') }} – {{ $closeTime->format('g:i A') }}
                         @endif
-                        <span class="bs-toggle"> ˅</span>
+                        <span class="bs-toggle">˅</span>
                     </div>
                 </div>
                 <div class="bs-hours-expand" id="bsHoursPanel">
@@ -1068,7 +998,7 @@
                     <div class="bs-info-text">
                         {{ $salon->address }}, {{ $salon->city }}
                         <br>
-                        <a href="https://maps.google.com/?q={{ urlencode($salon->address.', '.$salon->city) }}" target="_blank" class="directions-link">Get directions</a>
+                        <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="directions-link">Get directions</a>
                     </div>
                 </div>
  
@@ -1089,10 +1019,9 @@
  
     {{-- Mobile Book Now button --}}
     <div class="d-lg-none" style="position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid #f0f0f0;z-index:500;">
-        <a href="{{ route('booking.step1', $salon->id) }}"
-   style="display:block;text-align:center;background:#1a1a1a;color:#fff;border-radius:12px;padding:14px;font-size:1rem;font-weight:700;">
-    Book now
-</a>
+        <a href="{{ route('booking.step1', $salon->id) }}" style="display:block;text-align:center;background:#1a1a1a;color:#fff;border-radius:12px;padding:14px;font-size:1rem;font-weight:700;">
+            Book now
+        </a>
     </div>
  
 </div>{{-- end detail-wrap --}}
@@ -1108,22 +1037,37 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // ========================
-// TAB SWITCHING
+// ✅ SCROLL-TO-SECTION (replaces old show/hide tab switching)
+// All sections stay visible; clicking a tab just scrolls smoothly
+// to that section's heading, and highlights the matching tab.
 // ========================
-function switchTab(tab) {
-    const tabs = ['services','team','reviews','about','features'];
-    tabs.forEach(t => {
-        const el = document.getElementById('tab-' + t);
-        if (el) el.style.display = t === tab ? 'block' : 'none';
-    });
-    document.querySelectorAll('.salon-tab').forEach((btn, i) => {
-        btn.classList.toggle('active', tabs[i] === tab);
-    });
-    document.getElementById('salonTabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+const sectionIds = ['services','team','reviews','about','features'];
+ 
+function scrollToSection(section) {
+    const el = document.getElementById('section-' + section);
+    if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
  
+function setActiveTabFromScroll() {
+    const tabsBarHeight = document.getElementById('salonTabs').offsetHeight + 70;
+    let current = sectionIds[0];
+    for (const id of sectionIds) {
+        const el = document.getElementById('section-' + id);
+        if (el && el.getBoundingClientRect().top - tabsBarHeight <= 0) {
+            current = id;
+        }
+    }
+    document.querySelectorAll('.salon-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.section === current);
+    });
+}
+ 
+window.addEventListener('scroll', setActiveTabFromScroll, { passive: true });
+ 
 // ========================
-// SERVICE CATEGORY FILTER
+// SERVICE CATEGORY FILTER (unchanged — filters within the Services section only)
 // ========================
 function filterServiceCat(cat, btn) {
     document.querySelectorAll('.svc-cat-btn').forEach(b => b.classList.remove('active'));
