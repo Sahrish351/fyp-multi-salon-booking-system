@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::create('notifications', function (Blueprint $table) {
+        Schema::create('app_notifications', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('salon_id');
+            $table->foreignId('salon_id')->nullable()->constrained('salons')->onDelete('cascade');
             $table->string('title');
             $table->text('message');
             $table->string('recipient_type')->default('all');
@@ -18,13 +18,11 @@ return new class extends Migration
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
-            $table->foreign('salon_id')->references('id')->on('salons')->onDelete('cascade');
         });
     }
 
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('notifications');
+        Schema::dropIfExists('app_notifications');
     }
 };
