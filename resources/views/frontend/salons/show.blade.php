@@ -814,13 +814,25 @@
                     <h3>About</h3>
                     <p>{{ $salon->description ?? 'Welcome to '.$salon->name.'. We are dedicated to providing top-quality beauty services in '.$salon->city.'. Our experienced team of stylists and beauty experts are here to give you the best experience possible. Book your appointment today!' }}</p>
  
-                    <div class="map-placeholder" onclick="window.open('{{ $mapsUrl }}','_blank')">
-                        <div class="map-fallback">
-                            <i class="fas fa-map-marker-alt" style="font-size:2rem;color:#7c3aed;"></i>
-                            <div style="font-size:0.85rem;color:#555;font-weight:600;">{{ $salon->name }}</div>
-                            <div style="font-size:0.78rem;color:#888;">{{ $salon->address }}, {{ $salon->city }}</div>
-                        </div>
-                    </div>
+                    <div class="map-placeholder">
+    @if(config('services.google_maps.key'))
+        <iframe
+            width="100%"
+            height="100%"
+            style="border:0;border-radius:16px;"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps/embed/v1/place?key={{ config('services.google_maps.key') }}&q={{ urlencode($salon->address . ', ' . $salon->city . ', Pakistan') }}&zoom=15">
+        </iframe>
+    @else
+        <div class="map-fallback" onclick="window.open('{{ $mapsUrl }}','_blank')">
+            <i class="fas fa-map-marker-alt" style="font-size:2rem;color:#7c3aed;"></i>
+            <div style="font-size:0.85rem;color:#555;font-weight:600;">{{ $salon->name }}</div>
+            <div style="font-size:0.78rem;color:#888;">{{ $salon->address }}, {{ $salon->city }}</div>
+        </div>
+    @endif
+</div>
                     <p class="address-line">
                         {{ $salon->address }}, {{ $salon->city }}, Pakistan
                         <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="directions-link"> Get directions</a>
