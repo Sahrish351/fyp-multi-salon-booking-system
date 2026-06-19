@@ -14,7 +14,7 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
  
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PublicSalonController;
-use App\Http\Controllers\Frontend\PublicServiceController;
+// use App\Http\Controllers\Frontend\PublicServiceController;
 use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\BookingController;
@@ -86,10 +86,10 @@ Route::get('/salons/search', [PublicSalonController::class, 'search'])->name('sa
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
 Route::get('/salons/{slug}/gallery', [PublicSalonController::class, 'gallery'])->name('salons.gallery');
  
-// Services public
-Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
-Route::get('/services/category/{slug}', [PublicServiceController::class, 'byCategory'])->name('services.by-category');
-Route::get('/salons/{salonSlug}/services/{serviceId}', [PublicServiceController::class, 'show'])->name('services.show');
+// // Services public
+// Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
+// Route::get('/services/category/{slug}', [PublicServiceController::class, 'byCategory'])->name('services.by-category');
+// Route::get('/salons/{salonSlug}/services/{serviceId}', [PublicServiceController::class, 'show'])->name('services.show');
  
 // Redirect stubs
 Route::get('/stylists', fn() => redirect()->route('salons.index'))->name('stylists.index');
@@ -148,8 +148,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/owner/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('owner.login.submit');
  
     // Admin login
-    Route::get('/admin/login',  [App\Http\Controllers\Admin\Auth\LoginController::class, 'showLoginForm'])->name('admin.login.form');
-    Route::post('/admin/login', [App\Http\Controllers\Admin\Auth\LoginController::class, 'login'])->name('admin.login.submit');
+    Route::get('/admin/login',  [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('admin.login.form');
+    Route::post('/admin/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('admin.login.submit');
  
     // Registration
     Route::get('/register/client',   [RegisterController::class, 'showClientForm'])->name('register.client');
@@ -259,12 +259,10 @@ Route::middleware('auth')->group(function () {
 
 // COMPLAINT ROUTES
 
-Route::prefix('client')->group(function () {
-    Route::get('/complaints', [ComplaintSubmitController::class, 'index'])->name('complaints.index');
-    Route::get('/complaints/create', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
-    Route::post('/complaints', [ComplaintSubmitController::class, 'store'])->name('complaints.store');
-    Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show'])->name('complaints.show');
-});
+Route::get('/complaints', [ComplaintSubmitController::class, 'index'])->name('complaints.index');
+Route::get('/complaints/create', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
+Route::post('/complaints', [ComplaintSubmitController::class, 'store'])->name('complaints.store');
+Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show'])->name('complaints.show');
         // Notifications
         Route::get('/notifications',                       [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/send-to-all',          [NotificationController::class, 'sendToAll'])->name('notifications.send-to-all');
