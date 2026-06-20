@@ -86,11 +86,11 @@ Route::get('/salons/search', [PublicSalonController::class, 'search'])->name('sa
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
 Route::get('/salons/{slug}/gallery', [PublicSalonController::class, 'gallery'])->name('salons.gallery');
  
-// // Services public
-// Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
-// Route::get('/services/category/{slug}', [PublicServiceController::class, 'byCategory'])->name('services.by-category');
-// Route::get('/salons/{salonSlug}/services/{serviceId}', [PublicServiceController::class, 'show'])->name('services.show');
- 
+/// ==================== SERVICES ROUTES ====================
+Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
+Route::get('/services/category/{slug}', [PublicServiceController::class, 'byCategory'])->name('services.by-category');
+Route::get('/salons/{salonSlug}/services/{serviceId}', [PublicServiceController::class, 'show'])->name('services.show');
+
 // Redirect stubs
 Route::get('/stylists', fn() => redirect()->route('salons.index'))->name('stylists.index');
 Route::get('/gallery',  fn() => redirect()->route('salons.index'))->name('gallery.index');
@@ -129,6 +129,8 @@ Route::prefix('payfast')->name('payfast.')->group(function () {
     Route::get('/cancel',  [BookingController::class, 'payfastCancel'])->name('cancel');
     Route::post('/notify', [BookingController::class, 'payfastNotify'])->name('notify');
 });
+
+
  
 // ============================================================
 // AUTH ROUTES (Guest only)

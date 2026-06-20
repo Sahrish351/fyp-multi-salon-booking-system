@@ -647,7 +647,15 @@
                 @forelse($featuredSalons->take(4) as $index => $salon)
                 <a href="{{ route('salons.show', $salon->slug) }}" class="salon-card">
                     <div class="sc-img">
-                        <img src="{{ $salon->cover_url ?? '#' }}" alt="{{ $salon->name }}">
+                        @if($index == 0)
+                        <img src="{{ asset('storage/images/salon1.jpg') }}" alt="{{ $salon->name }}">
+                        @elseif($index == 1)
+                        <img src="{{ asset('storage/images/salon9.jpg') }}" alt="{{ $salon->name }}">
+                        @elseif($index == 2)
+                        <img src="{{ asset('storage/images/salon17.jpg') }}" alt="{{ $salon->name }}">
+                        @else
+                        <img src="{{ asset('storage/images/salon25.jpg') }}" alt="{{ $salon->name }}">
+                        @endif
                         <span class="sc-badge">Featured</span>
                     </div>
                     <div class="sc-body">
@@ -655,15 +663,15 @@
                             <div class="sc-name">{{ $salon->name ?? 'Glamora Elite' }} <i class="fas fa-check-circle vc"></i></div>
                             <div class="sc-rating-inline"><i class="fas fa-star star"></i> {{ $ratings[$index % count($ratings)] }}</div>
                         </div>
-                        <div class="sc-addr">{{ $salon->address ?? 'Main Boulevard, Gulberg' }}, {{ $salon->city ?? 'Lahore' }}</div>
+                        <div class="sc-addr">{{ $salon->address ?? 'Main Boulevard Gulberg, Lahore' }}</div>
                         <div class="sc-meta">{{ $salon->services->first()?->category?->name ?? 'Luxury Salon' }} · {{ rand(50,300) }} reviews</div>
                     </div>
                 </a>
                 @empty
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Glamora Elite <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 5.0</div></div><div class="sc-addr">Main Boulevard, Gulberg, Lahore</div><div class="sc-meta">Luxury Salon · 128 reviews</div></div></a>
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Serenity Spa & Salon <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.9</div></div><div class="sc-addr">DHA Phase 5, Lahore</div><div class="sc-meta">Spa · 89 reviews</div></div></a>
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Royal Bridal Studio <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.8</div></div><div class="sc-addr">MM Alam Road, Lahore</div><div class="sc-meta">Bridal · 234 reviews</div></div></a>
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">The Hair Lounge <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.7</div></div><div class="sc-addr">Clifton, Karachi</div><div class="sc-meta">Hair Salon · 156 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon1.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Glamora Elite Salon <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 5.0</div></div><div class="sc-addr">Main Boulevard Gulberg, Lahore</div><div class="sc-meta">Luxury Salon · 128 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon2.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Aura Beauty Studio <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.9</div></div><div class="sc-addr">DHA Phase 5, Lahore</div><div class="sc-meta">Spa · 89 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon3.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">The Royal Glow Salon <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.8</div></div><div class="sc-addr">MM Alam Road, Lahore</div><div class="sc-meta">Bridal · 234 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon4.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Elegance Hair & Beauty Lounge <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.7</div></div><div class="sc-addr">Clifton Block 5, Karachi</div><div class="sc-meta">Hair Salon · 156 reviews</div></div></a>
                 @endforelse
             </div>
         </div>
@@ -681,20 +689,30 @@
         <button class="slider-arrow-btn left" onclick="slide('newto',-1)"><i class="fas fa-chevron-left"></i></button>
         <div class="slider-scroll-area" id="slider-newto">
             <div class="slider-track">
-                @forelse($newSalons->take(4) as $salon)
+                @forelse($newSalons->take(4) as $index => $salon)
                 <a href="{{ route('salons.show', $salon->slug) }}" class="salon-card">
-                    <div class="sc-img"><img src="{{ $salon->cover_url ?? '#' }}" alt="{{ $salon->name }}"></div>
+                    <div class="sc-img">
+                        @if($index == 0)
+                        <img src="{{ asset('storage/images/salon11.jpg') }}" alt="{{ $salon->name }}">
+                        @elseif($index == 1)
+                        <img src="{{ asset('storage/images/salon20.jpg') }}" alt="{{ $salon->name }}">
+                        @elseif($index == 2)
+                        <img src="{{ asset('storage/images/salon13.jpg') }}" alt="{{ $salon->name }}">
+                        @else
+                        <img src="{{ asset('storage/images/salon29.jpg') }}" alt="{{ $salon->name }}">
+                        @endif
+                    </div>
                     <div class="sc-body">
                         <div class="sc-name-row"><div class="sc-name">{{ $salon->name ?? 'New Style Studio' }} <i class="fas fa-check-circle vc"></i></div></div>
-                        <div class="sc-addr">{{ $salon->address ?? 'Johar Town' }}, {{ $salon->city ?? 'Lahore' }}</div>
+                        <div class="sc-addr">{{ $salon->address ?? 'Johar Town, Lahore' }}</div>
                         <div class="sc-meta">New · {{ rand(10,100) }} reviews</div>
                     </div>
                 </a>
                 @empty
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">New Style Studio <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">Johar Town, Lahore</div><div class="sc-meta">New · 45 reviews</div></div></a>
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Urban Nails & Spa <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">Gulshan, Karachi</div><div class="sc-meta">New · 32 reviews</div></div></a>
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Bliss Beauty Bar <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">F-7, Islamabad</div><div class="sc-meta">New · 28 reviews</div></div></a>
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">The Makeup Loft <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">Saddar, Rawalpindi</div><div class="sc-meta">New · 67 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon11.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">New Style Studio <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">Johar Town, Lahore</div><div class="sc-meta">New · 45 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon20.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Urban Nails & Spa <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">Gulshan, Karachi</div><div class="sc-meta">New · 32 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon13.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Bliss Beauty Bar <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">F-7, Islamabad</div><div class="sc-meta">New · 28 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon29.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">The Makeup Loft <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">Saddar, Rawalpindi</div><div class="sc-meta">New · 67 reviews</div></div></a>
                 @endforelse
             </div>
         </div>
@@ -712,23 +730,33 @@
         <button class="slider-arrow-btn left" onclick="slide('trending',-1)"><i class="fas fa-chevron-left"></i></button>
         <div class="slider-scroll-area" id="slider-trending">
             <div class="slider-track">
-                @forelse($topRatedSalons->take(4) as $salon)
+                @forelse($topRatedSalons->take(4) as $index => $salon)
                 <a href="{{ route('salons.show', $salon->slug) }}" class="salon-card">
-                    <div class="sc-img"><img src="{{ $salon->cover_url ?? '#' }}" alt="{{ $salon->name }}"></div>
+                    <div class="sc-img">
+                        @if($index == 0)
+                        <img src="{{ asset('storage/images/salon13.jpg') }}" alt="{{ $salon->name }}">
+                        @elseif($index == 1)
+                        <img src="{{ asset('storage/images/salon14.jpg') }}" alt="{{ $salon->name }}">
+                        @elseif($index == 2)
+                        <img src="{{ asset('storage/images/salon32.jpg') }}" alt="{{ $salon->name }}">
+                        @else
+                        <img src="{{ asset('storage/images/salon31.jpg') }}" alt="{{ $salon->name }}">
+                        @endif
+                    </div>
                     <div class="sc-body">
                         <div class="sc-name-row">
                             <div class="sc-name">{{ $salon->name ?? 'Trending Now' }} <i class="fas fa-check-circle vc"></i></div>
                             <div class="sc-rating-inline"><i class="fas fa-star star"></i> {{ number_format($salon->rating ?? 4.8, 1) }}</div>
                         </div>
-                        <div class="sc-addr">{{ $salon->address ?? 'Liberty Market' }}, {{ $salon->city ?? 'Lahore' }}</div>
+                        <div class="sc-addr">{{ $salon->address ?? 'Liberty Market, Lahore' }}</div>
                         <div class="sc-meta">{{ rand(100,500) }} reviews</div>
                     </div>
                 </a>
                 @empty
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Trending Now <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.9</div></div><div class="sc-addr">Liberty Market, Lahore</div><div class="sc-meta">234 reviews</div></div></a>
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Vogue Beauty Lounge <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.8</div></div><div class="sc-addr">Clifton, Karachi</div><div class="sc-meta">189 reviews</div></div></a>
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Elegance Salon <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.7</div></div><div class="sc-addr">F-10, Islamabad</div><div class="sc-meta">156 reviews</div></div></a>
-                <a href="#" class="salon-card"><div class="sc-img"><img src="#" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Style Studio <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.6</div></div><div class="sc-addr">Saddar, Rawalpindi</div><div class="sc-meta">102 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon21.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Trending Now <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.9</div></div><div class="sc-addr">Liberty Market, Lahore</div><div class="sc-meta">234 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon22.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Vogue Beauty Lounge <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.8</div></div><div class="sc-addr">Clifton, Karachi</div><div class="sc-meta">189 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon23.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Elegance Salon <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.7</div></div><div class="sc-addr">F-10, Islamabad</div><div class="sc-meta">156 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon24.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Style Studio <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.6</div></div><div class="sc-addr">Saddar, Rawalpindi</div><div class="sc-meta">102 reviews</div></div></a>
                 @endforelse
             </div>
         </div>
