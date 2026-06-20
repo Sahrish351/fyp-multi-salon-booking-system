@@ -14,7 +14,7 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
  
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PublicSalonController;
-// use App\Http\Controllers\Frontend\PublicServiceController;
+use App\Http\Controllers\Frontend\PublicServiceController;
 use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\BookingController;
@@ -86,10 +86,10 @@ Route::get('/salons/search', [PublicSalonController::class, 'search'])->name('sa
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
 Route::get('/salons/{slug}/gallery', [PublicSalonController::class, 'gallery'])->name('salons.gallery');
  
-// // Services public
-// Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
-// Route::get('/services/category/{slug}', [PublicServiceController::class, 'byCategory'])->name('services.by-category');
-// Route::get('/salons/{salonSlug}/services/{serviceId}', [PublicServiceController::class, 'show'])->name('services.show');
+// Services public
+Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
+Route::get('/services/category/{slug}', [PublicServiceController::class, 'byCategory'])->name('services.by-category');
+Route::get('/salons/{salonSlug}/services/{serviceId}', [PublicServiceController::class, 'show'])->name('services.show');
  
 // Redirect stubs
 Route::get('/stylists', fn() => redirect()->route('salons.index'))->name('stylists.index');
@@ -474,6 +474,11 @@ Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show']
 
 Route::get('/test-complaint', function () {
     return 'Test route is working!';
+});
+
+// TEST ROUTE - COMPLAINTS CREATE
+Route::get('/client/complaints/create', function () {
+    return view('client.complaints.create');
 });
 
 
