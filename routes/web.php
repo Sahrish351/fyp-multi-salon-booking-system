@@ -490,7 +490,3 @@ Route::get('/test-complaint', function () {
 Route::get('/client/complaints/create', function () {
     return view('client.complaints.create');
 });
-
-
-
- 

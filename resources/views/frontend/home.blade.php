@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+Home.blede.php
+
+<!D
+
+OCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1114,3 +1118,4 @@ document.addEventListener('click', function(e) {
 </script>
 </body>
 </html>
+
