@@ -57,6 +57,7 @@ use App\Http\Controllers\Owner\OwnerSettingController;
 use App\Http\Controllers\Owner\OwnerPackageController;
 use App\Http\Controllers\Owner\OwnerProfileController;
 use App\Http\Controllers\Owner\OwnerSalonHolidayController;
+
  
 use App\Http\Controllers\Client\ClientDashboardController;
 use App\Http\Controllers\Client\SalonSearchController;
@@ -322,47 +323,53 @@ Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show']
     // OWNER ROUTES
     // ========================================================
     Route::prefix('owner')->name('owner.')->group(function () {
- 
+
         Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
- 
+
         // Profile
         Route::get('/profile',              [OwnerProfileController::class, 'index'])->name('profile');
         Route::put('/profile',              [OwnerProfileController::class, 'update'])->name('profile.update');
         Route::post('/profile/upload-pic',  [OwnerProfileController::class, 'uploadPicture'])->name('profile.upload-pic');
- 
+
         // Settings
         Route::get('/settings',             [OwnerSettingController::class, 'index'])->name('settings.index');
         Route::post('/settings/general',    [OwnerSettingController::class, 'general'])->name('settings.general');
         Route::post('/settings/password',   [OwnerSettingController::class, 'updatePassword'])->name('settings.password');
         Route::post('/settings',            [OwnerSettingController::class, 'general'])->name('settings.update');
- 
+
         // Salons
         Route::resource('salons', OwnerSalonController::class);
- 
+
         // Services
         Route::resource('services', OwnerServiceController::class);
         Route::post('/services/{service}/toggle-status', [OwnerServiceController::class, 'toggleStatus'])->name('services.toggle-status');
- 
+
         // Categories
+        // NOTE: Inhe pehle sirf 1 route tha (index), ab Add/Edit/Delete ke
+        // liye 3 routes add ki gayi hain - methods OwnerServiceController
+        // mein already maujood hain (storeCategory, updateCategory, destroyCategory).
         Route::get('/categories', [OwnerServiceController::class, 'categories'])->name('categories.index');
- 
+        Route::post('/categories', [OwnerServiceController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categories/{category}', [OwnerServiceController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categories/{category}', [OwnerServiceController::class, 'destroyCategory'])->name('categories.destroy');
+
         // Stylists
         Route::resource('stylists', OwnerStylistController::class);
         Route::post('/stylists/{id}/availability', [OwnerStylistController::class, 'storeAvailability'])->name('stylists.availability.store');
         Route::post('/stylists/{id}/holiday',      [OwnerStylistController::class, 'storeHoliday'])->name('stylists.holiday.store');
- 
+
         // Stylist Availability & Holidays (these are used in owner layout navbar)
         Route::get('/stylists/{stylist}/availability',        [OwnerStylistController::class, 'availability'])->name('stylists.availability.index');
         Route::delete('/stylists/{stylist}/availability/{day}',[OwnerStylistController::class, 'destroyAvailability'])->name('stylists.availability.destroy');
         Route::get('/stylists/{stylist}/holidays',            [OwnerHolidayController::class, 'index'])->name('stylists.holidays.index');
         Route::post('/stylists/{stylist}/holidays',           [OwnerHolidayController::class, 'store'])->name('stylists.holidays.store');
         Route::delete('/stylists/{stylist}/holidays/{holiday}',[OwnerHolidayController::class, 'destroy'])->name('stylists.holidays.destroy');
- 
+
         // Time Slots
         Route::get('/time-slots',                       [OwnerTimeSlotController::class, 'index'])->name('time-slots.index');
         Route::post('/time-slots/generate',             [OwnerTimeSlotController::class, 'generate'])->name('time-slots.generate');
         Route::post('/time-slots/{timeSlot}/toggle',    [OwnerTimeSlotController::class, 'toggleStatus'])->name('time-slots.toggle');
- 
+
         // Appointments
         Route::get('/appointments/export',             [OwnerAppointmentController::class, 'export'])->name('appointments.export');
         Route::resource('appointments', OwnerAppointmentController::class);
@@ -371,30 +378,30 @@ Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show']
         Route::post('/appointments/{id}/complete',     [OwnerAppointmentController::class, 'complete'])->name('appointments.complete');
         Route::post('/appointments/{id}/cancel',       [OwnerAppointmentController::class, 'cancel'])->name('appointments.cancel');
         Route::get('/appointments/{id}/invoice',       [OwnerAppointmentController::class, 'invoice'])->name('appointments.invoice');
- 
+
         // Payments
         Route::get('/payments/export',                 [OwnerPaymentController::class, 'export'])->name('payments.export');
         Route::resource('payments', OwnerPaymentController::class);
         Route::post('/payments/{payment}/approve',     [OwnerPaymentController::class, 'approve'])->name('payments.approve');
         Route::post('/payments/{payment}/reject',      [OwnerPaymentController::class, 'reject'])->name('payments.reject');
- 
+
         // Packages
         Route::resource('packages', OwnerPackageController::class);
         Route::post('/packages/{package}/toggle-status', [OwnerPackageController::class, 'toggleStatus'])->name('packages.toggle-status');
- 
+
         // Reviews
         Route::resource('reviews', OwnerReviewController::class);
         Route::post('/reviews/{review}/approve', [OwnerReviewController::class, 'approve'])->name('reviews.approve');
         Route::post('/reviews/{review}/reply',   [OwnerReviewController::class, 'reply'])->name('reviews.reply');
         Route::post('/reviews/{review}/flag',    [OwnerReviewController::class, 'toggleFlag'])->name('reviews.flag');
- 
+
         // Gallery
         Route::resource('gallery', OwnerGalleryController::class);
         Route::post('/gallery/reorder', [OwnerGalleryController::class, 'reorder'])->name('gallery.reorder');
- 
+
         // Holidays (Salon closed days)
         Route::resource('holidays', OwnerSalonHolidayController::class);
- 
+
         // Waitlist
         Route::resource('waitlist', OwnerWaitlistController::class);
         Route::post('/waitlist/{id}/notify', [OwnerWaitlistController::class, 'notify'])->name('waitlist.notify');
@@ -404,22 +411,21 @@ Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show']
         // Clients
         Route::get('/clients/export',        [OwnerClientController::class, 'export'])->name('clients.export');
         Route::resource('clients', OwnerClientController::class);
-        // Waitlist
-        
+
         // Notifications
         Route::get('/notifications',                    [OwnerNotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/{id}/read',         [OwnerNotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/notifications/read-all',          [OwnerNotificationController::class, 'markAllRead'])->name('notifications.read-all');
- 
+
         // Reports
         Route::get('/reports',         [OwnerReportController::class, 'index'])->name('reports.index');
         Route::post('/reports/export', [OwnerReportController::class, 'export'])->name('reports.export');
- 
+
         // Analytics
         Route::get('/analytics',         [OwnerAnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/analytics/revenue', [OwnerAnalyticsController::class, 'revenue'])->name('analytics.revenue');
     });
- 
+
     // ========================================================
     // CLIENT ROUTES
     // ========================================================
