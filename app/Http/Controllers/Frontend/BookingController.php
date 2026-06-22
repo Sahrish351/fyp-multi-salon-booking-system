@@ -156,28 +156,28 @@ class BookingController extends Controller
         $stylistId   = Session::get('booking_stylist_id');
         $bookingTime = Session::get('booking_time');
         $bookingDate = Session::get('booking_date');
-
+ 
         if (!$serviceId || !$stylistId) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Please complete all booking steps.');
         }
-
+ 
         if (!$bookingTime || !$bookingDate) {
             return redirect()->route('booking.step3', $salon->id)
                 ->with('error', 'Please select a date and time first.');
         }
-
+ 
         $service = Service::findOrFail($serviceId);
         $stylist = Stylist::findOrFail($stylistId);
-
+ 
         $slot = (object) [
             'slot_date'  => $bookingDate,
             'start_time' => \Carbon\Carbon::parse($bookingTime)->format('H:i:s'),
             'end_time'   => \Carbon\Carbon::parse($bookingTime)
-                                ->addMinutes($service->duration_minutes ?? 60)
+                                ->addMinutes($service->duration ?? 60)
                                 ->format('H:i:s'),
         ];
-
+ 
         return view('frontend.booking.step-4-payment', compact(
             'salon', 'service', 'stylist', 'slot'
         ));
@@ -187,27 +187,26 @@ class BookingController extends Controller
     public function postPayment(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
-
+ 
         $serviceId   = Session::get('booking_service_id');
         $stylistId   = Session::get('booking_stylist_id');
         $bookingTime = Session::get('booking_time');
         $bookingDate = Session::get('booking_date', now()->format('Y-m-d'));
-
+ 
         if (!$serviceId || !$stylistId || !$bookingTime) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Session expired. Please start again.');
         }
-
+ 
         $service = Service::findOrFail($serviceId);
-
+ 
         $startTime = \Carbon\Carbon::parse($bookingTime)->format('H:i:s');
         $endTime   = \Carbon\Carbon::parse($bookingTime)
-                        ->addMinutes($service->duration_minutes ?? 60)
+                        ->addMinutes($service->duration ?? 60)
                         ->format('H:i:s');
-
+ 
         $bookingRef = 'GLM-' . strtoupper(substr(uniqid(), -6));
-
-        
+ 
         $appointment = Appointment::create([
             'booking_ref'      => $bookingRef,
             'client_id'        => Auth::id(),
@@ -221,34 +220,47 @@ class BookingController extends Controller
             'advance_amount'   => 100,
             'status'           => 'pending_payment',
         ]);
-
+ 
+        // ✅ method must match the DB enum exactly: easypaisa | jazzcash | payfast | card
+        $requestedMethod = $request->input('payment_method', 'jazzcash');
+        $validMethods = ['jazzcash', 'easypaisa', 'payfast', 'card'];
+        $dbMethod = in_array($requestedMethod, $validMethods) ? $requestedMethod : 'payfast';
+ 
         $payment = Payment::create([
             'appointment_id' => $appointment->id,
             'client_id'      => Auth::id(),
             'salon_id'       => $salon->id,
             'amount'         => 100,
-            'method'         => 'payfast',
+            'method'         => $dbMethod,
             'status'         => 'pending',
         ]);
-
+ 
         Session::put('pending_payment_id', $payment->id);
         Session::put('booking_salon_id', $salon->id);
-
-      
-        $payfastData = [
-            'merchant_id'  => config('services.payfast.merchant_id'),
-            'merchant_key' => config('services.payfast.merchant_key'),
-            'return_url'   => route('payfast.return'),
-            'cancel_url'   => route('payfast.cancel'),
-            'notify_url'   => route('payfast.notify'),
-            'amount'       => 100,
-            'item_name'    => $service->name . ' - Advance Booking (' . $bookingRef . ')',
-            'order_id'     => $bookingRef,
-        ];
-
-        $sandboxUrl = config('services.payfast.sandbox_url', 'https://sandbox.payfast.pk/order/request');
-
-        return view('frontend.booking.payfast-redirect', compact('payfastData', 'sandboxUrl'));
+ 
+        // ✅ Shows the mock PayFast checkout UI (card/JazzCash/EasyPaisa + OTP)
+        // instead of redirecting to a real external gateway. Once your real
+        // PayFast.pk merchant_id/merchant_key are approved, swap this view
+        // for the auto-submitting redirect form to PayFast's sandbox_url —
+        // no other code in this method needs to change.
+        return view('frontend.booking.payfast-checkout', compact('salon', 'requestedMethod'));
+    }
+ 
+    // ✅ NEW METHOD — add this right after postPayment().
+    // Saves the mobile number / card reference entered on the mock
+    // checkout page against the pending payment before the OTP step.
+    public function confirmMockPayment(Request $request)
+    {
+        $paymentId = Session::get('pending_payment_id');
+        $payment   = Payment::find($paymentId);
+ 
+        if ($payment) {
+            $payment->update([
+                'sender_number' => $request->input('sender_number'),
+            ]);
+        }
+ 
+        return response()->json(['ok' => true]);
     }
 
  
@@ -256,21 +268,21 @@ class BookingController extends Controller
     {
         $paymentId = Session::get('pending_payment_id');
         $payment   = Payment::find($paymentId);
-
+ 
         if ($payment) {
             $payment->update([
                 'status'         => 'approved',
-                'transaction_id' => $request->input('pf_payment_id', 'SANDBOX-' . uniqid()),
+                'transaction_id' => 'SANDBOX-' . strtoupper(uniqid()),
             ]);
-
+ 
             $appointment = $payment->appointment;
             $appointment->update(['status' => 'payment_submitted']);
-
+ 
             Session::forget([
                 'booking_service_id', 'booking_service_ids', 'booking_stylist_id',
                 'booking_time', 'booking_date', 'booking_salon_id', 'pending_payment_id',
             ]);
-
+ 
             try {
                 $appointment->salon->owner->notify(
                     new \App\Notifications\NewPaymentAlert($appointment)
@@ -278,14 +290,16 @@ class BookingController extends Controller
             } catch (\Exception $e) {
                 Log::warning('Owner notification failed: ' . $e->getMessage());
             }
-
-            return redirect()->route('client.appointments.index')
-                ->with('success', 'Payment successful! Your booking is confirmed and awaiting salon approval.');
+ 
+            // ✅ Show the confetti success page directly with the real
+            // appointment data, instead of redirecting to appointments list
+            return view('frontend.booking.confirmation', compact('appointment'));
         }
-
+ 
         return redirect()->route('client.appointments.index')
             ->with('error', 'Payment record not found.');
     }
+ 
 
    
     public function payfastCancel(Request $request)
