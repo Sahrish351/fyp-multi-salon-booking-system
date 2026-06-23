@@ -1,24 +1,18 @@
-{{--
-    ===========================================================
-    OWNER DASHBOARD - MAIN PAGE (resources/views/owner/dashboard.blade.php)
-    ===========================================================
---}}
+
 @extends('layouts.owner')
 
 @section('title', 'Dashboard')
 
 @section('content')
 
-    {{-- Page Header --}}
+  
     <div class="page-header">
         <h2>Dashboard</h2>
         <p>Welcome back! Here's what's happening today.</p>
     </div>
 
-    {{-- ===================== STAT CARDS ROW 1 ===================== --}}
     <div class="row g-4 mb-4">
 
-        {{-- Today Appointments --}}
         <div class="col-md-6 col-lg-4">
             <div class="stat-card">
                 <div class="stat-top">
@@ -30,7 +24,7 @@
             </div>
         </div>
 
-        {{-- Pending Appointments --}}
+    
         <div class="col-md-6 col-lg-4">
             <div class="stat-card">
                 <div class="stat-top">
@@ -42,7 +36,7 @@
             </div>
         </div>
 
-        {{-- Total Revenue --}}
+      
         <div class="col-md-6 col-lg-4">
             <div class="stat-card">
                 <div class="stat-top">
@@ -56,10 +50,10 @@
 
     </div>
 
-    {{-- ===================== STAT CARDS ROW 2 ===================== --}}
+
     <div class="row g-4 mb-4">
 
-        {{-- Total Clients --}}
+    
         <div class="col-md-6 col-lg-4">
             <div class="stat-card">
                 <div class="stat-top">
@@ -71,7 +65,7 @@
             </div>
         </div>
 
-        {{-- Pending Payments --}}
+        
         <div class="col-md-6 col-lg-4">
             <div class="stat-card">
                 <div class="stat-top">
@@ -83,7 +77,7 @@
             </div>
         </div>
 
-        {{-- Monthly Sales --}}
+     
         <div class="col-md-6 col-lg-4">
             <div class="stat-card">
                 <div class="stat-top">
@@ -97,7 +91,7 @@
 
     </div>
 
-    {{-- ===================== CHARTS ROW 1: Revenue Trend + Monthly Bookings ===================== --}}
+    
     <div class="row g-4 mb-4">
 
         <div class="col-lg-6">
@@ -120,7 +114,7 @@
 
     </div>
 
-    {{-- ===================== CHARTS ROW 2: Popular Services + Client Growth ===================== --}}
+    
     <div class="row g-4 mb-4">
 
         <div class="col-lg-6">
@@ -143,7 +137,7 @@
 
     </div>
 
-    {{-- ===================== TODAY'S APPOINTMENTS TABLE ===================== --}}
+    
     <div class="row g-4 mb-4">
         <div class="col-12">
             <div class="panel-card">
@@ -201,7 +195,7 @@
         </div>
     </div>
 
-    {{-- ===================== RECENT PAYMENTS TABLE ===================== --}}
+    
     <div class="row g-4 mb-4">
         <div class="col-12">
             <div class="panel-card">
@@ -274,7 +268,7 @@
     $clientGrowthDataJs   = $clientGrowthData ?? [780, 850, 920, 1040, 1150, 1245];
 @endphp
 <script>
-    // ===================== Chart Color Palette (Pinkish Theme) =====================
+    
     const goldColor   = '#D9A441';
     const roseColor    = '#E96A98';
     const purpleColor = '#9B6FD1';
@@ -283,7 +277,7 @@
     const orangeColor = '#E08A2C';
     const inkColor    = '#6B4F62';
 
-    // ===================== 1. Revenue Trend (Area Chart) =====================
+    
     const revenueCtx = document.getElementById('revenueTrendChart').getContext('2d');
     const revenueGradient = revenueCtx.createLinearGradient(0, 0, 0, 230);
     revenueGradient.addColorStop(0, 'rgba(217, 164, 65, 0.35)');
@@ -322,7 +316,7 @@
         }
     });
 
-    // ===================== 2. Monthly Bookings (Bar Chart) =====================
+   
     new Chart(document.getElementById('monthlyBookingsChart'), {
         type: 'bar',
         data: {
@@ -352,7 +346,6 @@
         }
     });
 
-    // ===================== 3. Popular Services (Pie Chart) =====================
     new Chart(document.getElementById('popularServicesChart'), {
         type: 'pie',
         data: {
@@ -375,7 +368,7 @@
         }
     });
 
-    // ===================== 4. Client Growth (Line Chart) =====================
+   
     new Chart(document.getElementById('clientGrowthChart'), {
         type: 'line',
         data: {
