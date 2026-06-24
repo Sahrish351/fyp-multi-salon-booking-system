@@ -41,6 +41,7 @@ use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Owner\OwnerDashboardController;
 use App\Http\Controllers\Owner\OwnerSalonController;
 use App\Http\Controllers\Owner\OwnerServiceController;
+use App\Http\Controllers\Owner\OwnerCategoryController;
 use App\Http\Controllers\Owner\OwnerStylistController;
 use App\Http\Controllers\Owner\OwnerTimeSlotController;
 use App\Http\Controllers\Owner\OwnerHolidayController;
@@ -344,14 +345,15 @@ Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show']
         Route::resource('services', OwnerServiceController::class);
         Route::post('/services/{service}/toggle-status', [OwnerServiceController::class, 'toggleStatus'])->name('services.toggle-status');
 
-        // Categories
-        // NOTE: Inhe pehle sirf 1 route tha (index), ab Add/Edit/Delete ke
-        // liye 3 routes add ki gayi hain - methods OwnerServiceController
-        // mein already maujood hain (storeCategory, updateCategory, destroyCategory).
-        Route::get('/categories', [OwnerServiceController::class, 'categories'])->name('categories.index');
-        Route::post('/categories', [OwnerServiceController::class, 'storeCategory'])->name('categories.store');
-        Route::put('/categories/{category}', [OwnerServiceController::class, 'updateCategory'])->name('categories.update');
-        Route::delete('/categories/{category}', [OwnerServiceController::class, 'destroyCategory'])->name('categories.destroy');
+       
+Route::get('/categories', [OwnerCategoryController::class, 'index'])->name('categories.index');
+Route::get('/categories/create', [OwnerCategoryController::class, 'create'])->name('categories.create');
+Route::post('/categories', [OwnerCategoryController::class, 'store'])->name('categories.store');
+Route::get('/categories/{category}', [OwnerCategoryController::class, 'show'])->name('categories.show');
+Route::get('/categories/{category}/edit', [OwnerCategoryController::class, 'edit'])->name('categories.edit');
+Route::put('/categories/{category}', [OwnerCategoryController::class, 'update'])->name('categories.update');
+Route::delete('/categories/{category}', [OwnerCategoryController::class, 'destroy'])->name('categories.destroy');
+
 
         // Stylists
         Route::resource('stylists', OwnerStylistController::class);

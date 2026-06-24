@@ -7,7 +7,17 @@ use Illuminate\Http\Request;
 
 class OwnerServiceController extends Controller
 {
-    
+    /**
+     * Route: GET /owner/services  -->  name: owner.services.index
+     *
+     * Services list page (stat cards + search + table).
+     *
+     * BAAD ME: Database se real services laayen:
+     *   $services = Service::where('salon_id', auth()->user()->salon_id)->get();
+     *   $stats['total_services'] = $services->count();
+     *   $stats['avg_price']      = round($services->avg('price'));
+     *   $stats['avg_duration']   = round($services->avg('duration'));
+     */
     public function index(Request $request)
     {
         $stats = [
@@ -30,7 +40,14 @@ class OwnerServiceController extends Controller
         return view('owner.services.index', compact('stats', 'services'));
     }
 
-   
+    /**
+     * Route: GET /owner/services/create  -->  name: owner.services.create
+     *
+     * Naya service add karne ka page.
+     *
+     * BAAD ME: Categories dropdown ke liye real categories laayen:
+     *   $categories = Category::where('salon_id', auth()->user()->salon_id)->pluck('name');
+     */
     public function create()
     {
         $categories = ['Hair Styling', 'Nail Care', 'Facial', 'Spa', 'Makeup', 'Body Treatment', 'Hair Treatment'];
@@ -38,17 +55,39 @@ class OwnerServiceController extends Controller
         return view('owner.services.create', compact('categories'));
     }
 
-  
+    /**
+     * Route: POST /owner/services  -->  name: owner.services.store
+     *
+     * Naya service add karna (Add Service modal submit).
+     *
+     * BAAD ME:
+     *   $request->validate([
+     *       'name'     => 'required|string|max:255',
+     *       'category' => 'required|string',
+     *       'duration' => 'required|integer|min:1',
+     *       'price'    => 'required|numeric|min:0',
+     *   ]);
+     *   Service::create([...$request->validated(), 'salon_id' => auth()->user()->salon_id]);
+     */
     public function store(Request $request)
     {
         return redirect()->route('owner.services.index')->with('success', 'Service added successfully!');
     }
 
+    /**
+     * Route: GET /owner/services/{service}/edit  -->  name: owner.services.edit
+     *
+     * Service edit karne ka page (pre-filled form).
+     *
+     * BAAD ME:
+     *   $service = Service::findOrFail($id)->toArray();
+     *   $categories = Category::where('salon_id', auth()->user()->salon_id)->pluck('name');
+     */
     public function edit($service)
     {
         $categories = ['Hair Styling', 'Nail Care', 'Facial', 'Spa', 'Makeup', 'Body Treatment', 'Hair Treatment'];
 
-      
+        // Demo data — id ke mutabiq dummy service bana rahe hain (BAAD ME DB se aayega)
         $serviceData = [
             'id'             => $service,
             'name'           => 'Premium Haircut',
@@ -65,18 +104,43 @@ class OwnerServiceController extends Controller
         return view('owner.services.edit', ['service' => $serviceData, 'categories' => $categories]);
     }
 
+    /**
+     * Route: PUT/PATCH /owner/services/{service}  -->  name: owner.services.update
+     *
+     * Service update karna (Edit Service modal submit).
+     *
+     * BAAD ME:
+     *   $service = Service::findOrFail($id);
+     *   $service->update($request->validated());
+     */
     public function update(Request $request, $service)
     {
         return redirect()->route('owner.services.index')->with('success', 'Service updated successfully!');
     }
 
-
+    /**
+     * Route: DELETE /owner/services/{service}  -->  name: owner.services.destroy
+     *
+     * Service delete karna (Delete confirmation modal submit).
+     *
+     * BAAD ME:
+     *   Service::findOrFail($id)->delete();
+     */
     public function destroy(Request $request, $service)
     {
         return redirect()->route('owner.services.index')->with('success', 'Service deleted successfully!');
     }
 
- 
+    /**
+     * Route: GET /owner/services/{service}  -->  name: owner.services.show
+     *
+     * Service ka detail page (image, stats, description, recent bookings).
+     *
+     * BAAD ME:
+     *   $service = Service::findOrFail($id)->toArray();
+     *   $recentBookings = Appointment::where('service_id', $id)
+     *       ->latest()->take(5)->get();
+     */
     public function show($service)
     {
         $serviceData = [
@@ -104,43 +168,25 @@ class OwnerServiceController extends Controller
         return view('owner.services.show', ['service' => $serviceData, 'recentBookings' => $recentBookings]);
     }
 
-   
+    /**
+     * Route: POST /owner/services/{service}/toggle-status  -->  name: owner.services.toggle-status
+     *
+     * Service ko Active/Inactive toggle karna.
+     *
+     * BAAD ME:
+     *   $service = Service::findOrFail($id);
+     *   $service->update(['status' => $service->status === 'Active' ? 'Inactive' : 'Active']);
+     */
     public function toggleStatus(Request $request, $service)
     {
         return redirect()->route('owner.services.index')->with('success', 'Service status updated!');
     }
 
-    
-    public function categories(Request $request)
-    {
-        $categories = [
-            ['id' => 1, 'name' => 'Hair Styling',     'count' => 12, 'icon_bg' => 'cat-gold'],
-            ['id' => 2, 'name' => 'Nail Care',        'count' => 8,  'icon_bg' => 'cat-purple'],
-            ['id' => 3, 'name' => 'Facial Treatment', 'count' => 6,  'icon_bg' => 'cat-green'],
-            ['id' => 4, 'name' => 'Spa & Massage',    'count' => 5,  'icon_bg' => 'cat-blue'],
-            ['id' => 5, 'name' => 'Makeup',           'count' => 7,  'icon_bg' => 'cat-orange'],
-            ['id' => 6, 'name' => 'Body Treatment',   'count' => 4,  'icon_bg' => 'cat-pink'],
-            ['id' => 7, 'name' => 'Hair Treatment',   'count' => 6,  'icon_bg' => 'cat-teal'],
-        ];
-
-        return view('owner.categories', compact('categories'));
-    }
-
-   
-    public function storeCategory(Request $request)
-    {
-        return redirect()->route('owner.categories.index')->with('success', 'Category added successfully!');
-    }
-
-   
-    public function updateCategory(Request $request, $category)
-    {
-        return redirect()->route('owner.categories.index')->with('success', 'Category updated successfully!');
-    }
-
-    
-    public function destroyCategory(Request $request, $category)
-    {
-        return redirect()->route('owner.categories.index')->with('success', 'Category deleted successfully!');
-    }
+    /*
+     * NOTE: Categories ke methods (categories, storeCategory, updateCategory,
+     * destroyCategory) yahan se hata diye gaye hain. Ab Categories ka apna
+     * alag controller hai: App\Http\Controllers\Owner\OwnerCategoryController.
+     * Apni routes/web.php mein bhi Categories ki routes ab is naye controller
+     * ko point karni hain (dekhen ADD_THESE_ROUTES_TO_web.php.txt - updated version).
+     */
 }
