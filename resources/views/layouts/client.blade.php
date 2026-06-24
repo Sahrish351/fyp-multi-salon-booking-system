@@ -158,7 +158,7 @@
                     <div class="dropdown">
                         <button class="btn btn-sm position-relative" style="background: rgba(233,30,140,0.1); border-radius: 50%; width: 38px; height: 38px;" data-bs-toggle="dropdown">
                             <i class="fas fa-bell" style="color: var(--client-pink);"></i>
-                            @php $unreadCount = Auth::user()->unreadNotifications->count(); @endphp
+                            @php $unreadCount = 0; @endphp
                             @if($unreadCount > 0)
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
                                     {{ $unreadCount > 9 ? '9+' : $unreadCount }}
@@ -167,7 +167,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
                             <li><h6 class="dropdown-header">Notifications</h6></li>
-                            @forelse(Auth::user()->unreadNotifications->take(5) as $notif)
+                            @forelse([] as $notif)  <!-- Empty array — no notifications -->
                                 <li>
                                     <a class="dropdown-item" href="#" style="white-space: normal;">
                                         <small class="text-muted">{{ $notif->created_at->diffForHumans() }}</small><br>
