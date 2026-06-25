@@ -184,195 +184,204 @@ class BookingController extends Controller
     }
 
    
-    public function postPayment(Request $request, $salon_id)
-    {
-        $salon = Salon::findOrFail($salon_id);
+    // / ── STEP 4 POST: Receive screenshot + create pending appointment ──
+public function postPayment(Request $request, $salon_id)
+{
+    $salon = Salon::findOrFail($salon_id);
  
-        $serviceId   = Session::get('booking_service_id');
-        $stylistId   = Session::get('booking_stylist_id');
-        $bookingTime = Session::get('booking_time');
-        $bookingDate = Session::get('booking_date', now()->format('Y-m-d'));
+    $serviceId   = Session::get('booking_service_id');
+    $stylistId   = Session::get('booking_stylist_id');
+    $bookingTime = Session::get('booking_time');
+    $bookingDate = Session::get('booking_date', now()->format('Y-m-d'));
  
-        if (!$serviceId || !$stylistId || !$bookingTime) {
-            return redirect()->route('booking.step1', $salon->id)
-                ->with('error', 'Session expired. Please start again.');
-        }
- 
-        $service = Service::findOrFail($serviceId);
- 
-        $startTime = \Carbon\Carbon::parse($bookingTime)->format('H:i:s');
-        $endTime   = \Carbon\Carbon::parse($bookingTime)
-                        ->addMinutes($service->duration ?? 60)
-                        ->format('H:i:s');
- 
-        $bookingRef = 'GLM-' . strtoupper(substr(uniqid(), -6));
- 
-        $appointment = Appointment::create([
-            'booking_ref'      => $bookingRef,
-            'client_id'        => Auth::id(),
-            'salon_id'         => $salon->id,
-            'stylist_id'       => $stylistId,
-            'service_id'       => $service->id,
-            'appointment_date' => $bookingDate,
-            'start_time'       => $startTime,
-            'end_time'         => $endTime,
-            'total_amount'     => $service->price,
-            'advance_amount'   => 100,
-            'status'           => 'pending_payment',
-        ]);
- 
-        // ✅ method must match the DB enum exactly: easypaisa | jazzcash | payfast | card
-        $requestedMethod = $request->input('payment_method', 'jazzcash');
-        $validMethods = ['jazzcash', 'easypaisa', 'payfast', 'card'];
-        $dbMethod = in_array($requestedMethod, $validMethods) ? $requestedMethod : 'payfast';
- 
-        $payment = Payment::create([
-            'appointment_id' => $appointment->id,
-            'client_id'      => Auth::id(),
-            'salon_id'       => $salon->id,
-            'amount'         => 100,
-            'method'         => $dbMethod,
-            'status'         => 'pending',
-        ]);
- 
-        Session::put('pending_payment_id', $payment->id);
-        Session::put('booking_salon_id', $salon->id);
- 
-        // ✅ Shows the mock PayFast checkout UI (card/JazzCash/EasyPaisa + OTP)
-        // instead of redirecting to a real external gateway. Once your real
-        // PayFast.pk merchant_id/merchant_key are approved, swap this view
-        // for the auto-submitting redirect form to PayFast's sandbox_url —
-        // no other code in this method needs to change.
-        return view('frontend.booking.payfast-checkout', compact('salon', 'requestedMethod'));
+    if (!$serviceId || !$stylistId || !$bookingTime) {
+        return redirect()->route('booking.step1', $salon->id)
+            ->with('error', 'Session expired. Please start again.');
     }
  
-    // ✅ NEW METHOD — add this right after postPayment().
-    // Saves the mobile number / card reference entered on the mock
-    // checkout page against the pending payment before the OTP step.
-    public function confirmMockPayment(Request $request)
-    {
-        $paymentId = Session::get('pending_payment_id');
-        $payment   = Payment::find($paymentId);
+    // Validate the form
+    $request->validate([
+        'payment_method'  => 'required|in:easypaisa,jazzcash,bank',
+        'transaction_ref' => 'required|string|max:255',
+        'sender_number'   => 'required|string|max:20',
+        'screenshot'      => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+    ], [
+        'screenshot.required' => 'Please upload your payment screenshot.',
+        'screenshot.image'    => 'The file must be an image.',
+        'screenshot.max'      => 'Screenshot must be under 5MB.',
+    ]);
  
-        if ($payment) {
-            $payment->update([
-                'sender_number' => $request->input('sender_number'),
-            ]);
-        }
+    $service = Service::findOrFail($serviceId);
  
-        return response()->json(['ok' => true]);
-    }
+    $startTime = \Carbon\Carbon::parse($bookingTime)->format('H:i:s');
+    $endTime   = \Carbon\Carbon::parse($bookingTime)
+                    ->addMinutes($service->duration ?? 60)
+                    ->format('H:i:s');
+ 
+    $bookingRef = 'GLM-' . strtoupper(substr(uniqid(), -6));
+ 
+    // Save screenshot to storage/app/public/payment-screenshots/
+    $screenshotPath = $request->file('screenshot')
+        ->store('payment-screenshots', 'public');
+ 
+    // Create appointment with status 'pending_payment' (becomes 'confirmed'
+    // when admin approves the screenshot in the admin panel)
+    $appointment = Appointment::create([
+        'booking_ref'      => $bookingRef,
+        'client_id'        => Auth::id(),
+        'salon_id'         => $salon->id,
+        'stylist_id'       => $stylistId,
+        'service_id'       => $service->id,
+        'appointment_date' => $bookingDate,
+        'start_time'       => $startTime,
+        'end_time'         => $endTime,
+        'total_amount'     => $service->price,
+        'advance_amount'   => 100,
+        'status'           => 'pending_payment',
+    ]);
+ 
+    // Save payment record with screenshot path
+    Payment::create([
+        'appointment_id'  => $appointment->id,
+        'client_id'       => Auth::id(),
+        'salon_id'        => $salon->id,
+        'amount'          => 100,
+        'method'          => $request->payment_method,
+        'transaction_ref' => $request->transaction_ref,
+        'sender_number'   => $request->sender_number,
+        'screenshot'      => $screenshotPath,
+        'status'          => 'pending',
+    ]);
+ 
+    // Clear booking session
+    Session::forget([
+        'booking_service_id', 'booking_service_ids', 'booking_stylist_id',
+        'booking_time', 'booking_date', 'booking_salon_id',
+    ]);
+ 
+    // // Optional: notify admin that a new payment screenshot arrived
+    // try {
+    //     $appointment->salon->owner->notify(
+    //         new \App\Notifications\NewPaymentAlert($appointment)
+    //     );
+    // } catch (\Exception $e) {
+    //     Log::warning('Owner payment alert failed: ' . $e->getMessage());
+    // }
+ 
+    // Show the pending confirmation page
+    return view('frontend.booking.confirmation', compact('appointment'));
+}
 
  
-    public function payfastReturn(Request $request)
-    {
-        $paymentId = Session::get('pending_payment_id');
-        $payment   = Payment::find($paymentId);
+    // public function payfastReturn(Request $request)
+    // {
+    //     $paymentId = Session::get('pending_payment_id');
+    //     $payment   = Payment::find($paymentId);
  
-        if ($payment) {
-            $payment->update([
-                'status'         => 'approved',
-                'transaction_id' => 'SANDBOX-' . strtoupper(uniqid()),
-            ]);
+    //     if ($payment) {
+    //         $payment->update([
+    //             'status'         => 'approved',
+    //             'transaction_id' => 'SANDBOX-' . strtoupper(uniqid()),
+    //         ]);
  
-            $appointment = $payment->appointment;
-            $appointment->update(['status' => 'payment_submitted']);
+    //         $appointment = $payment->appointment;
+    //         $appointment->update(['status' => 'payment_submitted']);
  
-            Session::forget([
-                'booking_service_id', 'booking_service_ids', 'booking_stylist_id',
-                'booking_time', 'booking_date', 'booking_salon_id', 'pending_payment_id',
-            ]);
+    //         Session::forget([
+    //             'booking_service_id', 'booking_service_ids', 'booking_stylist_id',
+    //             'booking_time', 'booking_date', 'booking_salon_id', 'pending_payment_id',
+    //         ]);
  
-            try {
-                $appointment->salon->owner->notify(
-                    new \App\Notifications\NewPaymentAlert($appointment)
-                );
-            } catch (\Exception $e) {
-                Log::warning('Owner notification failed: ' . $e->getMessage());
-            }
+    //         try {
+    //             $appointment->salon->owner->notify(
+    //                 new \App\Notifications\NewPaymentAlert($appointment)
+    //             );
+    //         } catch (\Exception $e) {
+    //             Log::warning('Owner notification failed: ' . $e->getMessage());
+    //         }
  
-            // ✅ Show the confetti success page directly with the real
-            // appointment data, instead of redirecting to appointments list
-            return view('frontend.booking.confirmation', compact('appointment'));
-        }
+    //         // ✅ Show the confetti success page directly with the real
+    //         // appointment data, instead of redirecting to appointments list
+    //         return view('frontend.booking.confirmation', compact('appointment'));
+    //     }
  
-        return redirect()->route('client.appointments.index')
-            ->with('error', 'Payment record not found.');
-    }
+    //     return redirect()->route('client.appointments.index')
+    //         ->with('error', 'Payment record not found.');
+    // }
  
 
    
-    public function payfastCancel(Request $request)
-    {
-        $paymentId = Session::get('pending_payment_id');
-        $payment   = Payment::find($paymentId);
+    // public function payfastCancel(Request $request)
+    // {
+    //     $paymentId = Session::get('pending_payment_id');
+    //     $payment   = Payment::find($paymentId);
 
-        if ($payment) {
-            $payment->update(['status' => 'cancelled']);
-            $payment->appointment->update(['status' => 'cancelled']);
-        }
+    //     if ($payment) {
+    //         $payment->update(['status' => 'cancelled']);
+    //         $payment->appointment->update(['status' => 'cancelled']);
+    //     }
 
-        return redirect()->route('booking.step4', Session::get('booking_salon_id'))
-            ->with('error', 'Payment was cancelled. Please try again.');
-    }
+    //     return redirect()->route('booking.step4', Session::get('booking_salon_id'))
+    //         ->with('error', 'Payment was cancelled. Please try again.');
+    // }
 
     
-    public function payfastNotify(Request $request)
-    {
-        Log::info('PayFast IPN received: ' . json_encode($request->all()));
+    // public function payfastNotify(Request $request)
+    // {
+    //     Log::info('PayFast IPN received: ' . json_encode($request->all()));
 
-        // In sandbox/demo mode just acknowledge receipt.
-        // In production verify the signature/hash here before trusting data.
-        return response('OK', 200);
-    }
+    //     // In sandbox/demo mode just acknowledge receipt.
+    //     // In production verify the signature/hash here before trusting data.
+    //     return response('OK', 200);
+    // }
 
    
-    public function getSlots(Request $request, $salon_id)
-    {
-        $salon     = Salon::findOrFail($salon_id);
-        $date      = $request->date;
-        $stylistId = $request->stylist_id ?? Session::get('booking_stylist_id');
-        $serviceId = $request->service_id ?? Session::get('booking_service_id');
+    // public function getSlots(Request $request, $salon_id)
+    // {
+    //     $salon     = Salon::findOrFail($salon_id);
+    //     $date      = $request->date;
+    //     $stylistId = $request->stylist_id ?? Session::get('booking_stylist_id');
+    //     $serviceId = $request->service_id ?? Session::get('booking_service_id');
 
-        $bookedTimes = Appointment::where('salon_id', $salon->id)
-            ->where('stylist_id', $stylistId)
-            ->where('appointment_date', $date)
-            ->whereNotIn('status', ['cancelled'])
-            ->pluck('start_time')
-            ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
-            ->toArray();
+    //     $bookedTimes = Appointment::where('salon_id', $salon->id)
+    //         ->where('stylist_id', $stylistId)
+    //         ->where('appointment_date', $date)
+    //         ->whereNotIn('status', ['cancelled'])
+    //         ->pluck('start_time')
+    //         ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
+    //         ->toArray();
 
-        $isHoliday = StylistHoliday::where('stylist_id', $stylistId)
-            ->whereDate('date', $date)
-            ->exists();
+    //     $isHoliday = StylistHoliday::where('stylist_id', $stylistId)
+    //         ->whereDate('date', $date)
+    //         ->exists();
 
-        if ($isHoliday) {
-            return response()->json(['slots' => [], 'holiday' => true]);
-        }
+    //     if ($isHoliday) {
+    //         return response()->json(['slots' => [], 'holiday' => true]);
+    //     }
 
-        $openTime  = \Carbon\Carbon::parse($salon->opening_time  ?? '09:00');
-        $closeTime = \Carbon\Carbon::parse($salon->closing_time  ?? '20:00');
-        $duration  = $serviceId
-            ? (Service::find($serviceId)->duration_minutes ?? 60)
-            : 60;
+    //     $openTime  = \Carbon\Carbon::parse($salon->opening_time  ?? '09:00');
+    //     $closeTime = \Carbon\Carbon::parse($salon->closing_time  ?? '20:00');
+    //     $duration  = $serviceId
+    //         ? (Service::find($serviceId)->duration_minutes ?? 60)
+    //         : 60;
 
-        $slots   = [];
-        $current = $openTime->copy();
+    //     $slots   = [];
+    //     $current = $openTime->copy();
 
-        while ($current->copy()->addMinutes($duration)->lte($closeTime)) {
-            $timeStr = $current->format('H:i');
-            $label   = $current->format('h:i A');
-            $slots[] = [
-                'time'      => $label,
-                'time_24'   => $timeStr,
-                'label'     => $label,
-                'available' => !in_array($timeStr, $bookedTimes),
-            ];
-            $current->addMinutes(30);
-        }
+    //     while ($current->copy()->addMinutes($duration)->lte($closeTime)) {
+    //         $timeStr = $current->format('H:i');
+    //         $label   = $current->format('h:i A');
+    //         $slots[] = [
+    //             'time'      => $label,
+    //             'time_24'   => $timeStr,
+    //             'label'     => $label,
+    //             'available' => !in_array($timeStr, $bookedTimes),
+    //         ];
+    //         $current->addMinutes(30);
+    //     }
 
-        return response()->json(['slots' => $slots, 'holiday' => false]);
-    }
+    //     return response()->json(['slots' => $slots, 'holiday' => false]);
+    // }
 
     
     public function confirmation($booking_id)
