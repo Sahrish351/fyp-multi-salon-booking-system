@@ -142,5 +142,3 @@ function cancelModal(id) {
 }
 </script>
 @endpush
- 
- 
