@@ -405,10 +405,14 @@ Route::delete('/categories/{category}', [OwnerCategoryController::class, 'destro
         Route::resource('holidays', OwnerSalonHolidayController::class);
 
         // Waitlist
-        Route::resource('waitlist', OwnerWaitlistController::class);
-        Route::post('/waitlist/{id}/notify', [OwnerWaitlistController::class, 'notify'])->name('waitlist.notify');
-        Route::get('/waitlist/{waitlist}',   [OwnerWaitlistController::class, 'show'])->name('waitlist.show');
-        Route::delete('/waitlist/{waitlist}',[OwnerWaitlistController::class, 'remove'])->name('waitlist.remove');
+Route::get('/waitlist',                [OwnerWaitlistController::class, 'index'])->name('waitlist.index');
+Route::get('/waitlist/create',         [OwnerWaitlistController::class, 'create'])->name('waitlist.create');
+Route::post('/waitlist',               [OwnerWaitlistController::class, 'store'])->name('waitlist.store');
+Route::get('/waitlist/{waitlist}',     [OwnerWaitlistController::class, 'show'])->name('waitlist.show');
+Route::get('/waitlist/{waitlist}/edit',[OwnerWaitlistController::class, 'edit'])->name('waitlist.edit');
+Route::put('/waitlist/{waitlist}',     [OwnerWaitlistController::class, 'update'])->name('waitlist.update');
+Route::delete('/waitlist/{waitlist}',  [OwnerWaitlistController::class, 'destroy'])->name('waitlist.destroy');
+Route::post('/waitlist/{id}/notify',   [OwnerWaitlistController::class, 'notify'])->name('waitlist.notify');
 
         // Clients
         Route::get('/clients/export',        [OwnerClientController::class, 'export'])->name('clients.export');
