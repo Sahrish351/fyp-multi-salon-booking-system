@@ -12,25 +12,26 @@
     @stack('styles')
     
     <style>
+        /* ================================================================
+                   BASE VARIABLES – PINK THEME (Like Client Dashboard)
+                   ================================================================ */
         :root {
-            --bg: #FDF8F5;
+            --bg: #fff5f9;
             --white: #FFFFFF;
-            --brown: #5C3D2E;
-            --brown-dk: #3D2614;
-            --brown-md: #7A5040;
-            --brown-lt: #F0E8E0;
-            --beige: #EDE0D4;
-            --accent: #C17D52;
+            --pink: #E91E8C;
+            --pink-dark: #c2185b;
+            --pink-light: #fce4ec;
+            --pink-bg: #fff0f7;
+            --text: #1a1c1d;
+            --text-mid: #4a4452;
+            --text-lt: #9c8b7e;
+            --border: #fce4ec;
+            --shadow: 0 1px 8px rgba(233,30,140,0.07);
+            --shadow-md: 0 4px 20px rgba(233,30,140,0.1);
+            --sidebar-w: 260px;
             --red: #DC2626;
             --green: #16A34A;
             --blue: #2563EB;
-            --text: #1C1208;
-            --text-mid: #6B5C4F;
-            --text-lt: #9C8B7E;
-            --border: #E8D8CC;
-            --shadow: 0 1px 8px rgba(92,61,46,0.07);
-            --shadow-md: 0 4px 20px rgba(92,61,46,0.1);
-            --sidebar-w: 260px;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,11 +50,13 @@
             min-height: 100vh;
         }
         
-        /* ========== SIDEBAR ========== */
+        /* ================================================================
+                   SIDEBAR – PINK GRADIENT
+                   ================================================================ */
         .admin-sidebar {
             width: var(--sidebar-w);
-            background: var(--white);
-            border-right: 1px solid var(--border);
+            background: linear-gradient(180deg, #E91E8C 0%, #c2185b 100%);
+            border-right: 1px solid rgba(255,255,255,0.1);
             position: fixed;
             top: 0;
             left: 0;
@@ -66,20 +69,20 @@
         
         .sidebar-header {
             padding: 28px 20px 20px 24px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
         .sidebar-header h1 {
             font-size: 1.6rem;
             font-weight: 800;
-            color: var(--brown-dk);
+            color: #fff;
             letter-spacing: -0.5px;
         }
         
         .sidebar-header p {
             font-size: 0.65rem;
             letter-spacing: 2px;
-            color: var(--text-lt);
+            color: rgba(255,255,255,0.6);
             margin-top: 4px;
         }
         
@@ -96,7 +99,7 @@
             font-size: 0.65rem;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: var(--text-lt);
+            color: rgba(255,255,255,0.5);
             padding: 8px 12px;
             font-weight: 600;
         }
@@ -110,7 +113,7 @@
             align-items: center;
             gap: 12px;
             padding: 10px 16px;
-            color: var(--text-mid);
+            color: rgba(255,255,255,0.8);
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 500;
@@ -121,25 +124,38 @@
         .nav-item a i {
             width: 20px;
             font-size: 0.9rem;
-            color: var(--text-lt);
+            color: rgba(255,255,255,0.6);
         }
         
         .nav-item:hover a {
-            background: var(--brown-lt);
-            color: var(--brown-dk);
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+        }
+        
+        .nav-item:hover a i {
+            color: #fff;
         }
         
         .nav-item.active a {
-            background: var(--brown-lt);
-            color: var(--brown-dk);
+            background: rgba(255,255,255,0.20);
+            color: #fff;
             font-weight: 600;
         }
         
         .nav-item.active a i {
-            color: var(--brown);
+            color: #fff;
         }
         
-        /* ========== MAIN CONTENT ========== */
+        /* Sidebar Logout */
+        .sidebar-nav .nav-item:last-child {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: auto;
+            padding-top: 16px;
+        }
+        
+        /* ================================================================
+                   MAIN CONTENT
+                   ================================================================ */
         .admin-main {
             flex: 1;
             margin-left: var(--sidebar-w);
@@ -148,9 +164,12 @@
             flex-direction: column;
         }
         
-        /* ========== TOP NAVBAR ========== */
+        /* ================================================================
+                   TOP NAVBAR – PINK THEME
+                   ================================================================ */
         .admin-topbar {
-            background: var(--white);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border);
             padding: 12px 28px;
             display: flex;
@@ -183,7 +202,7 @@
         }
         
         .topbar-search input::placeholder {
-            color: var(--text-lt);
+            color: #aaa;
         }
         
         .topbar-right {
@@ -196,7 +215,7 @@
             font-size: 0.7rem;
             font-weight: 600;
             color: var(--green);
-            background: #E9F5EF;
+            background: #ecfdf5;
             padding: 4px 12px;
             border-radius: 40px;
         }
@@ -212,7 +231,7 @@
             position: absolute;
             top: -8px;
             right: -10px;
-            background: var(--accent);
+            background: var(--pink);
             color: white;
             font-size: 0.6rem;
             padding: 2px 6px;
@@ -227,7 +246,7 @@
         .profile-avatar {
             width: 38px;
             height: 38px;
-            background: var(--brown);
+            background: linear-gradient(135deg, #E91E8C, #c2185b);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -266,22 +285,34 @@
         }
         
         .profile-dropdown a:hover {
-            background: var(--brown-lt);
+            background: var(--pink-bg);
         }
         
-        /* ========== BODY ========== */
+        /* ================================================================
+                   ADMIN BODY
+                   ================================================================ */
         .admin-body {
             padding: 28px 32px;
             flex: 1;
         }
         
-        /* ========== CARDS & TABLES ========== */
+        /* ================================================================
+                   CARDS – PINK THEME
+                   ================================================================ */
         .card {
-            background: var(--white);
+            background: #ffffff;
             border: 1px solid var(--border);
             border-radius: 20px;
             overflow: hidden;
             margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: all .3s ease;
+        }
+        
+        .card:hover {
+            border-color: var(--pink);
+            box-shadow: 0 8px 25px rgba(233,30,140,0.08);
+            transform: translateY(-2px);
         }
         
         .card-header {
@@ -290,6 +321,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #ffffff;
         }
         
         .card-title {
@@ -298,9 +330,12 @@
             color: var(--text);
         }
         
+        /* ================================================================
+                   BUTTONS – PINK THEME
+                   ================================================================ */
         .btn-primary {
-            background: var(--brown);
-            color: white;
+            background: linear-gradient(135deg, #E91E8C, #c2185b);
+            color: #fff;
             border: none;
             padding: 8px 20px;
             border-radius: 30px;
@@ -311,22 +346,26 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: background 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(233,30,140,0.3);
         }
         
         .btn-primary:hover {
-            background: var(--brown-dk);
+            background: linear-gradient(135deg, #d81b60, #a31545);
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(233,30,140,0.4);
         }
         
         .btn-outline {
             background: transparent;
-            border: 1px solid var(--border);
+            border: 1px solid var(--pink);
             padding: 6px 16px;
             border-radius: 30px;
             font-size: 0.7rem;
             cursor: pointer;
-            color: var(--text-mid);
-            transition: all 0.2s;
+            color: var(--pink);
+            font-weight: 600;
+            transition: all 0.3s;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -334,11 +373,34 @@
         }
         
         .btn-outline:hover {
-            background: var(--brown-lt);
-            border-color: var(--brown);
-            color: var(--brown);
+            background: var(--pink);
+            border-color: var(--pink);
+            color: #fff;
         }
         
+        .btn-secondary {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            color: #555;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* ================================================================
+                   TABLES – PINK THEME
+                   ================================================================ */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -349,7 +411,7 @@
             padding: 12px 16px;
             font-size: 0.65rem;
             text-transform: uppercase;
-            color: var(--text-lt);
+            color: var(--text-mid);
             background: var(--bg);
             font-weight: 600;
         }
@@ -362,7 +424,7 @@
         }
         
         .data-table tr:hover td {
-            background: var(--brown-lt);
+            background: var(--pink-bg);
         }
         
         .data-table tbody tr {
@@ -370,6 +432,9 @@
             transition: background 0.2s;
         }
         
+        /* ================================================================
+                   BADGES – PINK THEME
+                   ================================================================ */
         .badge {
             display: inline-flex;
             padding: 3px 10px;
@@ -379,21 +444,28 @@
         }
         
         .badge-success {
-            background: #E9F5EF;
+            background: #ecfdf5;
             color: var(--green);
         }
         
         .badge-warning {
-            background: #FEF3E8;
-            color: var(--accent);
+            background: #fffbeb;
+            color: #f59e0b;
         }
         
         .badge-danger {
-            background: #FEF2F2;
+            background: #fef2f2;
             color: var(--red);
         }
         
-        /* Pagination */
+        .badge-info {
+            background: #eff6ff;
+            color: var(--blue);
+        }
+        
+        /* ================================================================
+                   PAGINATION – PINK THEME
+                   ================================================================ */
         .pagination-wrapper {
             padding: 1rem;
             border-top: 1px solid var(--border);
@@ -404,17 +476,116 @@
             justify-content: center;
         }
         
+        .pagination .page-item.active .page-link {
+            background: var(--pink);
+            border-color: var(--pink);
+            color: #fff;
+        }
+        
+        .pagination .page-link:hover {
+            color: var(--pink);
+        }
+        
+        /* ================================================================
+                   FORM INPUTS – PINK THEME
+                   ================================================================ */
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--pink);
+            box-shadow: 0 0 0 0.2rem rgba(233,30,140,0.15);
+        }
+        
+        /* ================================================================
+                   ALERTS – PINK THEME
+                   ================================================================ */
+        .alert-success {
+            background: #ecfdf5;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+        .alert-danger {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+        .alert-warning {
+            background: #fffbeb;
+            border-color: #fde68a;
+            color: #92400e;
+        }
+        .alert-info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+        
+        /* ================================================================
+                   MODALS – PINK THEME
+                   ================================================================ */
+        .modal-content {
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-footer {
+            border-top: 1px solid var(--border);
+        }
+        
+        /* ================================================================
+                   DROPDOWNS – PINK THEME
+                   ================================================================ */
+        .dropdown-menu {
+            border: 1px solid var(--border);
+        }
+        .dropdown-item:hover {
+            background: var(--pink-bg);
+            color: var(--pink);
+        }
+        
+        /* ================================================================
+                   RESPONSIVE
+                   ================================================================ */
         @media (max-width: 900px) {
-            .admin-sidebar { transform: translateX(-100%); position: fixed; transition: 0.2s; }
-            .admin-main { margin-left: 0; }
-            .admin-body { padding: 20px; }
+            .admin-sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                transition: 0.2s;
+            }
+            .admin-main {
+                margin-left: 0;
+            }
+            .admin-body {
+                padding: 20px;
+            }
+            .topbar-search {
+                width: 180px;
+            }
+        }
+        
+        /* Sidebar toggle for mobile (optional) */
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-mid);
+            cursor: pointer;
+        }
+        @media (max-width: 900px) {
+            .sidebar-toggle {
+                display: block;
+            }
         }
     </style>
 </head>
 <body>
 <div class="admin-wrapper">
-    <!-- SIDEBAR -->
-    <aside class="admin-sidebar">
+    <!-- ============================================================
+    SIDEBAR
+    ============================================================ -->
+    <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-header">
             <h1>Glamora</h1>
             <p>ADMIN PANEL</p>
@@ -483,20 +654,22 @@
                     <a href="{{ route('admin.settings.index') }}"><i class="fas fa-sliders-h"></i> Settings</a>
                 </div>
             </div>
-        </nav>
-        
-        <div class="sidebar-nav" style="border-top: 1px solid var(--border); margin-top: auto;">
+            
+            <!-- Logout -->
             <div class="nav-item">
                 <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
                 <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">@csrf</form>
             </div>
-        </div>
+        </nav>
     </aside>
     
-    <!-- MAIN CONTENT -->
+    <!-- ============================================================
+    MAIN CONTENT
+    ============================================================ -->
     <main class="admin-main">
+        <!-- Topbar -->
         <div class="admin-topbar">
             <div class="topbar-search">
                 <i class="fas fa-search"></i>
@@ -519,12 +692,16 @@
             </div>
         </div>
         
+        <!-- Page Content -->
         <div class="admin-body">
             @yield('content')
         </div>
     </main>
 </div>
 
+<!-- ============================================================
+SCRIPTS
+============================================================ -->
 <script>
     // Profile Dropdown
     const profileBtn = document.getElementById('profileBtn');
