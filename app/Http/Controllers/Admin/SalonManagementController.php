@@ -17,10 +17,18 @@ class SalonManagementController extends Controller
         $salons = Salon::with('owner')
             ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->when($request->city, fn($q) => $q->where('city', $request->city))
-            ->when($request->search, fn($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->when($request->search, fn($q) => $q->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                      ->orWhere('phone', 'like', '%' . $request->search . '%')
+                      ->orWhereHas('owner', fn($q) => $q->where('name', 'like', '%' . $request->search . '%'));
+            }))
             ->latest()
-            ->paginate(15);
-        return view('admin.salons.index', compact('salons'));
+            ->paginate(15)
+            ->withQueryString();
+
+        $cities = Salon::distinct()->orderBy('city')->pluck('city')->filter()->values();
+
+        return view('admin.salons.index', compact('salons', 'cities'));
     }
 
     public function create()
@@ -32,15 +40,15 @@ class SalonManagementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'owner_id' => 'required|exists:users,id',
-            'city' => 'required|string|max:100',
-            'area' => 'required|string|max:100',
-            'address' => 'required|string',
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
+            'name'        => 'required|string|max:255',
+            'owner_id'    => 'required|exists:users,id',
+            'city'        => 'required|string|max:100',
+            'area'        => 'required|string|max:100',
+            'address'     => 'required|string',
+            'phone'       => 'required|string|max:20',
+            'email'       => 'required|email|max:255',
             'description' => 'nullable|string',
-            'logo' => 'nullable|image|max:2048',
+            'logo'        => 'nullable|image|max:2048',
         ]);
 
         $data = $request->except('logo');
@@ -50,7 +58,7 @@ class SalonManagementController extends Controller
         }
 
         $data['status'] = 'approved';
-        $data['slug'] = Str::slug($request->name) . '-' . uniqid();
+        $data['slug']   = Str::slug($request->name) . '-' . uniqid();
 
         Salon::create($data);
 
@@ -66,7 +74,7 @@ class SalonManagementController extends Controller
 
     public function edit($id)
     {
-        $salon = Salon::findOrFail($id);
+        $salon  = Salon::findOrFail($id);
         $owners = User::where('role', 'owner')->get();
         return view('admin.salons.edit', compact('salon', 'owners'));
     }
@@ -76,16 +84,16 @@ class SalonManagementController extends Controller
         $salon = Salon::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'owner_id' => 'required|exists:users,id',
-            'city' => 'required|string|max:100',
-            'area' => 'required|string|max:100',
-            'address' => 'required|string',
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
+            'name'        => 'required|string|max:255',
+            'owner_id'    => 'required|exists:users,id',
+            'city'        => 'required|string|max:100',
+            'area'        => 'required|string|max:100',
+            'address'     => 'required|string',
+            'phone'       => 'required|string|max:20',
+            'email'       => 'required|email|max:255',
             'description' => 'nullable|string',
-            'logo' => 'nullable|image|max:2048',
-            'status' => 'in:active,suspended,approved,pending',
+            'logo'        => 'nullable|image|max:2048',
+            'status'      => 'in:active,suspended,approved,pending',
         ]);
 
         $data = $request->except('logo');
