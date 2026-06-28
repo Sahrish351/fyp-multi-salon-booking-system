@@ -246,6 +246,7 @@ Route::middleware('auth')->group(function () {
         // Clients
         Route::get('/clients',                        [ClientManagementController::class, 'index'])->name('clients.index');
         Route::get('/clients/export',                 [ClientManagementController::class, 'export'])->name('clients.export');
+        Route::get('/clients/export-pdf',             [ClientManagementController::class, 'exportPdf'])->name('clients.export.pdf');  
         Route::get('/clients/{user}',                 [ClientManagementController::class, 'show'])->name('clients.show');
         Route::post('/clients/{user}/toggle-status',  [ClientManagementController::class, 'toggleStatus'])->name('clients.toggle-status');
         Route::post('/clients/{user}/toggle',         [ClientManagementController::class, 'toggleStatus'])->name('clients.toggle');
