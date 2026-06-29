@@ -91,6 +91,7 @@
     </div>
 
     @php
+        // ── STATS ──
         $totalRevenue      = \App\Models\Payment::where('status', 'approved')->sum('amount');
         $totalAppointments = \App\Models\Appointment::count();
         $activeSalons      = \App\Models\Salon::where('status', 'approved')->count();
@@ -99,19 +100,36 @@
         $todayAppointments = \App\Models\Appointment::whereDate('appointment_date', today())->count();
         $monthlyRevenue    = \App\Models\Payment::where('status', 'approved')->whereMonth('created_at', now()->month)->sum('amount');
 
-        // Last year same months for comparison
+        // ── MONTHLY REVENUE DATA (for chart) ──
         $monthlyData = [];
         $lastYearData = [];
         $targetData = [];
         for ($m = 1; $m <= 6; $m++) {
-            $monthlyData[]  = \App\Models\Payment::where('status','approved')->whereMonth('created_at',$m)->whereYear('created_at', now()->year)->sum('amount');
-            $lastYearData[] = \App\Models\Payment::where('status','approved')->whereMonth('created_at',$m)->whereYear('created_at', now()->year - 1)->sum('amount');
+            $monthlyData[]  = \App\Models\Payment::where('status','approved')
+                                ->whereMonth('created_at', $m)
+                                ->whereYear('created_at', now()->year)
+                                ->sum('amount');
+            $lastYearData[] = \App\Models\Payment::where('status','approved')
+                                ->whereMonth('created_at', $m)
+                                ->whereYear('created_at', now()->year - 1)
+                                ->sum('amount');
             $targetData[]   = $monthlyData[$m-1] * 1.2; // 20% above current as target line
         }
 
+        // ── WEEKLY APPOINTMENTS DATA (real DB) ──
+        $weeklyLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        $weeklyData = [];
+        $startOfWeek = \Carbon\Carbon::now()->startOfWeek(); // Monday
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startOfWeek->copy()->addDays($i);
+            $weeklyData[] = \App\Models\Appointment::whereDate('appointment_date', $date)->count();
+        }
+
+        // ── PENDING SALONS ──
         $pendingSalons = \App\Models\Salon::where('status', 'pending')->latest()->take(5)->get();
     @endphp
 
+    {{-- STATS CARDS --}}
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon">💰</div>
@@ -135,20 +153,15 @@
         </div>
     </div>
 
+    {{-- CHARTS --}}
     <div class="charts-row">
         <div class="chart-card">
             <div class="chart-header">
                 <span class="chart-title">Revenue Performance</span>
                 <div class="chart-legend" style="margin-top:10px;">
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:#B5125F;"></div> This Year
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:#E0177D;"></div> Last Year
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:#F2A9CE; border: 1.5px dashed #B5125F; border-radius:50%;"></div> Target
-                    </div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#B5125F;"></div> This Year</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#E0177D;"></div> Last Year</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#F2A9CE; border: 1.5px dashed #B5125F; border-radius:50%;"></div> Target</div>
                 </div>
             </div>
             <canvas id="revenueChart" height="180"></canvas>
@@ -159,7 +172,9 @@
         </div>
     </div>
 
+    {{-- TWO COLUMN LAYOUT --}}
     <div class="two-columns">
+        {{-- LEFT: Pending Salon Approvals --}}
         <div class="card">
             <div class="card-header">
                 <h3><i class="fas fa-store"></i> Pending Salon Approvals</h3>
@@ -184,6 +199,7 @@
             </table>
         </div>
 
+        {{-- RIGHT: Quick Actions + Notifications --}}
         <div>
             <div class="card">
                 <div class="card-header"><h3>Quick Admin Actions</h3></div>
@@ -225,20 +241,18 @@
 </div>
 
 <script>
-    // ── Revenue Chart: 3 lines, dark → medium → light pink ──
+    // ── Revenue Chart ──
     const revenueCtx = document.getElementById('revenueChart');
 
-    // Gradient fill for "This Year" (darkest)
+    // Gradients
     const gradDark = revenueCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
     gradDark.addColorStop(0, 'rgba(181, 18, 95, 0.18)');
     gradDark.addColorStop(1, 'rgba(181, 18, 95, 0.0)');
 
-    // Gradient fill for "Last Year" (medium)
     const gradMid = revenueCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
     gradMid.addColorStop(0, 'rgba(224, 23, 125, 0.12)');
     gradMid.addColorStop(1, 'rgba(224, 23, 125, 0.0)');
 
-    // Gradient fill for "Target" (lightest)
     const gradLight = revenueCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
     gradLight.addColorStop(0, 'rgba(242, 169, 206, 0.10)');
     gradLight.addColorStop(1, 'rgba(242, 169, 206, 0.0)');
@@ -249,9 +263,8 @@
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
             datasets: [
                 {
-                    // Biggest line — darkest pink
                     label: 'This Year',
-                    data: {{ json_encode($monthlyData) }},
+                    data: @json($monthlyData),
                     borderColor: '#B5125F',
                     backgroundColor: gradDark,
                     borderWidth: 3,
@@ -265,9 +278,8 @@
                     order: 1
                 },
                 {
-                    // Medium line — standard pink
                     label: 'Last Year',
-                    data: {{ json_encode($lastYearData) }},
+                    data: @json($lastYearData),
                     borderColor: '#E0177D',
                     backgroundColor: gradMid,
                     borderWidth: 2,
@@ -281,9 +293,8 @@
                     order: 2
                 },
                 {
-                    // Smallest/lightest — target dashed line
                     label: 'Target',
-                    data: {{ json_encode($targetData) }},
+                    data: @json($targetData),
                     borderColor: '#F2A9CE',
                     backgroundColor: gradLight,
                     borderWidth: 1.5,
@@ -322,21 +333,21 @@
     });
 
     // ── Weekly Appointments Bar Chart ──
-    // Colors: dark → medium → light pink based on bar value
-    const weeklyData = [42, 58, 51, 68, 75, 89, 64];
+    const weeklyData = @json($weeklyData);
     const maxVal = Math.max(...weeklyData);
     const minVal = Math.min(...weeklyData);
     const barColors = weeklyData.map(v => {
+        if (maxVal === 0) return '#F2A9CE'; // sab zero hain toh lightest pink
         const ratio = (v - minVal) / (maxVal - minVal);
-        if (ratio >= 0.66) return '#B5125F';      // biggest bars — darkest pink
-        if (ratio >= 0.33) return '#E0177D';      // medium bars — standard pink
-        return '#F2A9CE';                          // smallest bars — lightest pink
+        if (ratio >= 0.66) return '#B5125F';
+        if (ratio >= 0.33) return '#E0177D';
+        return '#F2A9CE';
     });
 
     new Chart(document.getElementById('weeklyChart'), {
         type: 'bar',
         data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            labels: @json($weeklyLabels),
             datasets: [{
                 data: weeklyData,
                 backgroundColor: barColors,
@@ -355,6 +366,7 @@
         }
     });
 
+    // ── Click on stat cards ──
     document.querySelectorAll('.stat-card').forEach(card =>
         card.addEventListener('click', () => alert('📊 Detailed analytics would appear here'))
     );
