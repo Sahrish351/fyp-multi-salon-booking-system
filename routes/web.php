@@ -253,6 +253,8 @@ Route::middleware('auth')->group(function () {
  
         // Categories
         Route::resource('categories', CategoryController::class);
+        Route::put('admin/categories/{category}', [CategoryController::class, 'update'])
+        ->name('admin.categories.update');
  
         // Appointments
         Route::get('/appointments/export',         [AppointmentMonitorController::class, 'export'])->name('appointments.export');
