@@ -260,10 +260,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/appointments/export',         [AppointmentMonitorController::class, 'export'])->name('appointments.export');
         Route::get('/appointments',                [AppointmentMonitorController::class, 'index'])->name('appointments.index');
         Route::get('/appointments/{appointment}',  [AppointmentMonitorController::class, 'show'])->name('appointments.show');
- 
-        // Payments
-        Route::get('/payments/export', [PaymentMonitorController::class, 'export'])->name('payments.export');
-        Route::get('/payments',        [PaymentMonitorController::class, 'index'])->name('payments.index');
+ // Payments
+Route::get('/payments/export', [PaymentMonitorController::class, 'export'])->name('payments.export');
+Route::get('/payments',        [PaymentMonitorController::class, 'index'])->name('payments.index');
+Route::get('/payments/{id}',   [PaymentMonitorController::class, 'show'])->name('payments.show');
+Route::post('/payments/{id}/approve', [PaymentMonitorController::class, 'approve'])->name('payments.approve');
+Route::post('/payments/{id}/reject',  [PaymentMonitorController::class, 'reject'])->name('payments.reject');
  
         // Reviews
         Route::get('/reviews',                          [ReviewManagementController::class, 'index'])->name('reviews.index');
