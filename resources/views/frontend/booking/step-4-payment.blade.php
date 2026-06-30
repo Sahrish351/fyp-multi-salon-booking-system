@@ -1,4 +1,4 @@
-{{-- FILE: resources/views/frontend/booking/step-4-payment.blade.php --}}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
