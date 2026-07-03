@@ -7,22 +7,10 @@ use Illuminate\Http\Request;
 
 class OwnerDashboardController extends Controller
 {
-    /**
-     * Route: GET /owner/dashboard  -->  name: owner.dashboard
-     *
-     * Owner ka main Dashboard page.
-     *
-     * BAAD ME: Database se real queries lagayen, jaise:
-     *   $salonId = auth()->user()->salon_id;
-     *   $stats['today_appointments'] = Appointment::where('salon_id', $salonId)
-     *       ->whereDate('date', today())->count();
-     *   $stats['total_revenue'] = Payment::where('salon_id', $salonId)
-     *       ->where('status', 'completed')->sum('amount');
-     *   ... waghera
-     */
+   
     public function index(Request $request)
     {
-        // ===================== STAT CARDS DATA =====================
+        
         $stats = [
             'today_appointments'   => 24,
             'pending_appointments' => 8,
@@ -32,7 +20,7 @@ class OwnerDashboardController extends Controller
             'monthly_sales'        => 128450,
         ];
 
-        // ===================== REVENUE TREND CHART (Line/Area) =====================
+       
         $revenueLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
         $revenueData   = [24000, 29000, 32000, 35000, 41000, 45280];
 
