@@ -106,7 +106,7 @@ Route::get('/stylists', fn() => redirect()->route('salons.index'))->name('stylis
 Route::get('/gallery',  fn() => redirect()->route('salons.index'))->name('gallery.index');
  
 // ============================================================
-// ✅ BOOKING ROUTES — ALL STEPS REQUIRE LOGIN
+//  BOOKING ROUTES — ALL STEPS REQUIRE LOGIN
 // ============================================================
 // ============================================================
 Route::prefix('booking')->name('booking.')->middleware('auth')->group(function () {
@@ -130,7 +130,7 @@ Route::prefix('booking')->name('booking.')->middleware('auth')->group(function (
     // Confirmation page
     Route::get('/confirmation/{booking_id}', [BookingController::class, 'confirmation'])->name('confirmation');
 
-    // ✅ AJAX: Get available time slots for a given date
+    //  AJAX: Get available time slots for a given date
     Route::get('/slots/{salon_id}', [BookingController::class, 'getSlots'])->name('slots');
 });
 
@@ -463,9 +463,8 @@ Route::post('/waitlist/{id}/notify',   [OwnerWaitlistController::class, 'notify'
         Route::get('/appointments/{appointment}/reschedule',[RescheduleController::class, 'create'])->name('appointments.reschedule');
  
         // Reschedule
-        Route::get('/reschedule/{appointment}',  [RescheduleController::class, 'create'])->name('reschedule.create');
-        Route::post('/reschedule/{appointment}', [RescheduleController::class, 'store'])->name('reschedule.store');
- 
+        Route::get('/appointments/{appointment}/reschedule', [RescheduleController::class, 'create'])->name('appointments.reschedule');
+    Route::post('/appointments/{appointment}/reschedule', [RescheduleController::class, 'store'])->name('appointments.reschedule.store');
         // Waitlist
         Route::get('/waitlist',                      [WaitlistJoinController::class, 'index'])->name('waitlist.index');
         Route::post('/waitlist/join',                [WaitlistJoinController::class, 'join'])->name('waitlist.join');

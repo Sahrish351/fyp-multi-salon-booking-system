@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,6 +70,8 @@
     .btn-waitlist { background: #f97316; color: #fff; border: none; border-radius: 50px; padding: 11px 22px; font-size: .85rem; font-weight: 700; cursor: pointer; transition: all .15s; font-family: 'Inter',sans-serif; }
     .btn-waitlist:hover { background: #ea580c; transform: translateY(-1px); }
     .no-date-msg { grid-column: 1/-1; text-align: center; color: #aaa; padding: 20px; }
+    .form-error-box { background:#fff5f5;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;font-size:.78rem;color:#dc2626;margin-bottom:16px; }
+    .form-error-box div { padding: 2px 0; }
     </style>
 </head>
 <body>
@@ -92,6 +93,20 @@
         <!-- LEFT PANEL -->
         <div class="left-panel">
             <h1>Select date and time</h1>
+
+            @if ($errors->any())
+            <div class="form-error-box">
+                @foreach ($errors->all() as $err)
+                    <div>• {{ $err }}</div>
+                @endforeach
+            </div>
+            @endif
+
+            @if (session('error'))
+            <div class="form-error-box">
+                {{ session('error') }}
+            </div>
+            @endif
 
             <div class="stylist-row">
                 <div class="stylist-pill">
@@ -170,8 +185,6 @@
                 </div>
             </div>
 
-            {{-- ✅ FIXED: route() helper used (not hardcoded url()) so it always
-                 matches the named route regardless of prefix changes --}}
             <form action="{{ route('booking.step3.post', $salon->id) }}" method="POST" id="step3Form">
                 @csrf
                 <input type="hidden" name="time_slot_id"     id="slotInput" value="">
@@ -196,6 +209,18 @@ let selectedTime = null;
 
 window.addEventListener('load', renderCalendar);
 
+// ✅ FIX: build the date string from LOCAL date parts instead of
+// date.toISOString(), which converts to UTC and can shift "today" back
+// to "yesterday" for users in timezones ahead of UTC (e.g. Pakistan,
+// UTC+5) during the early morning hours. This was the root cause of
+// "today's date slot selection not working".
+function toLocalDateStr(d) {
+    const y   = d.getFullYear();
+    const m   = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+
 function renderCalendar() {
     const year  = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -216,7 +241,7 @@ function renderCalendar() {
     for (let d = 1; d <= totalDays; d++) {
         const date    = new Date(year, month, d);
         const isPast  = date < today;
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = toLocalDateStr(date);
         const dayName = date.toLocaleDateString('en-PK', { weekday:'short' });
         const monName = date.toLocaleDateString('en-PK', { month:'short' });
         html += `<div class="date-card${isPast?' disabled':''}" data-date="${dateStr}"
@@ -246,7 +271,7 @@ function selectDate(card, date) {
     document.getElementById('timeDisplay').style.display = 'none';
     document.getElementById('waitlistSection').classList.remove('show');
     document.getElementById('dateText').textContent =
-        new Date(date).toLocaleDateString('en-PK', { weekday:'long', day:'numeric', month:'long' });
+        new Date(date + 'T00:00:00').toLocaleDateString('en-PK', { weekday:'long', day:'numeric', month:'long' });
     document.getElementById('dateDisplay').style.display = 'flex';
     loadSlots(date);
 }
@@ -279,7 +304,7 @@ function loadSlots(date) {
                          ${s.available?`onclick="selectTime(this,'${s.time}')"`:''}>${s.label}</div>`;
         });
         grid.innerHTML = html;
-        
+
         document.getElementById('waitlistSection').classList.toggle('show', !anyAvail);
     })
     .catch(() => {
