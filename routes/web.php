@@ -275,17 +275,19 @@ Route::post('/payments/{id}/reject',  [PaymentMonitorController::class, 'reject'
 
 // COMPLAINT ROUTES
 
-Route::get('/complaints', [ComplaintSubmitController::class, 'index'])->name('complaints.index');
-Route::get('/complaints/create', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
-Route::post('/complaints', [ComplaintSubmitController::class, 'store'])->name('complaints.store');
-Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show'])->name('complaints.show');
-        // Notifications
+Route::get('/complaints', [App\Http\Controllers\Admin\ComplaintController::class, 'index'])->name('complaints.index');
+    Route::get('/complaints/{complaint}', [App\Http\Controllers\Admin\ComplaintController::class, 'show'])->name('complaints.show');
+    Route::post('/complaints/{complaint}/update-status', [App\Http\Controllers\Admin\ComplaintController::class, 'updateStatus'])->name('complaints.update-status');
+    Route::post('/complaints/{complaint}/reply', [App\Http\Controllers\Admin\ComplaintController::class, 'reply'])->name('complaints.reply');
+    Route::delete('/complaints/{complaint}', [App\Http\Controllers\Admin\ComplaintController::class, 'destroy'])->name('complaints.destroy');
+// notifications 
         Route::get('/notifications',                       [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/send-to-all',          [NotificationController::class, 'sendToAll'])->name('notifications.send-to-all');
         Route::post('/notifications/send-to-owners',       [NotificationController::class, 'sendToOwners'])->name('notifications.send-to-owners');
  
         // Reports
         Route::get('/reports',         [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/preview', [ReportController::class, 'preview'])->name('reports.preview');
         Route::post('/reports/export', [ReportController::class, 'export'])->name('reports.export');
  
         // Audit Logs
