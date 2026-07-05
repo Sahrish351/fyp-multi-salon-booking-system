@@ -1,7 +1,3 @@
-/* ==========================================================================
-   GlowAura - Owner Dashboard Styles
-   Theme: Soft Pinkish / Light (Clear & Readable)
-   ========================================================================== */
 
 :root {
   --blush-50:   #FFF5F8;
@@ -11,11 +7,11 @@
   --rose-400:   #F08FB4;
   --rose-500:   #E96A98;
   --rose-600:   #D94E80;
-  --plum-700:   #7A2E55;
-  --plum-800:   #5C2142;
-  --plum-900:   #401530;
-  --gold-500:   #D9A441;
-  --gold-600:   #C28A2A;
+  --plum-900:   #1A0A1E;   
+  --plum-800:   #7B1450;   
+  --plum-700:   #9C1A63;   
+  --gold-500:   #E91E8C;
+  --gold-600:   #C4176F;
   --green-500:  #2EAE7D;
   --green-50:   #E6F8F0;
   --orange-500: #E08A2C;
@@ -53,7 +49,7 @@ a {
   text-decoration: none;
 }
 
-/* ===================== LAYOUT WRAPPER ===================== */
+
 .app-wrapper {
   display: flex;
   min-height: 100vh;
@@ -73,7 +69,7 @@ a {
   }
 }
 
-/* ===================== SIDEBAR ===================== */
+
 .sidebar {
   width: 270px;
   position: fixed;
@@ -179,7 +175,7 @@ a {
   margin: 14px 6px;
 }
 
-/* Mobile sidebar toggle */
+
 .sidebar-toggle-btn {
   display: none;
   background: var(--plum-800);
@@ -213,7 +209,7 @@ a {
   }
 }
 
-/* ===================== TOP HEADER ===================== */
+
 .page-header {
   margin-bottom: 26px;
 }
@@ -231,7 +227,7 @@ a {
   margin: 0;
 }
 
-/* ===================== STAT CARDS ===================== */
+
 .stat-card {
   background: var(--white);
   border-radius: var(--radius-lg);
@@ -305,7 +301,7 @@ a {
   color: var(--plum-900);
 }
 
-/* ===================== PANEL / CHART CARDS ===================== */
+
 .panel-card {
   background: var(--white);
   border-radius: var(--radius-lg);
@@ -352,7 +348,7 @@ a {
   width: 100%;
 }
 
-/* ===================== TABLES ===================== */
+
 .table-custom {
   width: 100%;
   border-collapse: collapse;
@@ -398,7 +394,7 @@ a {
   font-weight: 700;
 }
 
-/* Status badges */
+
 .badge-status {
   display: inline-block;
   padding: 5px 14px;
@@ -413,7 +409,7 @@ a {
 .badge-completed { background: var(--green-50); color: var(--green-500); }
 .badge-cancelled { background: var(--red-50); color: var(--red-500); }
 
-/* ===================== TOPBAR (mobile) ===================== */
+
 .mobile-topbar {
   display: none;
   align-items: center;
@@ -427,7 +423,7 @@ a {
   }
 }
 
-/* Scrollbar for whole page */
+
 ::-webkit-scrollbar {
   width: 8px;
 }
