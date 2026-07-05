@@ -331,6 +331,7 @@ Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show']
     Route::prefix('owner')->name('owner.')->group(function () {
 
         Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/chart-data', [OwnerDashboardController::class, 'getChartData'])->name('dashboard.chart-data');
 
         // Profile
         Route::get('/profile',              [OwnerProfileController::class, 'index'])->name('profile');
