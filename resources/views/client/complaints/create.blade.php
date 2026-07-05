@@ -1,3 +1,4 @@
+{{-- resources/views/client/complaints/create.blade.php --}}
 @extends('layouts.client')
 
 @section('title', 'Submit Complaint')
@@ -12,13 +13,16 @@
                     <p style="color:#888;font-size:0.85rem;">Select an appointment and describe your issue</p>
                 </div>
                 <div class="card-body">
+                    {{-- Display any session error (e.g., duplicate complaint) --}}
                     @if(session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    <form action="/client/complaints" method="POST">
+                    {{-- Use named route for form submission --}}
+                    <form action="{{ route('client.complaints.store') }}" method="POST">
                         @csrf
 
+                        {{-- Appointment selection dropdown --}}
                         <div class="form-group mb-3">
                             <label>Select Appointment</label>
                             <select name="appointment_id" class="form-control" required>
@@ -34,6 +38,7 @@
                             @enderror
                         </div>
 
+                        {{-- Complaint subject --}}
                         <div class="form-group mb-3">
                             <label>Subject</label>
                             <input type="text" name="subject" class="form-control" required placeholder="Brief subject of complaint" value="{{ old('subject') }}">
@@ -42,6 +47,7 @@
                             @enderror
                         </div>
 
+                        {{-- Complaint description --}}
                         <div class="form-group mb-3">
                             <label>Description</label>
                             <textarea name="description" class="form-control" rows="5" required placeholder="Describe your complaint in detail">{{ old('description') }}</textarea>
@@ -50,8 +56,9 @@
                             @enderror
                         </div>
 
+                        {{-- Submit and Cancel buttons --}}
                         <button type="submit" class="btn" style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;border-radius:50px;padding:10px 30px;font-weight:600;">Submit Complaint</button>
-                        <a href="/client/complaints" class="btn" style="background:#f0f0f0;color:#555;border:none;border-radius:50px;padding:10px 30px;">Cancel</a>
+                        <a href="{{ route('client.complaints.index') }}" class="btn" style="background:#f0f0f0;color:#555;border:none;border-radius:50px;padding:10px 30px;">Cancel</a>
                     </form>
                 </div>
             </div>

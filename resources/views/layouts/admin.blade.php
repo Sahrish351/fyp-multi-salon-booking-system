@@ -613,18 +613,14 @@
                 <div class="nav-item {{ request()->routeIs('admin.clients.*') ? 'active' : '' }}">
                     <a href="{{ route('admin.clients.index') }}"><i class="fas fa-users"></i> Clients</a>
                 </div>
-                <div class="nav-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.categories.index') }}"><i class="fas fa-tags"></i> Categories</a>
-                </div>
+                
                 <div class="nav-item {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}">
                     <a href="{{ route('admin.appointments.index') }}"><i class="fas fa-calendar"></i> Appointments</a>
                 </div>
                 <div class="nav-item {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
                     <a href="{{ route('admin.payments.index') }}"><i class="fas fa-credit-card"></i> Payments</a>
                 </div>
-                <div class="nav-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.reviews.index') }}"><i class="fas fa-star"></i> Reviews</a>
-                </div>
+                
                 <div class="nav-item {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}">
                     <a href="{{ route('admin.complaints.index') }}"><i class="fas fa-exclamation-triangle"></i> Complaints</a>
                 </div>

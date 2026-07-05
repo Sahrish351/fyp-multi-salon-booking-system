@@ -34,6 +34,7 @@
                 ['route' => 'client.appointments.index', 'icon' => 'fa-calendar-check', 'label' => 'My Appointments'],
                 ['route' => 'client.waitlist.index', 'icon' => 'fa-list-ol', 'label' => 'My Waitlist'],
                 ['route' => 'client.favorites.index', 'icon' => 'fa-heart', 'label' => 'Saved Salons'],
+                ['route' => 'client.reviews.index', 'icon' => 'fa-star', 'label' => 'My Reviews'],
                 ['route' => 'client.complaints.index', 'icon' => 'fa-exclamation-circle', 'label' => 'Complaints'],
                 ['route' => 'client.notifications.index', 'icon' => 'fa-bell', 'label' => 'Notifications'],
                 ['route' => 'client.profile.index', 'icon' => 'fa-user-edit', 'label' => 'My Profile'],
