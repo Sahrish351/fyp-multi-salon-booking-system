@@ -4,189 +4,461 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+
+use App\Models\Service;
+use App\Models\Category;
+use App\Models\Salon;
+use App\Models\Appointment;
 
 class OwnerServiceController extends Controller
 {
-    /**
-     * Route: GET /owner/services  -->  name: owner.services.index
-     *
-     * Services list page (stat cards + search + table).
-     *
-     * BAAD ME: Database se real services laayen:
-     *   $services = Service::where('salon_id', auth()->user()->salon_id)->get();
-     *   $stats['total_services'] = $services->count();
-     *   $stats['avg_price']      = round($services->avg('price'));
-     *   $stats['avg_duration']   = round($services->avg('duration'));
-     */
     public function index(Request $request)
     {
-        $stats = [
-            'total_services' => 48,
-            'avg_price'      => 124,
-            'avg_duration'   => 78,
-        ];
+        try {
+            $user = auth()->user();
 
-        $services = [
-            ['id' => 1, 'name' => 'Premium Haircut',   'category' => 'Hair Styling', 'duration' => 45,  'price' => 85,  'bookings' => 145, 'status' => 'Active'],
-            ['id' => 2, 'name' => 'Hair Coloring',     'category' => 'Hair Styling', 'duration' => 90,  'price' => 120, 'bookings' => 98,  'status' => 'Active'],
-            ['id' => 3, 'name' => 'Luxury Manicure',   'category' => 'Nail Care',    'duration' => 60,  'price' => 65,  'bookings' => 132, 'status' => 'Active'],
-            ['id' => 4, 'name' => 'Luxury Pedicure',   'category' => 'Nail Care',    'duration' => 75,  'price' => 80,  'bookings' => 118, 'status' => 'Active'],
-            ['id' => 5, 'name' => 'Gold Facial',       'category' => 'Facial',       'duration' => 90,  'price' => 150, 'bookings' => 76,  'status' => 'Active'],
-            ['id' => 6, 'name' => 'Full Body Massage', 'category' => 'Spa',          'duration' => 90,  'price' => 180, 'bookings' => 54,  'status' => 'Active'],
-            ['id' => 7, 'name' => 'Bridal Makeup',     'category' => 'Makeup',       'duration' => 180, 'price' => 350, 'bookings' => 24,  'status' => 'Active'],
-            ['id' => 8, 'name' => 'Beard Trim',        'category' => 'Hair Styling', 'duration' => 30,  'price' => 45,  'bookings' => 89,  'status' => 'Active'],
-        ];
+            if ($user->role !== 'owner') {
+                abort(403, 'Unauthorized access.');
+            }
 
-        return view('owner.services.index', compact('stats', 'services'));
+            $salon = Salon::where('owner_id', $user->id)->first();
+
+            if (!$salon) {
+                return redirect()->route('owner.salons.create')
+                    ->with('error', 'Please create your salon first.');
+            }
+
+            $salonId = $salon->id;
+
+            $services = Service::where('salon_id', $salonId)
+                ->with('category')
+                ->orderBy('name')
+                ->get();
+
+            $totalServices = $services->count();
+            $activeServices = $services->where('is_active', true)->count();
+            $inactiveServices = $services->where('is_active', false)->count();
+            $avgDuration = round($services->avg('duration') ?? 0);
+
+            $servicesWithBookings = $services->map(function ($service) {
+                $bookingsCount = Appointment::where('service_id', $service->id)->count();
+                $service->bookings = $bookingsCount;
+                return $service;
+            });
+
+            $stats = [
+                'total_services' => $totalServices,
+                'active_services' => $activeServices,
+                'inactive_services' => $inactiveServices,
+                'avg_duration' => $avgDuration,
+            ];
+
+            return view('owner.services.index', [
+                'stats' => $stats,
+                'services' => $servicesWithBookings,
+                'salon' => $salon,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Service Index Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to load services.');
+        }
     }
 
-    /**
-     * Route: GET /owner/services/create  -->  name: owner.services.create
-     *
-     * Naya service add karne ka page.
-     *
-     * BAAD ME: Categories dropdown ke liye real categories laayen:
-     *   $categories = Category::where('salon_id', auth()->user()->salon_id)->pluck('name');
-     */
     public function create()
     {
-        $categories = ['Hair Styling', 'Nail Care', 'Facial', 'Spa', 'Makeup', 'Body Treatment', 'Hair Treatment'];
+        try {
+            $user = auth()->user();
 
-        return view('owner.services.create', compact('categories'));
+            if ($user->role !== 'owner') {
+                abort(403, 'Unauthorized access.');
+            }
+
+            $salon = Salon::where('owner_id', $user->id)->first();
+
+            if (!$salon) {
+                return redirect()->route('owner.salons.create')
+                    ->with('error', 'Please create your salon first.');
+            }
+
+            $categories = Category::where('salon_id', $salon->id)
+                ->orderBy('name')
+                ->get();
+
+            if ($categories->isEmpty()) {
+                $defaultCategories = ['Hair Styling', 'Nail Care', 'Facial', 'Spa', 'Makeup', 'Body Treatment'];
+                foreach ($defaultCategories as $catName) {
+                    Category::create([
+                        'salon_id' => $salon->id,
+                        'name' => $catName,
+                        'is_active' => true,
+                    ]);
+                }
+                $categories = Category::where('salon_id', $salon->id)->orderBy('name')->get();
+            }
+
+            return view('owner.services.create', [
+                'categories' => $categories,
+                'salon' => $salon,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Service Create Error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Unable to load create page: ' . $e->getMessage());
+        }
     }
 
-    /**
-     * Route: POST /owner/services  -->  name: owner.services.store
-     *
-     * Naya service add karna (Add Service modal submit).
-     *
-     * BAAD ME:
-     *   $request->validate([
-     *       'name'     => 'required|string|max:255',
-     *       'category' => 'required|string',
-     *       'duration' => 'required|integer|min:1',
-     *       'price'    => 'required|numeric|min:0',
-     *   ]);
-     *   Service::create([...$request->validated(), 'salon_id' => auth()->user()->salon_id]);
-     */
     public function store(Request $request)
     {
-        return redirect()->route('owner.services.index')->with('success', 'Service added successfully!');
+        try {
+            $user = auth()->user();
+
+            if ($user->role !== 'owner') {
+                abort(403, 'Unauthorized access.');
+            }
+
+            $salon = Salon::where('owner_id', $user->id)->first();
+
+            if (!$salon) {
+                return redirect()->route('owner.salons.create')
+                    ->with('error', 'Salon not found.');
+            }
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'category_id' => 'required|exists:categories,id',
+                'duration' => 'required|integer|min:1|max:480',
+                'price' => 'required|numeric|min:0|max:999999',
+                'description' => 'nullable|string|max:2000',
+                'client_notes' => 'nullable|string|max:500',
+                'status' => 'required|in:Active,Inactive',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('service-images', 'public');
+            }
+
+            $service = Service::create([
+                'salon_id' => $salon->id,
+                'category_id' => $request->category_id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price,
+                'duration' => $request->duration,
+                'image' => $imagePath,
+                'is_active' => $request->status === 'Active' ? true : false,
+                'is_package' => false,
+            ]);
+
+            return redirect()->route('owner.services.index')
+                ->with('success', 'Service "' . $service->name . '" created successfully!');
+
+        } catch (\Exception $e) {
+            \Log::error('Service Store Error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Unable to create service: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
-    /**
-     * Route: GET /owner/services/{service}/edit  -->  name: owner.services.edit
-     *
-     * Service edit karne ka page (pre-filled form).
-     *
-     * BAAD ME:
-     *   $service = Service::findOrFail($id)->toArray();
-     *   $categories = Category::where('salon_id', auth()->user()->salon_id)->pluck('name');
-     */
-    public function edit($service)
-    {
-        $categories = ['Hair Styling', 'Nail Care', 'Facial', 'Spa', 'Makeup', 'Body Treatment', 'Hair Treatment'];
-
-        // Demo data — id ke mutabiq dummy service bana rahe hain (BAAD ME DB se aayega)
-        $serviceData = [
-            'id'             => $service,
-            'name'           => 'Premium Haircut',
-            'category'       => 'Hair Styling',
-            'duration'       => 45,
-            'price'          => 85,
-            'discount_price' => null,
-            'description'    => 'A precision haircut tailored to your face shape and style preference, finished with a professional blow-dry.',
-            'client_notes'   => 'Please arrive 10 minutes early for a consultation.',
-            'status'         => 'Active',
-            'image_url'      => null,
-        ];
-
-        return view('owner.services.edit', ['service' => $serviceData, 'categories' => $categories]);
-    }
-
-    /**
-     * Route: PUT/PATCH /owner/services/{service}  -->  name: owner.services.update
-     *
-     * Service update karna (Edit Service modal submit).
-     *
-     * BAAD ME:
-     *   $service = Service::findOrFail($id);
-     *   $service->update($request->validated());
-     */
-    public function update(Request $request, $service)
-    {
-        return redirect()->route('owner.services.index')->with('success', 'Service updated successfully!');
-    }
-
-    /**
-     * Route: DELETE /owner/services/{service}  -->  name: owner.services.destroy
-     *
-     * Service delete karna (Delete confirmation modal submit).
-     *
-     * BAAD ME:
-     *   Service::findOrFail($id)->delete();
-     */
-    public function destroy(Request $request, $service)
-    {
-        return redirect()->route('owner.services.index')->with('success', 'Service deleted successfully!');
-    }
-
-    /**
-     * Route: GET /owner/services/{service}  -->  name: owner.services.show
-     *
-     * Service ka detail page (image, stats, description, recent bookings).
-     *
-     * BAAD ME:
-     *   $service = Service::findOrFail($id)->toArray();
-     *   $recentBookings = Appointment::where('service_id', $id)
-     *       ->latest()->take(5)->get();
-     */
+    // ✅ FIXED SHOW METHOD
     public function show($service)
     {
-        $serviceData = [
-            'id'             => $service,
-            'name'           => 'Premium Haircut',
-            'category'       => 'Hair Styling',
-            'duration'       => 45,
-            'price'          => 85,
-            'discount_price' => null,
-            'bookings'       => 145,
-            'revenue'        => 12325,
-            'rating'         => 4.8,
-            'description'    => 'A precision haircut tailored to your face shape and style preference, finished with a professional blow-dry.',
-            'client_notes'   => 'Please arrive 10 minutes early for a consultation.',
-            'status'         => 'Active',
-            'image_url'      => null,
-        ];
+        try {
+            $user = auth()->user();
 
-        $recentBookings = [
-            ['client' => 'Sarah Johnson', 'date' => 'Jun 8, 2026', 'stylist' => 'Emma Wilson', 'status' => 'Confirmed'],
-            ['client' => 'Michael Chen',  'date' => 'Jun 7, 2026', 'stylist' => 'James Brown', 'status' => 'Completed'],
-            ['client' => 'Amanda Lee',    'date' => 'Jun 5, 2026', 'stylist' => 'Emma Wilson', 'status' => 'Completed'],
-        ];
+            if ($user->role !== 'owner') {
+                abort(403, 'Unauthorized access.');
+            }
 
-        return view('owner.services.show', ['service' => $serviceData, 'recentBookings' => $recentBookings]);
+            // ✅ Direct find without salon_id check
+            $service = Service::with('category')->find($service);
+
+            if (!$service) {
+                return redirect()->route('owner.services.index')
+                    ->with('error', 'Service not found.');
+            }
+
+            $bookingsCount = Appointment::where('service_id', $service->id)->count();
+
+            $totalRevenue = Appointment::where('service_id', $service->id)
+                ->whereHas('payment', function ($query) {
+                    $query->where('status', 'approved');
+                })
+                ->sum('total_amount');
+
+            $avgRating = \App\Models\Review::where('service_id', $service->id)
+                ->avg('rating') ?? 0;
+
+            $recentBookings = Appointment::where('service_id', $service->id)
+                ->with(['client', 'stylist'])
+                ->orderBy('appointment_date', 'desc')
+                ->orderBy('start_time', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(function ($appointment) {
+                    $statusMap = [
+                        'pending_payment' => 'Pending',
+                        'confirmed' => 'Confirmed',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                        'in_progress' => 'In Progress',
+                    ];
+
+                    return [
+                        'client' => $appointment->client->name ?? 'N/A',
+                        'date' => $appointment->appointment_date->format('M d, Y'),
+                        'stylist' => $appointment->stylist->name ?? 'N/A',
+                        'status' => $statusMap[$appointment->status] ?? ucfirst($appointment->status),
+                    ];
+                });
+
+            $serviceData = [
+                'id' => $service->id,
+                'name' => $service->name,
+                'category' => $service->category->name ?? 'Uncategorized',
+                'duration' => $service->duration,
+                'price' => $service->price,
+                'discount_price' => null,
+                'bookings' => $bookingsCount,
+                'revenue' => $totalRevenue,
+                'rating' => round($avgRating, 1),
+                'description' => $service->description ?? 'No description provided.',
+                'client_notes' => $service->client_notes ?? '',
+                'status' => $service->is_active ? 'Active' : 'Inactive',
+                'image_url' => $service->image ? asset('storage/' . $service->image) : null,
+            ];
+
+            return view('owner.services.show', [
+                'service' => $serviceData,
+                'recentBookings' => $recentBookings,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Service Show Error: ' . $e->getMessage());
+            return redirect()->route('owner.services.index')
+                ->with('error', 'Service not found.');
+        }
     }
 
-    /**
-     * Route: POST /owner/services/{service}/toggle-status  -->  name: owner.services.toggle-status
-     *
-     * Service ko Active/Inactive toggle karna.
-     *
-     * BAAD ME:
-     *   $service = Service::findOrFail($id);
-     *   $service->update(['status' => $service->status === 'Active' ? 'Inactive' : 'Active']);
-     */
+    public function edit($service)
+    {
+        try {
+            $user = auth()->user();
+
+            if ($user->role !== 'owner') {
+                abort(403, 'Unauthorized access.');
+            }
+
+            $salon = Salon::where('owner_id', $user->id)->first();
+
+            if (!$salon) {
+                return redirect()->route('owner.salons.create')
+                    ->with('error', 'Salon not found.');
+            }
+
+            $service = Service::where('salon_id', $salon->id)
+                ->find($service);
+
+            if (!$service) {
+                return redirect()->route('owner.services.index')
+                    ->with('error', 'Service not found.');
+            }
+
+            $categories = Category::where('salon_id', $salon->id)
+                ->orderBy('name')
+                ->get();
+
+            $serviceData = [
+                'id' => $service->id,
+                'name' => $service->name,
+                'category_id' => $service->category_id,
+                'category' => $service->category->name ?? '',
+                'duration' => $service->duration,
+                'price' => $service->price,
+                'discount_price' => null,
+                'description' => $service->description,
+                'client_notes' => $service->client_notes ?? '',
+                'status' => $service->is_active ? 'Active' : 'Inactive',
+                'image_url' => $service->image ? asset('storage/' . $service->image) : null,
+            ];
+
+            return view('owner.services.edit', [
+                'service' => $serviceData,
+                'categories' => $categories,
+                'salon' => $salon,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Service Edit Error: ' . $e->getMessage());
+            return redirect()->route('owner.services.index')
+                ->with('error', 'Service not found.');
+        }
+    }
+
+    public function update(Request $request, $service)
+    {
+        try {
+            $user = auth()->user();
+
+            if ($user->role !== 'owner') {
+                abort(403, 'Unauthorized access.');
+            }
+
+            $salon = Salon::where('owner_id', $user->id)->first();
+
+            if (!$salon) {
+                return redirect()->route('owner.salons.create')
+                    ->with('error', 'Salon not found.');
+            }
+
+            $service = Service::where('salon_id', $salon->id)->find($service);
+
+            if (!$service) {
+                return redirect()->route('owner.services.index')
+                    ->with('error', 'Service not found.');
+            }
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'category_id' => 'required|exists:categories,id',
+                'duration' => 'required|integer|min:1|max:480',
+                'price' => 'required|numeric|min:0|max:999999',
+                'description' => 'nullable|string|max:2000',
+                'client_notes' => 'nullable|string|max:500',
+                'status' => 'required|in:Active,Inactive',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            if ($request->hasFile('image')) {
+                if ($service->image && Storage::disk('public')->exists($service->image)) {
+                    Storage::disk('public')->delete($service->image);
+                }
+                $imagePath = $request->file('image')->store('service-images', 'public');
+            } else {
+                $imagePath = $service->image;
+            }
+
+            $service->update([
+                'category_id' => $request->category_id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price,
+                'duration' => $request->duration,
+                'image' => $imagePath,
+                'is_active' => $request->status === 'Active' ? true : false,
+            ]);
+
+            return redirect()->route('owner.services.index')
+                ->with('success', 'Service "' . $service->name . '" updated successfully!');
+
+        } catch (\Exception $e) {
+            \Log::error('Service Update Error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Unable to update service: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    public function destroy($service)
+    {
+        try {
+            $user = auth()->user();
+
+            if ($user->role !== 'owner') {
+                abort(403, 'Unauthorized access.');
+            }
+
+            $salon = Salon::where('owner_id', $user->id)->first();
+
+            if (!$salon) {
+                return redirect()->route('owner.salons.create')
+                    ->with('error', 'Salon not found.');
+            }
+
+            $service = Service::where('salon_id', $salon->id)->find($service);
+
+            if (!$service) {
+                return redirect()->route('owner.services.index')
+                    ->with('error', 'Service not found.');
+            }
+
+            $serviceName = $service->name;
+
+            $appointmentCount = Appointment::where('service_id', $service->id)->count();
+            if ($appointmentCount > 0) {
+                return redirect()->route('owner.services.index')
+                    ->with('error', 'Cannot delete "' . $serviceName . '" because it has ' . $appointmentCount . ' appointment(s).');
+            }
+
+            if ($service->image && Storage::disk('public')->exists($service->image)) {
+                Storage::disk('public')->delete($service->image);
+            }
+
+            $service->delete();
+
+            return redirect()->route('owner.services.index')
+                ->with('success', 'Service "' . $serviceName . '" deleted successfully!');
+
+        } catch (\Exception $e) {
+            \Log::error('Service Delete Error: ' . $e->getMessage());
+            return redirect()->route('owner.services.index')
+                ->with('error', 'Unable to delete service: ' . $e->getMessage());
+        }
+    }
+
     public function toggleStatus(Request $request, $service)
     {
-        return redirect()->route('owner.services.index')->with('success', 'Service status updated!');
-    }
+        try {
+            $user = auth()->user();
 
-    /*
-     * NOTE: Categories ke methods (categories, storeCategory, updateCategory,
-     * destroyCategory) yahan se hata diye gaye hain. Ab Categories ka apna
-     * alag controller hai: App\Http\Controllers\Owner\OwnerCategoryController.
-     * Apni routes/web.php mein bhi Categories ki routes ab is naye controller
-     * ko point karni hain (dekhen ADD_THESE_ROUTES_TO_web.php.txt - updated version).
-     */
+            if ($user->role !== 'owner') {
+                abort(403, 'Unauthorized access.');
+            }
+
+            $salon = Salon::where('owner_id', $user->id)->first();
+
+            if (!$salon) {
+                return redirect()->route('owner.salons.create')
+                    ->with('error', 'Salon not found.');
+            }
+
+            $service = Service::where('salon_id', $salon->id)->find($service);
+
+            if (!$service) {
+                return redirect()->route('owner.services.index')
+                    ->with('error', 'Service not found.');
+            }
+
+            $service->is_active = !$service->is_active;
+            $service->save();
+
+            $status = $service->is_active ? 'Active' : 'Inactive';
+
+            return redirect()->route('owner.services.index')
+                ->with('success', 'Service "' . $service->name . '" is now ' . $status);
+
+        } catch (\Exception $e) {
+            \Log::error('Service Toggle Error: ' . $e->getMessage());
+            return redirect()->route('owner.services.index')
+                ->with('error', 'Unable to toggle service status.');
+        }
+    }
 }

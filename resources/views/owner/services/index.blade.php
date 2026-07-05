@@ -1,11 +1,25 @@
-
 @extends('layouts.owner')
- 
+
 @section('title', 'Services')
- 
+
 @section('content')
- 
-   
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <h2>Services</h2>
@@ -15,60 +29,69 @@
             <i class="bi bi-plus-lg me-2"></i> Add Service
         </a>
     </div>
- 
-    <div class="row g-4 mb-4">
- 
-        <div class="col-md-4">
+
+    <!-- 4 STATS CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
             <div class="stat-card-sm">
                 <div class="stat-icon icon-gold"><i class="bi bi-scissors"></i></div>
                 <div>
                     <div class="stat-label-sm">Total Services</div>
-                    <div class="stat-value-sm">{{ $stats['total_services'] ?? 48 }}</div>
+                    <div class="stat-value-sm">{{ $stats['total_services'] ?? 0 }}</div>
                 </div>
             </div>
         </div>
- 
-        <div class="col-md-4">
+
+        <div class="col-md-3">
             <div class="stat-card-sm">
-                <div class="stat-icon icon-green"><i class="bi bi-currency-dollar"></i></div>
+                <div class="stat-icon icon-green"><i class="bi bi-check-circle-fill"></i></div>
                 <div>
-                    <div class="stat-label-sm">Avg. Price</div>
-                    <div class="stat-value-sm">${{ $stats['avg_price'] ?? 124 }}</div>
+                    <div class="stat-label-sm">Active Services</div>
+                    <div class="stat-value-sm">{{ $stats['active_services'] ?? 0 }}</div>
                 </div>
             </div>
         </div>
- 
-        <div class="col-md-4">
+
+        <div class="col-md-3">
+            <div class="stat-card-sm">
+                <div class="stat-icon icon-red"><i class="bi bi-x-circle-fill"></i></div>
+                <div>
+                    <div class="stat-label-sm">Inactive Services</div>
+                    <div class="stat-value-sm">{{ $stats['inactive_services'] ?? 0 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
             <div class="stat-card-sm">
                 <div class="stat-icon icon-blue"><i class="bi bi-clock-fill"></i></div>
                 <div>
                     <div class="stat-label-sm">Avg. Duration</div>
-                    <div class="stat-value-sm">{{ $stats['avg_duration'] ?? 78 }} min</div>
+                    <div class="stat-value-sm">{{ $stats['avg_duration'] ?? 0 }} min</div>
                 </div>
             </div>
         </div>
- 
     </div>
- 
-   
+
+    <!-- SEARCH & FILTERS -->
     <div class="panel-card panel-card-auto mb-4">
-        <div class="row g-3 align-items-center">
-            <div class="col-md-9">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-8">
                 <div class="search-input-wrap">
-                    <i class="bi bi-search"></i>
+                    <i class="bi bi-search search-icon"></i>
                     <input type="text" id="serviceSearchInput" class="form-control input-custom search-input"
                            placeholder="Search services...">
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <button type="button" class="btn btn-filters w-100" data-bs-toggle="modal" data-bs-target="#filtersModal">
                     <i class="bi bi-funnel-fill me-2"></i> Filters
                 </button>
             </div>
         </div>
     </div>
- 
-   
+
+    <!-- SERVICES TABLE -->
     <div class="panel-card panel-card-auto">
         <div class="table-responsive">
             <table class="table-custom" id="servicesTable">
@@ -84,124 +107,66 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        $services = $services ?? [
-                            ['id' => 1, 'name' => 'Premium Haircut',   'category' => 'Hair Styling', 'duration' => 45,  'price' => 85,  'bookings' => 145, 'status' => 'Active'],
-                            ['id' => 2, 'name' => 'Hair Coloring',     'category' => 'Hair Styling', 'duration' => 90,  'price' => 120, 'bookings' => 98,  'status' => 'Active'],
-                            ['id' => 3, 'name' => 'Luxury Manicure',   'category' => 'Nail Care',    'duration' => 60,  'price' => 65,  'bookings' => 132, 'status' => 'Active'],
-                            ['id' => 4, 'name' => 'Luxury Pedicure',   'category' => 'Nail Care',    'duration' => 75,  'price' => 80,  'bookings' => 118, 'status' => 'Active'],
-                            ['id' => 5, 'name' => 'Gold Facial',       'category' => 'Facial',       'duration' => 90,  'price' => 150, 'bookings' => 76,  'status' => 'Active'],
-                            ['id' => 6, 'name' => 'Full Body Massage', 'category' => 'Spa',          'duration' => 90,  'price' => 180, 'bookings' => 54,  'status' => 'Active'],
-                            ['id' => 7, 'name' => 'Bridal Makeup',     'category' => 'Makeup',       'duration' => 180, 'price' => 350, 'bookings' => 24,  'status' => 'Active'],
-                            ['id' => 8, 'name' => 'Beard Trim',        'category' => 'Hair Styling', 'duration' => 30,  'price' => 45,  'bookings' => 89,  'status' => 'Active'],
-                        ];
-                    @endphp
- 
-                    @foreach ($services as $service)
+                    @forelse($services as $service)
                         <tr class="service-row"
-                            data-name="{{ strtolower($service['name']) }}"
-                            data-category="{{ strtolower($service['category']) }}">
-                            <td class="cell-name">{{ $service['name'] }}</td>
-                            <td>{{ $service['category'] }}</td>
-                            <td>{{ $service['duration'] }} min</td>
-                            <td class="amount-gold">${{ $service['price'] }}</td>
-                            <td>{{ $service['bookings'] }}</td>
+                            data-name="{{ strtolower($service->name) }}"
+                            data-category="{{ strtolower($service->category->name ?? '') }}"
+                            data-status="{{ strtolower($service->is_active ? 'active' : 'inactive') }}">
+                            <td class="cell-name">{{ $service->name }}</td>
+                            <td>{{ $service->category->name ?? 'Uncategorized' }}</td>
+                            <td>{{ $service->duration }} min</td>
+                            <td class="amount-gold">PKR {{ number_format($service->price) }}</td>
+                            <td>{{ $service->bookings ?? 0 }}</td>
                             <td>
-                                <span class="badge-status {{ $service['status'] === 'Active' ? 'badge-confirmed' : 'badge-cancelled' }}">
-                                    {{ $service['status'] }}
+                                <span class="badge-status {{ $service->is_active ? 'badge-confirmed' : 'badge-cancelled' }}">
+                                    {{ $service->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>
                             <td>
                                 <div class="action-icons">
-                                    <a href="{{ route('owner.services.show', ['service' => $service['id']]) }}"
+                                    <a href="{{ route('owner.services.show', $service->id) }}"
                                        class="action-btn view-btn">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <button type="button" class="action-btn edit-btn"
-                                            data-bs-toggle="modal" data-bs-target="#editServiceModal"
-                                            data-id="{{ $service['id'] }}"
-                                            data-name="{{ $service['name'] }}"
-                                            data-category="{{ $service['category'] }}"
-                                            data-duration="{{ $service['duration'] }}"
-                                            data-price="{{ $service['price'] }}">
+                                    <a href="{{ route('owner.services.edit', $service->id) }}"
+                                       class="action-btn edit-btn">
                                         <i class="bi bi-pencil-square"></i>
-                                    </button>
+                                    </a>
                                     <button type="button" class="action-btn delete-btn"
                                             data-bs-toggle="modal" data-bs-target="#deleteServiceModal"
-                                            data-id="{{ $service['id'] }}"
-                                            data-name="{{ $service['name'] }}">
+                                            data-id="{{ $service->id }}"
+                                            data-name="{{ $service->name }}">
                                         <i class="bi bi-trash3"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <i class="bi bi-emoji-frown" style="font-size:36px; color:#F08FB4;"></i>
+                                <p class="mt-2 mb-0" style="color:#6B4F62;">No services found. Create your first service!</p>
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
- 
+
             <div id="noServicesFound" class="text-center py-5" style="display:none;">
                 <i class="bi bi-emoji-frown" style="font-size:36px; color:#F08FB4;"></i>
                 <p class="mt-2 mb-0" style="color:#6B4F62;">No services found matching your search.</p>
             </div>
         </div>
     </div>
- 
+
 @endsection
- 
 
 @push('modals')
- 
-    
-    <div class="modal fade" id="editServiceModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content modal-content-custom">
-                <form action="{{ route('owner.services.update', ['service' => 0]) }}" method="POST" id="editServiceForm">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-header modal-header-custom">
-                        <h5 class="modal-title">Edit Service</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label-custom">Service Name</label>
-                            <input type="text" name="name" id="editServiceName" class="form-control input-custom" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label-custom">Category</label>
-                            <select name="category" id="editServiceCategory" class="form-select input-custom" required>
-                                <option>Hair Styling</option>
-                                <option>Nail Care</option>
-                                <option>Facial</option>
-                                <option>Spa</option>
-                                <option>Makeup</option>
-                            </select>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <label class="form-label-custom">Duration (min)</label>
-                                <input type="number" name="duration" id="editServiceDuration" class="form-control input-custom" required>
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label-custom">Price ($)</label>
-                                <input type="number" name="price" id="editServicePrice" class="form-control input-custom" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer modal-footer-custom">
-                        <button type="button" class="btn btn-cancel-modal" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-save-changes">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
- 
-  
+    <!-- DELETE MODAL -->
     <div class="modal fade" id="deleteServiceModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content modal-content-custom">
-                <form action="{{ route('owner.services.destroy', ['service' => 0]) }}" method="POST" id="deleteServiceForm">
+                <form action="" method="POST" id="deleteServiceForm">
                     @csrf
                     @method('DELETE')
                     <div class="modal-body text-center py-4">
@@ -219,8 +184,8 @@
             </div>
         </div>
     </div>
- 
-  
+
+    <!-- FILTERS MODAL -->
     <div class="modal fade" id="filtersModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content modal-content-custom">
@@ -233,11 +198,14 @@
                         <label class="form-label-custom">Category</label>
                         <select id="filterCategory" class="form-select input-custom">
                             <option value="">All Categories</option>
-                            <option value="hair styling">Hair Styling</option>
-                            <option value="nail care">Nail Care</option>
-                            <option value="facial">Facial</option>
-                            <option value="spa">Spa</option>
-                            <option value="makeup">Makeup</option>
+                            @php
+                                $uniqueCategories = $services->pluck('category.name')->unique()->filter();
+                            @endphp
+                            @foreach($uniqueCategories as $cat)
+                                @if($cat)
+                                    <option value="{{ strtolower($cat) }}">{{ $cat }}</option>
+                                @endif
+                            @endforeach
                         </select>
                     </div>
                     <div class="mb-3">
@@ -256,140 +224,390 @@
             </div>
         </div>
     </div>
- 
 @endpush
- 
+
 @section('extra-css')
 <style>
     .btn-add-service {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; font-size: 14.5px;
-        padding: 11px 22px; border-radius: 10px; border: none;
-        box-shadow: 0 4px 14px rgba(217, 164, 65, 0.35); transition: all 0.18s ease;
-        display: inline-flex; align-items: center; white-space: nowrap;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        transition: all 0.18s ease;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
     }
-    .btn-add-service:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(217, 164, 65, 0.5); color: var(--plum-900); }
- 
-  
-    .panel-card-auto { height: auto; }
- 
+    .btn-add-service:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
+
     .stat-card-sm {
-        background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--blush-200);
-        box-shadow: var(--shadow-card); padding: 18px 20px; display: flex; align-items: center; gap: 16px; height: 100%;
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--blush-200);
+        box-shadow: var(--shadow-card);
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 80px;
+        transition: all 0.3s ease;
     }
-    .stat-card-sm .stat-icon { width: 50px; height: 50px; border-radius: 14px; font-size: 20px; flex-shrink: 0; }
-    .stat-label-sm { font-size: 13.5px; color: var(--ink-700); margin-bottom: 2px; }
-    .stat-value-sm { font-size: 22px; font-weight: 700; color: var(--plum-900); }
- 
-    .search-input-wrap { position: relative; }
-    .search-input-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ink-500); }
-    .search-input { padding-left: 40px !important; }
- 
+    .stat-card-sm:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-card-hover);
+    }
+    .stat-card-sm .stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        font-size: 18px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+    }
+    .stat-label-sm {
+        font-size: 12px;
+        color: var(--ink-700);
+        margin-bottom: 1px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .stat-value-sm {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--plum-900);
+    }
+
+    .icon-gold { background: linear-gradient(135deg, #D9A441, #C4903A); }
+    .icon-green { background: linear-gradient(135deg, #2EAE7D, #1E8E64); }
+    .icon-red { background: linear-gradient(135deg, #E14D6A, #C0392B); }
+    .icon-blue { background: linear-gradient(135deg, #4A7FE0, #3568C4); }
+
+    .search-input-wrap {
+        position: relative;
+        width: 100%;
+    }
+    .search-input-wrap .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--ink-500);
+        font-size: 16px;
+        z-index: 2;
+    }
+    .search-input {
+        padding-left: 44px !important;
+        height: 46px;
+        font-size: 14px;
+        width: 100%;
+    }
+
     .btn-filters {
-        background: var(--white); border: 1px solid var(--rose-300) !important; color: var(--rose-600) !important;
-        font-weight: 600; font-size: 14.5px; padding: 11px 20px; border-radius: var(--radius-sm);
-        display: inline-flex; align-items: center; justify-content: center; transition: all 0.18s ease;
+        background: var(--white);
+        border: 1.5px solid var(--rose-300) !important;
+        color: var(--rose-600) !important;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 10px 16px;
+        border-radius: var(--radius-sm);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.18s ease;
+        height: 46px;
     }
-    .btn-filters:hover { background: var(--blush-50); }
- 
-    .action-icons { display: flex; gap: 8px; }
+    .btn-filters:hover {
+        background: var(--blush-50);
+        border-color: var(--rose-400) !important;
+    }
+
+    .panel-card-auto {
+        height: auto !important;
+        padding: 1.2rem 1.5rem !important;
+    }
+    .panel-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.2rem 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(0,0,0,0.04);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .table-custom {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-custom thead th {
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink-500);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        padding: 0 10px 12px;
+        border-bottom: 1px solid var(--blush-200);
+    }
+    .table-custom tbody td {
+        padding: 12px 10px;
+        font-size: 14px;
+        color: var(--ink-900);
+        border-bottom: 1px solid var(--blush-100);
+    }
+    .table-custom tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .table-custom tbody tr:hover {
+        background: var(--blush-50);
+    }
+    .cell-name {
+        font-weight: 600;
+        color: var(--plum-800);
+    }
+    .amount-gold {
+        color: #E85588;
+        font-weight: 700;
+    }
+
+    .badge-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-confirmed { background: #E8F5E9; color: #2EAE7D; }
+    .badge-cancelled { background: #FCE4EC; color: #E14D6A; }
+
+    .action-icons { display: flex; gap: 6px; }
     .action-btn {
-        width: 34px; height: 34px; border-radius: 8px; border: none; display: inline-flex;
-        align-items: center; justify-content: center; font-size: 15px; cursor: pointer; transition: all 0.15s ease;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.15s ease;
     }
-    .edit-btn { background: var(--blue-50); color: var(--blue-500); }
-    .edit-btn:hover { background: var(--blue-500); color: #fff; }
-    .view-btn { background: var(--purple-50); color: var(--purple-500); }
-    .view-btn:hover { background: var(--purple-500); color: #fff; }
-    .delete-btn { background: var(--red-50); color: var(--red-500); }
-    .delete-btn:hover { background: var(--red-500); color: #fff; }
- 
-    .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink-700); margin-bottom: 6px; }
+    .edit-btn { background: #E9F0FD; color: #4A7FE0; }
+    .edit-btn:hover { background: #4A7FE0; color: #fff; }
+    .view-btn { background: #F1E9FB; color: #9B6FD1; }
+    .view-btn:hover { background: #9B6FD1; color: #fff; }
+    .delete-btn { background: #FCE9ED; color: #E14D6A; }
+    .delete-btn:hover { background: #E14D6A; color: #fff; }
+
+    .form-label-custom {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink-700);
+        margin-bottom: 5px;
+    }
     .input-custom {
-        background: var(--blush-50) !important; border: 1px solid var(--blush-200) !important;
-        border-radius: var(--radius-sm) !important; color: var(--ink-900) !important;
-        font-size: 14.5px; padding: 11px 14px !important;
+        background: var(--blush-50) !important;
+        border: 1.5px solid var(--blush-200) !important;
+        border-radius: var(--radius-sm) !important;
+        color: var(--ink-900) !important;
+        font-size: 14px;
+        padding: 10px 14px !important;
+        transition: all 0.25s ease;
+        width: 100%;
     }
-    .input-custom:focus { background: #fff !important; border-color: var(--rose-400) !important; box-shadow: 0 0 0 3px rgba(240, 143, 180, 0.2) !important; outline: none; }
- 
-    .modal-content-custom { border-radius: var(--radius-lg); border: none; overflow: hidden; }
-    .modal-header-custom { background: var(--blush-50); border-bottom: 1px solid var(--blush-200); padding: 18px 24px; }
-    .modal-header-custom .modal-title { font-weight: 700; color: var(--plum-800); }
-    .modal-body { padding: 22px 24px; }
-    .modal-footer-custom { border-top: 1px solid var(--blush-100); padding: 16px 24px; }
- 
+    .input-custom:focus {
+        background: #fff !important;
+        border-color: #FF6B9D !important;
+        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.15) !important;
+        outline: none;
+    }
+
+    .modal-content-custom {
+        border-radius: var(--radius-lg);
+        border: none;
+        overflow: hidden;
+    }
+    .modal-header-custom {
+        background: var(--blush-50);
+        border-bottom: 1px solid var(--blush-200);
+        padding: 16px 24px;
+    }
+    .modal-header-custom .modal-title {
+        font-weight: 700;
+        color: var(--plum-800);
+    }
+    .modal-body { padding: 20px 24px; }
+    .modal-footer-custom {
+        border-top: 1px solid var(--blush-100);
+        padding: 14px 24px;
+        gap: 10px;
+    }
+
     .btn-cancel-modal {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--ink-700);
-        font-weight: 600; padding: 9px 20px; border-radius: 10px;
+        background: var(--white);
+        border: 1px solid var(--blush-200);
+        color: var(--ink-700);
+        font-weight: 600;
+        padding: 8px 18px;
+        border-radius: 10px;
+        transition: all 0.18s ease;
     }
-    .btn-cancel-modal:hover { background: var(--blush-50); }
- 
+    .btn-cancel-modal:hover {
+        background: var(--blush-50);
+        color: var(--ink-900);
+    }
+
     .btn-save-changes {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; padding: 9px 22px; border-radius: 10px; border: none;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 8px 20px;
+        border-radius: 10px;
+        border: none;
+        transition: all 0.18s ease;
     }
-    .btn-save-changes:hover { color: var(--plum-900); }
- 
+    .btn-save-changes:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(232, 85, 136, 0.4);
+        color: #ffffff !important;
+    }
+
     .btn-delete-confirm {
-        background: linear-gradient(135deg, #F0708C, var(--red-500));
-        color: #fff; font-weight: 700; padding: 9px 24px; border-radius: 10px; border: none;
+        background: linear-gradient(135deg, #F0708C, #E14D6A);
+        color: #fff;
+        font-weight: 700;
+        padding: 8px 22px;
+        border-radius: 10px;
+        border: none;
+        transition: all 0.18s ease;
     }
-    .btn-delete-confirm:hover { color: #fff; box-shadow: 0 4px 14px rgba(225, 77, 106, 0.4); }
+    .btn-delete-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(225, 77, 106, 0.4);
+        color: #fff;
+    }
+
+    .alert {
+        border-radius: 12px;
+        border: none;
+        padding: 0.8rem 1.2rem;
+    }
+    .alert-success {
+        background: #E8F5E9;
+        color: #1B5E20;
+    }
+    .alert-danger {
+        background: #FCE4EC;
+        color: #880E4F;
+    }
+
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d1f2c;
+        margin-bottom: 0.25rem;
+    }
+    .page-header p {
+        color: #8a7a88;
+        margin-bottom: 0;
+    }
 </style>
 @endsection
- 
+
 @section('extra-js')
 <script>
-   
-    const searchInput = document.getElementById('serviceSearchInput');
-    const rows = document.querySelectorAll('.service-row');
-    const noResults = document.getElementById('noServicesFound');
- 
-    function applySearchAndFilters() {
-        const term = (searchInput.value || '').toLowerCase().trim();
-        const categoryFilter = document.getElementById('filterCategory')?.value || '';
-        let visibleCount = 0;
- 
-        rows.forEach(row => {
-            const matchesSearch = row.dataset.name.includes(term);
-            const matchesCategory = !categoryFilter || row.dataset.category === categoryFilter;
-            const show = matchesSearch && matchesCategory;
-            row.style.display = show ? '' : 'none';
-            if (show) visibleCount++;
+    document.addEventListener('DOMContentLoaded', function() {
+        // SEARCH
+        const searchInput = document.getElementById('serviceSearchInput');
+        const rows = document.querySelectorAll('.service-row');
+        const noResults = document.getElementById('noServicesFound');
+
+        function applySearchAndFilters() {
+            const term = (searchInput.value || '').toLowerCase().trim();
+            const categoryFilter = document.getElementById('filterCategory')?.value || '';
+            const statusFilter = document.getElementById('filterStatus')?.value || '';
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const matchesSearch = row.dataset.name.includes(term);
+                const matchesCategory = !categoryFilter || row.dataset.category === categoryFilter;
+                const matchesStatus = !statusFilter || row.dataset.status === statusFilter;
+                const show = matchesSearch && matchesCategory && matchesStatus;
+                row.style.display = show ? '' : 'none';
+                if (show) visibleCount++;
+            });
+
+            if (noResults) {
+                noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applySearchAndFilters);
+        }
+
+        // FILTERS
+        const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+        const filterCategory = document.getElementById('filterCategory');
+        const filterStatus = document.getElementById('filterStatus');
+
+        if (applyFiltersBtn) {
+            applyFiltersBtn.addEventListener('click', applySearchAndFilters);
+        }
+
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', function() {
+                if (filterCategory) filterCategory.value = '';
+                if (filterStatus) filterStatus.value = '';
+                applySearchAndFilters();
+            });
+        }
+
+        // DELETE MODAL
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const serviceId = this.dataset.id;
+                const serviceName = this.dataset.name;
+                
+                const nameSpan = document.getElementById('deleteServiceName');
+                if (nameSpan) {
+                    nameSpan.textContent = serviceName;
+                }
+                
+                const form = document.getElementById('deleteServiceForm');
+                if (form) {
+                    const baseUrl = "{{ route('owner.services.destroy', ['service' => 0]) }}";
+                    form.action = baseUrl.replace('/0', '/' + serviceId);
+                }
+            });
         });
- 
-        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
-    }
- 
-    searchInput.addEventListener('input', applySearchAndFilters);
- 
-    document.getElementById('applyFiltersBtn').addEventListener('click', applySearchAndFilters);
-    document.getElementById('clearFiltersBtn').addEventListener('click', function () {
-        document.getElementById('filterCategory').value = '';
-        document.getElementById('filterStatus').value = '';
-        applySearchAndFilters();
-    });
- 
-   
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.getElementById('editServiceName').value = this.dataset.name;
-            document.getElementById('editServiceCategory').value = this.dataset.category;
-            document.getElementById('editServiceDuration').value = this.dataset.duration;
-            document.getElementById('editServicePrice').value = this.dataset.price;
- 
-            const form = document.getElementById('editServiceForm');
-            form.action = form.action.replace(/\/\d+$/, '/' + this.dataset.id).replace(/services\/0/, 'services/' + this.dataset.id);
-        });
-    });
- 
-    
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.getElementById('deleteServiceName').textContent = this.dataset.name;
- 
-            const form = document.getElementById('deleteServiceForm');
-            form.action = form.action.replace(/\/\d+$/, '/' + this.dataset.id).replace(/services\/0/, 'services/' + this.dataset.id);
+
+        // AUTO-DISMISS ALERTS
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.classList.remove('show');
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 300);
+            }, 5000);
         });
     });
 </script>

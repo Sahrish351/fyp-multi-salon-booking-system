@@ -20,10 +20,25 @@ class Service extends Model
         'is_package' => 'boolean',
     ];
 
-    public function salon() { return $this->belongsTo(Salon::class); }
-    public function category() { return $this->belongsTo(Category::class); }
-    public function appointments() { return $this->hasMany(Appointment::class); }
-    public function waitlists() { return $this->hasMany(Waitlist::class); }
+    public function salon() 
+    { 
+        return $this->belongsTo(Salon::class); 
+    }
+    
+    public function category() 
+    { 
+        return $this->belongsTo(Category::class); 
+    }
+    
+    public function appointments() 
+    { 
+        return $this->hasMany(Appointment::class); 
+    }
+    
+    public function waitlists() 
+    { 
+        return $this->hasMany(Waitlist::class); 
+    }
 
     public function getDurationTextAttribute(): string
     {
@@ -32,5 +47,14 @@ class Service extends Model
         if ($hours > 0 && $minutes > 0) return "{$hours}h {$minutes}min";
         if ($hours > 0) return "{$hours}h";
         return "{$minutes}min";
+    }
+
+    
+    public function getImageUrlAttribute(): string
+    {
+        if ($this->image) {
+            return asset('storage/' . $this->image);
+        }
+        return asset('images/default-service.jpg');
     }
 }

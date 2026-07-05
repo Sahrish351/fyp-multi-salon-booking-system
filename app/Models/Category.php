@@ -3,15 +3,42 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    protected $fillable = ['name', 'slug', 'icon', 'image', 'description', 'is_active', 'sort_order'];
+    use SoftDeletes;
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $fillable = [
+        'salon_id',      // ✅ Add this
+        'name', 
+        'slug', 
+        'icon', 
+        'image', 
+        'description', 
+        'is_active', 
+        'sort_order'
+    ];
 
-    public function services() { return $this->hasMany(Service::class); }
-    public function galleries() { return $this->hasMany(Gallery::class); }
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    // ✅ Add this relationship
+    public function salon()
+    {
+        return $this->belongsTo(Salon::class);
+    }
+
+    public function services()
+    {
+        return $this->hasMany(Service::class);
+    }
+
+    public function galleries()
+    {
+        return $this->hasMany(Gallery::class);
+    }
 
     public function getImageUrlAttribute(): string
     {

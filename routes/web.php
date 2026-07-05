@@ -346,11 +346,11 @@ Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show']
         // Salons
         Route::resource('salons', OwnerSalonController::class);
 
-        // Services
-        Route::resource('services', OwnerServiceController::class);
-        Route::post('/services/{service}/toggle-status', [OwnerServiceController::class, 'toggleStatus'])->name('services.toggle-status');
+       //  SERVICES ROUTES PEHLE
+Route::resource('services', OwnerServiceController::class);
+Route::post('/services/{service}/toggle-status', [OwnerServiceController::class, 'toggleStatus'])->name('services.toggle-status');
 
-       
+//  CATEGORIES ROUTES BAAD MEIN
 Route::get('/categories', [OwnerCategoryController::class, 'index'])->name('categories.index');
 Route::get('/categories/create', [OwnerCategoryController::class, 'create'])->name('categories.create');
 Route::post('/categories', [OwnerCategoryController::class, 'store'])->name('categories.store');
@@ -358,7 +358,6 @@ Route::get('/categories/{category}', [OwnerCategoryController::class, 'show'])->
 Route::get('/categories/{category}/edit', [OwnerCategoryController::class, 'edit'])->name('categories.edit');
 Route::put('/categories/{category}', [OwnerCategoryController::class, 'update'])->name('categories.update');
 Route::delete('/categories/{category}', [OwnerCategoryController::class, 'destroy'])->name('categories.destroy');
-
 
         // Stylists
         Route::resource('stylists', OwnerStylistController::class);
@@ -378,14 +377,19 @@ Route::delete('/categories/{category}', [OwnerCategoryController::class, 'destro
         Route::post('/time-slots/{timeSlot}/toggle',    [OwnerTimeSlotController::class, 'toggleStatus'])->name('time-slots.toggle');
 
         // Appointments
-        Route::get('/appointments/export',             [OwnerAppointmentController::class, 'export'])->name('appointments.export');
-        Route::resource('appointments', OwnerAppointmentController::class);
-        Route::post('/appointments/{id}/approve',      [OwnerAppointmentController::class, 'approve'])->name('appointments.approve');
-        Route::post('/appointments/{id}/confirm',      [OwnerAppointmentController::class, 'approve'])->name('appointments.confirm');
-        Route::post('/appointments/{id}/complete',     [OwnerAppointmentController::class, 'complete'])->name('appointments.complete');
-        Route::post('/appointments/{id}/cancel',       [OwnerAppointmentController::class, 'cancel'])->name('appointments.cancel');
-        Route::get('/appointments/{id}/invoice',       [OwnerAppointmentController::class, 'invoice'])->name('appointments.invoice');
+Route::get('/appointments/export',             [OwnerAppointmentController::class, 'export'])->name('appointments.export');
+Route::resource('appointments', OwnerAppointmentController::class);
 
+// ✅ Appointment Actions
+Route::post('/appointments/{id}/approve',      [OwnerAppointmentController::class, 'approve'])->name('appointments.approve');
+Route::post('/appointments/{id}/confirm',      [OwnerAppointmentController::class, 'approve'])->name('appointments.confirm');
+Route::post('/appointments/{id}/complete',     [OwnerAppointmentController::class, 'complete'])->name('appointments.complete');
+Route::post('/appointments/{id}/cancel',       [OwnerAppointmentController::class, 'cancel'])->name('appointments.cancel');
+Route::get('/appointments/{id}/invoice',       [OwnerAppointmentController::class, 'invoice'])->name('appointments.invoice');
+
+// ✅ PAYMENT VERIFICATION ROUTES - YEH 2 ADD KAREIN
+Route::post('/appointments/{id}/verify-payment', [OwnerAppointmentController::class, 'verifyPayment'])->name('appointments.verify-payment');
+Route::post('/appointments/{id}/reject-payment', [OwnerAppointmentController::class, 'rejectPayment'])->name('appointments.reject-payment');
         // Payments
         Route::get('/payments/export',                 [OwnerPaymentController::class, 'export'])->name('payments.export');
         Route::resource('payments', OwnerPaymentController::class);

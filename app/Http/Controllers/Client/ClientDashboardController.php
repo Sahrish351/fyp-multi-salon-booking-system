@@ -62,9 +62,13 @@ class ClientDashboardController extends Controller
 
         $paymentsCount = Appointment::where('client_id', $clientId)->whereHas('payment')->count();
 
-        $alertsCount = method_exists($client, 'unreadNotifications')
-            ? $client->unreadNotifications()->count()
-            : 0;
+        // ✅ FIXED: Notification table nahi hai toh 0 set karein
+        $alertsCount = 0;
+
+        // ✅ Agar future mein notifications table aaye toh yeh use karein:
+        // $alertsCount = method_exists($client, 'unreadNotifications')
+        //     ? $client->unreadNotifications()->count()
+        //     : 0;
 
         $stats = [
             'total_bookings'  => $totalBookings,
@@ -95,12 +99,6 @@ class ClientDashboardController extends Controller
         $ringCircumference = 251.2;
         $ringDashoffset = $ringCircumference - ($ringCircumference * $completionPercent / 100);
 
-        // ===================================================================
-        // Donut chart data — Weekly / Monthly / Yearly.
-        // Now includes RAW COUNTS (not just %) so the front-end can show a
-        // proper "12 of 40 bookings (30%)" tooltip on hover, instead of only
-        // a bare percentage.
-        // ===================================================================
         $now = Carbon::now();
 
         $donutRanges = [
