@@ -24,10 +24,9 @@ use App\Http\Controllers\Admin\SalonRequestController;
 use App\Http\Controllers\Admin\SalonManagementController;
 use App\Http\Controllers\Admin\OwnerManagementController;
 use App\Http\Controllers\Admin\ClientManagementController;
-use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AppointmentMonitorController;
 use App\Http\Controllers\Admin\PaymentMonitorController;
-use App\Http\Controllers\Admin\ReviewManagementController;
+// use App\Http\Controllers\Admin\ReviewManagementController;
 use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ReportController;
@@ -252,9 +251,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/clients/{user}/toggle',         [ClientManagementController::class, 'toggleStatus'])->name('clients.toggle');
  
         // Categories
-        Route::resource('categories', CategoryController::class);
-        Route::put('admin/categories/{category}', [CategoryController::class, 'update'])
-        ->name('admin.categories.update');
+        // Route::resource('categories', CategoryController::class);
+        // Route::put('admin/categories/{category}', [CategoryController::class, 'update'])
+        // ->name('admin.categories.update');
  
         // Appointments
         Route::get('/appointments/export',         [AppointmentMonitorController::class, 'export'])->name('appointments.export');
@@ -268,10 +267,10 @@ Route::post('/payments/{id}/approve', [PaymentMonitorController::class, 'approve
 Route::post('/payments/{id}/reject',  [PaymentMonitorController::class, 'reject'])->name('payments.reject');
  
         // Reviews
-        Route::get('/reviews',                          [ReviewManagementController::class, 'index'])->name('reviews.index');
-        Route::post('/reviews/{review}/toggle-approval',[ReviewManagementController::class, 'toggleApproval'])->name('reviews.toggle-approval');
-        Route::post('/reviews/{review}/toggle',         [ReviewManagementController::class, 'toggleApproval'])->name('reviews.toggle');
-        Route::delete('/reviews/{review}',              [ReviewManagementController::class, 'destroy'])->name('reviews.destroy');
+        // Route::get('/reviews',                          [ReviewManagementController::class, 'index'])->name('reviews.index');
+        // Route::post('/reviews/{review}/toggle-approval',[ReviewManagementController::class, 'toggleApproval'])->name('reviews.toggle-approval');
+        // Route::post('/reviews/{review}/toggle',         [ReviewManagementController::class, 'toggleApproval'])->name('reviews.toggle');
+        // Route::delete('/reviews/{review}',              [ReviewManagementController::class, 'destroy'])->name('reviews.destroy');
  
 
 // COMPLAINT ROUTES
@@ -476,8 +475,18 @@ Route::post('/waitlist/{id}/notify',   [OwnerWaitlistController::class, 'notify'
         Route::post('/favorites/{salon}/toggle',     [FavoriteSalonController::class, 'toggle'])->name('favorites.toggle');
  
         // Reviews
-        Route::post('/reviews/{appointment}', [ReviewSubmitController::class, 'store'])->name('reviews.store');
- 
+Route::get('/reviews', [ReviewSubmitController::class, 'index'])->name('reviews.index');
+
+    // Create form – 'create' literal segment hone ki wajah se {review} wale route se conflict nahi karega
+    Route::get('/reviews/create/{appointment}', [ReviewSubmitController::class, 'create'])->name('reviews.create');
+
+    // Store – POST
+    Route::post('/reviews/{appointment}', [ReviewSubmitController::class, 'store'])->name('reviews.store');
+
+    // Show – single review
+    Route::get('/reviews/{review}', [ReviewSubmitController::class, 'show'])->name('reviews.show');
+
+
         // Complaints
         Route::get('/complaints',                      [ComplaintSubmitController::class, 'index'])->name('complaints.index');
         Route::get('/complaints/create/{appointment}', [ComplaintSubmitController::class, 'create'])->name('complaints.create');

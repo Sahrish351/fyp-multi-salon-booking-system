@@ -153,7 +153,12 @@
                             </button>
                         </div>
                     </div>
-                    
+
+                    <!-- My Waitlist -->
+                    <a href="{{ route('client.waitlist.index') }}" class="btn btn-sm position-relative d-flex align-items-center justify-content-center" style="background: rgba(233,30,140,0.1); border-radius: 50%; width: 38px; height: 38px;" title="My Waitlist">
+                        <i class="fas fa-hourglass-half" style="color: var(--client-pink);"></i>
+                    </a>
+
                     <!-- Notifications -->
                     <div class="dropdown">
                         <button class="btn btn-sm position-relative" style="background: rgba(233,30,140,0.1); border-radius: 50%; width: 38px; height: 38px;" data-bs-toggle="dropdown">
@@ -167,10 +172,11 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
                             <li><h6 class="dropdown-header">Notifications</h6></li>
-                            @forelse([] as $notif)  <!-- Empty array — no notifications -->
+                            @php $notifications = []; @endphp
+                            @forelse($notifications as $notif)
                                 <li>
                                     <a class="dropdown-item" href="#" style="white-space: normal;">
-                                        <small class="text-muted">{{ $notif->created_at->diffForHumans() }}</small><br>
+                                        <small class="text-muted">{{ $notif->created_at->diffForHumans() ?? now()->diffForHumans() }}</small><br>
                                         <strong>{{ $notif->data['title'] ?? 'New Notification' }}</strong><br>
                                         <span class="small">{{ $notif->data['message'] ?? 'You have a new notification' }}</span>
                                     </a>
@@ -206,18 +212,22 @@
                             </div>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ url('/client/profile') }}">
-    <i class="fas fa-user-circle me-2"></i>My Profile
-</a></li>
-<li><a class="dropdown-item" href="{{ url('/client/appointments') }}">
-    <i class="fas fa-calendar-alt me-2"></i>My Appointments
-</a></li>
-<li><a class="dropdown-item" href="{{ url('/client/favorites') }}">
-    <i class="fas fa-heart me-2"></i>Favorites
-</a></li>
-<li><a class="dropdown-item" href="{{ url('/client/settings') }}">
-    <i class="fas fa-cog me-2"></i>Settings
-</a></li>
+                            {{-- ✅ FIXED: Hardcoded URLs (saare kaam kar rahe hain) --}}
+                            <li><a class="dropdown-item" href="/client/profile">
+                                <i class="fas fa-user-circle me-2"></i>My Profile
+                            </a></li>
+                            <li><a class="dropdown-item" href="/client/appointments">
+                                <i class="fas fa-calendar-alt me-2"></i>My Appointments
+                            </a></li>
+                            <li><a class="dropdown-item" href="/client/reviews">
+                                <i class="fas fa-star me-2" style="color:#f59e0b;"></i>My Reviews
+                            </a></li>
+                            <li><a class="dropdown-item" href="/client/favorites">
+                                <i class="fas fa-heart me-2" style="color:#E91E8C;"></i>Favorites
+                            </a></li>
+                            <li><a class="dropdown-item" href="/client/settings">
+                                <i class="fas fa-cog me-2"></i>Settings
+                            </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST" id="logout-form">

@@ -273,18 +273,12 @@ $pc = isset($appointment->payment) ? ($payBadges[$appointment->payment->status] 
     {{-- ══ RIGHT ══ --}}
     <div>
 
-        {{-- Actions --}}
+        {{-- Status (view-only — action buttons removed, this card now just shows what's happening) --}}
         <div class="dcard">
-            <div class="dcard-head"><i class="fas fa-bolt"></i><span class="dcard-title">Actions</span></div>
+            <div class="dcard-head"><i class="fas fa-bolt"></i><span class="dcard-title">Status</span></div>
             <div class="dcard-body">
 
                 @if($appointment->status === 'confirmed')
-                    <form action="{{ route('admin.appointments.complete', $appointment->id) }}" method="POST" style="margin:0 0 .65rem;">
-                        @csrf
-                        <button type="submit" class="act-btn act-btn-sage">
-                            <i class="fas fa-check-circle"></i> Mark as Completed
-                        </button>
-                    </form>
                     <div class="status-visual">
                         <i class="fas fa-check-circle status-visual-icon" style="color:var(--sage);"></i>
                         <p class="status-visual-text">Appointment is confirmed and scheduled.</p>
@@ -299,14 +293,8 @@ $pc = isset($appointment->payment) ? ($payBadges[$appointment->payment->status] 
                 @elseif($appointment->status === 'payment_submitted')
                     <div class="status-visual">
                         <i class="fas fa-paper-plane status-visual-icon" style="color:var(--rose);"></i>
-                        <p class="status-visual-text">Payment submitted by client. Verify and confirm.</p>
+                        <p class="status-visual-text">Payment submitted by client, awaiting verification.</p>
                     </div>
-                    <form action="{{ route('admin.appointments.complete', $appointment->id) }}" method="POST" style="margin:.75rem 0 0;">
-                        @csrf
-                        <button type="submit" class="act-btn act-btn-primary">
-                            <i class="fas fa-check"></i> Verify & Complete
-                        </button>
-                    </form>
 
                 @elseif($appointment->status === 'completed')
                     <div class="status-visual">
@@ -321,7 +309,7 @@ $pc = isset($appointment->payment) ? ($payBadges[$appointment->payment->status] 
                     </div>
 
                 @else
-                    <p style="color:#9a9a9a;font-size:.85rem;margin:0;text-align:center;">No actions available.</p>
+                    <p style="color:#9a9a9a;font-size:.85rem;margin:0;text-align:center;">No status information available.</p>
                 @endif
 
             </div>
