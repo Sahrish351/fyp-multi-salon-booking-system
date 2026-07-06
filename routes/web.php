@@ -63,7 +63,8 @@ use App\Http\Controllers\Client\ClientDashboardController;
 use App\Http\Controllers\Client\SalonSearchController;
 use App\Http\Controllers\Client\SalonDetailController;
 use App\Http\Controllers\Client\BookingStepController;
-use App\Http\Controllers\Client\PaymentSubmitController;
+// use App\Http\Controllers\Client\PaymentSubmitController;
+use App\Http\Controllers\Client\ClientPaymentController;
 use App\Http\Controllers\Client\AppointmentManageController;
 use App\Http\Controllers\Client\RescheduleController;
 use App\Http\Controllers\Client\WaitlistJoinController;
@@ -459,8 +460,9 @@ Route::post('/waitlist/{id}/notify',   [OwnerWaitlistController::class, 'notify'
         Route::get('/booking/{salon}/dates', [BookingStepController::class, 'getAvailableDates'])->name('booking.dates');
  
         // Payment
-        Route::get('/payment/{appointment}',  [PaymentSubmitController::class, 'show'])->name('payment.show');
-        Route::post('/payment/{appointment}', [PaymentSubmitController::class, 'store'])->name('payment.submit');
+       Route::get('/payments', [ClientPaymentController::class, 'index'])->name('payments.index');
+Route::get('/payments/{payment}', [ClientPaymentController::class, 'show'])->name('payments.show');
+Route::get('/payments/{payment}/receipt', [ClientPaymentController::class, 'downloadReceipt'])->name('payments.receipt');
  
         // Appointments
         Route::get('/appointments',                        [AppointmentManageController::class, 'index'])->name('appointments.index');
