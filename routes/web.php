@@ -447,11 +447,10 @@ Route::post('/waitlist/{id}/notify',   [OwnerWaitlistController::class, 'notify'
     // ========================================================
     // CLIENT ROUTES
     // ========================================================
-    Route::prefix('client')->name('client.')->group(function () {
- 
-        Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
- 
-        // Search
+    Route::prefix('client')->name('client.')->middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+    
+    // Search
         Route::get('/search',        [SalonSearchController::class, 'index'])->name('search');
         Route::get('/salons/{slug}', [SalonDetailController::class, 'show'])->name('salons.show');
  

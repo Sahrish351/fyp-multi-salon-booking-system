@@ -18,13 +18,14 @@ use App\Models\Review;
 
 class OwnerDashboardController extends Controller
 {
-   
+    /**
+     * Owner Dashboard Index
+     */
     public function index(Request $request)
     {
         try {
             $user = auth()->user();
 
-            
             if (!$user) {
                 return redirect()->route('login');
             }
@@ -33,7 +34,6 @@ class OwnerDashboardController extends Controller
                 abort(403, 'Unauthorized access.');
             }
 
-        
             $salon = Salon::where('owner_id', $user->id)->first();
 
             if (!$salon) {
@@ -42,35 +42,20 @@ class OwnerDashboardController extends Controller
             }
 
             $salonId = $salon->id;
-
-      
             $cacheKey = "owner_dashboard_{$salonId}";
 
             $dashboardData = Cache::remember($cacheKey, 300, function () use ($salonId) {
                 return [
-                    
                     'stats' => $this->getStats($salonId),
-                    
-                   
                     'revenueLabels' => $this->getRevenueLabels(),
                     'revenueData' => $this->getRevenueData($salonId),
-                    
-               
                     'bookingsLabels' => $this->getBookingsLabels(),
                     'bookingsData' => $this->getBookingsData($salonId),
-                    
-                   
                     'servicesLabels' => $this->getServicesLabels($salonId),
                     'servicesData' => $this->getServicesData($salonId),
-                    
-                
                     'clientGrowthLabels' => $this->getClientGrowthLabels(),
                     'clientGrowthData' => $this->getClientGrowthData($salonId),
-                    
-                   
                     'todaysAppointments' => $this->getTodayAppointments($salonId),
-                    
-                   
                     'recentPayments' => $this->getRecentPayments($salonId),
                 ];
             });
@@ -85,7 +70,6 @@ class OwnerDashboardController extends Controller
                 'user_id' => auth()->id(),
                 'trace' => $e->getTraceAsString()
             ]);
-
 
             return view('owner.dashboard')->with([
                 'error' => 'Unable to load dashboard data. Please try again later.',
@@ -105,59 +89,52 @@ class OwnerDashboardController extends Controller
         }
     }
 
-  
+    /**
+     * Get Statistics
+     */
     private function getStats($salonId)
     {
         $today = Carbon::today();
         $now = Carbon::now();
 
-       
         $todayAppointments = Appointment::where('salon_id', $salonId)
             ->whereDate('appointment_date', $today)
             ->count();
 
-       
         $pendingAppointments = Appointment::where('salon_id', $salonId)
             ->where('status', 'pending_payment')
             ->count();
 
-    
         $totalRevenue = Payment::where('salon_id', $salonId)
             ->where('status', 'approved')
             ->sum('amount');
 
-       
         $totalClients = User::where('role', 'client')
             ->whereHas('appointments', function ($query) use ($salonId) {
                 $query->where('salon_id', $salonId);
             })
             ->count();
 
-      
         $pendingPayments = Payment::where('salon_id', $salonId)
             ->where('status', 'pending')
             ->sum('amount');
 
-       
         $monthlySales = Payment::where('salon_id', $salonId)
             ->where('status', 'approved')
             ->whereMonth('created_at', $now->month)
             ->whereYear('created_at', $now->year)
             ->sum('amount');
 
-   
         $lastMonthSales = Payment::where('salon_id', $salonId)
             ->where('status', 'approved')
             ->whereMonth('created_at', $now->copy()->subMonth()->month)
             ->whereYear('created_at', $now->copy()->subMonth()->year)
             ->sum('amount');
 
-        
         $yesterdayAppointments = Appointment::where('salon_id', $salonId)
             ->whereDate('appointment_date', $today->copy()->subDay())
             ->count();
 
-       
         $todayTrend = $yesterdayAppointments > 0 ? round((($todayAppointments - $yesterdayAppointments) / $yesterdayAppointments) * 100) : 0;
         $revenueTrend = $totalRevenue > 0 ? round(($totalRevenue / max(Payment::where('salon_id', $salonId)->where('status', 'approved')->sum('amount') - $totalRevenue, 1)) * 100) : 0;
         $clientTrend = $totalClients > 0 ? round(($totalClients / max(User::where('role', 'client')->whereHas('appointments', function($q) use ($salonId) { $q->where('salon_id', $salonId); })->count() - $totalClients, 1)) * 100) : 0;
@@ -182,7 +159,9 @@ class OwnerDashboardController extends Controller
         ];
     }
 
-  
+    /**
+     * Get Revenue Data
+     */
     private function getRevenueData($salonId)
     {
         $data = [];
@@ -200,7 +179,9 @@ class OwnerDashboardController extends Controller
         return $data;
     }
 
-    
+    /**
+     * Get Bookings Data
+     */
     private function getBookingsData($salonId)
     {
         $data = [];
@@ -217,7 +198,9 @@ class OwnerDashboardController extends Controller
         return $data;
     }
 
-   
+    /**
+     * Get Services Data
+     */
     private function getServicesData($salonId)
     {
         $services = DB::table('appointments')
@@ -240,7 +223,9 @@ class OwnerDashboardController extends Controller
         return array_values($services);
     }
 
-    
+    /**
+     * Get Services Labels
+     */
     private function getServicesLabels($salonId)
     {
         $labels = DB::table('appointments')
@@ -256,7 +241,9 @@ class OwnerDashboardController extends Controller
         return !empty($labels) ? $labels : ['No Data Available'];
     }
 
-   
+    /**
+     * Get Client Growth Data
+     */
     private function getClientGrowthData($salonId)
     {
         $data = [];
@@ -280,6 +267,9 @@ class OwnerDashboardController extends Controller
         return $data;
     }
 
+    /**
+     * Get Today's Appointments
+     */
     private function getTodayAppointments($salonId)
     {
         $today = Carbon::today();
@@ -327,7 +317,9 @@ class OwnerDashboardController extends Controller
         })->toArray();
     }
 
-    
+    /**
+     * Get Recent Payments
+     */
     private function getRecentPayments($salonId)
     {
         $payments = Payment::where('salon_id', $salonId)
@@ -359,7 +351,9 @@ class OwnerDashboardController extends Controller
         })->toArray();
     }
 
-   
+    /**
+     * Get Revenue Labels
+     */
     private function getRevenueLabels()
     {
         $labels = [];
@@ -369,19 +363,25 @@ class OwnerDashboardController extends Controller
         return $labels;
     }
 
-   
+    /**
+     * Get Bookings Labels
+     */
     private function getBookingsLabels()
     {
         return $this->getRevenueLabels();
     }
 
- 
+    /**
+     * Get Client Growth Labels
+     */
     private function getClientGrowthLabels()
     {
         return $this->getRevenueLabels();
     }
 
-    
+    /**
+     * Empty Stats for Error State
+     */
     private function getEmptyStats()
     {
         return [
@@ -403,7 +403,9 @@ class OwnerDashboardController extends Controller
         ];
     }
 
-   
+    /**
+     * Get Chart Data for AJAX
+     */
     public function getChartData(Request $request)
     {
         try {
@@ -427,7 +429,6 @@ class OwnerDashboardController extends Controller
             $values = [];
             
             if ($period === 'weekly') {
-               
                 for ($i = 6; $i >= 0; $i--) {
                     $date = Carbon::today()->subDays($i);
                     $labels[] = $date->format('D');
@@ -444,7 +445,6 @@ class OwnerDashboardController extends Controller
                     }
                 }
             } elseif ($period === 'monthly') {
-              
                 for ($i = 11; $i >= 0; $i--) {
                     $date = Carbon::now()->subMonths($i);
                     $labels[] = $date->format('M');
@@ -463,7 +463,6 @@ class OwnerDashboardController extends Controller
                     }
                 }
             } else {
-                
                 for ($i = 4; $i >= 0; $i--) {
                     $year = Carbon::now()->subYears($i)->year;
                     $labels[] = (string) $year;
@@ -492,7 +491,9 @@ class OwnerDashboardController extends Controller
         }
     }
 
-   
+    /**
+     * Refresh Dashboard Cache
+     */
     public function refresh(Request $request)
     {
         $user = auth()->user();
@@ -506,5 +507,77 @@ class OwnerDashboardController extends Controller
         
         return redirect()->route('owner.dashboard')
             ->with('error', 'Unable to refresh dashboard.');
+    }
+
+    /**
+     * ✅ Get Unread Notifications Count for Owner
+     */
+    public function getNotifications(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            
+            if (!$user) {
+                return response()->json(['count' => 0, 'notifications' => []]);
+            }
+
+            $notifications = $user->notifications()->take(10)->get();
+            $unreadCount = $user->unreadNotifications()->count();
+
+            return response()->json([
+                'count' => $unreadCount,
+                'notifications' => $notifications->map(function ($notif) {
+                    return [
+                        'id' => $notif->id,
+                        'data' => $notif->data,
+                        'read_at' => $notif->read_at,
+                        'created_at' => $notif->created_at->diffForHumans(),
+                    ];
+                })
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Notifications Error: ' . $e->getMessage());
+            return response()->json(['count' => 0, 'notifications' => []]);
+        }
+    }
+
+    /**
+     * ✅ Mark Notification as Read
+     */
+    public function markNotificationRead($id)
+    {
+        try {
+            $user = auth()->user();
+            $notification = $user->notifications()->find($id);
+            
+            if ($notification) {
+                $notification->markAsRead();
+                return response()->json(['success' => true]);
+            }
+            
+            return response()->json(['success' => false], 404);
+
+        } catch (\Exception $e) {
+            \Log::error('Mark Notification Error: ' . $e->getMessage());
+            return response()->json(['success' => false], 500);
+        }
+    }
+
+    /**
+     * ✅ Mark All Notifications as Read
+     */
+    public function markAllNotificationsRead(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $user->unreadNotifications->markAsRead();
+            
+            return redirect()->back()->with('success', 'All notifications marked as read.');
+
+        } catch (\Exception $e) {
+            \Log::error('Mark All Notifications Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to mark notifications as read.');
+        }
     }
 }
