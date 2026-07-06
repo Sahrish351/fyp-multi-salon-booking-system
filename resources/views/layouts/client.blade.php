@@ -161,39 +161,30 @@
 
                     <!-- Notifications -->
                     <div class="dropdown">
-                        <button class="btn btn-sm position-relative" style="background: rgba(233,30,140,0.1); border-radius: 50%; width: 38px; height: 38px;" data-bs-toggle="dropdown">
+                        <button class="btn btn-sm position-relative" id="notifBellBtn" style="background: rgba(233,30,140,0.1); border-radius: 50%; width: 38px; height: 38px;" data-bs-toggle="dropdown">
                             <i class="fas fa-bell" style="color: var(--client-pink);"></i>
-                            @php $unreadCount = 0; @endphp
-                            @if($unreadCount > 0)
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-                                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-                                </span>
-                            @endif
+                            @php $unreadCount = Auth::user()->unreadNotifications->count(); @endphp
+                            <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; {{ $unreadCount > 0 ? '' : 'display:none;' }}">
+                                {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                            </span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
                             <li><h6 class="dropdown-header">Notifications</h6></li>
-                            @php $notifications = []; @endphp
+                            @php $notifications = Auth::user()->notifications()->latest()->take(8)->get(); @endphp
                             @forelse($notifications as $notif)
                                 <li>
-                                    <a class="dropdown-item" href="#" style="white-space: normal;">
-                                        <small class="text-muted">{{ $notif->created_at->diffForHumans() ?? now()->diffForHumans() }}</small><br>
-                                        <strong>{{ $notif->data['title'] ?? 'New Notification' }}</strong><br>
-                                        <span class="small">{{ $notif->data['message'] ?? 'You have a new notification' }}</span>
+                                    <a class="dropdown-item" href="{{ route('client.notifications.index') }}" style="white-space: normal;">
+                                        <small class="text-muted">{{ $notif->created_at->diffForHumans() }}</small><br>
+                                        <span class="small {{ !$notif->read_at ? 'fw-semibold' : '' }}">{{ $notif->data['message'] ?? 'New Notification' }}</span>
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                             @empty
                                 <li><span class="dropdown-item text-muted text-center">✨ No new notifications</span></li>
                             @endforelse
-                            @if($unreadCount > 0)
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{{ route('notifications.markAllRead') }}" method="POST">
-                                        @csrf
-                                        <button class="dropdown-item text-center small text-primary">Mark all as read</button>
-                                    </form>
-                                </li>
-                            @endif
+                            <li>
+                                <a href="{{ route('client.notifications.index') }}" class="dropdown-item text-center small" style="color: var(--client-pink);">View all notifications</a>
+                            </li>
                         </ul>
                     </div>
  
@@ -302,6 +293,24 @@
                 }, 4000);
             });
         }, 1000);
+
+        // Notification bell: WhatsApp-style — opening the dropdown marks all as read and hides the badge
+        document.getElementById('notifBellBtn')?.addEventListener('click', function() {
+            const badge = document.getElementById('notifBadge');
+            if (!badge || badge.style.display === 'none') return;
+
+            fetch("{{ route('client.notifications.read-all') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            }).then(() => {
+                badge.style.display = 'none';
+            }).catch(() => {
+                // silently ignore — badge will still update correctly on next page load
+            });
+        });
     </script>
     
     @stack('scripts')

@@ -11,17 +11,11 @@
         --pink-dark: #c2185b;
         --pink-light: #fce4ec;
         --pink-bg: #fdf2f8;
-
-        /* reschedule + cancel bold solid colors */
-        --resch-a: #f59e0b;  --resch-b: #d97706;  /* amber/orange */
-        --cancel-a: #ef4444; --cancel-b: #dc2626; /* red          */
-
-        /* view = single flat VS Code blue, no gradient */
+        --cancel-a: #ef4444; --cancel-b: #dc2626;
         --vscode-blue: #007acc;
         --vscode-blue-dark: #005a9e;
     }
 
-    /* ---- Timeframe Tabs (primary, big pills) ---- */
     .timeframe-tabs { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
     .timeframe-tab {
         padding: 10px 22px; border-radius: 50px; font-size: .86rem; font-weight: 800;
@@ -32,7 +26,6 @@
     .timeframe-tab:not(.active) { background: #fff; color: #999; border: 1.5px solid var(--pink-light); }
     .timeframe-tab:not(.active):hover { border-color: var(--pink); color: var(--pink); }
 
-    /* ---- Status chips (secondary, smaller) ---- */
     .status-chips { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
     .status-chip {
         padding: 5px 15px; border-radius: 50px; font-size: .72rem; font-weight: 700;
@@ -42,7 +35,6 @@
     .status-chip:not(.active) { background: transparent; color: #aaa; border: 1.5px solid #eee; }
     .status-chip:not(.active):hover { color: var(--pink); border-color: var(--pink-light); }
 
-    /* ---- Vertical Pretty Card ---- */
     .appt-card {
         background: #fff;
         border-radius: 22px;
@@ -51,35 +43,30 @@
         border: 1px solid var(--pink-light);
         height: 100%;
     }
-
     .appt-card .card-top {
-        background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+        background: var(--pink-bg);
         padding: 16px 20px;
         display: flex; align-items: center; justify-content: space-between;
-        color: #fff;
+        color: var(--pink-dark);
     }
     .appt-card .date-chip { display: flex; align-items: baseline; gap: 6px; }
-    .appt-card .date-chip .d { font-size: 1.4rem; font-weight: 900; line-height: 1; }
-    .appt-card .date-chip .m-y { font-size: .68rem; text-transform: uppercase; opacity: .85; font-weight: 700; letter-spacing: .4px; }
-
+    .appt-card .date-chip .d { font-size: 1.4rem; font-weight: 900; line-height: 1; color: var(--pink-dark); }
+    .appt-card .date-chip .m-y { font-size: .68rem; text-transform: uppercase; opacity: .85; font-weight: 700; letter-spacing: .4px; color: var(--pink-dark); }
     .top-status {
         padding: 5px 14px; border-radius: 50px; font-size: .66rem; font-weight: 800;
         text-transform: uppercase; letter-spacing: .4px; display: inline-flex; align-items: center; gap: 5px;
-        background: rgba(255,255,255,.25); color: #fff; backdrop-filter: blur(3px);
+        background: var(--pink-light); color: var(--pink-dark);
     }
-
     .appt-card .card-body { padding: 18px 20px 8px; }
     .appt-card .salon-name { font-size: 1.02rem; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
     .appt-card .meta-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
     .appt-card .meta-list span { font-size: .8rem; color: #888; display: flex; align-items: center; gap: 8px; }
     .appt-card .meta-list i { color: var(--pink); width: 14px; }
-
     .appt-card .price-row {
         display: flex; align-items: center; justify-content: space-between;
         background: var(--pink-bg); border-radius: 12px; padding: 10px 14px; margin-bottom: 12px;
     }
     .appt-card .price-row .amt { font-weight: 900; color: var(--pink); font-size: .98rem; }
-
     .appt-card .screenshot-pill {
         display: inline-flex; align-items: center; gap: 5px;
         font-size: .68rem; font-weight: 700; padding: 4px 12px; border-radius: 50px; margin-bottom: 12px;
@@ -87,51 +74,48 @@
     .screenshot-approved { background: #ecfdf5; color: #059669; }
     .screenshot-pending  { background: #fffbeb; color: #b45309; }
     .screenshot-rejected { background: #fef2f2; color: #dc2626; }
-
     .appt-card .card-actions {
         display: flex; gap: 8px; flex-wrap: wrap;
         padding: 14px 20px 18px; border-top: 1px solid #fdeef5;
     }
 
-    /* ---- Action buttons ---- */
     .btn-soft {
-        display: inline-flex; align-items: center; gap: 7px;
-        padding: 8px 14px; border-radius: 10px;
-        text-decoration: none; font-size: .76rem; font-weight: 700;
-        border: 1px solid; cursor: pointer;
-        transition: background .15s;
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 7px 13px; border-radius: 10px;
+        text-decoration: none; font-size: .74rem; font-weight: 700;
+        border: 1.5px solid; cursor: pointer;
+        transition: background .15s, color .15s;
     }
+    .btn-soft.view { background: var(--vscode-blue); color: #fff; border-color: var(--vscode-blue); }
+    .btn-soft.view:hover { background: var(--pink-dark); border-color: var(--pink-dark); color: #fff; }
 
-    /* View — single FLAT vs-code blue, no gradient, no double shade */
-    .btn-soft.view {
-        background: var(--vscode-blue);
-        color: #fff;
-        border-color: var(--vscode-blue);
+    /* ── Reschedule — soft purple/violet, pyara sa ── */
+    .btn-soft.reschedule {
+        background: #f3f0ff;
+        color: #6d28d9;
+        border-color: #ddd6fe;
     }
-    .btn-soft.view:hover { background: var(--vscode-blue-dark); border-color: var(--vscode-blue-dark); color: #fff; }
+    .btn-soft.reschedule:hover { background: #6d28d9; color: #fff; border-color: #6d28d9; }
 
     .btn-soft.review { background: #fff8e1; color: #b45309; border-color: #fde68a; }
     .btn-soft.review:hover { background: #fff3cf; }
 
     .btn-bold {
         display: inline-flex; align-items: center; gap: 7px;
-        padding: 8px 14px; border-radius: 10px;
-        text-decoration: none; font-size: .76rem; font-weight: 800;
+        padding: 7px 13px; border-radius: 10px;
+        text-decoration: none; font-size: .74rem; font-weight: 800;
         border: none; cursor: pointer; color: #fff;
-        box-shadow: 0 5px 12px rgba(0,0,0,.1);
+        box-shadow: 0 4px 10px rgba(0,0,0,.08);
         transition: filter .15s;
     }
     .btn-bold:hover { filter: brightness(1.06); color: #fff; }
-    .btn-bold.reschedule { background: linear-gradient(135deg, var(--resch-a), var(--resch-b)); }
-    .btn-bold.cancel     { background: linear-gradient(135deg, var(--cancel-a), var(--cancel-b)); }
+    .btn-bold.cancel { background: linear-gradient(135deg, var(--cancel-a), var(--cancel-b)); }
 
-    /* ---- Empty State ---- */
     .empty-state {
         text-align: center; padding: 4rem 2rem; background: #fff;
         border-radius: 24px; border: 2px dashed var(--pink-light);
     }
 
-    /* ---- Cancel Modal ---- */
     #cancelModal { display: none; position: fixed; inset: 0; background: rgba(30,10,25,0.45); z-index: 999; align-items: center; justify-content: center; padding: 16px; }
     #cancelModal.show { display: flex; }
     .modal-box { background: #fff; border-radius: 20px; padding: 0; max-width: 400px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
@@ -149,7 +133,6 @@
 
 @section('content')
 
-{{-- Header --}}
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
         <h4 class="fw-bold mb-1" style="color:#333;font-family:'Playfair Display',serif;">
@@ -163,7 +146,6 @@
     </a>
 </div>
 
-{{-- Timeframe Tabs --}}
 @php
     $curTimeframe = request('timeframe', 'all');
     $curStatus    = request('status', 'all');
@@ -180,7 +162,6 @@
     @endforeach
 </div>
 
-{{-- Status Chips --}}
 @php
     $statuses = ['all'=>'All', 'confirmed'=>'Confirmed', 'pending_payment'=>'Pending', 'completed'=>'Completed', 'cancelled'=>'Cancelled'];
 @endphp
@@ -193,7 +174,6 @@
     @endforeach
 </div>
 
-{{-- Cards --}}
 <div class="row g-4">
     @forelse($appointments as $appt)
     <div class="col-lg-4 col-md-6">
@@ -247,12 +227,13 @@
                 </a>
 
                 @if(!in_array($appt->status, ['cancelled', 'completed']))
-                <a href="{{ route('client.appointments.show', $appt->id) }}?reschedule=1" class="btn-bold reschedule">
-                    <i class="fas fa-calendar-alt"></i> Reschedule
-                </a>
-                <button type="button" class="btn-bold cancel" onclick="cancelModal({{ $appt->id }})">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
+                    <button type="button" class="btn-bold cancel" onclick="cancelModal({{ $appt->id }})">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    {{-- ✅ FIXED: added client. prefix to reschedule route --}}
+                    <a href="{{ route('client.appointments.reschedule.create', $appt->id) }}" class="btn-soft reschedule">
+                        <i class="fas fa-calendar-alt"></i> Reschedule
+                    </a>
                 @endif
 
                 @if($appt->status === 'completed' && !$appt->review)
@@ -261,6 +242,7 @@
                 </a>
                 @endif
             </div>
+
         </div>
     </div>
     @empty
@@ -287,7 +269,6 @@
 <div class="mt-4">{{ $appointments->links() }}</div>
 @endif
 
-{{-- Cancel Modal --}}
 <div id="cancelModal">
     <div class="modal-box">
         <div class="modal-head">
@@ -322,7 +303,6 @@
     document.getElementById('cancelModal').addEventListener('click', function(e) {
         if (e.target === this) closeCancelModal();
     });
-
     document.addEventListener('DOMContentLoaded', function () {
         @if(session('success'))
         Swal.fire({ icon: 'success', title: 'Yay! 💖', text: @json(session('success')), confirmButtonColor: '#E91E8C', confirmButtonText: 'Great!', background: '#fff7fb' });

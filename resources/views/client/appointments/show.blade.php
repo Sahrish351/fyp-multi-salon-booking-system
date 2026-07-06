@@ -13,7 +13,6 @@
         --pink-light: #fce4ec;
         --pink-bg: #fdf2f8;
 
-        --resch-a: #f59e0b;  --resch-b: #d97706;
         --cancel-a: #ef4444; --cancel-b: #dc2626;
     }
 
@@ -41,9 +40,9 @@
     .appt-hero .hero-left { display: flex; align-items: center; gap: 12px; }
     .appt-hero .hero-icon {
         width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
-        background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+        background: var(--pink-light);
         display: flex; align-items: center; justify-content: center;
-        color: #fff; font-size: 1.05rem;
+        color: var(--pink-dark); font-size: 1.05rem;
     }
     .appt-hero .ref { font-size: .7rem; opacity: .85; letter-spacing: .3px; margin-bottom: 2px; color: var(--pink-dark); }
     .appt-hero h2 { font-size: 1.08rem; font-weight: 800; margin-bottom: 1px; color: #1a1a1a; }
@@ -60,7 +59,7 @@
         align-items: center;
         gap: 6px;
     }
-    .status-pill.awaiting  { background: #fff7e6; color: #b45309; }
+    .status-pill.awaiting  { background: var(--pink-light); color: var(--pink-dark); }
     .status-pill.confirmed { background: #ecfdf5; color: #059669; }
     .status-pill.completed { background: #eef6ff; color: #0284c7; }
     .status-pill.cancelled { background: #fff0f0; color: #dc2626; }
@@ -170,8 +169,7 @@
         transition: filter .15s, transform .15s;
     }
     .mini-btn:hover { filter: brightness(1.06); color: #fff; transform: translateY(-1px); }
-    .mini-btn.reschedule { background: linear-gradient(135deg, var(--resch-a), var(--resch-b)); }
-    .mini-btn.cancel     { background: linear-gradient(135deg, var(--cancel-a), var(--cancel-b)); }
+    .mini-btn.cancel { background: linear-gradient(135deg, var(--cancel-a), var(--cancel-b)); }
     .mini-btn.review     { background: linear-gradient(135deg, var(--pink), var(--pink-dark)); }
 
     /* --- Modals --- */
@@ -180,7 +178,6 @@
     .modal-box { background: #fff; border-radius: 20px; width: 100%; max-width: 440px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
     .modal-head { padding: 18px 24px; display:flex; align-items:center; justify-content:space-between; }
     .modal-head.cancel-head { background: linear-gradient(135deg, var(--cancel-a), var(--cancel-b)); }
-    .modal-head.resched-head { background: linear-gradient(135deg, var(--resch-a), var(--resch-b)); }
     .modal-head h3 { font-size: 1rem; font-weight: 800; color: #fff; }
     .modal-close { width:30px;height:30px;border-radius:8px;border:none;background:rgba(255,255,255,.3);color:#fff;cursor:pointer;font-size:.85rem; }
     .modal-body { padding: 20px 24px; }
@@ -192,7 +189,6 @@
     .modal-foot button { flex:1; padding: 11px; border-radius: 10px; font-weight: 800; font-size: .84rem; border: none; cursor: pointer; font-family:'Inter',sans-serif; }
     .btn-keep { background: #f2f2f2 !important; color: #555 !important; }
     .btn-confirm-cancel { background: linear-gradient(135deg, var(--cancel-a), var(--cancel-b)); color: #fff; }
-    .btn-confirm-resched { background: linear-gradient(135deg, var(--resch-a), var(--resch-b)); color: #fff; }
 </style>
 @endpush
 
@@ -302,15 +298,6 @@
                     </div>
                 </div>
                 @endif
-                @if($appointment->rescheduled_at ?? false)
-                <div class="detail-item">
-                    <div class="ic" style="background:#fef3c7;color:#d97706;"><i class="fas fa-clock-rotate-left"></i></div>
-                    <div>
-                        <div class="lbl">Previously Scheduled</div>
-                        <div class="val">{{ \Carbon\Carbon::parse($appointment->previous_date)->format('d M Y') }} at {{ \Carbon\Carbon::parse($appointment->previous_start_time)->format('h:i A') }}</div>
-                    </div>
-                </div>
-                @endif
             </div>
         </div>
 
@@ -393,19 +380,6 @@
             {{-- Row stays white/neutral — only the small pill button is colored --}}
             <div class="manage-row">
                 <div class="row-left">
-                    <span class="ic-box-mini"><i class="fas fa-calendar-alt"></i></span>
-                    <div class="txt">
-                        <div class="t1">Reschedule</div>
-                        <div class="t2">Pick a new date & time</div>
-                    </div>
-                </div>
-                <button type="button" class="mini-btn reschedule" onclick="openModal('rescheduleOverlay')">
-                    <i class="fas fa-calendar-alt"></i> Reschedule
-                </button>
-            </div>
-
-            <div class="manage-row">
-                <div class="row-left">
                     <span class="ic-box-mini" style="background:#fee2e2;color:#dc2626;"><i class="fas fa-times-circle"></i></span>
                     <div class="txt">
                         <div class="t1">Cancel Appointment</div>
@@ -460,34 +434,6 @@
     </div>
 </div>
 
-{{-- ================= Reschedule Modal ================= --}}
-<div class="modal-overlay" id="rescheduleOverlay">
-    <div class="modal-box">
-        <div class="modal-head resched-head">
-            <h3><i class="fas fa-calendar-check me-2"></i>Reschedule Appointment</h3>
-            <button class="modal-close" onclick="closeModal('rescheduleOverlay')">&times;</button>
-        </div>
-        <form action="{{ route('client.appointments.reschedule', $appointment->id) }}" method="POST">
-            @csrf
-            <div class="modal-body">
-                <p class="hint">Pick a new date and time. We'll check the stylist's availability before confirming.</p>
-                <label class="field-lbl">New Date *</label>
-                <input type="date" class="field-input" name="new_date" required
-                       min="{{ now()->addDay()->format('Y-m-d') }}"
-                       value="{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('Y-m-d') }}">
-                <label class="field-lbl">New Time *</label>
-                <input type="time" class="field-input" name="new_time" required
-                       value="{{ \Carbon\Carbon::parse($appointment->start_time)->format('H:i') }}">
-                <label class="field-lbl">Reason (optional)</label>
-                <textarea class="field-input" name="reschedule_reason" rows="2" placeholder="Why are you rescheduling? (optional)"></textarea>
-            </div>
-            <div class="modal-foot">
-                <button type="button" class="btn-keep" onclick="closeModal('rescheduleOverlay')">Never Mind</button>
-                <button type="submit" class="btn-confirm-resched"><i class="fas fa-check-circle"></i> Confirm New Time</button>
-            </div>
-        </form>
-    </div>
-</div>
 @endsection
 
 @push('scripts')
@@ -502,11 +448,6 @@ window.addEventListener('click', function (e) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('reschedule') === '1') {
-        openModal('rescheduleOverlay');
-    }
-
     @if(session('success'))
     Swal.fire({ icon: 'success', title: 'Yay! 💖', text: @json(session('success')), confirmButtonColor: '#E91E8C', confirmButtonText: 'Great!', background: '#fff7fb' });
     @endif

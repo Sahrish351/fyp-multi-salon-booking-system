@@ -42,7 +42,6 @@ class BookingController extends Controller
             return back()->with('error', 'Please select at least one service.');
         }
 
-
         Session::put('booking_salon_id', $salon->id);
 
         return redirect()->route('booking.step2', $salon->id);
@@ -107,14 +106,10 @@ class BookingController extends Controller
     {
         $salon = Salon::findOrFail($salon_id);
 
-
         if ($request->has('join_waitlist') && $request->join_waitlist == '1') {
             return $this->joinWaitlistFromStep3($request, $salon);
         }
 
-        // Use app timezone (Asia/Karachi) for "today" comparison instead of
-        // the server's default timezone, so late-night bookings don't get
-        // silently rejected as "before today".
         $request->validate([
             'time_slot_id'     => 'required|string',
             'appointment_date' => 'required|date_format:Y-m-d|after_or_equal:' . now()->format('Y-m-d'),
@@ -125,7 +120,6 @@ class BookingController extends Controller
 
         Session::put('booking_time', $request->time_slot_id);
         Session::put('booking_date', $request->appointment_date);
-
 
         return redirect()->route('booking.step4', $salon->id);
     }
@@ -190,7 +184,6 @@ class BookingController extends Controller
     }
 
 
-    // ── STEP 4 POST: Receive screenshot + create pending appointment ──
     public function postPayment(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
@@ -200,15 +193,11 @@ class BookingController extends Controller
         $bookingTime = Session::get('booking_time');
         $bookingDate = Session::get('booking_date');
 
-        // If any part of the booking session is missing, start over instead
-        // of silently defaulting the date to "now" (which caused wrong
-        // bookings before).
         if (!$serviceId || !$stylistId || !$bookingTime || !$bookingDate) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Session expired. Please start again.');
         }
 
-        // Validate the form
         $request->validate([
             'payment_method'  => 'required|in:easypaisa,jazzcash,bank',
             'transaction_ref' => 'required|string|max:255',
@@ -229,15 +218,9 @@ class BookingController extends Controller
 
         $bookingRef = 'GLM-' . strtoupper(substr(uniqid(), -6));
 
-        // Save screenshot to storage/app/public/payment-screenshots/
         $screenshotPath = $request->file('screenshot')
             ->store('payment-screenshots', 'public');
 
-        // Create appointment with status 'pending_payment' (becomes 'confirmed'
-        // when admin approves the screenshot in the admin panel)
-        // NOTE: time_slot_id column was made nullable via migration because
-        // this app does not use a separate time_slots table — the actual
-        // slot is represented by start_time / end_time below.
         $appointment = Appointment::create([
             'booking_ref'      => $bookingRef,
             'client_id'        => Auth::id(),
@@ -252,7 +235,6 @@ class BookingController extends Controller
             'status'           => 'pending_payment',
         ]);
 
-        // Save payment record with screenshot path
         Payment::create([
             'appointment_id'  => $appointment->id,
             'client_id'       => Auth::id(),
@@ -265,134 +247,68 @@ class BookingController extends Controller
             'status'          => 'pending',
         ]);
 
-        // Clear booking session
         Session::forget([
             'booking_service_id', 'booking_service_ids', 'booking_stylist_id',
             'booking_time', 'booking_date', 'booking_salon_id',
         ]);
 
-        // // Optional: notify admin that a new payment screenshot arrived
-        // try {
-        //     $appointment->salon->owner->notify(
-        //         new \App\Notifications\NewPaymentAlert($appointment)
-        //     );
-        // } catch (\Exception $e) {
-        //     Log::warning('Owner payment alert failed: ' . $e->getMessage());
-        // }
-
-        // Show the pending confirmation page
         return view('frontend.booking.confirmation', compact('appointment'));
     }
 
 
-    // public function payfastReturn(Request $request)
-    // {
-    //     $paymentId = Session::get('pending_payment_id');
-    //     $payment   = Payment::find($paymentId);
+    // ── AJAX: Load available time slots for a date ──
+    public function getSlots(Request $request, $salon_id)
+    {
+        $salon     = Salon::findOrFail($salon_id);
+        $date      = $request->date;
+        $stylistId = $request->stylist_id ?? Session::get('booking_stylist_id');
+        $serviceId = $request->service_id ?? Session::get('booking_service_id');
 
-    //     if ($payment) {
-    //         $payment->update([
-    //             'status'         => 'approved',
-    //             'transaction_id' => 'SANDBOX-' . strtoupper(uniqid()),
-    //         ]);
+        // Stylist holiday check
+        $isHoliday = StylistHoliday::where('stylist_id', $stylistId)
+            ->whereDate('date', $date)
+            ->exists();
 
-    //         $appointment = $payment->appointment;
-    //         $appointment->update(['status' => 'payment_submitted']);
+        if ($isHoliday) {
+            return response()->json(['slots' => [], 'holiday' => true]);
+        }
 
-    //         Session::forget([
-    //             'booking_service_id', 'booking_service_ids', 'booking_stylist_id',
-    //             'booking_time', 'booking_date', 'booking_salon_id', 'pending_payment_id',
-    //         ]);
+        // Already booked times for this stylist on this date
+        $bookedTimes = Appointment::where('salon_id', $salon->id)
+            ->where('stylist_id', $stylistId)
+            ->where('appointment_date', $date)
+            ->whereNotIn('status', ['cancelled'])
+            ->pluck('start_time')
+            ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
+            ->toArray();
 
-    //         try {
-    //             $appointment->salon->owner->notify(
-    //                 new \App\Notifications\NewPaymentAlert($appointment)
-    //             );
-    //         } catch (\Exception $e) {
-    //             Log::warning('Owner notification failed: ' . $e->getMessage());
-    //         }
+        // Generate slots from salon opening to closing time
+        $openTime  = \Carbon\Carbon::parse($salon->opening_time  ?? '09:00');
+        $closeTime = \Carbon\Carbon::parse($salon->closing_time  ?? '20:00');
+        $duration  = $serviceId
+            ? (Service::find($serviceId)?->duration_minutes ?? 60)
+            : 60;
 
-    //         // ✅ Show the confetti success page directly with the real
-    //         // appointment data, instead of redirecting to appointments list
-    //         return view('frontend.booking.confirmation', compact('appointment'));
-    //     }
+        $slots   = [];
+        $current = $openTime->copy();
 
-    //     return redirect()->route('client.appointments.index')
-    //         ->with('error', 'Payment record not found.');
-    // }
+        while ($current->copy()->addMinutes($duration)->lte($closeTime)) {
+            $timeStr   = $current->format('H:i');
+            $label     = $current->format('h:i A');
+            $available = !in_array($timeStr, $bookedTimes);
 
+            $slots[] = [
+                'time'      => $timeStr,
+                'label'     => $label,
+                'time_24'   => $timeStr,
+                'available' => $available,
+            ];
 
-    // public function payfastCancel(Request $request)
-    // {
-    //     $paymentId = Session::get('pending_payment_id');
-    //     $payment   = Payment::find($paymentId);
+            $current->addMinutes(30);
+        }
 
-    //     if ($payment) {
-    //         $payment->update(['status' => 'cancelled']);
-    //         $payment->appointment->update(['status' => 'cancelled']);
-    //     }
-
-    //     return redirect()->route('booking.step4', Session::get('booking_salon_id'))
-    //         ->with('error', 'Payment was cancelled. Please try again.');
-    // }
-
-
-    // public function payfastNotify(Request $request)
-    // {
-    //     Log::info('PayFast IPN received: ' . json_encode($request->all()));
-
-    //     // In sandbox/demo mode just acknowledge receipt.
-    //     // In production verify the signature/hash here before trusting data.
-    //     return response('OK', 200);
-    // }
-
-
-    // public function getSlots(Request $request, $salon_id)
-    // {
-    //     $salon     = Salon::findOrFail($salon_id);
-    //     $date      = $request->date;
-    //     $stylistId = $request->stylist_id ?? Session::get('booking_stylist_id');
-    //     $serviceId = $request->service_id ?? Session::get('booking_service_id');
-
-    //     $bookedTimes = Appointment::where('salon_id', $salon->id)
-    //         ->where('stylist_id', $stylistId)
-    //         ->where('appointment_date', $date)
-    //         ->whereNotIn('status', ['cancelled'])
-    //         ->pluck('start_time')
-    //         ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
-    //         ->toArray();
-
-    //     $isHoliday = StylistHoliday::where('stylist_id', $stylistId)
-    //         ->whereDate('date', $date)
-    //         ->exists();
-
-    //     if ($isHoliday) {
-    //         return response()->json(['slots' => [], 'holiday' => true]);
-    //     }
-
-    //     $openTime  = \Carbon\Carbon::parse($salon->opening_time  ?? '09:00');
-    //     $closeTime = \Carbon\Carbon::parse($salon->closing_time  ?? '20:00');
-    //     $duration  = $serviceId
-    //         ? (Service::find($serviceId)->duration_minutes ?? 60)
-    //         : 60;
-
-    //     $slots   = [];
-    //     $current = $openTime->copy();
-
-    //     while ($current->copy()->addMinutes($duration)->lte($closeTime)) {
-    //         $timeStr = $current->format('H:i');
-    //         $label   = $current->format('h:i A');
-    //         $slots[] = [
-    //             'time'      => $label,
-    //             'time_24'   => $timeStr,
-    //             'label'     => $label,
-    //             'available' => !in_array($timeStr, $bookedTimes),
-    //         ];
-    //         $current->addMinutes(30);
-    //     }
-
-    //     return response()->json(['slots' => $slots, 'holiday' => false]);
-    // }
+        return response()->json(['slots' => $slots, 'holiday' => false]);
+    }
 
 
     public function confirmation($booking_id)

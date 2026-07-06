@@ -67,13 +67,6 @@ class AppointmentManageController extends Controller
             'cancelled_at'        => now(),
         ]);
 
-        // ── Waitlist: next waiting client ko notify karo ──
-        WaitlistJoinController::offerToNext(
-            $appointment->salon_id,
-            $appointment->stylist_id,
-            $appointment->appointment_date->format('Y-m-d')
-        );
-
         Auth::user()->notify(new AppointmentUpdateNotification($appointment, 'cancelled'));
 
         return redirect()->route('client.appointments.show', $appointment->id)

@@ -4,14 +4,14 @@
 @extends('layouts.client')
 @section('title', 'Notifications — Glamora')
 @section('content')
- 
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h4 class="fw-bold mb-1" style="color:#333;font-family:'Playfair Display',serif;"><i class="fas fa-bell me-2" style="color:#E91E8C;"></i>Notifications</h4>
         <p style="color:#aaa;font-size:0.85rem;margin:0;">{{ Auth::user()->unreadNotifications->count() }} unread notifications</p>
     </div>
     @if(Auth::user()->unreadNotifications->count() > 0)
-    <form action="{{ route('client.notifications.mark-read') }}" method="POST">
+    <form action="{{ route('client.notifications.read-all') }}" method="POST">
         @csrf
         <button class="btn btn-sm rounded-pill px-4" style="background:#fff0f7;color:#E91E8C;border:1px solid #fce4ec;font-weight:600;">
             <i class="fas fa-check-double me-1"></i>Mark All Read
@@ -19,7 +19,7 @@
     </form>
     @endif
 </div>
- 
+
 <div class="bg-white rounded-4 overflow-hidden" style="border:1px solid #fce4ec;">
     @forelse(Auth::user()->notifications as $notif)
     <div class="d-flex align-items-start gap-3 p-4" style="border-bottom:1px solid #fce4ec;{{ !$notif->read_at ? 'background:#fff8fb;' : '' }}">
