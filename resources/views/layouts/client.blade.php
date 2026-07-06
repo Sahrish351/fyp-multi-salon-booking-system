@@ -160,73 +160,25 @@
                     <!-- ✅ NOTIFICATION BELL - COMPLETE WORKING                   -->
                     <!-- ============================================================ -->
                     <div class="dropdown">
-                        <button class="btn btn-sm position-relative" style="background: rgba(233,30,140,0.1); border-radius: 50%; width: 38px; height: 38px;" data-bs-toggle="dropdown">
+                        <button class="btn btn-sm position-relative" id="notifBellBtn" style="background: rgba(233,30,140,0.1); border-radius: 50%; width: 38px; height: 38px;" data-bs-toggle="dropdown">
                             <i class="fas fa-bell" style="color: var(--client-pink);"></i>
-                            @php
-                                $unreadCount = auth()->user()->unreadNotifications()->count();
-                            @endphp
+                            @php $unreadCount = 0; @endphp
                             @if($unreadCount > 0)
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-pulse" style="font-size: 0.65rem; min-width: 20px;">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
                                     {{ $unreadCount > 9 ? '9+' : $unreadCount }}
                                 </span>
                             @endif
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 340px; max-height: 420px; overflow-y: auto; border-radius: 16px; border: 1px solid #fce4ec; padding: 0;">
-
-                            <!-- Header -->
-                            <li class="dropdown-header d-flex justify-content-between align-items-center px-4 py-3" style="background: #fcf9fc; border-bottom: 1px solid #fce4ec; border-radius: 16px 16px 0 0;">
-                                <span class="fw-bold" style="color: #2d1f2c;">
-                                    <i class="fas fa-bell me-2" style="color: #E91E8C;"></i> Notifications
-                                </span>
-                                @if($unreadCount > 0)
-                                    <form action="{{ route('client.notifications.mark-all-read') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm text-decoration-none" style="color: #E91E8C; font-weight: 600; background: none; border: none;">
-                                            Mark all read
-                                        </button>
-                                    </form>
-                                @endif
-                            </li>
-
-                            <!-- Notifications List -->
-                            @php
-                                $notifications = auth()->user()->notifications()->take(8)->get();
-                            @endphp
-
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                            <li><h6 class="dropdown-header">Notifications</h6></li>
+                            @php $notifications = []; @endphp
                             @forelse($notifications as $notif)
-                                <li class="dropdown-item py-3 px-4 border-bottom" style="border-color: #f5eaf0; background: {{ $notif->read_at ? '#fff' : '#fcf4f8' }};">
-                                    <div class="d-flex align-items-start gap-3">
-                                        <div style="width: 36px; height: 36px; border-radius: 50%; background: {{ $notif->read_at ? '#f5f5f5' : '#fce4ec' }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <span style="font-size: 1.1rem;">
-                                                {{ $notif->data['status'] === 'confirmed' ? '✅' : ($notif->data['status'] === 'cancelled' ? '❌' : '📋') }}
-                                            </span>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="fw-semibold" style="color: #2d1f2c; font-size: 0.85rem;">
-                                                {{ $notif->data['status_text'] ?? 'Update' }}
-                                            </div>
-                                            <div style="color: #666; font-size: 0.75rem;">
-                                                {{ $notif->data['message'] ?? 'Your appointment has been updated.' }}
-                                            </div>
-                                            <div style="color: #aaa; font-size: 0.65rem; margin-top: 2px;">
-                                                {{ $notif->data['service_name'] ?? '' }} · {{ $notif->data['salon_name'] ?? '' }}
-                                            </div>
-                                            <div style="color: #ccc; font-size: 0.6rem; margin-top: 2px;">
-                                                {{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}
-                                            </div>
-                                        </div>
-                                        @if(!$notif->read_at)
-                                            <span class="badge rounded-pill" style="background: #E91E8C; font-size: 0.5rem; padding: 3px 8px; flex-shrink: 0;">New</span>
-                                        @endif
-                                    </div>
-                                    @if(!$notif->read_at)
-                                        <form action="{{ route('client.notifications.mark-read', $notif->id) }}" method="POST" class="float-end mt-1">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm text-decoration-none" style="color: #E91E8C; font-size: 0.6rem; background: none; border: none;">
-                                                Mark as read
-                                            </button>
-                                        </form>
-                                    @endif
+                                <li>
+                                    <a class="dropdown-item" href="#" style="white-space: normal;">
+                                        <small class="text-muted">{{ $notif->created_at->diffForHumans() ?? now()->diffForHumans() }}</small><br>
+                                        <strong>{{ $notif->data['title'] ?? 'New Notification' }}</strong><br>
+                                        <span class="small">{{ $notif->data['message'] ?? 'You have a new notification' }}</span>
+                                    </a>
                                 </li>
                             @empty
                                 <li class="dropdown-item py-4 text-center" style="color: #aaa;">
@@ -234,13 +186,15 @@
                                     No notifications yet
                                 </li>
                             @endforelse
-
-                            <!-- Footer -->
-                            <li class="dropdown-footer text-center py-2" style="background: #fcf9fc; border-top: 1px solid #fce4ec; border-radius: 0 0 16px 16px;">
-                                <a href="{{ route('client.notifications.index') }}" class="text-decoration-none small" style="color: #E91E8C; font-weight: 600;">
-                                    View all notifications
-                                </a>
-                            </li>
+                            @if($unreadCount > 0)
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{{ route('notifications.markAllRead') }}" method="POST">
+                                        @csrf
+                                        <button class="dropdown-item text-center small text-primary">Mark all as read</button>
+                                    </form>
+                                </li>
+                            @endif
                         </ul>
                     </div>
                     <!-- ============================================================ -->
@@ -341,6 +295,24 @@
                 }, 4000);
             });
         }, 1000);
+
+        // Notification bell: WhatsApp-style — opening the dropdown marks all as read and hides the badge
+        document.getElementById('notifBellBtn')?.addEventListener('click', function() {
+            const badge = document.getElementById('notifBadge');
+            if (!badge || badge.style.display === 'none') return;
+
+            fetch("{{ route('client.notifications.read-all') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            }).then(() => {
+                badge.style.display = 'none';
+            }).catch(() => {
+                // silently ignore — badge will still update correctly on next page load
+            });
+        });
     </script>
 
     @stack('scripts')

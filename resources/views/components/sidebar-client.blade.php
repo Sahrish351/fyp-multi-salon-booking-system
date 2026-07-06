@@ -1,7 +1,7 @@
 {{-- ============================================================ --}}
 {{-- FILE: resources/views/components/sidebar-client.blade.php --}}
 {{-- ============================================================ --}}
-<div class="sidebar d-flex flex-column" style="background: linear-gradient(180deg, #c2185b 0%, #880e4f 100%); border-right: 1px solid rgba(255,255,255,0.1);">
+<div class="sidebar d-flex flex-column" style="background: linear-gradient(180deg, #E91E8C 0%, #c2185b 100%); border-right: 1px solid rgba(255,255,255,0.1);">
     
     {{-- Logo Section --}}
     <div class="p-4 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">

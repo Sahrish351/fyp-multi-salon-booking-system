@@ -382,14 +382,14 @@ Route::delete('/categories/{category}', [OwnerCategoryController::class, 'destro
 Route::get('/appointments/export',             [OwnerAppointmentController::class, 'export'])->name('appointments.export');
 Route::resource('appointments', OwnerAppointmentController::class);
 
-// ✅ Appointment Actions
+//  Appointment Actions
 Route::post('/appointments/{id}/approve',      [OwnerAppointmentController::class, 'approve'])->name('appointments.approve');
 Route::post('/appointments/{id}/confirm',      [OwnerAppointmentController::class, 'approve'])->name('appointments.confirm');
 Route::post('/appointments/{id}/complete',     [OwnerAppointmentController::class, 'complete'])->name('appointments.complete');
 Route::post('/appointments/{id}/cancel',       [OwnerAppointmentController::class, 'cancel'])->name('appointments.cancel');
 Route::get('/appointments/{id}/invoice',       [OwnerAppointmentController::class, 'invoice'])->name('appointments.invoice');
 
-// ✅ PAYMENT VERIFICATION ROUTES - YEH 2 ADD KAREIN
+// PAYMENT VERIFICATION ROUTES 
 Route::post('/appointments/{id}/verify-payment', [OwnerAppointmentController::class, 'verifyPayment'])->name('appointments.verify-payment');
 Route::post('/appointments/{id}/reject-payment', [OwnerAppointmentController::class, 'rejectPayment'])->name('appointments.reject-payment');
         // Payments
@@ -468,14 +468,16 @@ Route::post('/waitlist/{id}/notify',   [OwnerWaitlistController::class, 'notify'
         Route::get('/appointments/{appointment}/reschedule',[RescheduleController::class, 'create'])->name('appointments.reschedule');
  
         // Reschedule
-        Route::get('/appointments/{appointment}/reschedule', [RescheduleController::class, 'create'])->name('appointments.reschedule');
-    Route::post('/appointments/{appointment}/reschedule', [RescheduleController::class, 'store'])->name('appointments.reschedule.store');
+Route::get('appointments/{appointment}/reschedule', [RescheduleController::class, 'create'])->name('appointments.reschedule.create');
+Route::post('appointments/{appointment}/reschedule', [RescheduleController::class, 'store'])->name('appointments.reschedule');
         // Waitlist
-        Route::get('/waitlist',                      [WaitlistJoinController::class, 'index'])->name('waitlist.index');
-        Route::post('/waitlist/join',                [WaitlistJoinController::class, 'join'])->name('waitlist.join');
-        Route::post('/waitlist/{waitlist}/accept',   [WaitlistJoinController::class, 'accept'])->name('waitlist.accept');
-        Route::post('/waitlist/{waitlist}/reject',   [WaitlistJoinController::class, 'reject'])->name('waitlist.reject');
- 
+       
+Route::prefix('waitlist')->name('waitlist.')->group(function () {
+    Route::get('/',                   [WaitlistJoinController::class, 'index'])->name('index');
+    Route::post('/join',              [WaitlistJoinController::class, 'join'])->name('join');
+    Route::post('/{waitlist}/accept', [WaitlistJoinController::class, 'accept'])->name('accept');
+    Route::post('/{waitlist}/reject', [WaitlistJoinController::class, 'reject'])->name('reject');
+});
         // Favorites
         Route::get('/favorites',                     [FavoriteSalonController::class, 'index'])->name('favorites.index');
         Route::post('/favorites/{salon}/toggle',     [FavoriteSalonController::class, 'toggle'])->name('favorites.toggle');

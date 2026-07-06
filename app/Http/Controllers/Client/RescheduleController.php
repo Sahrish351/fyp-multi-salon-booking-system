@@ -4,71 +4,71 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
-use App\Models\AppointmentReschedule;
-use App\Models\TimeSlot;
+use App\Notifications\AppointmentUpdateNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class RescheduleController extends Controller
 {
     public function create(Appointment $appointment)
     {
-        if ($appointment->client_id !== Auth::id()) abort(403);
-        
-        if (!in_array($appointment->status, ['confirmed', 'payment_approved'])) {
-            return back()->with('error', 'Only confirmed appointments can be rescheduled.');
+        if ($appointment->client_id !== Auth::id()) {
+            abort(403);
         }
 
-        $salon = $appointment->salon;
-        $stylists = $salon->stylists()->where('is_active', true)->get();
-        
-        return view('client.reschedule.create', compact('appointment', 'salon', 'stylists'));
+        if (in_array($appointment->status, ['cancelled', 'completed'])) {
+            return redirect()->route('client.appointments.show', $appointment->id)
+                ->with('error', 'This appointment can no longer be rescheduled.');
+        }
+
+        return view('client.reschedule.create', compact('appointment'));
     }
 
     public function store(Request $request, Appointment $appointment)
     {
-        if ($appointment->client_id !== Auth::id()) abort(403);
-
-        $request->validate([
-            'new_date'       => 'required|date|after:today',
-            'new_time_slot_id' => 'required|exists:time_slots,id',
-            'new_stylist_id' => 'nullable|exists:stylists,id',
-            'reason'         => 'nullable|string',
-        ]);
-
-        $newSlot = TimeSlot::findOrFail($request->new_time_slot_id);
-        
-        if (!$newSlot->isAvailable()) {
-            return back()->with('error', 'Selected slot is no longer available.');
+        if ($appointment->client_id !== Auth::id()) {
+            abort(403);
         }
 
-        DB::transaction(function () use ($request, $appointment, $newSlot) {
-            // Lock the new slot
-            $newSlot->update([
-                'status'          => 'locked',
-                'locked_by'       => Auth::id(),
-                'locked_at'       => now(),
-                'lock_expires_at' => now()->addMinutes(10),
-            ]);
+        if (in_array($appointment->status, ['cancelled', 'completed'])) {
+            return back()->with('error', 'This appointment can no longer be rescheduled.');
+        }
 
-            // Create reschedule request
-            AppointmentReschedule::create([
-                'appointment_id'   => $appointment->id,
-                'old_date'         => $appointment->appointment_date,
-                'old_time'         => $appointment->start_time,
-                'new_date'         => $request->new_date,
-                'new_time'         => $newSlot->start_time,
-                'old_stylist_id'   => $appointment->stylist_id,
-                'new_stylist_id'   => $request->new_stylist_id ?? $appointment->stylist_id,
-                'reason'           => $request->reason,
-                'requested_by'     => Auth::id(),
-                'status'           => 'pending',
-            ]);
+        $request->validate([
+            'new_date'          => 'required|date|after_or_equal:' . now()->format('Y-m-d'),
+            'new_time'          => 'required|date_format:H:i',
+            'reschedule_reason' => 'nullable|string|max:500',
+        ], [
+            'new_date.after_or_equal' => 'Please select today or a future date.',
+        ]);
 
-            $appointment->update(['status' => 'pending_reschedule']);
-        });
+        $service = $appointment->service;
 
-        return redirect()->route('client.appointments.show', $appointment)->with('success', 'Reschedule request submitted! Awaiting owner approval.');
+        $newStart = \Carbon\Carbon::parse($request->new_time)->format('H:i:s');
+        $newEnd   = \Carbon\Carbon::parse($request->new_time)
+                        ->addMinutes($service->duration ?? 60)
+                        ->format('H:i:s');
+
+        $oldDate = \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y');
+        $oldTime = \Carbon\Carbon::parse($appointment->start_time)->format('h:i A');
+
+        $appointment->update([
+            'appointment_date' => $request->new_date,
+            'start_time'       => $newStart,
+            'end_time'         => $newEnd,
+            'notes'            => trim(
+                ($appointment->notes ? $appointment->notes . ' | ' : '') .
+                "Rescheduled from {$oldDate} {$oldTime}" .
+                ($request->filled('reschedule_reason') ? " — Reason: {$request->reschedule_reason}" : '')
+            ),
+        ]);
+
+        Auth::user()->notify(new AppointmentUpdateNotification($appointment, 'rescheduled', [
+            'old_date' => $oldDate,
+            'old_time' => $oldTime,
+        ]));
+
+        return redirect()->route('client.appointments.show', $appointment->id)
+            ->with('success', 'Your appointment has been rescheduled successfully!');
     }
 }
