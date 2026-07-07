@@ -172,87 +172,87 @@ class OwnerServiceController extends Controller
         }
     }
 
-    // ✅ FIXED SHOW METHOD
-    public function show($service)
-    {
-        try {
-            $user = auth()->user();
+    public function show($id)  // ✅ $id use karein (service nahi)
+{
+    try {
+        $user = auth()->user();
 
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
+        }
 
-            // ✅ Direct find without salon_id check
-            $service = Service::with('category')->find($service);
+        // ✅ Direct find
+        $service = Service::with('category')->find($id);
 
-            if (!$service) {
-                return redirect()->route('owner.services.index')
-                    ->with('error', 'Service not found.');
-            }
-
-            $bookingsCount = Appointment::where('service_id', $service->id)->count();
-
-            $totalRevenue = Appointment::where('service_id', $service->id)
-                ->whereHas('payment', function ($query) {
-                    $query->where('status', 'approved');
-                })
-                ->sum('total_amount');
-
-            $avgRating = \App\Models\Review::where('service_id', $service->id)
-                ->avg('rating') ?? 0;
-
-            $recentBookings = Appointment::where('service_id', $service->id)
-                ->with(['client', 'stylist'])
-                ->orderBy('appointment_date', 'desc')
-                ->orderBy('start_time', 'desc')
-                ->limit(5)
-                ->get()
-                ->map(function ($appointment) {
-                    $statusMap = [
-                        'pending_payment' => 'Pending',
-                        'confirmed' => 'Confirmed',
-                        'completed' => 'Completed',
-                        'cancelled' => 'Cancelled',
-                        'in_progress' => 'In Progress',
-                    ];
-
-                    return [
-                        'client' => $appointment->client->name ?? 'N/A',
-                        'date' => $appointment->appointment_date->format('M d, Y'),
-                        'stylist' => $appointment->stylist->name ?? 'N/A',
-                        'status' => $statusMap[$appointment->status] ?? ucfirst($appointment->status),
-                    ];
-                });
-
-            $serviceData = [
-                'id' => $service->id,
-                'name' => $service->name,
-                'category' => $service->category->name ?? 'Uncategorized',
-                'duration' => $service->duration,
-                'price' => $service->price,
-                'discount_price' => null,
-                'bookings' => $bookingsCount,
-                'revenue' => $totalRevenue,
-                'rating' => round($avgRating, 1),
-                'description' => $service->description ?? 'No description provided.',
-                'client_notes' => $service->client_notes ?? '',
-                'status' => $service->is_active ? 'Active' : 'Inactive',
-                'image_url' => $service->image ? asset('storage/' . $service->image) : null,
-            ];
-
-            return view('owner.services.show', [
-                'service' => $serviceData,
-                'recentBookings' => $recentBookings,
-            ]);
-
-        } catch (\Exception $e) {
-            \Log::error('Service Show Error: ' . $e->getMessage());
+        if (!$service) {
             return redirect()->route('owner.services.index')
                 ->with('error', 'Service not found.');
         }
-    }
 
-    public function edit($service)
+        $bookingsCount = Appointment::where('service_id', $service->id)->count();
+
+        $totalRevenue = Appointment::where('service_id', $service->id)
+            ->whereHas('payment', function ($query) {
+                $query->where('status', 'approved');
+            })
+            ->sum('total_amount');
+
+        $avgRating = \App\Models\Review::where('service_id', $service->id)
+            ->avg('rating') ?? 0;
+
+        $recentBookings = Appointment::where('service_id', $service->id)
+            ->with(['client', 'stylist'])
+            ->orderBy('appointment_date', 'desc')
+            ->orderBy('start_time', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($appointment) {
+                $statusMap = [
+                    'pending_payment' => 'Pending',
+                    'confirmed' => 'Confirmed',
+                    'completed' => 'Completed',
+                    'cancelled' => 'Cancelled',
+                    'in_progress' => 'In Progress',
+                ];
+
+                return [
+                    'client' => $appointment->client->name ?? 'N/A',
+                    'date' => $appointment->appointment_date->format('M d, Y'),
+                    'stylist' => $appointment->stylist->name ?? 'N/A',
+                    'status' => $statusMap[$appointment->status] ?? ucfirst($appointment->status),
+                ];
+            });
+
+        $serviceData = [
+            'id' => $service->id,
+            'name' => $service->name,
+            'category' => $service->category->name ?? 'Uncategorized',
+            'duration' => $service->duration,
+            'price' => $service->price,
+            'discount_price' => null,
+            'bookings' => $bookingsCount,
+            'revenue' => $totalRevenue,
+            'rating' => round($avgRating, 1),
+            'description' => $service->description ?? 'No description provided.',
+            'client_notes' => $service->client_notes ?? '',
+            'status' => $service->is_active ? 'Active' : 'Inactive',
+            'image_url' => $service->image ? asset('storage/' . $service->image) : null,
+        ];
+
+        return view('owner.services.show', [
+            'service' => $serviceData,
+            'recentBookings' => $recentBookings,
+        ]);
+
+    } catch (\Exception $e) {
+        \Log::error('Service Show Error: ' . $e->getMessage());
+        return redirect()->route('owner.services.index')
+            ->with('error', 'Service not found.');
+    }
+}
+
+    // ✅ FIXED EDIT METHOD - $id use karein
+    public function edit($id)
     {
         try {
             $user = auth()->user();
@@ -269,7 +269,7 @@ class OwnerServiceController extends Controller
             }
 
             $service = Service::where('salon_id', $salon->id)
-                ->find($service);
+                ->find($id);
 
             if (!$service) {
                 return redirect()->route('owner.services.index')
@@ -307,7 +307,8 @@ class OwnerServiceController extends Controller
         }
     }
 
-    public function update(Request $request, $service)
+    // ✅ FIXED UPDATE METHOD - $id use karein
+    public function update(Request $request, $id)
     {
         try {
             $user = auth()->user();
@@ -323,7 +324,7 @@ class OwnerServiceController extends Controller
                     ->with('error', 'Salon not found.');
             }
 
-            $service = Service::where('salon_id', $salon->id)->find($service);
+            $service = Service::where('salon_id', $salon->id)->find($id);
 
             if (!$service) {
                 return redirect()->route('owner.services.index')
@@ -377,7 +378,8 @@ class OwnerServiceController extends Controller
         }
     }
 
-    public function destroy($service)
+    // ✅ FIXED DESTROY METHOD - $id use karein
+    public function destroy($id)
     {
         try {
             $user = auth()->user();
@@ -393,7 +395,7 @@ class OwnerServiceController extends Controller
                     ->with('error', 'Salon not found.');
             }
 
-            $service = Service::where('salon_id', $salon->id)->find($service);
+            $service = Service::where('salon_id', $salon->id)->find($id);
 
             if (!$service) {
                 return redirect()->route('owner.services.index')
@@ -424,7 +426,7 @@ class OwnerServiceController extends Controller
         }
     }
 
-    public function toggleStatus(Request $request, $service)
+    public function toggleStatus(Request $request, $id)
     {
         try {
             $user = auth()->user();
@@ -440,7 +442,7 @@ class OwnerServiceController extends Controller
                     ->with('error', 'Salon not found.');
             }
 
-            $service = Service::where('salon_id', $salon->id)->find($service);
+            $service = Service::where('salon_id', $salon->id)->find($id);
 
             if (!$service) {
                 return redirect()->route('owner.services.index')
