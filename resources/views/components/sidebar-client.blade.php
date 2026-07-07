@@ -32,6 +32,7 @@
             $clientLinks = [
                 ['route' => 'client.dashboard', 'icon' => 'fa-home', 'label' => 'Dashboard'],
                 ['route' => 'client.appointments.index', 'icon' => 'fa-calendar-check', 'label' => 'My Appointments'],
+                ['route' => 'client.payments.index', 'icon' => 'fa-credit-card', 'label' => 'Payments'],
                 ['route' => 'client.waitlist.index', 'icon' => 'fa-list-ol', 'label' => 'My Waitlist'],
                 ['route' => 'client.favorites.index', 'icon' => 'fa-heart', 'label' => 'Saved Salons'],
                 ['route' => 'client.reviews.index', 'icon' => 'fa-star', 'label' => 'My Reviews'],

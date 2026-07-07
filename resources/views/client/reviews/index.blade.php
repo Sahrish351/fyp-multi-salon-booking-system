@@ -22,12 +22,7 @@
     <a href="{{ route('client.reviews.index', ['status' => 'approved']) }}" 
        class="btn btn-sm rounded-pill {{ request('status') === 'approved' ? 'active' : '' }}"
        style="{{ request('status') === 'approved' ? 'background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-weight:600;' : 'background:#fff;color:#888;border:1px solid #fce4ec;' }}font-size:0.82rem;padding:6px 16px;">
-        Approved
-    </a>
-    <a href="{{ route('client.reviews.index', ['status' => 'pending']) }}" 
-       class="btn btn-sm rounded-pill {{ request('status') === 'pending' ? 'active' : '' }}"
-       style="{{ request('status') === 'pending' ? 'background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-weight:600;' : 'background:#fff;color:#888;border:1px solid #fce4ec;' }}font-size:0.82rem;padding:6px 16px;">
-        Pending
+        Published
     </a>
 </div>
 
