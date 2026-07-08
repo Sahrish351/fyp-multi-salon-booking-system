@@ -1,4 +1,3 @@
-
 @extends('layouts.owner')
  
 @section('title', 'Record Payment')
@@ -106,32 +105,146 @@
  
 @section('extra-css')
 <style>
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d1f2c;
+        margin-bottom: 0.25rem;
+    }
+    .page-header p {
+        color: #8a7a88;
+        margin-bottom: 0;
+    }
+
+    /* ===== BACK BUTTON ===== */
     .btn-back {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--plum-800);
-        font-weight: 600; font-size: 14.5px; padding: 10px 20px; border-radius: 10px;
-        display: inline-flex; align-items: center; transition: all 0.18s ease;
+        background: #fff;
+        border: 1px solid #f0e8ed;
+        color: #2d1f2c;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-back:hover { background: var(--blush-50); color: var(--plum-900); }
+    .btn-back:hover {
+        background: #fcf6f9;
+        border-color: #E85588;
+        color: #E85588;
+    }
  
-    .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink-700); margin-bottom: 6px; }
+    /* ===== FORM ===== */
+    .panel-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(0,0,0,0.04);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    .panel-card:hover {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .panel-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2d1f2c;
+        margin-bottom: 1.2rem;
+    }
+
+    .form-label-custom {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #4a3a48;
+        margin-bottom: 6px;
+    }
     .input-custom {
-        background: var(--blush-50) !important; border: 1px solid var(--blush-200) !important;
-        border-radius: var(--radius-sm) !important; color: var(--ink-900) !important;
-        font-size: 14.5px; padding: 11px 14px !important;
+        background: #fcf6f9 !important;
+        border: 1px solid #f0e8ed !important;
+        border-radius: 10px !important;
+        color: #2d1f2c !important;
+        font-size: 14.5px;
+        padding: 11px 14px !important;
+        width: 100%;
     }
-    .input-custom:focus { background: #fff !important; border-color: var(--rose-400) !important; box-shadow: 0 0 0 3px rgba(240, 143, 180, 0.2) !important; outline: none; }
- 
+    .input-custom:focus {
+        background: #fff !important;
+        border-color: #E85588 !important;
+        box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15) !important;
+        outline: none;
+    }
+    .input-custom[type="file"] {
+        padding: 8px 12px !important;
+    }
+
+    /* ============================================================
+       RECORD PAYMENT BUTTON - PINK
+       ============================================================ */
     .btn-save-changes {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; padding: 11px 26px; border-radius: 10px; border: none;
-        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-save-changes:hover { color: var(--plum-900); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 164, 65, 0.4); }
- 
+    .btn-save-changes:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
+
+    /* ============================================================
+       CANCEL BUTTON - PINK OUTLINE
+       ============================================================ */
     .btn-cancel-modal {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--ink-700);
-        font-weight: 600; padding: 11px 26px; border-radius: 10px; display: inline-flex; align-items: center;
+        background: #fff;
+        border: 1.5px solid #FF6B9D;
+        color: #E85588;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-cancel-modal:hover { background: var(--blush-50); color: var(--ink-900); }
+    .btn-cancel-modal:hover {
+        background: #E85588;
+        color: #ffffff !important;
+        border-color: #E85588;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .btn-back {
+            justify-content: center;
+            width: 100%;
+        }
+        .d-flex.gap-3 {
+            flex-wrap: wrap;
+        }
+        .btn-save-changes,
+        .btn-cancel-modal {
+            flex: 1;
+            justify-content: center;
+        }
+    }
 </style>
 @endsection

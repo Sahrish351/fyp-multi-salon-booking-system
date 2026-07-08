@@ -3,30 +3,46 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class OwnerCategoryController extends Controller
 {
     /**
-     * Route: GET /owner/categories  -->  name: owner.categories.index
-     *
-     * Categories grid page dikhana.
-     *
-     * BAAD ME: Database se real categories laayen (service count ke saath):
-     *   $categories = Category::where('salon_id', auth()->user()->salon_id)
-     *       ->withCount('services')->get();
+     * Display a listing of categories.
      */
     public function index(Request $request)
     {
-        $categories = $this->dummyCategories();
+        try {
+            // ✅ SAB CATEGORIES DIKHAO
+            $categories = Category::withCount('services')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($category) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'count' => $category->services_count,
+                        'icon_bg' => $category->icon_color ?? 'cat-gold',
+                        'status' => $category->is_active ? 'Active' : 'Inactive',
+                        'description' => $category->description,
+                    ];
+                });
 
-        return view('owner.categories.index', compact('categories'));
+            return view('owner.categories.index', compact('categories'));
+
+        } catch (\Exception $e) {
+            Log::error('Category Index Error: ' . $e->getMessage());
+            return view('owner.categories.index', ['categories' => collect([])])
+                ->with('error', 'Unable to load categories.');
+        }
     }
 
     /**
-     * Route: GET /owner/categories/create  -->  name: owner.categories.create
-     *
-     * Nayi category add karne ka page.
+     * Show the form for creating a new category.
      */
     public function create()
     {
@@ -34,133 +50,208 @@ class OwnerCategoryController extends Controller
     }
 
     /**
-     * Route: POST /owner/categories  -->  name: owner.categories.store
-     *
-     * Nayi category add karna (Create page form submit).
-     *
-     * BAAD ME:
-     *   $request->validate([
-     *       'name'        => 'required|string|max:255',
-     *       'description' => 'nullable|string',
-     *       'icon_color'  => 'required|string',
-     *       'status'      => 'required|in:Active,Inactive',
-     *   ]);
-     *   Category::create([...$request->validated(), 'salon_id' => auth()->user()->salon_id]);
+     * Store a newly created category in database.
      */
     public function store(Request $request)
     {
-        return redirect()->route('owner.categories.index')->with('success', 'Category added successfully!');
-    }
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255|unique:categories,name',
+                'description' => 'nullable|string|max:500',
+                'icon_color' => 'nullable|string',
+                'status' => 'required|in:Active,Inactive',
+            ]);
 
-    /**
-     * Route: GET /owner/categories/{category}  -->  name: owner.categories.show
-     *
-     * Category ka detail page (icon, stats, us category ke services).
-     *
-     * BAAD ME:
-     *   $category = Category::findOrFail($id)->toArray();
-     *   $servicesInCategory = Service::where('category_id', $id)->get();
-     */
-    public function show($category)
-    {
-        $categoryData = $this->findDummyCategory($category);
-
-        $servicesInCategory = [
-            ['name' => 'Premium Haircut', 'duration' => 45, 'price' => 85,  'status' => 'Active'],
-            ['name' => 'Hair Coloring',   'duration' => 90, 'price' => 120, 'status' => 'Active'],
-            ['name' => 'Beard Trim',      'duration' => 30, 'price' => 45,  'status' => 'Active'],
-        ];
-
-        return view('owner.categories.show', [
-            'category' => $categoryData,
-            'servicesInCategory' => $servicesInCategory,
-        ]);
-    }
-
-    /**
-     * Route: GET /owner/categories/{category}/edit  -->  name: owner.categories.edit
-     *
-     * Category edit karne ka page (pre-filled form).
-     *
-     * BAAD ME:
-     *   $category = Category::findOrFail($id)->toArray();
-     */
-    public function edit($category)
-    {
-        $categoryData = $this->findDummyCategory($category);
-
-        return view('owner.categories.edit', ['category' => $categoryData]);
-    }
-
-    /**
-     * Route: PUT /owner/categories/{category}  -->  name: owner.categories.update
-     *
-     * Category update karna (Edit page form submit).
-     *
-     * BAAD ME:
-     *   $category = Category::findOrFail($id);
-     *   $category->update($request->validated());
-     */
-    public function update(Request $request, $category)
-    {
-        return redirect()->route('owner.categories.index')->with('success', 'Category updated successfully!');
-    }
-
-    /**
-     * Route: DELETE /owner/categories/{category}  -->  name: owner.categories.destroy
-     *
-     * Category delete karna (Delete confirmation modal submit).
-     *
-     * BAAD ME:
-     *   Category::findOrFail($id)->delete();
-     *   // Services iss category ke delete nahi honge, category_id null ho jayega
-     */
-    public function destroy(Request $request, $category)
-    {
-        return redirect()->route('owner.categories.index')->with('success', 'Category deleted successfully!');
-    }
-
-    /**
-     * Dummy/demo categories list — BAAD ME ye method hata kar Eloquent
-     * query se replace kar dena.
-     */
-    private function dummyCategories(): array
-    {
-        return [
-            ['id' => 1, 'name' => 'Hair Styling',     'count' => 12, 'icon_bg' => 'cat-gold',   'status' => 'Active'],
-            ['id' => 2, 'name' => 'Nail Care',        'count' => 8,  'icon_bg' => 'cat-purple', 'status' => 'Active'],
-            ['id' => 3, 'name' => 'Facial Treatment', 'count' => 6,  'icon_bg' => 'cat-green',  'status' => 'Active'],
-            ['id' => 4, 'name' => 'Spa & Massage',    'count' => 5,  'icon_bg' => 'cat-blue',   'status' => 'Active'],
-            ['id' => 5, 'name' => 'Makeup',           'count' => 7,  'icon_bg' => 'cat-orange', 'status' => 'Active'],
-            ['id' => 6, 'name' => 'Body Treatment',   'count' => 4,  'icon_bg' => 'cat-pink',   'status' => 'Active'],
-            ['id' => 7, 'name' => 'Hair Treatment',   'count' => 6,  'icon_bg' => 'cat-teal',   'status' => 'Active'],
-        ];
-    }
-
-    /**
-     * Dummy category id ke mutabiq dhoondna — BAAD ME Category::findOrFail($id) se replace karna.
-     */
-    private function findDummyCategory($id): array
-    {
-        $categories = $this->dummyCategories();
-
-        foreach ($categories as $cat) {
-            if ($cat['id'] == $id) {
-                $cat['description']     = 'Services related to ' . strtolower($cat['name']) . ' for our valued clients.';
-                $cat['total_bookings']  = 120;
-                return $cat;
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
             }
-        }
 
-        // Fallback agar id na milay
-        return [
-            'id' => $id,
-            'name' => 'Hair Styling',
-            'count' => 12,
-            'icon_bg' => 'cat-gold',
-            'status' => 'Active',
-            'description' => 'Services related to hair styling for our valued clients.',
-            'total_bookings' => 120,
-        ];
+            // ✅ CREATE CATEGORY
+            Category::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'icon_color' => $request->icon_color ?? 'cat-gold',
+                'is_active' => $request->status === 'Active' ? true : false,
+            ]);
+
+            return redirect()->route('owner.categories.index')
+                ->with('success', 'Category "' . $request->name . '" created successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Category Store Error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Unable to create category.')
+                ->withInput();
+        }
+    }
+
+    /**
+     * Display the specified category.
+     */
+    public function show($id)
+    {
+        try {
+            $category = Category::withCount('services')->find($id);
+
+            if (!$category) {
+                return redirect()->route('owner.categories.index')
+                    ->with('error', 'Category not found.');
+            }
+
+            $servicesInCategory = Service::where('category_id', $category->id)
+                ->select('id', 'name', 'duration', 'price', 'is_active')
+                ->get()
+                ->map(function ($service) {
+                    return [
+                        'id' => $service->id,
+                        'name' => $service->name,
+                        'duration' => $service->duration,
+                        'price' => $service->price,
+                        'status' => $service->is_active ? 'Active' : 'Inactive',
+                    ];
+                });
+
+            $categoryData = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'description' => $category->description ?? 'No description provided.',
+                'count' => $category->services_count,
+                'icon_bg' => $category->icon_color ?? 'cat-gold',
+                'status' => $category->is_active ? 'Active' : 'Inactive',
+                'total_bookings' => 0,
+            ];
+
+            return view('owner.categories.show', [
+                'category' => $categoryData,
+                'servicesInCategory' => $servicesInCategory,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Category Show Error: ' . $e->getMessage());
+            return redirect()->route('owner.categories.index')
+                ->with('error', 'Category not found.');
+        }
+    }
+
+    /**
+     * Show the form for editing the specified category.
+     */
+    public function edit($id)
+    {
+        try {
+            $category = Category::find($id);
+
+            if (!$category) {
+                return redirect()->route('owner.categories.index')
+                    ->with('error', 'Category not found.');
+            }
+
+            $categoryData = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'description' => $category->description,
+                'icon_bg' => $category->icon_color ?? 'cat-gold',
+                'status' => $category->is_active ? 'Active' : 'Inactive',
+            ];
+
+            return view('owner.categories.edit', ['category' => $categoryData]);
+
+        } catch (\Exception $e) {
+            Log::error('Category Edit Error: ' . $e->getMessage());
+            return redirect()->route('owner.categories.index')
+                ->with('error', 'Category not found.');
+        }
+    }
+
+    /**
+     * Update the specified category in database.
+     */
+    public function update(Request $request, $id)
+    {
+        try {
+            $category = Category::find($id);
+
+            if (!$category) {
+                return redirect()->route('owner.categories.index')
+                    ->with('error', 'Category not found.');
+            }
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255|unique:categories,name,' . $id,
+                'description' => 'nullable|string|max:500',
+                'icon_color' => 'nullable|string',
+                'status' => 'required|in:Active,Inactive',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            // ✅ UPDATE CATEGORY
+            $category->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'icon_color' => $request->icon_color ?? $category->icon_color,
+                'is_active' => $request->status === 'Active' ? true : false,
+            ]);
+
+            return redirect()->route('owner.categories.index')
+                ->with('success', 'Category "' . $category->name . '" updated successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Category Update Error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Unable to update category.')
+                ->withInput();
+        }
+    }
+
+    /**
+     * Remove the specified category from database.
+     */
+    public function destroy($id)
+    {
+        try {
+            $category = Category::find($id);
+
+            if (!$category) {
+                return redirect()->route('owner.categories.index')
+                    ->with('error', 'Category not found.');
+            }
+
+            $categoryName = $category->name;
+
+            // ✅ CHECK IF CATEGORY HAS SERVICES
+            $serviceCount = Service::where('category_id', $category->id)->count();
+            
+            if ($serviceCount > 0) {
+                return redirect()->route('owner.categories.index')
+                    ->with('error', 'Cannot delete "' . $categoryName . '" because it has ' . $serviceCount . ' service(s).');
+            }
+
+            // ✅ DELETE CATEGORY
+            $category->delete();
+
+            return redirect()->route('owner.categories.index')
+                ->with('success', 'Category "' . $categoryName . '" deleted successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Category Delete Error: ' . $e->getMessage());
+            return redirect()->route('owner.categories.index')
+                ->with('error', 'Unable to delete category.');
+        }
+    }
+
+    /**
+     * Helper: Get icon color
+     */
+    private function getIconColor($id): string
+    {
+        $colors = ['cat-gold', 'cat-purple', 'cat-green', 'cat-blue', 'cat-orange', 'cat-pink', 'cat-teal'];
+        return $colors[$id % count($colors)];
     }
 }

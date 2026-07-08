@@ -1,16 +1,11 @@
-{{--
-    ===========================================================
-    CATEGORY SHOW / DETAIL PAGE (resources/views/owner/categories/show.blade.php)
-    Route: GET /owner/categories/{category} --> owner.categories.show
-    ===========================================================
---}}
+
 @extends('layouts.owner')
 
 @section('title', 'Category Details')
 
 @section('content')
 
-    {{-- Page Header --}}
+ 
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <h2>{{ $category['name'] }}</h2>
@@ -28,7 +23,7 @@
 
     <div class="row g-4">
 
-        {{-- ===================== LEFT: ICON + STATUS ===================== --}}
+       
         <div class="col-lg-4">
             <div class="panel-card text-center">
                 <div class="category-icon-preview {{ $category['icon_bg'] }} mx-auto">
@@ -46,10 +41,10 @@
             </div>
         </div>
 
-        {{-- ===================== RIGHT: STATS + SERVICES LIST ===================== --}}
+        
         <div class="col-lg-8">
 
-            {{-- Stat cards --}}
+        
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
                     <div class="stat-card-sm">
@@ -71,7 +66,7 @@
                 </div>
             </div>
 
-            {{-- Services under this category --}}
+      
             <div class="panel-card">
                 <div class="panel-title">Services in this Category</div>
                 <div class="table-responsive">

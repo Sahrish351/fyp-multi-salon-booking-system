@@ -1,16 +1,11 @@
-{{--
-    ===========================================================
-    CATEGORY EDIT PAGE (resources/views/owner/categories/edit.blade.php)
-    Route: GET /owner/categories/{category}/edit --> owner.categories.edit
-    ===========================================================
---}}
+
 @extends('layouts.owner')
 
 @section('title', 'Edit Category')
 
 @section('content')
 
-    {{-- Page Header --}}
+ 
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <h2>Edit Category</h2>
@@ -27,7 +22,7 @@
 
         <div class="row g-4">
 
-            {{-- ===================== LEFT: ICON PREVIEW ===================== --}}
+           
             <div class="col-lg-4">
                 <div class="panel-card text-center">
                     <div class="category-icon-preview {{ $category['icon_bg'] }} mx-auto" id="iconPreview">
@@ -50,7 +45,7 @@
                 </div>
             </div>
 
-            {{-- ===================== RIGHT: CATEGORY DETAILS FORM ===================== --}}
+            
             <div class="col-lg-8">
                 <div class="panel-card">
                     <div class="panel-title">Category Details</div>
@@ -96,13 +91,58 @@
 
 @section('extra-css')
 <style>
-    .btn-back {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--plum-800);
-        font-weight: 600; font-size: 14.5px; padding: 10px 20px; border-radius: 10px;
-        display: inline-flex; align-items: center; transition: all 0.18s ease;
+  
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d1f2c;
+        margin-bottom: 0.25rem;
     }
-    .btn-back:hover { background: var(--blush-50); color: var(--plum-900); }
+    .page-header p {
+        color: #8a7a88;
+        margin-bottom: 0;
+    }
 
+    
+    .btn-back {
+        background: #fff;
+        border: 1px solid #f0e8ed;
+        color: #2d1f2c;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
+    }
+    .btn-back:hover {
+        background: #fcf6f9;
+        border-color: #E85588;
+        color: #E85588;
+    }
+
+   
+    .panel-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(0,0,0,0.04);
+        transition: all 0.3s ease;
+    }
+    .panel-card:hover {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .panel-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2d1f2c;
+        margin-bottom: 1.2rem;
+    }
+
+  
     .category-icon-preview {
         width: 90px;
         height: 90px;
@@ -114,44 +154,133 @@
         color: #fff;
         transition: background 0.2s ease;
     }
-    .cat-gold   { background: linear-gradient(135deg, var(--gold-500), var(--gold-600)); }
-    .cat-purple { background: linear-gradient(135deg, var(--purple-500), #7E4FB5); }
-    .cat-green  { background: linear-gradient(135deg, #38C495, var(--green-500)); }
-    .cat-blue   { background: linear-gradient(135deg, #6398F2, var(--blue-500)); }
-    .cat-orange { background: linear-gradient(135deg, #F2A23D, var(--orange-500)); }
-    .cat-pink   { background: linear-gradient(135deg, var(--rose-400), var(--rose-600)); }
+    .cat-gold   { background: linear-gradient(135deg, #D9A441, #C4903A); }
+    .cat-purple { background: linear-gradient(135deg, #9B6FD1, #7E4FB5); }
+    .cat-green  { background: linear-gradient(135deg, #38C495, #2EAE7D); }
+    .cat-blue   { background: linear-gradient(135deg, #6398F2, #4A7FE0); }
+    .cat-orange { background: linear-gradient(135deg, #F2A23D, #E08A2C); }
+    .cat-pink   { background: linear-gradient(135deg, #FF6B9D, #E85588); }
     .cat-teal   { background: linear-gradient(135deg, #3DC9B0, #21A085); }
 
-    .preview-hint { font-size: 12px; color: var(--ink-500); margin-top: 10px; margin-bottom: 0; }
+    .preview-hint {
+        font-size: 12px;
+        color: #8a7a88;
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
 
-    .color-picker-row { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
-    .color-radio { display: none; }
+    .color-picker-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+    }
+    .color-radio {
+        display: none;
+    }
     .color-swatch {
-        width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
-        display: inline-block; border: 3px solid transparent; transition: all 0.15s ease;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: inline-block;
+        border: 3px solid transparent;
+        transition: all 0.15s ease;
     }
-    .color-radio:checked + .color-swatch { border-color: var(--plum-800); transform: scale(1.1); }
+    .color-radio:checked + .color-swatch {
+        border-color: #2d1f2c;
+        transform: scale(1.1);
+    }
 
-    .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink-700); margin-bottom: 6px; }
+  
+    .form-label-custom {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #4a3a48;
+        margin-bottom: 6px;
+    }
+    .form-label-custom .text-muted {
+        font-weight: 400;
+        font-size: 12.5px;
+        color: #8a7a88;
+    }
+
     .input-custom {
-        background: var(--blush-50) !important; border: 1px solid var(--blush-200) !important;
-        border-radius: var(--radius-sm) !important; color: var(--ink-900) !important;
-        font-size: 14.5px; padding: 11px 14px !important;
+        background: #fcf6f9 !important;
+        border: 1px solid #f0e8ed !important;
+        border-radius: 10px !important;
+        color: #2d1f2c !important;
+        font-size: 14.5px;
+        padding: 11px 14px !important;
+        transition: all 0.25s ease;
+        width: 100%;
     }
-    .input-custom:focus { background: #fff !important; border-color: var(--rose-400) !important; box-shadow: 0 0 0 3px rgba(240, 143, 180, 0.2) !important; outline: none; }
+    .input-custom:focus {
+        background: #fff !important;
+        border-color: #E85588 !important;
+        box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15) !important;
+        outline: none;
+    }
 
+   
     .btn-save-changes {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; padding: 11px 26px; border-radius: 10px; border: none;
-        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-save-changes:hover { color: var(--plum-900); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 164, 65, 0.4); }
+    .btn-save-changes:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
 
+    
     .btn-cancel-modal {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--ink-700);
-        font-weight: 600; padding: 11px 26px; border-radius: 10px; display: inline-flex; align-items: center;
+        background: #fff;
+        border: 1.5px solid #FF6B9D;
+        color: #E85588;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-cancel-modal:hover { background: var(--blush-50); color: var(--ink-900); }
+    .btn-cancel-modal:hover {
+        background: #E85588;
+        color: #ffffff !important;
+        border-color: #E85588;
+    }
+
+   
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .btn-back {
+            justify-content: center;
+            width: 100%;
+        }
+        .d-flex.gap-3 {
+            flex-wrap: wrap;
+        }
+        .btn-save-changes,
+        .btn-cancel-modal {
+            flex: 1;
+            justify-content: center;
+        }
+    }
 </style>
 @endsection
 

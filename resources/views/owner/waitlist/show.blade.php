@@ -1,4 +1,3 @@
-
 @extends('layouts.owner')
  
 @section('title', 'Waitlist Entry Details')
@@ -13,7 +12,6 @@
         ];
     @endphp
  
-  
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <h2>{{ $entry['client_name'] }}</h2>
@@ -31,7 +29,6 @@
  
     <div class="row g-4">
  
-       
         <div class="col-lg-4">
             <div class="panel-card text-center">
                 <span class="badge-priority-lg {{ $priorityBadge[$entry['priority']] ?? 'badge-priority-low' }}">
@@ -63,7 +60,6 @@
             </div>
         </div>
  
-       
         <div class="col-lg-8">
  
             <div class="panel-card mb-4">
@@ -111,9 +107,7 @@
  
 @endsection
  
-
 @push('modals')
- 
     <div class="modal fade" id="removeWaitlistModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content modal-content-custom">
@@ -135,26 +129,59 @@
             </div>
         </div>
     </div>
- 
 @endpush
  
 @section('extra-css')
 <style>
-    .btn-back {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--plum-800);
-        font-weight: 600; font-size: 14.5px; padding: 10px 20px; border-radius: 10px;
-        display: inline-flex; align-items: center; transition: all 0.18s ease;
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d1f2c;
+        margin-bottom: 0.25rem;
     }
-    .btn-back:hover { background: var(--blush-50); color: var(--plum-900); }
+    .page-header p {
+        color: #8a7a88;
+        margin-bottom: 0;
+    }
+
+    .btn-back {
+        background: #fff;
+        border: 1px solid #f0e8ed;
+        color: #2d1f2c;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
+    }
+    .btn-back:hover {
+        background: #fcf6f9;
+        border-color: #E85588;
+        color: #E85588;
+    }
  
     .btn-edit-action {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; font-size: 14.5px;
-        padding: 10px 22px; border-radius: 10px; border: none;
-        box-shadow: 0 4px 14px rgba(217, 164, 65, 0.35); transition: all 0.18s ease;
-        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 10px 22px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        transition: all 0.18s ease;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
     }
-    .btn-edit-action:hover { transform: translateY(-1px); color: var(--plum-900); box-shadow: 0 6px 18px rgba(217, 164, 65, 0.5); }
+    .btn-edit-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
  
     .badge-priority-lg {
         display: inline-block;
@@ -163,32 +190,81 @@
         font-size: 15px;
         font-weight: 700;
     }
-    .badge-priority-high   { background: var(--red-50); color: var(--red-500); }
-    .badge-priority-medium { background: #FCEFDE; color: var(--orange-500); }
-    .badge-priority-low    { background: var(--blue-50); color: var(--blue-500); }
+    .badge-priority-high   { background: #FCE4EC; color: #D45482; }
+    .badge-priority-medium { background: #FDF6E8; color: #C4903A; }
+    .badge-priority-low    { background: #E8F0FE; color: #3568C4; }
  
-    .waiting-since { font-size: 13px; color: var(--ink-500); margin: 0; }
+    .waiting-since { font-size: 13px; color: #8a7a88; margin: 0; }
  
+    /* ===== ACTION BUTTONS - PINK ===== */
     .btn-action-book {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600)); color: var(--plum-900);
-        font-weight: 700; padding: 11px; border-radius: 10px; border: none;
-        display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 11px;
+        border-radius: 10px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.18s ease;
     }
-    .btn-action-book:hover { color: var(--plum-900); box-shadow: 0 4px 14px rgba(217, 164, 65, 0.35); }
+    .btn-action-book:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        color: #ffffff !important;
+    }
  
     .btn-action-notify {
-        background: var(--blush-100); color: var(--rose-600);
-        font-weight: 700; padding: 11px; border-radius: 10px; border: none;
-        display: inline-flex; align-items: center; justify-content: center;
+        background: #FCE8F0;
+        color: #E85588;
+        font-weight: 600;
+        padding: 11px;
+        border-radius: 10px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.18s ease;
     }
-    .btn-action-notify:hover { background: var(--rose-500); color: #fff; }
+    .btn-action-notify:hover {
+        background: #E85588;
+        color: #ffffff !important;
+    }
  
     .btn-action-remove {
-        background: var(--red-50); color: var(--red-500);
-        font-weight: 700; padding: 11px; border-radius: 10px; border: 1px solid #FBD0D9;
-        display: inline-flex; align-items: center; justify-content: center;
+        background: #fff;
+        color: #E85588;
+        font-weight: 600;
+        padding: 11px;
+        border-radius: 10px;
+        border: 1.5px solid #FF6B9D;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.18s ease;
     }
-    .btn-action-remove:hover { background: var(--red-500); color: #fff; }
+    .btn-action-remove:hover {
+        background: #E85588;
+        color: #ffffff !important;
+        border-color: #E85588;
+    }
+ 
+    .panel-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        border: 1px solid #f0e8ed;
+        height: auto !important;
+    }
+    .panel-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2d1f2c;
+        margin-bottom: 1rem;
+    }
  
     .info-grid {
         display: grid;
@@ -196,30 +272,54 @@
         gap: 16px 24px;
     }
     .info-item { display: flex; flex-direction: column; gap: 4px; }
-    .info-label { font-size: 12.5px; color: var(--ink-500); }
-    .info-value { font-size: 14.5px; font-weight: 600; color: var(--plum-900); }
+    .info-label { font-size: 12.5px; color: #8a7a88; }
+    .info-value { font-size: 14.5px; font-weight: 600; color: #2d1f2c; }
  
     .entry-notes-text {
-        color: var(--ink-700);
+        color: #4a3a48;
         font-size: 14.5px;
         line-height: 1.7;
         margin-bottom: 0;
     }
  
-    .modal-content-custom { border-radius: var(--radius-lg); border: none; overflow: hidden; }
+    .modal-content-custom { border-radius: 16px; border: none; overflow: hidden; }
     .modal-body { padding: 22px 24px; }
-    .modal-footer-custom { border-top: 1px solid var(--blush-100); padding: 16px 24px; }
+    .modal-footer-custom { border-top: 1px solid #f5eef2; padding: 16px 24px; }
  
     .btn-cancel-modal {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--ink-700);
-        font-weight: 600; padding: 9px 20px; border-radius: 10px;
+        background: #fff;
+        border: 1.5px solid #FF6B9D;
+        color: #E85588;
+        font-weight: 600;
+        padding: 9px 20px;
+        border-radius: 10px;
+        transition: all 0.15s ease;
     }
-    .btn-cancel-modal:hover { background: var(--blush-50); }
+    .btn-cancel-modal:hover {
+        background: #E85588;
+        color: #ffffff !important;
+        border-color: #E85588;
+    }
  
     .btn-delete-confirm {
-        background: linear-gradient(135deg, #F0708C, var(--red-500));
-        color: #fff; font-weight: 700; padding: 9px 24px; border-radius: 10px; border: none;
+        background: linear-gradient(135deg, #F0708C, #E85588);
+        color: #fff;
+        font-weight: 700;
+        padding: 9px 24px;
+        border-radius: 10px;
+        border: none;
+        transition: all 0.15s ease;
     }
-    .btn-delete-confirm:hover { color: #fff; box-shadow: 0 4px 14px rgba(225, 77, 106, 0.4); }
+    .btn-delete-confirm:hover {
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+    }
 </style>
 @endsection

@@ -346,8 +346,8 @@ Route::get('/complaints', [App\Http\Controllers\Admin\ComplaintController::class
         Route::post('/settings/password',   [OwnerSettingController::class, 'updatePassword'])->name('settings.password');
         Route::post('/settings',            [OwnerSettingController::class, 'general'])->name('settings.update');
 
-        // Salons
-        Route::resource('salons', OwnerSalonController::class);
+        // // Salons
+        // Route::resource('salons', OwnerSalonController::class);
 
        //  SERVICES ROUTES PEHLE
 Route::resource('services', OwnerServiceController::class);
