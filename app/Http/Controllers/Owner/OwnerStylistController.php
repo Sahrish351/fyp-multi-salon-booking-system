@@ -3,29 +3,57 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Stylist;
+use App\Models\Salon;
+use App\Models\Appointment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class OwnerStylistController extends Controller
 {
-    /**
-     * Route: GET /owner/stylists  -->  name: owner.stylists.index
-     *
-     * Team Members grid page dikhana.
-     *
-     * BAAD ME: Database se real stylists laayen:
-     *   $stylists = Stylist::where('salon_id', auth()->user()->salon_id)->get();
-     */
+    
     public function index(Request $request)
-    {
-        $stylists = $this->dummyStylists();
+{
+    try {
+        $user = auth()->user();
+
+        // ✅ SIRF US SALON KI STYLISTS
+        $stylists = Stylist::where('salon_id', $user->salon_id ?? 0)
+            ->orderBy('name')
+            ->get()
+            ->map(function ($stylist) {
+                $clientsCount = Appointment::where('stylist_id', $stylist->id)
+                    ->distinct('client_id')
+                    ->count('client_id');
+
+                $revenue = Appointment::where('stylist_id', $stylist->id)
+                    ->where('status', 'completed')
+                    ->sum('total_amount');
+
+                return [
+                    'id' => $stylist->id,
+                    'name' => $stylist->name,
+                    'role' => $stylist->role ?? 'Stylist',
+                    'rating' => $stylist->rating ?? 4.5,
+                    'clients' => $clientsCount,
+                    'revenue' => $revenue,
+                    'photo_url' => $stylist->photo ? asset('storage/' . $stylist->photo) : null,
+                    'status' => $stylist->status ?? 'Active',
+                ];
+            });
 
         return view('owner.stylists.index', compact('stylists'));
-    }
 
+    } catch (\Exception $e) {
+        Log::error('Stylist Index Error: ' . $e->getMessage());
+        return view('owner.stylists.index', ['stylists' => collect([])])
+            ->with('error', 'Unable to load team members.');
+    }
+}
     /**
-     * Route: GET /owner/stylists/create  -->  name: owner.stylists.create
-     *
-     * Naya team member add karne ka page.
+     * Show the form for creating a new stylist.
      */
     public function create()
     {
@@ -33,185 +61,321 @@ class OwnerStylistController extends Controller
     }
 
     /**
-     * Route: POST /owner/stylists  -->  name: owner.stylists.store
-     *
-     * Naya team member add karna (Create page form submit).
-     *
-     * BAAD ME:
-     *   $request->validate([
-     *       'name'             => 'required|string|max:255',
-     *       'role'             => 'required|string|max:255',
-     *       'email'            => 'required|email|unique:stylists,email',
-     *       'phone'            => 'required|string|max:20',
-     *       'specialization'   => 'nullable|string',
-     *       'experience_years' => 'nullable|integer|min:0',
-     *       'bio'              => 'nullable|string',
-     *       'photo'            => 'nullable|image|max:2048',
-     *       'status'           => 'required|in:Active,Inactive',
-     *   ]);
-     *   Stylist::create([...$request->validated(), 'salon_id' => auth()->user()->salon_id]);
+     * Store a newly created stylist.
      */
     public function store(Request $request)
     {
-        return redirect()->route('owner.stylists.index')->with('success', 'Team member added successfully!');
+        try {
+            $user = auth()->user();
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'role' => 'required|string|max:255',
+                'email' => 'nullable|email|unique:stylists,email',
+                'phone' => 'required|string|max:20',
+                'specialization' => 'nullable|string',
+                'experience_years' => 'nullable|integer|min:0',
+                'bio' => 'nullable|string',
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'status' => 'required|in:Active,Inactive',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            // ✅ Handle photo upload
+            $photoPath = null;
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('stylists', 'public');
+            }
+
+            // ✅ Save to database
+            Stylist::create([
+                'salon_id' => $user->salon_id ?? 1,
+                'name' => $request->name,
+                'role' => $request->role,
+                'email' => $request->email ?? null,
+                'phone' => $request->phone,
+                'specialization' => $request->specialization,
+                'experience_years' => $request->experience_years ?? 0,
+                'bio' => $request->bio,
+                'photo' => $photoPath,
+                'status' => $request->status,
+                'rating' => 4.5,
+            ]);
+
+            return redirect()->route('owner.stylists.index')
+                ->with('success', 'Team member "' . $request->name . '" added successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Stylist Store Error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Unable to add team member: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     /**
-     * Route: GET /owner/stylists/{stylist}  -->  name: owner.stylists.show
-     *
-     * Team member ka detail page (photo, stats, bio, recent appointments).
-     *
-     * BAAD ME:
-     *   $stylist = Stylist::findOrFail($id)->toArray();
-     *   $recentAppointments = Appointment::where('stylist_id', $id)
-     *       ->latest()->take(5)->get();
+     * Display the specified stylist.
      */
-    public function show($stylist)
+    public function show($id)
     {
-        $stylistData = $this->findDummyStylist($stylist);
+        try {
+            $user = auth()->user();
 
-        $recentAppointments = [
-            ['client' => 'Sarah Johnson', 'service' => 'Hair Styling', 'date' => 'Jun 8, 2026', 'status' => 'Confirmed'],
-            ['client' => 'Lisa Anderson', 'service' => 'Haircut',      'date' => 'Jun 6, 2026', 'status' => 'Completed'],
-            ['client' => 'Amanda Lee',    'service' => 'Hair Coloring','date' => 'Jun 3, 2026', 'status' => 'Completed'],
-        ];
+            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
+                ->find($id);
 
-        return view('owner.stylists.show', [
-            'stylist' => $stylistData,
-            'recentAppointments' => $recentAppointments,
-        ]);
+            if (!$stylist) {
+                return redirect()->route('owner.stylists.index')
+                    ->with('error', 'Team member not found.');
+            }
+
+            // ✅ Calculate stats
+            $clientsCount = Appointment::where('stylist_id', $stylist->id)
+                ->distinct('client_id')
+                ->count('client_id');
+
+            $revenue = Appointment::where('stylist_id', $stylist->id)
+                ->where('status', 'completed')
+                ->sum('total_amount');
+
+            $appointmentsCount = Appointment::where('stylist_id', $stylist->id)->count();
+
+            // ✅ Recent appointments
+            $recentAppointments = Appointment::where('stylist_id', $stylist->id)
+                ->with(['client', 'service'])
+                ->orderBy('appointment_date', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(function ($appt) {
+                    return [
+                        'client' => $appt->client->name ?? 'N/A',
+                        'service' => $appt->service->name ?? 'N/A',
+                        'date' => $appt->appointment_date ? date('M d, Y', strtotime($appt->appointment_date)) : 'N/A',
+                        'status' => ucfirst($appt->status ?? 'pending'),
+                    ];
+                });
+
+            $stylistData = [
+                'id' => $stylist->id,
+                'name' => $stylist->name,
+                'role' => $stylist->role ?? 'Stylist',
+                'rating' => $stylist->rating ?? 4.5,
+                'clients' => $clientsCount,
+                'revenue' => $revenue,
+                'photo_url' => $stylist->photo ? asset('storage/' . $stylist->photo) : null,
+                'status' => $stylist->status ?? 'Active',
+                'email' => $stylist->email,
+                'phone' => $stylist->phone,
+                'specialization' => $stylist->specialization ?? 'General',
+                'experience_years' => $stylist->experience_years ?? 0,
+                'bio' => $stylist->bio,
+                'total_appointments' => $appointmentsCount,
+            ];
+
+            return view('owner.stylists.show', [
+                'stylist' => $stylistData,
+                'recentAppointments' => $recentAppointments,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Stylist Show Error: ' . $e->getMessage());
+            return redirect()->route('owner.stylists.index')
+                ->with('error', 'Team member not found.');
+        }
     }
 
     /**
-     * Route: GET /owner/stylists/{stylist}/edit  -->  name: owner.stylists.edit
-     *
-     * Team member edit karne ka page (pre-filled form).
-     *
-     * BAAD ME:
-     *   $stylist = Stylist::findOrFail($id)->toArray();
+     * Show the form for editing the specified stylist.
      */
-    public function edit($stylist)
+    public function edit($id)
     {
-        $stylistData = $this->findDummyStylist($stylist);
+        try {
+            $user = auth()->user();
 
-        return view('owner.stylists.edit', ['stylist' => $stylistData]);
+            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
+                ->find($id);
+
+            if (!$stylist) {
+                return redirect()->route('owner.stylists.index')
+                    ->with('error', 'Team member not found.');
+            }
+
+            $stylistData = [
+                'id' => $stylist->id,
+                'name' => $stylist->name,
+                'role' => $stylist->role ?? 'Stylist',
+                'email' => $stylist->email,
+                'phone' => $stylist->phone,
+                'specialization' => $stylist->specialization ?? '',
+                'experience_years' => $stylist->experience_years ?? 0,
+                'bio' => $stylist->bio,
+                'photo_url' => $stylist->photo ? asset('storage/' . $stylist->photo) : null,
+                'status' => $stylist->status ?? 'Active',
+            ];
+
+            return view('owner.stylists.edit', ['stylist' => $stylistData]);
+
+        } catch (\Exception $e) {
+            Log::error('Stylist Edit Error: ' . $e->getMessage());
+            return redirect()->route('owner.stylists.index')
+                ->with('error', 'Team member not found.');
+        }
     }
 
     /**
-     * Route: PUT /owner/stylists/{stylist}  -->  name: owner.stylists.update
-     *
-     * Team member update karna (Edit page form submit).
-     *
-     * BAAD ME:
-     *   $stylist = Stylist::findOrFail($id);
-     *   $stylist->update($request->validated());
+     * Update the specified stylist.
      */
-    public function update(Request $request, $stylist)
+    public function update(Request $request, $id)
     {
-        return redirect()->route('owner.stylists.index')->with('success', 'Team member updated successfully!');
+        try {
+            $user = auth()->user();
+
+            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
+                ->find($id);
+
+            if (!$stylist) {
+                return redirect()->route('owner.stylists.index')
+                    ->with('error', 'Team member not found.');
+            }
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'role' => 'required|string|max:255',
+                'email' => 'nullable|email|unique:stylists,email,' . $id,
+                'phone' => 'required|string|max:20',
+                'specialization' => 'nullable|string',
+                'experience_years' => 'nullable|integer|min:0',
+                'bio' => 'nullable|string',
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'status' => 'required|in:Active,Inactive',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            // ✅ Handle photo upload
+            if ($request->hasFile('photo')) {
+                if ($stylist->photo && Storage::disk('public')->exists($stylist->photo)) {
+                    Storage::disk('public')->delete($stylist->photo);
+                }
+                $photoPath = $request->file('photo')->store('stylists', 'public');
+                $stylist->photo = $photoPath;
+            }
+
+            // ✅ Update
+            $stylist->name = $request->name;
+            $stylist->role = $request->role;
+            $stylist->email = $request->email ?? null;
+            $stylist->phone = $request->phone;
+            $stylist->specialization = $request->specialization;
+            $stylist->experience_years = $request->experience_years ?? 0;
+            $stylist->bio = $request->bio;
+            $stylist->status = $request->status;
+            $stylist->save();
+
+            return redirect()->route('owner.stylists.index')
+                ->with('success', 'Team member "' . $stylist->name . '" updated successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Stylist Update Error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Unable to update team member.')
+                ->withInput();
+        }
     }
 
     /**
-     * Route: DELETE /owner/stylists/{stylist}  -->  name: owner.stylists.destroy
-     *
-     * Team member remove karna (Delete confirmation modal submit).
-     *
-     * BAAD ME:
-     *   Stylist::findOrFail($id)->delete();
+     * Remove the specified stylist.
      */
-    public function destroy(Request $request, $stylist)
+    public function destroy($id)
     {
-        return redirect()->route('owner.stylists.index')->with('success', 'Team member removed successfully!');
+        try {
+            $user = auth()->user();
+
+            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
+                ->find($id);
+
+            if (!$stylist) {
+                return redirect()->route('owner.stylists.index')
+                    ->with('error', 'Team member not found.');
+            }
+
+            // ✅ Delete photo
+            if ($stylist->photo && Storage::disk('public')->exists($stylist->photo)) {
+                Storage::disk('public')->delete($stylist->photo);
+            }
+
+            $stylistName = $stylist->name;
+            $stylist->delete();
+
+            return redirect()->route('owner.stylists.index')
+                ->with('success', 'Team member "' . $stylistName . '" removed successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Stylist Destroy Error: ' . $e->getMessage());
+            return redirect()->route('owner.stylists.index')
+                ->with('error', 'Unable to remove team member.');
+        }
     }
 
     /**
-     * Route: POST /owner/stylists/{id}/availability  -->  name: owner.stylists.availability.store
-     * (Aapki web.php mein already maujood route — yahan basic stub)
+     * Store availability for a stylist.
      */
     public function storeAvailability(Request $request, $id)
     {
+        // TODO: Implement availability logic
         return redirect()->route('owner.stylists.availability.index', ['stylist' => $id])
             ->with('success', 'Availability updated!');
     }
 
     /**
-     * Route: POST /owner/stylists/{id}/holiday  -->  name: owner.stylists.holiday.store
+     * Store holiday for a stylist.
      */
     public function storeHoliday(Request $request, $id)
     {
+        // TODO: Implement holiday logic
         return redirect()->route('owner.stylists.holidays.index', ['stylist' => $id])
             ->with('success', 'Holiday added!');
     }
 
     /**
-     * Route: GET /owner/stylists/{stylist}/availability  -->  name: owner.stylists.availability.index
+     * Show availability page.
      */
-    public function availability($stylist)
+    public function availability($id)
     {
-        $stylistData = $this->findDummyStylist($stylist);
+        try {
+            $user = auth()->user();
 
-        return response("<h2 style='font-family:sans-serif; padding:40px;'>"
-            . htmlspecialchars($stylistData['name'])
-            . " — Availability page (coming soon)</h2>");
+            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
+                ->find($id);
+
+            if (!$stylist) {
+                return redirect()->route('owner.stylists.index')
+                    ->with('error', 'Team member not found.');
+            }
+
+            return view('owner.stylists.availability', ['stylist' => $stylist]);
+
+        } catch (\Exception $e) {
+            Log::error('Stylist Availability Error: ' . $e->getMessage());
+            return redirect()->route('owner.stylists.index')
+                ->with('error', 'Unable to load availability.');
+        }
     }
 
     /**
-     * Route: DELETE /owner/stylists/{stylist}/availability/{day}  -->  name: owner.stylists.availability.destroy
+     * Destroy availability slot.
      */
     public function destroyAvailability(Request $request, $stylist, $day)
     {
         return back()->with('success', 'Availability slot removed!');
-    }
-
-    /**
-     * Dummy/demo stylists list — BAAD ME ye method hata kar Eloquent
-     * query se replace kar dena.
-     */
-    private function dummyStylists(): array
-    {
-        return [
-            ['id' => 1, 'name' => 'Emma Wilson',     'role' => 'Senior Hair Stylist', 'rating' => 4.9, 'clients' => 245, 'revenue' => 31850, 'photo_url' => null, 'status' => 'Active'],
-            ['id' => 2, 'name' => 'James Brown',      'role' => 'Master Barber',       'rating' => 4.8, 'clients' => 189, 'revenue' => 24120, 'photo_url' => null, 'status' => 'Active'],
-            ['id' => 3, 'name' => 'Sophia Lee',        'role' => 'Nail Specialist',     'rating' => 4.9, 'clients' => 210, 'revenue' => 27300, 'photo_url' => null, 'status' => 'Active'],
-            ['id' => 4, 'name' => 'Olivia Martinez',   'role' => 'Facial Specialist',   'rating' => 4.7, 'clients' => 156, 'revenue' => 19850, 'photo_url' => null, 'status' => 'Active'],
-            ['id' => 5, 'name' => 'Isabella Garcia',   'role' => 'Massage Therapist',   'rating' => 4.8, 'clients' => 132, 'revenue' => 22400, 'photo_url' => null, 'status' => 'Active'],
-        ];
-    }
-
-    /**
-     * Dummy stylist id ke mutabiq dhoondna — BAAD ME Stylist::findOrFail($id) se replace karna.
-     */
-    private function findDummyStylist($id): array
-    {
-        $stylists = $this->dummyStylists();
-
-        foreach ($stylists as $s) {
-            if ($s['id'] == $id) {
-                $s['email']            = strtolower(str_replace(' ', '.', $s['name'])) . '@glowaura.com';
-                $s['phone']            = '+1 (555) 123-45' . str_pad($id, 2, '0', STR_PAD_LEFT);
-                $s['specialization']   = 'Hair Styling';
-                $s['experience_years'] = 5;
-                $s['bio']              = $s['name'] . ' is a dedicated ' . strtolower($s['role']) . ' with years of experience delivering top-quality service to every client.';
-                $s['total_appointments'] = 312;
-                return $s;
-            }
-        }
-
-        return [
-            'id' => $id,
-            'name' => 'Emma Wilson',
-            'role' => 'Senior Hair Stylist',
-            'rating' => 4.9,
-            'clients' => 245,
-            'revenue' => 31850,
-            'photo_url' => null,
-            'status' => 'Active',
-            'email' => 'emma.wilson@glowaura.com',
-            'phone' => '+1 (555) 123-4501',
-            'specialization' => 'Hair Styling',
-            'experience_years' => 5,
-            'bio' => 'Emma Wilson is a dedicated senior hair stylist with years of experience.',
-            'total_appointments' => 312,
-        ];
     }
 }

@@ -1,14 +1,30 @@
-{{--
-    ===========================================================
-    TEAM MEMBER CREATE PAGE (resources/views/owner/stylists/create.blade.php)
-    Route: GET /owner/stylists/create --> owner.stylists.create
-    ===========================================================
---}}
 @extends('layouts.owner')
 
 @section('title', 'Add Team Member')
 
 @section('content')
+
+    {{-- ===== ERROR MESSAGES ===== --}}
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Please fix the following errors:</strong>
+            <ul class="mb-0 mt-1">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
     {{-- Page Header --}}
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
@@ -26,9 +42,8 @@
 
         <div class="row g-4">
 
-            {{-- ===================== LEFT: PHOTO UPLOAD ===================== --}}
-            <div class="col-lg-4">
-                <div class="panel-card text-center">
+            <div class="col-lg-4 d-flex">
+                <div class="panel-card text-center w-100">
                     <div class="stylist-photo-box mx-auto" id="photoPreviewBox">
                         <i class="bi bi-person-fill"></i>
                     </div>
@@ -51,59 +66,80 @@
                 </div>
             </div>
 
-            {{-- ===================== RIGHT: STAFF DETAILS FORM ===================== --}}
-            <div class="col-lg-8">
-                <div class="panel-card">
+            <div class="col-lg-8 d-flex">
+                <div class="panel-card w-100">
                     <div class="panel-title">Staff Details</div>
 
                     <div class="row g-3">
 
                         <div class="col-md-6">
-                            <label class="form-label-custom">Full Name</label>
-                            <input type="text" name="name" class="form-control input-custom"
-                                   placeholder="e.g. Emma Wilson" required>
+                            <label class="form-label-custom">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control input-custom @error('name') is-invalid @enderror"
+                                   placeholder="e.g. Ayesha Khan" value="{{ old('name') }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label-custom">Role / Title</label>
-                            <input type="text" name="role" class="form-control input-custom"
-                                   placeholder="e.g. Senior Hair Stylist" required>
+                            <label class="form-label-custom">Role / Title <span class="text-danger">*</span></label>
+                            <input type="text" name="role" class="form-control input-custom @error('role') is-invalid @enderror"
+                                   placeholder="e.g. Senior Hair Stylist" value="{{ old('role') }}" required>
+                            @error('role')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label-custom">Email</label>
-                            <input type="email" name="email" class="form-control input-custom"
-                                   placeholder="emma@glowaura.com" required>
+                            <label class="form-label-custom">Email <span class="text-muted">(optional)</span></label>
+                            <input type="email" name="email" class="form-control input-custom @error('email') is-invalid @enderror"
+                                   placeholder="ayesha@glowaura.pk" value="{{ old('email') }}">
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label-custom">Phone</label>
-                            <input type="text" name="phone" class="form-control input-custom"
-                                   placeholder="+1 (555) 123-4567" required>
+                            <label class="form-label-custom">Phone <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" class="form-control input-custom @error('phone') is-invalid @enderror"
+                                   placeholder="+92 300 1234567" value="{{ old('phone') }}" required>
+                            @error('phone')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label-custom">Specialization</label>
-                            <select name="specialization" class="form-select input-custom">
+                            <select name="specialization" class="form-select input-custom @error('specialization') is-invalid @enderror">
                                 <option value="">Select specialization</option>
-                                <option>Hair Styling</option>
-                                <option>Nail Care</option>
-                                <option>Facial</option>
-                                <option>Spa &amp; Massage</option>
-                                <option>Makeup</option>
+                                <option value="Hair Styling" {{ old('specialization') == 'Hair Styling' ? 'selected' : '' }}>Hair Styling</option>
+                                <option value="Barber" {{ old('specialization') == 'Barber' ? 'selected' : '' }}>Barber</option>
+                                <option value="Nail Care" {{ old('specialization') == 'Nail Care' ? 'selected' : '' }}>Nail Care</option>
+                                <option value="Facial" {{ old('specialization') == 'Facial' ? 'selected' : '' }}>Facial</option>
+                                <option value="Spa & Massage" {{ old('specialization') == 'Spa & Massage' ? 'selected' : '' }}>Spa & Massage</option>
+                                <option value="Makeup" {{ old('specialization') == 'Makeup' ? 'selected' : '' }}>Makeup</option>
                             </select>
+                            @error('specialization')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label-custom">Experience (years)</label>
-                            <input type="number" name="experience_years" class="form-control input-custom"
-                                   placeholder="5" min="0">
+                            <input type="number" name="experience_years" class="form-control input-custom @error('experience_years') is-invalid @enderror"
+                                   placeholder="5" min="0" value="{{ old('experience_years', 0) }}">
+                            @error('experience_years')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-12">
                             <label class="form-label-custom">Bio <span class="text-muted">(optional)</span></label>
-                            <textarea name="bio" class="form-control input-custom" rows="4"
-                                      placeholder="A short bio about this team member, their experience, and specialties..."></textarea>
+                            <textarea name="bio" class="form-control input-custom @error('bio') is-invalid @enderror" rows="4"
+                                      placeholder="A short bio about this team member...">{{ old('bio') }}</textarea>
+                            @error('bio')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                     </div>
@@ -126,59 +162,226 @@
 
 @section('extra-css')
 <style>
-    .btn-back {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--plum-800);
-        font-weight: 600; font-size: 14.5px; padding: 10px 20px; border-radius: 10px;
-        display: inline-flex; align-items: center; transition: all 0.18s ease;
+    /* ===== PAGE HEADER ===== */
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d1f2c;
+        margin-bottom: 0.25rem;
     }
-    .btn-back:hover { background: var(--blush-50); color: var(--plum-900); }
+    .page-header p {
+        color: #8a7a88;
+        margin-bottom: 0;
+    }
 
+    /* ===== BACK BUTTON ===== */
+    .btn-back {
+        background: #fff;
+        border: 1px solid #f0e8ed;
+        color: #2d1f2c;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
+    }
+    .btn-back:hover {
+        background: #fcf6f9;
+        border-color: #E85588;
+        color: #E85588;
+    }
+
+    /* ===== ALERTS ===== */
+    .alert {
+        border-radius: 12px;
+        border: none;
+        padding: 0.8rem 1.2rem;
+    }
+    .alert-danger {
+        background: #FCE4EC;
+        color: #880E4F;
+    }
+    .alert ul {
+        padding-left: 1.2rem;
+        margin-bottom: 0;
+    }
+
+    /* ===== PANEL CARD ===== */
+    .panel-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        border: 1px solid #f0e8ed;
+        height: 100% !important;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2d1f2c;
+        margin-bottom: 1rem;
+        flex-shrink: 0;
+    }
+
+    /* ===== STYLIST PHOTO ===== */
     .stylist-photo-box {
         width: 150px;
         height: 150px;
         border-radius: 50%;
-        background: var(--blush-50);
-        border: 2px dashed var(--rose-300);
+        background: #fcf6f9;
+        border: 2px dashed #f0d8e0;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 56px;
-        color: var(--rose-400);
+        color: #E85588;
         overflow: hidden;
+        flex-shrink: 0;
     }
     .stylist-photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-    .image-hint { font-size: 12px; color: var(--ink-500); margin-top: 10px; margin-bottom: 0; }
+    .image-hint {
+        font-size: 12px;
+        color: #8a7a88;
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
 
+    /* ===== CHANGE PHOTO BUTTON - PINK ===== */
     .btn-change-logo {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 600; font-size: 14px;
-        padding: 9px 20px; border-radius: 10px; border: none; cursor: pointer;
-        box-shadow: 0 4px 12px rgba(217, 164, 65, 0.3); transition: all 0.18s ease;
-        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 9px 20px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.3);
+        transition: all 0.18s ease;
+        display: inline-flex;
+        align-items: center;
     }
-    .btn-change-logo:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 164, 65, 0.45); }
+    .btn-change-logo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
 
-    .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink-700); margin-bottom: 6px; }
+    /* ===== FORM ===== */
+    .form-label-custom {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #4a3a48;
+        margin-bottom: 6px;
+    }
+    .form-label-custom .text-danger { color: #E85588; }
+    .form-label-custom .text-muted { font-weight: 400; font-size: 12.5px; color: #8a7a88; }
+
     .input-custom {
-        background: var(--blush-50) !important; border: 1px solid var(--blush-200) !important;
-        border-radius: var(--radius-sm) !important; color: var(--ink-900) !important;
-        font-size: 14.5px; padding: 11px 14px !important;
+        background: #fcf6f9 !important;
+        border: 1px solid #f0e8ed !important;
+        border-radius: 10px !important;
+        color: #2d1f2c !important;
+        font-size: 14.5px;
+        padding: 11px 14px !important;
+        width: 100%;
     }
-    .input-custom:focus { background: #fff !important; border-color: var(--rose-400) !important; box-shadow: 0 0 0 3px rgba(240, 143, 180, 0.2) !important; outline: none; }
+    .input-custom:focus {
+        background: #fff !important;
+        border-color: #E85588 !important;
+        box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15) !important;
+        outline: none;
+    }
 
+    .is-invalid {
+        border-color: #E85588 !important;
+    }
+    .invalid-feedback {
+        color: #E85588;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    /* ============================================================
+       SAVE/ADD BUTTON - PINK
+       ============================================================ */
     .btn-save-changes {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; padding: 11px 26px; border-radius: 10px; border: none;
-        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-save-changes:hover { color: var(--plum-900); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 164, 65, 0.4); }
+    .btn-save-changes:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
 
+    /* ============================================================
+       CANCEL BUTTON - PINK OUTLINE
+       ============================================================ */
     .btn-cancel-modal {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--ink-700);
-        font-weight: 600; padding: 11px 26px; border-radius: 10px; display: inline-flex; align-items: center;
+        background: #fff;
+        border: 1.5px solid #FF6B9D;
+        color: #E85588;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-cancel-modal:hover { background: var(--blush-50); color: var(--ink-900); }
+    .btn-cancel-modal:hover {
+        background: #E85588;
+        color: #ffffff !important;
+        border-color: #E85588;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .btn-back {
+            justify-content: center;
+            width: 100%;
+        }
+        .d-flex.gap-3 {
+            flex-wrap: wrap;
+        }
+        .btn-save-changes,
+        .btn-cancel-modal {
+            flex: 1;
+            justify-content: center;
+        }
+        .col-lg-4.d-flex,
+        .col-lg-8.d-flex {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        .panel-card {
+            height: auto !important;
+        }
+    }
 </style>
 @endsection
 

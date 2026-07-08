@@ -1,16 +1,9 @@
-{{--
-    ===========================================================
-    TEAM MEMBER EDIT PAGE (resources/views/owner/stylists/edit.blade.php)
-    Route: GET /owner/stylists/{stylist}/edit --> owner.stylists.edit
-    ===========================================================
---}}
 @extends('layouts.owner')
 
 @section('title', 'Edit Team Member')
 
 @section('content')
 
-    {{-- Page Header --}}
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <h2>Edit Team Member</h2>
@@ -27,7 +20,6 @@
 
         <div class="row g-4">
 
-            {{-- ===================== LEFT: PHOTO UPLOAD ===================== --}}
             <div class="col-lg-4">
                 <div class="panel-card text-center">
                     <div class="stylist-photo-box mx-auto" id="photoPreviewBox">
@@ -56,33 +48,31 @@
                 </div>
             </div>
 
-            {{-- ===================== RIGHT: STAFF DETAILS FORM ===================== --}}
             <div class="col-lg-8">
                 <div class="panel-card">
                     <div class="panel-title">Staff Details</div>
 
                     <div class="row g-3">
-
                         <div class="col-md-6">
-                            <label class="form-label-custom">Full Name</label>
+                            <label class="form-label-custom">Full Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control input-custom"
                                    value="{{ $stylist['name'] }}" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label-custom">Role / Title</label>
+                            <label class="form-label-custom">Role / Title <span class="text-danger">*</span></label>
                             <input type="text" name="role" class="form-control input-custom"
                                    value="{{ $stylist['role'] }}" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label-custom">Email</label>
+                            <label class="form-label-custom">Email <span class="text-danger">*</span></label>
                             <input type="email" name="email" class="form-control input-custom"
                                    value="{{ $stylist['email'] }}" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label-custom">Phone</label>
+                            <label class="form-label-custom">Phone <span class="text-danger">*</span></label>
                             <input type="text" name="phone" class="form-control input-custom"
                                    value="{{ $stylist['phone'] }}" required>
                         </div>
@@ -90,7 +80,8 @@
                         <div class="col-md-6">
                             <label class="form-label-custom">Specialization</label>
                             <select name="specialization" class="form-select input-custom">
-                                @foreach (['Hair Styling', 'Nail Care', 'Facial', 'Spa & Massage', 'Makeup'] as $spec)
+                                <option value="">Select specialization</option>
+                                @foreach (['Hair Styling', 'Nail Care', 'Facial', 'Spa & Massage', 'Makeup', 'Barber', 'Bridal'] as $spec)
                                     <option {{ $stylist['specialization'] === $spec ? 'selected' : '' }}>{{ $spec }}</option>
                                 @endforeach
                             </select>
@@ -106,7 +97,6 @@
                             <label class="form-label-custom">Bio <span class="text-muted">(optional)</span></label>
                             <textarea name="bio" class="form-control input-custom" rows="4">{{ $stylist['bio'] }}</textarea>
                         </div>
-
                     </div>
 
                     <div class="d-flex gap-3 mt-4">
@@ -115,71 +105,169 @@
                         </button>
                         <a href="{{ route('owner.stylists.index') }}" class="btn btn-cancel-modal">Cancel</a>
                     </div>
-
                 </div>
             </div>
-
         </div>
-
     </form>
 
 @endsection
 
 @section('extra-css')
 <style>
-    .btn-back {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--plum-800);
-        font-weight: 600; font-size: 14.5px; padding: 10px 20px; border-radius: 10px;
-        display: inline-flex; align-items: center; transition: all 0.18s ease;
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d1f2c;
+        margin-bottom: 0.25rem;
     }
-    .btn-back:hover { background: var(--blush-50); color: var(--plum-900); }
+    .page-header p {
+        color: #8a7a88;
+        margin-bottom: 0;
+    }
+
+    .btn-back {
+        background: #fff;
+        border: 1px solid #f0e8ed;
+        color: #2d1f2c;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
+    }
+    .btn-back:hover {
+        background: #fcf6f9;
+        border-color: #E85588;
+        color: #E85588;
+    }
+
+    .panel-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        border: 1px solid #f0e8ed;
+        height: auto !important;
+    }
+    .panel-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2d1f2c;
+        margin-bottom: 1rem;
+    }
 
     .stylist-photo-box {
         width: 150px;
         height: 150px;
         border-radius: 50%;
-        background: var(--blush-50);
-        border: 2px dashed var(--rose-300);
+        background: #fcf6f9;
+        border: 2px dashed #f0d8e0;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 56px;
-        color: var(--rose-400);
+        color: #E85588;
         overflow: hidden;
     }
     .stylist-photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-    .image-hint { font-size: 12px; color: var(--ink-500); margin-top: 10px; margin-bottom: 0; }
+    .image-hint { font-size: 12px; color: #8a7a88; margin-top: 10px; margin-bottom: 0; }
 
     .btn-change-logo {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 600; font-size: 14px;
-        padding: 9px 20px; border-radius: 10px; border: none; cursor: pointer;
-        box-shadow: 0 4px 12px rgba(217, 164, 65, 0.3); transition: all 0.18s ease;
-        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 9px 20px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.3);
+        transition: all 0.18s ease;
+        display: inline-flex;
+        align-items: center;
     }
-    .btn-change-logo:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 164, 65, 0.45); }
+    .btn-change-logo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
 
-    .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink-700); margin-bottom: 6px; }
+    .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: #4a3a48; margin-bottom: 6px; }
     .input-custom {
-        background: var(--blush-50) !important; border: 1px solid var(--blush-200) !important;
-        border-radius: var(--radius-sm) !important; color: var(--ink-900) !important;
-        font-size: 14.5px; padding: 11px 14px !important;
+        background: #fcf6f9 !important;
+        border: 1px solid #f0e8ed !important;
+        border-radius: 10px !important;
+        color: #2d1f2c !important;
+        font-size: 14.5px;
+        padding: 11px 14px !important;
+        width: 100%;
     }
-    .input-custom:focus { background: #fff !important; border-color: var(--rose-400) !important; box-shadow: 0 0 0 3px rgba(240, 143, 180, 0.2) !important; outline: none; }
+    .input-custom:focus {
+        background: #fff !important;
+        border-color: #E85588 !important;
+        box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15) !important;
+        outline: none;
+    }
 
     .btn-save-changes {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; padding: 11px 26px; border-radius: 10px; border: none;
-        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-save-changes:hover { color: var(--plum-900); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 164, 65, 0.4); }
+    .btn-save-changes:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
 
     .btn-cancel-modal {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--ink-700);
-        font-weight: 600; padding: 11px 26px; border-radius: 10px; display: inline-flex; align-items: center;
+        background: #fff;
+        border: 1.5px solid #FF6B9D;
+        color: #E85588;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-cancel-modal:hover { background: var(--blush-50); color: var(--ink-900); }
+    .btn-cancel-modal:hover {
+        background: #E85588;
+        color: #ffffff !important;
+        border-color: #E85588;
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .btn-back {
+            justify-content: center;
+            width: 100%;
+        }
+        .d-flex.gap-3 {
+            flex-wrap: wrap;
+        }
+        .btn-save-changes,
+        .btn-cancel-modal {
+            flex: 1;
+            justify-content: center;
+        }
+    }
 </style>
 @endsection
 
