@@ -281,10 +281,16 @@ Route::get('/complaints', [App\Http\Controllers\Admin\ComplaintController::class
     Route::post('/complaints/{complaint}/update-status', [App\Http\Controllers\Admin\ComplaintController::class, 'updateStatus'])->name('complaints.update-status');
     Route::post('/complaints/{complaint}/reply', [App\Http\Controllers\Admin\ComplaintController::class, 'reply'])->name('complaints.reply');
     Route::delete('/complaints/{complaint}', [App\Http\Controllers\Admin\ComplaintController::class, 'destroy'])->name('complaints.destroy');
-// notifications 
-        Route::get('/notifications',                       [NotificationController::class, 'index'])->name('notifications.index');
-        Route::post('/notifications/send-to-all',          [NotificationController::class, 'sendToAll'])->name('notifications.send-to-all');
-        Route::post('/notifications/send-to-owners',       [NotificationController::class, 'sendToOwners'])->name('notifications.send-to-owners');
+    
+    // ========== NOTIFICATION ROUTES  ==========
+     // ============================================================
+        Route::get('/notifications',                    [NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/{id}',                [NotificationController::class, 'show'])->name('notifications.show');
+        Route::put('/notifications/{id}/mark-read',      [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+        Route::put('/notifications/mark-all-read',       [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+        Route::delete('/notifications/{id}',             [NotificationController::class, 'destroy'])->name('notifications.destroy');
+        Route::post('/notifications/send-to-all',        [NotificationController::class, 'sendToAll'])->name('notifications.send-to-all');
+        Route::post('/notifications/send-to-owners',      [NotificationController::class, 'sendToOwners'])->name('notifications.send-to-owners');
  
         // Reports
         Route::get('/reports',         [ReportController::class, 'index'])->name('reports.index');
@@ -346,7 +352,7 @@ Route::get('/complaints', [App\Http\Controllers\Admin\ComplaintController::class
         Route::post('/settings/password',   [OwnerSettingController::class, 'updatePassword'])->name('settings.password');
         Route::post('/settings',            [OwnerSettingController::class, 'general'])->name('settings.update');
 
-        // // Salons
+        // Salons
         // Route::resource('salons', OwnerSalonController::class);
 
        //  SERVICES ROUTES PEHLE
@@ -447,11 +453,10 @@ Route::post('/waitlist/{id}/notify',   [OwnerWaitlistController::class, 'notify'
     // ========================================================
     // CLIENT ROUTES
     // ========================================================
-    Route::prefix('client')->name('client.')->group(function () {
- 
-        Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
- 
-        // Search
+    Route::prefix('client')->name('client.')->middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+    
+    // Search
         Route::get('/search',        [SalonSearchController::class, 'index'])->name('search');
         Route::get('/salons/{slug}', [SalonDetailController::class, 'show'])->name('salons.show');
  

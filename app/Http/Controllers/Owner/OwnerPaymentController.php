@@ -3,387 +3,353 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Payment;
 use App\Models\Salon;
-use App\Models\Service;
+use App\Models\Appointment;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class OwnerPaymentController extends Controller
 {
-    private function getOwnerSalon()
-    {
-        return Salon::where('owner_id', auth()->id())->first();
-    }
-
     /**
-     * Route: GET /owner/payments --> owner.payments.index
+     * Display a listing of payments — real data, scoped to this owner's
+     * salon only (same pattern as OwnerAppointmentController::index()).
      */
     public function index(Request $request)
     {
-        try {
-            $salon = $this->getOwnerSalon();
-            if (!$salon) {
-                return redirect()->route('owner.salons.create')
-                    ->with('error', 'Please create your salon first.');
-            }
+        $user = auth()->user();
 
-            // ── Stats ──────────────────────────────────────────────────
-            $stats = [
-                'total_revenue' => Payment::where('salon_id', $salon->id)
-                                    ->where('status', 'approved')
-                                    ->sum('amount'),
-
-                'completed'     => Payment::where('salon_id', $salon->id)
-                                    ->where('status', 'approved')
-                                    ->sum('amount'),
-
-                'pending'       => Payment::where('salon_id', $salon->id)
-                                    ->where('status', 'pending')
-                                    ->sum('amount'),
-
-                'today_total'   => Payment::where('salon_id', $salon->id)
-                                    ->whereDate('created_at', today())
-                                    ->sum('amount'),
-            ];
-
-            // ── Payments List ──────────────────────────────────────────
-            $paymentsRaw = Payment::where('salon_id', $salon->id)
-                ->with(['appointment.service', 'client'])
-                ->latest()
-                ->get();
-
-            $payments = $paymentsRaw->map(function ($p) {
-                // Client name
-                $clientName  = optional($p->client)->name ?? 'N/A';
-                $clientEmail = optional($p->client)->email ?? 'N/A';
-
-                // Service name appointment se
-                $serviceName = optional(optional($p->appointment)->service)->name ?? 'N/A';
-
-                // Status display mapping
-                $statusMap = [
-                    'pending'   => 'Pending',
-                    'approved'  => 'Completed',
-                    'rejected'  => 'Failed',
-                    'refunded'  => 'Refunded',
-                ];
-                $status = $statusMap[$p->status] ?? ucfirst($p->status);
-
-                return [
-                    'id'           => $p->id,
-                    'payment_id'   => 'PAY-' . str_pad($p->id, 3, '0', STR_PAD_LEFT),
-                    'client_name'  => $clientName,
-                    'client_email' => $clientEmail,
-                    'service'      => $serviceName,
-                    'amount'       => number_format($p->amount, 2),
-                    'method'       => ucfirst($p->method ?? 'N/A'),
-                    'transaction_ref' => $p->transaction_ref ?? 'N/A',
-                    'sender_number'   => $p->sender_number ?? 'N/A',
-                    'screenshot'      => $p->screenshot
-                                            ? asset('storage/' . $p->screenshot)
-                                            : null,
-                    'date'         => optional($p->created_at)->format('M d, Y') ?? 'N/A',
-                    'date_raw'     => optional($p->created_at)->format('Y-m-d') ?? '',
-                    'time'         => optional($p->created_at)->format('h:i A') ?? 'N/A',
-                    'time_raw'     => optional($p->created_at)->format('H:i') ?? '',
-                    'invoice_no'   => 'INV-' . ($p->created_at ? $p->created_at->format('Y') : date('Y'))
-                                       . '-' . str_pad($p->id, 3, '0', STR_PAD_LEFT),
-                    'status'       => $status,
-                    'rejection_reason' => $p->rejection_reason,
-                    'verified_at'  => $p->verified_at
-                                        ? \Carbon\Carbon::parse($p->verified_at)->format('M d, Y h:i A')
-                                        : null,
-                ];
-            })->toArray();
-
-            return view('owner.payments.index', compact('stats', 'payments'));
-
-        } catch (\Exception $e) {
-            \Log::error('Payment Index Error: ' . $e->getMessage());
-            $stats = ['total_revenue' => 0, 'completed' => 0, 'pending' => 0, 'today_total' => 0];
-            $payments = [];
-            return view('owner.payments.index', compact('stats', 'payments'))
-                ->with('error', 'Could not load payments: ' . $e->getMessage());
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
         }
+
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')
+                ->with('error', 'Please create your salon first.');
+        }
+
+        $salonId = $salon->id;
+        $today = Carbon::today();
+
+        $payments = Payment::where('salon_id', $salonId)
+            ->with(['appointment.client', 'appointment.service'])
+            ->latest()
+            ->get();
+
+        $stats = [
+            'total_revenue' => Payment::where('salon_id', $salonId)->where('status', 'approved')->sum('amount'),
+            'completed'     => Payment::where('salon_id', $salonId)->where('status', 'approved')->count(),
+            'pending'       => Payment::where('salon_id', $salonId)->where('status', 'pending')->sum('amount'),
+            'today_total'   => Payment::where('salon_id', $salonId)
+                                ->where('status', 'approved')
+                                ->whereDate('created_at', $today)
+                                ->sum('amount'),
+        ];
+
+        return view('owner.payments.index', compact('stats', 'payments', 'salon'));
     }
 
     /**
-     * Route: GET /owner/payments/create --> owner.payments.create
+     * Show the form to manually record a payment (e.g. cash payment)
+     * for one of this salon's appointments.
      */
     public function create()
     {
-        $salon    = $this->getOwnerSalon();
-        $services = Service::where('salon_id', $salon->id)
-                        ->where('is_active', true)
-                        ->orderBy('name')
-                        ->pluck('name')
-                        ->toArray();
+        $user = auth()->user();
 
-        return view('owner.payments.create', compact('services'));
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')
+                ->with('error', 'Please create your salon first.');
+        }
+
+        // Only appointments from this salon that don't already have a payment
+        $appointments = Appointment::where('salon_id', $salon->id)
+            ->whereDoesntHave('payment')
+            ->with(['client', 'service'])
+            ->orderByDesc('appointment_date')
+            ->get();
+
+        return view('owner.payments.create', compact('appointments', 'salon'));
     }
 
     /**
-     * Route: POST /owner/payments --> owner.payments.store
+     * Store a manually recorded payment.
      */
     public function store(Request $request)
     {
-        try {
-            $salon = $this->getOwnerSalon();
+        $user = auth()->user();
 
-            $request->validate([
-                'amount' => 'required|numeric|min:0',
-                'method' => 'required|string',
-                'status' => 'required|string',
-            ]);
-
-            Payment::create([
-                'salon_id'      => $salon->id,
-                'client_id'     => $request->client_id ?? null,
-                'appointment_id'=> $request->appointment_id ?? null,
-                'amount'        => $request->amount,
-                'method'        => $request->method,
-                'transaction_ref' => $request->transaction_ref ?? null,
-                'sender_number' => $request->sender_number ?? null,
-                'status'        => $request->status,
-            ]);
-
-            return redirect()->route('owner.payments.index')
-                ->with('success', 'Payment recorded successfully!');
-
-        } catch (\Exception $e) {
-            \Log::error('Payment Store Error: ' . $e->getMessage());
-            return redirect()->back()
-                ->with('error', 'Could not save: ' . $e->getMessage())
-                ->withInput();
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
         }
+
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
+        }
+
+        $validated = $request->validate([
+            'appointment_id' => 'required|exists:appointments,id',
+            'amount'         => 'required|numeric|min:0',
+            'method'         => 'required|in:cash,credit_card,debit_card,online,other',
+            'status'         => 'required|in:pending,approved,rejected',
+        ]);
+
+        $appointment = Appointment::where('salon_id', $salon->id)->findOrFail($validated['appointment_id']);
+
+        $payment = Payment::create([
+            'appointment_id'  => $appointment->id,
+            'client_id'       => $appointment->client_id,
+            'salon_id'        => $salon->id,
+            'amount'          => $validated['amount'],
+            'method'          => $validated['method'],
+            'status'          => $validated['status'],
+            'transaction_ref' => strtoupper($validated['method']) . '-' . strtoupper(uniqid()),
+        ]);
+
+        if ($validated['status'] === 'approved') {
+            $appointment->update(['status' => 'confirmed']);
+        }
+
+        return redirect()->route('owner.payments.index')->with('success', 'Payment recorded successfully!');
     }
 
     /**
-     * Route: GET /owner/payments/{payment} --> owner.payments.show
+     * Display the specified payment.
      */
-    public function show($id)
+    public function show($payment)
     {
-        try {
-            $salon = $this->getOwnerSalon();
+        $user = auth()->user();
 
-            $p = Payment::where('salon_id', $salon->id)
-                    ->with(['appointment.service', 'client'])
-                    ->findOrFail($id);
-
-            $clientName  = optional($p->client)->name ?? 'N/A';
-            $clientEmail = optional($p->client)->email ?? 'N/A';
-            $serviceName = optional(optional($p->appointment)->service)->name ?? 'N/A';
-
-            $statusMap = [
-                'pending'  => 'Pending',
-                'approved' => 'Completed',
-                'rejected' => 'Failed',
-                'refunded' => 'Refunded',
-            ];
-            $status = $statusMap[$p->status] ?? ucfirst($p->status);
-
-            $payment = [
-                'id'               => $p->id,
-                'payment_id'       => 'PAY-' . str_pad($p->id, 3, '0', STR_PAD_LEFT),
-                'client_name'      => $clientName,
-                'client_email'     => $clientEmail,
-                'service'          => $serviceName,
-                'amount'           => number_format($p->amount, 2),
-                'method'           => ucfirst($p->method ?? 'N/A'),
-                'transaction_ref'  => $p->transaction_ref ?? 'N/A',
-                'sender_number'    => $p->sender_number ?? 'N/A',
-                'screenshot'       => $p->screenshot
-                                        ? asset('storage/' . $p->screenshot)
-                                        : null,
-                'date'             => optional($p->created_at)->format('M d, Y') ?? 'N/A',
-                'date_raw'         => optional($p->created_at)->format('Y-m-d') ?? '',
-                'time'             => optional($p->created_at)->format('h:i A') ?? 'N/A',
-                'time_raw'         => optional($p->created_at)->format('H:i') ?? '',
-                'invoice_no'       => 'INV-' . ($p->created_at ? $p->created_at->format('Y') : date('Y'))
-                                       . '-' . str_pad($p->id, 3, '0', STR_PAD_LEFT),
-                'status'           => $status,
-                'raw_status'       => $p->status,
-                'rejection_reason' => $p->rejection_reason,
-                'verified_at'      => $p->verified_at
-                                        ? \Carbon\Carbon::parse($p->verified_at)->format('M d, Y h:i A')
-                                        : null,
-            ];
-
-            return view('owner.payments.show', compact('payment'));
-
-        } catch (\Exception $e) {
-            \Log::error('Payment Show Error: ' . $e->getMessage());
-            return redirect()->route('owner.payments.index')
-                ->with('error', 'Payment not found.');
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
         }
-    }
 
-    /**
-     * Route: GET /owner/payments/{payment}/edit
-     */
-    public function edit($id)
-    {
-        try {
-            $salon = $this->getOwnerSalon();
-            $p     = Payment::where('salon_id', $salon->id)->findOrFail($id);
+        $salon = Salon::where('owner_id', $user->id)->first();
 
-            $statusMap = ['pending' => 'Pending', 'approved' => 'Completed', 'rejected' => 'Failed', 'refunded' => 'Refunded'];
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
+        }
 
-            $payment = [
-                'id'              => $p->id,
-                'payment_id'      => 'PAY-' . str_pad($p->id, 3, '0', STR_PAD_LEFT),
-                'client_name'     => optional($p->client)->name ?? '',
-                'client_email'    => optional($p->client)->email ?? '',
-                'service'         => optional(optional($p->appointment)->service)->name ?? '',
-                'amount'          => $p->amount,
-                'method'          => $p->method ?? '',
-                'transaction_ref' => $p->transaction_ref ?? '',
-                'sender_number'   => $p->sender_number ?? '',
-                'date_raw'        => optional($p->created_at)->format('Y-m-d') ?? '',
-                'time_raw'        => optional($p->created_at)->format('H:i') ?? '',
-                'invoice_no'      => 'INV-' . date('Y') . '-' . str_pad($p->id, 3, '0', STR_PAD_LEFT),
-                'status'          => $statusMap[$p->status] ?? ucfirst($p->status),
-            ];
+        $paymentModel = Payment::where('salon_id', $salon->id)
+            ->with(['appointment.client', 'appointment.service', 'appointment.stylist'])
+            ->find($payment);
 
-            $services = Service::where('salon_id', $salon->id)
-                            ->where('is_active', true)
-                            ->pluck('name')->toArray();
-
-            return view('owner.payments.edit', compact('payment', 'services'));
-
-        } catch (\Exception $e) {
+        if (!$paymentModel) {
             return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
         }
+
+        return view('owner.payments.show', ['payment' => $paymentModel, 'salon' => $salon]);
     }
 
     /**
-     * Route: PUT /owner/payments/{payment}
+     * Show the form for editing the specified payment.
      */
-    public function update(Request $request, $id)
+    public function edit($payment)
     {
-        try {
-            $salon = $this->getOwnerSalon();
-            $p     = Payment::where('salon_id', $salon->id)->findOrFail($id);
+        $user = auth()->user();
 
-            $statusReverseMap = ['Completed' => 'approved', 'Pending' => 'pending', 'Failed' => 'rejected', 'Refunded' => 'refunded'];
-
-            $p->update([
-                'amount'          => $request->amount,
-                'method'          => $request->method,
-                'transaction_ref' => $request->transaction_ref,
-                'sender_number'   => $request->sender_number,
-                'status'          => $statusReverseMap[$request->status] ?? strtolower($request->status),
-            ]);
-
-            return redirect()->route('owner.payments.index')
-                ->with('success', 'Payment updated successfully!');
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Could not update: ' . $e->getMessage())
-                ->withInput();
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
         }
+
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
+        }
+
+        $paymentModel = Payment::where('salon_id', $salon->id)
+            ->with(['appointment.client', 'appointment.service'])
+            ->find($payment);
+
+        if (!$paymentModel) {
+            return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
+        }
+
+        return view('owner.payments.edit', ['payment' => $paymentModel, 'salon' => $salon]);
     }
 
     /**
-     * Route: DELETE /owner/payments/{payment}
+     * Update the specified payment.
      */
-    public function destroy($id)
+    public function update(Request $request, $payment)
     {
-        try {
-            $salon = $this->getOwnerSalon();
-            Payment::where('salon_id', $salon->id)->findOrFail($id)->delete();
-            return redirect()->route('owner.payments.index')->with('success', 'Payment deleted!');
-        } catch (\Exception $e) {
-            return redirect()->route('owner.payments.index')->with('error', 'Could not delete payment.');
+        $user = auth()->user();
+
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
         }
+
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
+        }
+
+        $paymentModel = Payment::where('salon_id', $salon->id)->find($payment);
+
+        if (!$paymentModel) {
+            return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
+        }
+
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'method' => 'required|in:easypaisa,jazzcash,bank,cash,credit_card,debit_card,online,other',
+            'status' => 'required|in:pending,approved,rejected',
+        ]);
+
+        $paymentModel->update($validated);
+
+        if ($validated['status'] === 'approved' && $paymentModel->appointment) {
+            $paymentModel->appointment->update(['status' => 'confirmed']);
+        } elseif ($validated['status'] === 'rejected' && $paymentModel->appointment) {
+            $paymentModel->appointment->update(['status' => 'pending_payment']);
+        }
+
+        return redirect()->route('owner.payments.index')->with('success', 'Payment updated successfully!');
     }
 
     /**
-     * Route: POST /owner/payments/{payment}/approve
-     * Payment approve karna — status 'pending' → 'approved'
+     * Remove the specified payment.
      */
-    public function approve(Request $request, $id)
+    public function destroy(Request $request, $payment)
     {
-        try {
-            $salon = $this->getOwnerSalon();
-            $p     = Payment::where('salon_id', $salon->id)->findOrFail($id);
+        $user = auth()->user();
 
-            $p->update([
-                'status'      => 'approved',
-                'verified_by' => auth()->id(),
-                'verified_at' => now(),
-                'rejection_reason' => null,
-            ]);
-
-            return redirect()->route('owner.payments.show', ['payment' => $id])
-                ->with('success', 'Payment approved successfully!');
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Could not approve payment.');
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
         }
+
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
+        }
+
+        $paymentModel = Payment::where('salon_id', $salon->id)->find($payment);
+
+        if (!$paymentModel) {
+            return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
+        }
+
+        $paymentModel->delete();
+
+        return redirect()->route('owner.payments.index')->with('success', 'Payment deleted successfully!');
     }
 
     /**
-     * Route: POST /owner/payments/{payment}/reject
-     * Payment reject karna — status 'pending' → 'rejected'
+     * Approve a payment — and confirm the linked appointment, same as
+     * OwnerAppointmentController::verifyPayment() does.
      */
-    public function reject(Request $request, $id)
+    public function approve(Request $request, $payment)
     {
-        try {
-            $salon = $this->getOwnerSalon();
-            $p     = Payment::where('salon_id', $salon->id)->findOrFail($id);
+        $user = auth()->user();
 
-            $p->update([
-                'status'           => 'rejected',
-                'rejection_reason' => $request->reason ?? 'Rejected by salon owner',
-                'verified_by'      => auth()->id(),
-                'verified_at'      => now(),
-            ]);
-
-            return redirect()->route('owner.payments.show', ['payment' => $id])
-                ->with('success', 'Payment rejected.');
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Could not reject payment.');
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
         }
+
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
+        }
+
+        $paymentModel = Payment::where('salon_id', $salon->id)->find($payment);
+
+        if (!$paymentModel) {
+            return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
+        }
+
+        $paymentModel->update(['status' => 'approved']);
+
+        if ($paymentModel->appointment) {
+            $paymentModel->appointment->update(['status' => 'confirmed']);
+        }
+
+        return redirect()->route('owner.payments.show', ['payment' => $payment])
+            ->with('success', 'Payment approved!');
     }
 
     /**
-     * Route: GET /owner/payments/export
-     * Real CSV export
+     * Reject a payment — and send the linked appointment back to
+     * pending_payment, same as OwnerAppointmentController::rejectPayment() does.
+     */
+    public function reject(Request $request, $payment)
+    {
+        $user = auth()->user();
+
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
+        }
+
+        $paymentModel = Payment::where('salon_id', $salon->id)->find($payment);
+
+        if (!$paymentModel) {
+            return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
+        }
+
+        $paymentModel->update(['status' => 'rejected']);
+
+        if ($paymentModel->appointment) {
+            $paymentModel->appointment->update(['status' => 'pending_payment']);
+        }
+
+        return redirect()->route('owner.payments.show', ['payment' => $payment])
+            ->with('success', 'Payment rejected.');
+    }
+
+    /**
+     * Export this salon's real payments as CSV.
      */
     public function export(Request $request)
     {
-        try {
-            $salon    = $this->getOwnerSalon();
-            $payments = Payment::where('salon_id', $salon->id)
-                            ->with(['client', 'appointment.service'])
-                            ->latest()
-                            ->get();
+        $user = auth()->user();
 
-            $csv = "Payment ID,Client,Service,Amount,Method,Transaction Ref,Date,Status\n";
-            foreach ($payments as $p) {
-                $csv .= sprintf(
-                    "PAY-%s,%s,%s,%s,%s,%s,%s,%s\n",
-                    str_pad($p->id, 3, '0', STR_PAD_LEFT),
-                    str_replace(',', ' ', optional($p->client)->name ?? 'N/A'),
-                    str_replace(',', ' ', optional(optional($p->appointment)->service)->name ?? 'N/A'),
-                    $p->amount,
-                    ucfirst($p->method ?? 'N/A'),
-                    $p->transaction_ref ?? 'N/A',
-                    optional($p->created_at)->format('Y-m-d'),
-                    ucfirst($p->status)
-                );
-            }
-
-            return response($csv)
-                ->header('Content-Type', 'text/csv')
-                ->header('Content-Disposition', 'attachment; filename="payments-' . date('Y-m-d') . '.csv"');
-
-        } catch (\Exception $e) {
-            return redirect()->route('owner.payments.index')
-                ->with('error', 'Could not export.');
+        if ($user->role !== 'owner') {
+            abort(403, 'Unauthorized access.');
         }
+
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
+        }
+
+        $payments = Payment::where('salon_id', $salon->id)
+            ->with(['appointment.client', 'appointment.service'])
+            ->latest()
+            ->get();
+
+        $csv = "Payment ID,Client,Service,Amount,Method,Date,Status\n";
+        foreach ($payments as $p) {
+            $csv .= $p->id . ",";
+            $csv .= (optional($p->appointment)->client->name ?? 'N/A') . ",";
+            $csv .= (optional($p->appointment)->service->name ?? 'N/A') . ",";
+            $csv .= $p->amount . ",";
+            $csv .= $p->method . ",";
+            $csv .= $p->created_at->format('M d, Y') . ",";
+            $csv .= $p->status . "\n";
+        }
+
+        return response($csv)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="payments-' . now()->format('Y-m-d') . '.csv"');
     }
 }

@@ -69,6 +69,13 @@ class BookingController extends Controller
     {
         $salon = Salon::findOrFail($salon_id);
 
+        // Same consistency guard as step2Stylist() — without this, a stale
+        // salon_id in the URL at this point would still get accepted.
+        if (Session::get('booking_salon_id') != $salon_id) {
+            return redirect()->route('booking.step1', $salon->id)
+                ->with('error', 'Your booking session doesn\'t match this salon. Please start again.');
+        }
+
         if ($request->stylist_id === 'any') {
             $stylist = $salon->stylists()->where('is_active', true)->inRandomOrder()->first();
             if (!$stylist) {
@@ -90,7 +97,15 @@ class BookingController extends Controller
         $serviceId = Session::get('booking_service_id');
         $stylistId = Session::get('booking_stylist_id');
 
-        if (!$serviceId || !$stylistId) {
+        // ── FIX: this salon_id consistency check was missing here before.
+        // step2Stylist() already validated it, but step3/step4/postPayment
+        // did not — so if the URL's salon_id ever drifted from the one
+        // locked into the session (two tabs, back-button, a stale link,
+        // etc), the rest of the flow would silently keep going against
+        // the WRONG salon, and the final appointment would be saved with
+        // that wrong salon_id. This is almost certainly what caused your
+        // booking to not show up under the correct salon owner.
+        if (!$serviceId || !$stylistId || Session::get('booking_salon_id') != $salon_id) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Please complete previous steps first.');
         }
@@ -105,6 +120,12 @@ class BookingController extends Controller
     public function postStep3DateTime(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
+
+        // Same fix as step3DateTime() above.
+        if (Session::get('booking_salon_id') != $salon_id) {
+            return redirect()->route('booking.step1', $salon->id)
+                ->with('error', 'Your booking session doesn\'t match this salon. Please start again.');
+        }
 
         if ($request->has('join_waitlist') && $request->join_waitlist == '1') {
             return $this->joinWaitlistFromStep3($request, $salon);
@@ -157,6 +178,12 @@ class BookingController extends Controller
         $bookingTime = Session::get('booking_time');
         $bookingDate = Session::get('booking_date');
 
+        // Same fix as step3DateTime() above.
+        if (Session::get('booking_salon_id') != $salon_id) {
+            return redirect()->route('booking.step1', $salon->id)
+                ->with('error', 'Your booking session doesn\'t match this salon. Please start again.');
+        }
+
         if (!$serviceId || !$stylistId) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Please complete all booking steps.');
@@ -187,6 +214,17 @@ class BookingController extends Controller
     public function postPayment(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
+
+        // ── FIX (the actual root cause): this check used to be missing.
+        // Without it, this final step trusted whatever $salon_id was in
+        // the URL, even if it no longer matched the salon the client
+        // actually picked back in step 1. Now we refuse to proceed if
+        // they've drifted apart, instead of silently saving the
+        // appointment against the wrong salon.
+        if (Session::get('booking_salon_id') != $salon_id) {
+            return redirect()->route('booking.step1', $salon->id)
+                ->with('error', 'Your booking session doesn\'t match this salon. Please start again.');
+        }
 
         $serviceId   = Session::get('booking_service_id');
         $stylistId   = Session::get('booking_stylist_id');
@@ -221,6 +259,10 @@ class BookingController extends Controller
         $screenshotPath = $request->file('screenshot')
             ->store('payment-screenshots', 'public');
 
+        // ── FIX: use $salon->id here (which we've now *guaranteed* above
+        // matches Session::get('booking_salon_id')) as the single source
+        // of truth for which salon this appointment belongs to — instead
+        // of it being possible for a mismatched value to slip through.
         $appointment = Appointment::create([
             'booking_ref'      => $bookingRef,
             'client_id'        => Auth::id(),
