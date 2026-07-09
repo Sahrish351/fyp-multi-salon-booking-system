@@ -1,11 +1,9 @@
-
 @extends('layouts.owner')
  
 @section('title', 'Clients')
  
 @section('content')
  
-
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <h2>Clients</h2>
@@ -16,15 +14,13 @@
         </a>
     </div>
  
-    
     <div class="row g-4 mb-4">
- 
         <div class="col-md-6 col-lg-3">
             <div class="stat-card-sm">
                 <div class="stat-icon icon-blue"><i class="bi bi-people-fill"></i></div>
                 <div>
                     <div class="stat-label-sm">Total Clients</div>
-                    <div class="stat-value-sm">{{ number_format($stats['total'] ?? 1245) }}</div>
+                    <div class="stat-value-sm">{{ number_format($stats['total']) }}</div>
                 </div>
             </div>
         </div>
@@ -34,7 +30,7 @@
                 <div class="stat-icon icon-gold"><i class="bi bi-graph-up-arrow"></i></div>
                 <div>
                     <div class="stat-label-sm">VIP Clients</div>
-                    <div class="stat-value-sm">{{ $stats['vip'] ?? 186 }}</div>
+                    <div class="stat-value-sm">{{ $stats['vip'] }}</div>
                 </div>
             </div>
         </div>
@@ -44,7 +40,7 @@
                 <div class="stat-icon icon-green"><i class="bi bi-person-plus-fill"></i></div>
                 <div>
                     <div class="stat-label-sm">New This Month</div>
-                    <div class="stat-value-sm">{{ $stats['new_this_month'] ?? 48 }}</div>
+                    <div class="stat-value-sm">{{ $stats['new_this_month'] }}</div>
                 </div>
             </div>
         </div>
@@ -54,14 +50,12 @@
                 <div class="stat-icon icon-purple"><i class="bi bi-calendar-check-fill"></i></div>
                 <div>
                     <div class="stat-label-sm">Active Today</div>
-                    <div class="stat-value-sm">{{ $stats['active_today'] ?? 24 }}</div>
+                    <div class="stat-value-sm">{{ $stats['active_today'] }}</div>
                 </div>
             </div>
         </div>
- 
     </div>
  
-  
     <div class="panel-card panel-card-auto mb-4">
         <div class="row g-3 align-items-center">
             <div class="col-md-9">
@@ -79,7 +73,6 @@
         </div>
     </div>
  
-   
     <div class="panel-card panel-card-auto">
         <div class="table-responsive">
             <table class="table-custom" id="clientsTable">
@@ -97,14 +90,14 @@
                 <tbody>
                     @php
                         $statusBadge = [
-                            'VIP'     => 'badge-vip',
+                            'VIP' => 'badge-vip',
                             'Regular' => 'badge-regular',
-                            'New'     => 'badge-confirmed',
-                            'Inactive'=> 'badge-cancelled',
+                            'New' => 'badge-new',
+                            'Inactive' => 'badge-inactive',
                         ];
                     @endphp
  
-                    @foreach ($clients as $client)
+                    @forelse ($clients as $client)
                         <tr class="client-row"
                             data-name="{{ strtolower($client['name']) }}"
                             data-status="{{ strtolower($client['status']) }}">
@@ -115,7 +108,7 @@
                             </td>
                             <td>{{ $client['join_date'] }}</td>
                             <td class="cell-name">{{ $client['total_visits'] }}</td>
-                            <td class="amount-gold">${{ number_format($client['total_spent']) }}</td>
+                            <td class="amount-gold">PKR {{ number_format($client['total_spent']) }}</td>
                             <td>{{ $client['last_visit'] }}</td>
                             <td>
                                 <span class="badge-status {{ $statusBadge[$client['status']] ?? 'badge-regular' }}">
@@ -141,7 +134,13 @@
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-4" style="color:#8a7a88;">
+                                No clients found yet.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
  
@@ -154,10 +153,7 @@
  
 @endsection
  
-
 @push('modals')
- 
- 
     <div class="modal fade" id="deleteClientModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content modal-content-custom">
@@ -180,7 +176,6 @@
         </div>
     </div>
  
-   
     <div class="modal fade" id="filtersModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content modal-content-custom">
@@ -207,96 +202,254 @@
             </div>
         </div>
     </div>
- 
 @endpush
  
 @section('extra-css')
 <style>
-    .btn-add-client {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; font-size: 14.5px;
-        padding: 11px 22px; border-radius: 10px; border: none;
-        box-shadow: 0 4px 14px rgba(217, 164, 65, 0.35); transition: all 0.18s ease;
-        display: inline-flex; align-items: center; white-space: nowrap;
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d1f2c;
+        margin-bottom: 0.25rem;
     }
-    .btn-add-client:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(217, 164, 65, 0.5); color: var(--plum-900); }
+    .page-header p {
+        color: #8a7a88;
+        margin-bottom: 0;
+    }
+
+    .btn-add-client {
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 11px 22px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        transition: all 0.18s ease;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        text-decoration: none;
+    }
+    .btn-add-client:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
  
     .panel-card-auto { height: auto; }
  
     .stat-card-sm {
-        background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--blush-200);
-        box-shadow: var(--shadow-card); padding: 18px 20px; display: flex; align-items: center; gap: 16px; height: 100%;
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #f0e8ed;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 100%;
     }
-    .stat-card-sm .stat-icon { width: 50px; height: 50px; border-radius: 14px; font-size: 20px; flex-shrink: 0; }
-    .stat-label-sm { font-size: 13.5px; color: var(--ink-700); margin-bottom: 2px; }
-    .stat-value-sm { font-size: 22px; font-weight: 700; color: var(--plum-900); }
+    .stat-card-sm .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        font-size: 20px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+    }
+    .icon-blue { background: linear-gradient(135deg, #4A7FE0, #3568C4); }
+    .icon-gold { background: linear-gradient(135deg, #D9A441, #C4903A); }
+    .icon-green { background: linear-gradient(135deg, #2EAE7D, #1E8E64); }
+    .icon-purple { background: linear-gradient(135deg, #9B6FD1, #7E56B0); }
+    .stat-label-sm { font-size: 13.5px; color: #8a7a88; margin-bottom: 2px; }
+    .stat-value-sm { font-size: 22px; font-weight: 700; color: #2d1f2c; }
  
     .search-input-wrap { position: relative; }
-    .search-input-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-500); }
+    .search-input-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #8a7a88; }
     .search-input { padding-left: 40px !important; }
  
     .btn-filters {
-        background: var(--white); border: 1px solid var(--rose-300) !important; color: var(--rose-600) !important;
-        font-weight: 600; font-size: 14.5px; padding: 11px 20px; border-radius: var(--radius-sm);
-        display: inline-flex; align-items: center; justify-content: center; transition: all 0.18s ease;
+        background: #fff;
+        border: 1.5px solid #FF6B9D !important;
+        color: #E85588 !important;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 11px 20px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.18s ease;
     }
-    .btn-filters:hover { background: var(--blush-50); }
+    .btn-filters:hover {
+        background: #E85588 !important;
+        color: #ffffff !important;
+        border-color: #E85588 !important;
+    }
  
-    .cell-sub { font-size: 12.5px; color: var(--ink-500); }
+    .cell-sub { font-size: 12.5px; color: #8a7a88; }
  
-    .badge-vip { background: #FCEFDE; color: var(--gold-600); }
-    .badge-regular { background: var(--blue-50); color: var(--blue-500); }
+    .badge-vip { background: #FDF6E8; color: #C4903A; }
+    .badge-regular { background: #E8F0FE; color: #3568C4; }
+    .badge-new { background: #E8F5ED; color: #1E8E64; }
+    .badge-inactive { background: #FCE4EC; color: #D45482; }
  
     .action-icons { display: flex; gap: 8px; }
     .action-btn {
-        width: 34px; height: 34px; border-radius: 8px; border: none; display: inline-flex;
-        align-items: center; justify-content: center; font-size: 15px; cursor: pointer; transition: all 0.15s ease;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.15s ease;
         text-decoration: none;
     }
-    .view-btn { background: var(--purple-50); color: var(--purple-500); }
-    .view-btn:hover { background: var(--purple-500); color: #fff; }
-    .edit-btn { background: var(--blue-50); color: var(--blue-500); }
-    .edit-btn:hover { background: var(--blue-500); color: #fff; }
-    .delete-btn { background: var(--red-50); color: var(--red-500); }
-    .delete-btn:hover { background: var(--red-500); color: #fff; }
+    .view-btn { background: #F0E8FD; color: #7E56B0; }
+    .view-btn:hover { background: #7E56B0; color: #fff; }
+    .edit-btn { background: #E8F0FE; color: #3568C4; }
+    .edit-btn:hover { background: #3568C4; color: #fff; }
+    .delete-btn { background: #fff; border: 1.5px solid #FF6B9D; color: #E85588; }
+    .delete-btn:hover { background: #E85588; color: #fff; border-color: #E85588; }
  
-    .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink-700); margin-bottom: 6px; }
+    .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: #4a3a48; margin-bottom: 6px; }
     .input-custom {
-        background: var(--blush-50) !important; border: 1px solid var(--blush-200) !important;
-        border-radius: var(--radius-sm) !important; color: var(--ink-900) !important;
-        font-size: 14.5px; padding: 11px 14px !important;
+        background: #fcf6f9 !important;
+        border: 1px solid #f0e8ed !important;
+        border-radius: 10px !important;
+        color: #2d1f2c !important;
+        font-size: 14.5px;
+        padding: 11px 14px !important;
+        width: 100%;
     }
-    .input-custom:focus { background: #fff !important; border-color: var(--rose-400) !important; box-shadow: 0 0 0 3px rgba(240, 143, 180, 0.2) !important; outline: none; }
+    .input-custom:focus {
+        background: #fff !important;
+        border-color: #E85588 !important;
+        box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15) !important;
+        outline: none;
+    }
  
-    .modal-content-custom { border-radius: var(--radius-lg); border: none; overflow: hidden; }
-    .modal-header-custom { background: var(--blush-50); border-bottom: 1px solid var(--blush-200); padding: 18px 24px; }
-    .modal-header-custom .modal-title { font-weight: 700; color: var(--plum-800); }
+    .modal-content-custom { border-radius: 16px; border: none; overflow: hidden; }
+    .modal-header-custom {
+        background: #fcf6f9;
+        border-bottom: 1px solid #f5eef2;
+        padding: 18px 24px;
+    }
+    .modal-header-custom .modal-title { font-weight: 700; color: #2d1f2c; }
     .modal-body { padding: 22px 24px; }
-    .modal-footer-custom { border-top: 1px solid var(--blush-100); padding: 16px 24px; }
+    .modal-footer-custom { border-top: 1px solid #f5eef2; padding: 16px 24px; }
  
     .btn-cancel-modal {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--ink-700);
-        font-weight: 600; padding: 9px 20px; border-radius: 10px;
+        background: #fff;
+        border: 1.5px solid #FF6B9D;
+        color: #E85588;
+        font-weight: 600;
+        padding: 9px 20px;
+        border-radius: 10px;
+        transition: all 0.15s ease;
     }
-    .btn-cancel-modal:hover { background: var(--blush-50); }
+    .btn-cancel-modal:hover {
+        background: #E85588;
+        color: #ffffff !important;
+        border-color: #E85588;
+    }
  
     .btn-save-changes {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; padding: 9px 22px; border-radius: 10px; border: none;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 9px 22px;
+        border-radius: 10px;
+        border: none;
+        transition: all 0.15s ease;
     }
-    .btn-save-changes:hover { color: var(--plum-900); }
+    .btn-save-changes:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        color: #ffffff !important;
+    }
  
     .btn-delete-confirm {
-        background: linear-gradient(135deg, #F0708C, var(--red-500));
-        color: #fff; font-weight: 700; padding: 9px 24px; border-radius: 10px; border: none;
+        background: linear-gradient(135deg, #F0708C, #E85588);
+        color: #fff;
+        font-weight: 700;
+        padding: 9px 24px;
+        border-radius: 10px;
+        border: none;
+        transition: all 0.15s ease;
     }
-    .btn-delete-confirm:hover { color: #fff; box-shadow: 0 4px 14px rgba(225, 77, 106, 0.4); }
+    .btn-delete-confirm:hover {
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.4);
+    }
+ 
+    .table-custom {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-custom thead th {
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        color: #8a7a88;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        padding: 0 10px 12px;
+        border-bottom: 1.5px solid #f0e8ed;
+    }
+    .table-custom tbody td {
+        padding: 12px 10px;
+        font-size: 14px;
+        color: #2d1f2c;
+        border-bottom: 1px solid #f5eef2;
+        vertical-align: middle;
+    }
+    .table-custom tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .table-custom tbody tr:hover {
+        background: #fcf6f9;
+    }
+    .cell-name { font-weight: 600; color: #2d1f2c; }
+    .amount-gold { font-weight: 700; color: #D9A441; }
+ 
+    .badge-status {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .badge-completed { background: #E8F5ED; color: #1E8E64; }
+ 
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .btn-add-client {
+            justify-content: center;
+            width: 100%;
+        }
+        .action-icons {
+            flex-wrap: wrap;
+        }
+    }
 </style>
 @endsection
  
 @section('extra-js')
 <script>
-   
     const searchInput = document.getElementById('clientSearchInput');
     const rows = document.querySelectorAll('.client-row');
     const noResults = document.getElementById('noClientsFound');
@@ -325,11 +478,9 @@
         applySearchAndFilters();
     });
  
-   
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             document.getElementById('deleteClientName').textContent = this.dataset.name;
- 
             const form = document.getElementById('deleteClientForm');
             form.action = form.action.replace(/clients\/\d+$/, 'clients/' + this.dataset.id);
         });
