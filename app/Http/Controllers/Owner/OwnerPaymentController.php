@@ -11,91 +11,12 @@ use Carbon\Carbon;
 
 class OwnerPaymentController extends Controller
 {
-<<<<<<< HEAD
-    /**
-     * Convert a raw Payment model into the exact array shape that
-     * owner.payments.index and owner.payments.show blade files expect.
-     */
-    private function formatPayment(Payment $payment): array
-    {
-        $appointment = $payment->appointment;
-        $client      = $appointment->client ?? null;
-        $service     = $appointment->service ?? null;
-
-        $statusMap = [
-            'approved' => 'Completed',
-            'pending'  => 'Pending',
-            'rejected' => 'Failed',
-            'refunded' => 'Refunded',
-        ];
-
-        return [
-            'id'               => $payment->id,
-            'appointment_id'   => $payment->appointment_id,
-            'payment_id'       => 'PAY-' . str_pad($payment->id, 3, '0', STR_PAD_LEFT),
-            'client_name'      => $client->name ?? 'N/A',
-            'client_email'     => $client->email ?? 'N/A',
-            'service'          => $service->name ?? 'N/A',
-            'amount'           => number_format($payment->amount, 2),
-            'method'           => ucfirst($payment->method ?? 'N/A'),
-            'date'             => $payment->created_at->format('M d, Y'),
-            'time'             => $payment->created_at->format('h:i A'),
-            'invoice_no'       => 'INV-' . $payment->created_at->format('Y') . '-' . str_pad($payment->id, 3, '0', STR_PAD_LEFT),
-            'status'           => $statusMap[$payment->status] ?? ucfirst($payment->status),
-            'transaction_ref'  => $payment->transaction_ref ?? 'N/A',
-            'sender_number'    => $payment->sender_number ?? null,
-            'screenshot'       => $payment->screenshot ? asset('storage/' . $payment->screenshot) : null,
-            'verified_at'      => $payment->reviewed_at ? Carbon::parse($payment->reviewed_at)->format('M d, Y') : null,
-            'rejection_reason' => $payment->rejection_reason ?? null,
-        ];
-    }
-
-    /**
-     * Display a listing of payments — real data, scoped to this owner's
-     * salon only (same pattern as OwnerAppointmentController::index()).
-     */
-=======
->>>>>>> 93e7900ffcb93785178b14619e424ed0d5b94b6c
     public function index(Request $request)
 {
     $user = auth()->user();
 
-<<<<<<< HEAD
-        if ($user->role !== 'owner') {
-            abort(403, 'Unauthorized access.');
-        }
-
-        $salon = Salon::where('owner_id', $user->id)->first();
-
-        if (!$salon) {
-            return redirect()->route('owner.salons.create')
-                ->with('error', 'Please create your salon first.');
-        }
-
-        $salonId = $salon->id;
-        $today = Carbon::today();
-
-        $payments = Payment::where('salon_id', $salonId)
-            ->with(['appointment.client', 'appointment.service'])
-            ->latest()
-            ->get()
-            ->map(fn ($p) => $this->formatPayment($p));
-
-        $stats = [
-            'total_revenue' => Payment::where('salon_id', $salonId)->where('status', 'approved')->sum('amount'),
-            'completed'     => Payment::where('salon_id', $salonId)->where('status', 'approved')->count(),
-            'pending'       => Payment::where('salon_id', $salonId)->where('status', 'pending')->sum('amount'),
-            'today_total'   => Payment::where('salon_id', $salonId)
-                                ->where('status', 'approved')
-                                ->whereDate('created_at', $today)
-                                ->sum('amount'),
-        ];
-
-        return view('owner.payments.index', compact('stats', 'payments', 'salon'));
-=======
     if ($user->role !== 'owner') {
         abort(403, 'Unauthorized access.');
->>>>>>> 93e7900ffcb93785178b14619e424ed0d5b94b6c
     }
 
     $salon = Salon::where('owner_id', $user->id)->first();
@@ -236,10 +157,7 @@ class OwnerPaymentController extends Controller
             return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
         }
 
-        return view('owner.payments.show', [
-            'payment' => $this->formatPayment($paymentModel),
-            'salon'   => $salon,
-        ]);
+        return view('owner.payments.show', ['payment' => $paymentModel, 'salon' => $salon]);
     }
 
     /**
@@ -396,14 +314,7 @@ class OwnerPaymentController extends Controller
             return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
         }
 
-        $validated = $request->validate([
-            'reason' => 'nullable|string|max:500',
-        ]);
-
-        $paymentModel->update([
-            'status'            => 'rejected',
-            'rejection_reason'  => $validated['reason'] ?? null,
-        ]);
+        $paymentModel->update(['status' => 'rejected']);
 
         if ($paymentModel->appointment) {
             $paymentModel->appointment->update(['status' => 'pending_payment']);

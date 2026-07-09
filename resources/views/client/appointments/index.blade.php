@@ -89,7 +89,6 @@
     .btn-soft.view { background: var(--vscode-blue); color: #fff; border-color: var(--vscode-blue); }
     .btn-soft.view:hover { background: var(--pink-dark); border-color: var(--pink-dark); color: #fff; }
 
-    /* ── Reschedule — soft purple/violet, pyara sa ── */
     .btn-soft.reschedule {
         background: #f3f0ff;
         color: #6d28d9;
@@ -199,16 +198,17 @@
             </div>
 
             <div class="card-body">
-                <div class="salon-name">{{ $appt->salon->name }}</div>
+                <div class="salon-name">{{ $appt->salon->name ?? 'Salon not available' }}</div>
                 <div class="meta-list">
-                    <span><i class="fas fa-spa"></i> {{ Str::limit($appt->service->name, 24) }}</span>
-                    <span><i class="fas fa-user"></i> {{ $appt->stylist->name }}</span>
+                    {{-- ✅ NULL SAFE CHECKS --}}
+                    <span><i class="fas fa-spa"></i> {{ Str::limit($appt->service->name ?? 'Service not available', 24) }}</span>
+                    <span><i class="fas fa-user"></i> {{ $appt->stylist->name ?? 'Stylist not available' }}</span>
                     <span><i class="fas fa-clock"></i> {{ \Carbon\Carbon::parse($appt->start_time)->format('h:i A') }}</span>
                 </div>
 
                 <div class="price-row">
                     <span style="font-size:.75rem;color:#999;font-weight:600;">Total Amount</span>
-                    <span class="amt">Rs. {{ number_format($appt->total_amount) }}</span>
+                    <span class="amt">Rs. {{ number_format($appt->total_amount ?? 0) }}</span>
                 </div>
 
                 @if($appt->payment)
@@ -230,7 +230,6 @@
                     <button type="button" class="btn-bold cancel" onclick="cancelModal({{ $appt->id }})">
                         <i class="fas fa-times"></i> Cancel
                     </button>
-                    {{-- ✅ FIXED: added client. prefix to reschedule route --}}
                     <a href="{{ route('client.appointments.reschedule.create', $appt->id) }}" class="btn-soft reschedule">
                         <i class="fas fa-calendar-alt"></i> Reschedule
                     </a>
