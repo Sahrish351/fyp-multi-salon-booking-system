@@ -1,11 +1,21 @@
-
 @extends('layouts.owner')
  
 @section('title', 'Add Client')
  
 @section('content')
  
-    
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+ 
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <h2>Add Client</h2>
@@ -27,19 +37,28 @@
  
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label-custom">Full Name</label>
-                            <input type="text" name="name" class="form-control input-custom"
-                                   placeholder="e.g. Sarah Johnson" required>
+                            <label class="form-label-custom">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control input-custom @error('name') is-invalid @enderror"
+                                   placeholder="e.g. Sarah Johnson" value="{{ old('name') }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-12">
-                            <label class="form-label-custom">Email</label>
-                            <input type="email" name="email" class="form-control input-custom"
-                                   placeholder="sarah.j@email.com" required>
+                            <label class="form-label-custom">Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control input-custom @error('email') is-invalid @enderror"
+                                   placeholder="sarah.j@email.com" value="{{ old('email') }}" required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-12">
-                            <label class="form-label-custom">Phone</label>
-                            <input type="text" name="phone" class="form-control input-custom"
-                                   placeholder="+1 234-567-8901" required>
+                            <label class="form-label-custom">Phone <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" class="form-control input-custom @error('phone') is-invalid @enderror"
+                                   placeholder="+1 234-567-8901" value="{{ old('phone') }}" required>
+                            @error('phone')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -51,22 +70,32 @@
  
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label-custom">Status</label>
-                            <select name="status" class="form-select input-custom" required>
-                                <option value="New" selected>New</option>
-                                <option value="Regular">Regular</option>
-                                <option value="VIP">VIP</option>
-                                <option value="Inactive">Inactive</option>
+                            <label class="form-label-custom">Status <span class="text-danger">*</span></label>
+                            <select name="status" class="form-select input-custom @error('status') is-invalid @enderror" required>
+                                <option value="New" {{ old('status') == 'New' ? 'selected' : '' }}>New</option>
+                                <option value="Regular" {{ old('status') == 'Regular' ? 'selected' : '' }}>Regular</option>
+                                <option value="VIP" {{ old('status') == 'VIP' ? 'selected' : '' }}>VIP</option>
+                                <option value="Inactive" {{ old('status') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                             </select>
+                            @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-12">
-                            <label class="form-label-custom">Join Date</label>
-                            <input type="date" name="join_date" class="form-control input-custom" required>
+                            <label class="form-label-custom">Join Date <span class="text-danger">*</span></label>
+                            <input type="date" name="join_date" class="form-control input-custom @error('join_date') is-invalid @enderror"
+                                   value="{{ old('join_date', date('Y-m-d')) }}" required>
+                            @error('join_date')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-12">
                             <label class="form-label-custom">Notes <span class="text-muted">(optional)</span></label>
-                            <textarea name="notes" class="form-control input-custom" rows="3"
-                                      placeholder="Any preferences, allergies, or important notes about this client..."></textarea>
+                            <textarea name="notes" class="form-control input-custom @error('notes') is-invalid @enderror" rows="3"
+                                      placeholder="Any preferences, allergies, or important notes about this client...">{{ old('notes') }}</textarea>
+                            @error('notes')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -91,32 +120,159 @@
  
 @section('extra-css')
 <style>
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d1f2c;
+        margin-bottom: 0.25rem;
+    }
+    .page-header p {
+        color: #8a7a88;
+        margin-bottom: 0;
+    }
+
     .btn-back {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--plum-800);
-        font-weight: 600; font-size: 14.5px; padding: 10px 20px; border-radius: 10px;
-        display: inline-flex; align-items: center; transition: all 0.18s ease;
+        background: #fff;
+        border: 1px solid #f0e8ed;
+        color: #2d1f2c;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-back:hover { background: var(--blush-50); color: var(--plum-900); }
- 
-    .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink-700); margin-bottom: 6px; }
+    .btn-back:hover {
+        background: #fcf6f9;
+        border-color: #E85588;
+        color: #E85588;
+    }
+
+    .panel-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        border: 1px solid #f0e8ed;
+        height: 100% !important;
+        display: flex;
+        flex-direction: column;
+    }
+    .panel-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2d1f2c;
+        margin-bottom: 1rem;
+        flex-shrink: 0;
+    }
+
+    .form-label-custom {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #4a3a48;
+        margin-bottom: 6px;
+    }
+    .form-label-custom .text-danger { color: #E85588; }
+    .form-label-custom .text-muted { font-weight: 400; font-size: 12.5px; color: #8a7a88; }
+
     .input-custom {
-        background: var(--blush-50) !important; border: 1px solid var(--blush-200) !important;
-        border-radius: var(--radius-sm) !important; color: var(--ink-900) !important;
-        font-size: 14.5px; padding: 11px 14px !important;
+        background: #fcf6f9 !important;
+        border: 1px solid #f0e8ed !important;
+        border-radius: 10px !important;
+        color: #2d1f2c !important;
+        font-size: 14.5px;
+        padding: 11px 14px !important;
+        width: 100%;
     }
-    .input-custom:focus { background: #fff !important; border-color: var(--rose-400) !important; box-shadow: 0 0 0 3px rgba(240, 143, 180, 0.2) !important; outline: none; }
- 
+    .input-custom:focus {
+        background: #fff !important;
+        border-color: #E85588 !important;
+        box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15) !important;
+        outline: none;
+    }
+    .is-invalid {
+        border-color: #E85588 !important;
+    }
+    .invalid-feedback {
+        color: #E85588;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
     .btn-save-changes {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; padding: 11px 26px; border-radius: 10px; border: none;
-        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-save-changes:hover { color: var(--plum-900); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 164, 65, 0.4); }
- 
+    .btn-save-changes:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 85, 136, 0.45);
+        color: #ffffff !important;
+    }
+
     .btn-cancel-modal {
-        background: var(--white); border: 1px solid var(--blush-200); color: var(--ink-700);
-        font-weight: 600; padding: 11px 26px; border-radius: 10px; display: inline-flex; align-items: center;
+        background: #fff;
+        border: 1.5px solid #FF6B9D;
+        color: #E85588;
+        font-weight: 600;
+        padding: 11px 26px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.18s ease;
+        text-decoration: none;
     }
-    .btn-cancel-modal:hover { background: var(--blush-50); color: var(--ink-900); }
+    .btn-cancel-modal:hover {
+        background: #E85588;
+        color: #ffffff !important;
+        border-color: #E85588;
+    }
+
+    .alert {
+        border-radius: 12px;
+        border: none;
+        padding: 0.8rem 1.2rem;
+    }
+    .alert-danger {
+        background: #FCE4EC;
+        color: #880E4F;
+    }
+    .alert ul {
+        padding-left: 1.2rem;
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .btn-back {
+            justify-content: center;
+            width: 100%;
+        }
+        .d-flex.gap-3 {
+            flex-wrap: wrap;
+        }
+        .btn-save-changes,
+        .btn-cancel-modal {
+            flex: 1;
+            justify-content: center;
+        }
+        .panel-card {
+            height: auto !important;
+        }
+    }
 </style>
 @endsection

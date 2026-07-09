@@ -4,17 +4,40 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class Gallery extends Model
 {
-    protected $fillable = ['salon_id', 'category_id', 'image_path', 'caption', 'sort_order', 'is_active'];
+    
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $table = 'galleries';
 
-    public function salon() { return $this->belongsTo(Salon::class); }
-    public function category() { return $this->belongsTo(Category::class); }
+    protected $fillable = [
+        'salon_id',
+        'category_id',
+        'image_path',
+        'caption',
+        'sort_order',
+        'is_active',
+        'views',
+    ];
 
-    public function getImageUrlAttribute(): string
+    protected $casts = [
+        'is_active' => 'boolean',
+        'views' => 'integer',
+    ];
+
+    public function salon()
     {
-        return asset('storage/' . $this->image_path);
+        return $this->belongsTo(Salon::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image_path ? asset('storage/' . $this->image_path) : null;
     }
 }

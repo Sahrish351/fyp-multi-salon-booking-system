@@ -11,6 +11,7 @@ use Carbon\Carbon;
 
 class OwnerPaymentController extends Controller
 {
+<<<<<<< HEAD
     /**
      * Convert a raw Payment model into the exact array shape that
      * owner.payments.index and owner.payments.show blade files expect.
@@ -53,10 +54,13 @@ class OwnerPaymentController extends Controller
      * Display a listing of payments — real data, scoped to this owner's
      * salon only (same pattern as OwnerAppointmentController::index()).
      */
+=======
+>>>>>>> 93e7900ffcb93785178b14619e424ed0d5b94b6c
     public function index(Request $request)
-    {
-        $user = auth()->user();
+{
+    $user = auth()->user();
 
+<<<<<<< HEAD
         if ($user->role !== 'owner') {
             abort(403, 'Unauthorized access.');
         }
@@ -88,12 +92,57 @@ class OwnerPaymentController extends Controller
         ];
 
         return view('owner.payments.index', compact('stats', 'payments', 'salon'));
+=======
+    if ($user->role !== 'owner') {
+        abort(403, 'Unauthorized access.');
+>>>>>>> 93e7900ffcb93785178b14619e424ed0d5b94b6c
     }
 
-    /**
-     * Show the form to manually record a payment (e.g. cash payment)
-     * for one of this salon's appointments.
-     */
+    $salon = Salon::where('owner_id', $user->id)->first();
+
+    if (!$salon) {
+        return redirect()->route('owner.salons.create')
+            ->with('error', 'Please create your salon first.');
+    }
+
+    $salonId = $salon->id;
+    $today = Carbon::today();
+
+    // ✅ PAYMENTS KO ARRAY MEIN CONVERT KARO
+    $payments = Payment::where('salon_id', $salonId)
+        ->with(['appointment.client', 'appointment.service'])
+        ->latest()
+        ->get()
+        ->map(function ($payment) {
+            return [
+                'id' => $payment->id,
+                'payment_id' => 'PAY-' . str_pad($payment->id, 3, '0', STR_PAD_LEFT),
+                'client_name' => $payment->appointment->client->name ?? 'N/A',
+                'client_email' => $payment->appointment->client->email ?? 'N/A',
+                'service' => $payment->appointment->service->name ?? 'N/A',
+                'amount' => number_format($payment->amount, 2),
+                'method' => ucfirst(str_replace('_', ' ', $payment->method ?? 'N/A')),
+                'date' => Carbon::parse($payment->created_at)->format('M d, Y'),
+                'time' => Carbon::parse($payment->created_at)->format('h:i A'),
+                'invoice_no' => $payment->invoice_no ?? 'N/A',
+                'status' => ucfirst($payment->status),
+            ];
+        });
+
+    // ✅ STATS
+    $stats = [
+        'total_revenue' => Payment::where('salon_id', $salonId)->where('status', 'approved')->sum('amount'),
+        'completed' => Payment::where('salon_id', $salonId)->where('status', 'approved')->count(),
+        'pending' => Payment::where('salon_id', $salonId)->where('status', 'pending')->sum('amount'),
+        'today_total' => Payment::where('salon_id', $salonId)
+            ->where('status', 'approved')
+            ->whereDate('created_at', $today)
+            ->sum('amount'),
+    ];
+
+    return view('owner.payments.index', compact('stats', 'payments', 'salon'));
+}
+   
     public function create()
     {
         $user = auth()->user();

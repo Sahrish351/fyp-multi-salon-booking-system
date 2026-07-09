@@ -23,12 +23,20 @@
 
     @php
         $statusConfig = [
+            'Approved' => ['class' => 'status-approved', 'icon' => 'bi-check-circle-fill', 'label' => 'Approved'],
+            'approved' => ['class' => 'status-approved', 'icon' => 'bi-check-circle-fill', 'label' => 'Approved'],
             'Completed' => ['class' => 'status-approved', 'icon' => 'bi-check-circle-fill', 'label' => 'Approved'],
+            'completed' => ['class' => 'status-approved', 'icon' => 'bi-check-circle-fill', 'label' => 'Approved'],
             'Pending'   => ['class' => 'status-pending',  'icon' => 'bi-hourglass-split',    'label' => 'Pending'],
+            'pending'   => ['class' => 'status-pending',  'icon' => 'bi-hourglass-split',    'label' => 'Pending'],
             'Failed'    => ['class' => 'status-rejected', 'icon' => 'bi-x-circle-fill',      'label' => 'Rejected'],
+            'failed'    => ['class' => 'status-rejected', 'icon' => 'bi-x-circle-fill',      'label' => 'Rejected'],
+            'Rejected'  => ['class' => 'status-rejected', 'icon' => 'bi-x-circle-fill',      'label' => 'Rejected'],
+            'rejected'  => ['class' => 'status-rejected', 'icon' => 'bi-x-circle-fill',      'label' => 'Rejected'],
             'Refunded'  => ['class' => 'status-refunded', 'icon' => 'bi-arrow-counterclockwise', 'label' => 'Refunded'],
+            'refunded'  => ['class' => 'status-refunded', 'icon' => 'bi-arrow-counterclockwise', 'label' => 'Refunded'],
         ];
-        $sc = $statusConfig[$payment['status']] ?? ['class' => 'status-pending', 'icon' => 'bi-hourglass-split', 'label' => $payment['status']];
+        $sc = $statusConfig[$payment['status']] ?? ['class' => 'status-pending', 'icon' => 'bi-hourglass-split', 'label' => ucfirst($payment['status'])];
     @endphp
 
     {{-- Header --}}
@@ -74,7 +82,7 @@
                     {{-- Actions --}}
                     <div class="d-flex flex-column gap-2">
 
-                        @if($payment['status'] === 'Pending')
+                        @if($payment['status'] === 'Pending' || $payment['status'] === 'pending')
                             {{-- Approve --}}
                             <form action="{{ route('owner.payments.approve', ['payment' => $payment['id']]) }}" method="POST">
                                 @csrf
@@ -90,8 +98,9 @@
                             </button>
                         @endif
 
+                        {{-- ✅ FIXED: View Screenshot Button --}}
                         @if($payment['screenshot'])
-                            <a href="{{ $payment['screenshot'] }}" target="_blank" class="btn btn-screenshot w-100">
+                            <a href="{{ asset('storage/' . $payment['screenshot']) }}" target="_blank" class="btn btn-screenshot w-100">
                                 <i class="bi bi-image-fill me-2"></i> View Screenshot
                             </a>
                         @endif
@@ -171,22 +180,32 @@
                 </div>
             </div>
 
-            {{-- Screenshot --}}
+            {{-- ✅ FIXED: Screenshot with asset() helper --}}
             @if($payment['screenshot'])
                 <div class="panel-card mb-4" style="height:auto; padding:1.25rem 1.5rem;">
                     <div class="detail-section-title">
                         <i class="bi bi-image-fill me-2"></i> Payment Screenshot
                     </div>
                     <div class="screenshot-wrap">
-                        <img src="{{ $payment['screenshot'] }}" alt="Payment Screenshot" class="screenshot-img"
+                        <img src="{{ asset('storage/' . $payment['screenshot']) }}" alt="Payment Screenshot" class="screenshot-img"
                              onclick="window.open(this.src, '_blank')">
                         <p class="screenshot-hint">Click to open full size</p>
+                    </div>
+                </div>
+            @else
+                <div class="panel-card mb-4" style="height:auto; padding:1.25rem 1.5rem;">
+                    <div class="detail-section-title">
+                        <i class="bi bi-image-fill me-2"></i> Payment Screenshot
+                    </div>
+                    <div class="text-center py-4">
+                        <i class="bi bi-image" style="font-size:48px; color:#d4c4d0;"></i>
+                        <p style="color:#8a7a88; margin-top:8px;">No screenshot uploaded for this payment.</p>
                     </div>
                 </div>
             @endif
 
             {{-- Rejection Reason --}}
-            @if($payment['status'] === 'Failed' && !empty($payment['rejection_reason']))
+            @if(($payment['status'] === 'Failed' || $payment['status'] === 'failed' || $payment['status'] === 'Rejected' || $payment['status'] === 'rejected') && !empty($payment['rejection_reason']))
                 <div class="rejection-box">
                     <div class="rejection-title">
                         <i class="bi bi-x-circle-fill me-2"></i> Rejection Reason
