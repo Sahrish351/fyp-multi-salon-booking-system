@@ -9,7 +9,7 @@
         <i class="fas fa-arrow-left me-2"></i>Back to Complaints
     </a>
     <h4 class="fw-bold mt-2 mb-0" style="color:#333;font-family:'Playfair Display',serif;">
-        <i class="fas fa-exclamation-circle me-2" style="color:#f97316;"></i>Complaint Details
+        <i class="fas fa-exclamation-circle me-2" style="color:#E91E8C;"></i>Complaint Details
     </h4>
 </div>
 
@@ -52,7 +52,7 @@
         </div>
 
         <div class="bg-white rounded-4 p-4" style="border:1px solid #fce4ec;">
-            <h6 class="fw-bold mb-4" style="color:#333;"><i class="fas fa-comments me-2" style="color:#3b82f6;"></i>Conversation</h6>
+            <h6 class="fw-bold mb-4" style="color:#333;"><i class="fas fa-comments me-2" style="color:#E91E8C;"></i>Conversation</h6>
 
             <div class="d-flex gap-3 mb-4">
                 <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width:40px;height:40px;background:linear-gradient(135deg,#E91E8C,#c2185b);font-size:0.8rem;">
@@ -102,7 +102,7 @@
 
     <div class="col-lg-4">
         <div class="bg-white rounded-4 p-4" style="border:1px solid #fce4ec;">
-            <h6 class="fw-bold mb-3" style="color:#333;font-size:0.95rem;"><i class="fas fa-info-circle me-2" style="color:#3b82f6;"></i>Complaint Info</h6>
+            <h6 class="fw-bold mb-3" style="color:#333;font-size:0.95rem;"><i class="fas fa-info-circle me-2" style="color:#E91E8C;"></i>Complaint Info</h6>
             @foreach([
                 ['ID', '#'.$complaint->id],
                 ['Status', ucwords(str_replace('_',' ',$complaint->status))],

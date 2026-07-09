@@ -1,195 +1,268 @@
 @extends('layouts.admin')
-@section('title', 'Complaint Details')
+@section('title', 'Complaint Details - Glamora Admin')
 
 @push('styles')
 <style>
+    :root {
+        --pk: #E91E8C;
+        --pk-dark: #c2185b;
+        --pk-light: #fce4ec;
+        --pk-bg: #fff0f7;
+    }
+
     .back-link {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 16px;
+        padding: 8px 18px;
         border-radius: 50px;
-        border: 1.5px solid #e5e0da;
-        color: #6d4c41;
-        font-size: 0.8rem;
-        font-weight: 700;
+        border: 1.5px solid #e5e0e5;
+        color: #666;
+        font-size: 0.82rem;
+        font-weight: 600;
         text-decoration: none;
-        margin-bottom: 24px;
-        transition: all 0.15s;
+        transition: all 0.2s;
+        margin-bottom: 20px;
     }
-    .back-link:hover { background: #6d4c41; color: #fff; border-color: #6d4c41; }
+    .back-link:hover {
+        border-color: var(--pk);
+        color: var(--pk);
+        background: var(--pk-bg);
+    }
 
-    .glam-card {
+    .detail-card {
         background: #fff;
+        border: 1px solid #f0edf0;
         border-radius: 18px;
-        border: 1px solid #eee;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         overflow: hidden;
+        margin-bottom: 20px;
     }
-    .glam-card .card-header {
-        padding: 18px 22px;
-        border-bottom: 1px solid #f0f0f0;
+    .detail-card .card-head {
+        padding: 18px 24px;
+        border-bottom: 1px solid #f5f0f5;
         display: flex;
         align-items: center;
         justify-content: space-between;
-    }
-    .glam-card .card-title { font-size: 1rem; font-weight: 700; color: #333; }
-    .glam-card .card-body { padding: 24px; }
-
-    .badge {
-        display: inline-flex; align-items: center; gap: 5px;
-        padding: 5px 14px; border-radius: 50px;
-        font-size: 0.72rem; font-weight: 700; text-transform: capitalize;
-    }
-    .badge-danger  { background: #fdeceb; color: #d9534f; }
-    .badge-warning { background: #fff6e0; color: #c9982f; }
-    .badge-success { background: #e9f7ef; color: #3fa46a; }
-
-    .complaint-subject {
-        font-size: 1.2rem;
-        font-weight: 800;
-        color: #1a1a1a;
-        margin-bottom: 8px;
-    }
-    .complaint-meta {
-        display: flex;
         flex-wrap: wrap;
+        gap: 12px;
+    }
+    .detail-card .card-title {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #1a1a1a;
+        display: flex;
         align-items: center;
-        gap: 6px 8px;
-        color: #999;
-        font-size: 0.82rem;
-        margin-bottom: 18px;
+        gap: 10px;
     }
-    .complaint-meta i { color: #bbb; margin-right: 3px; }
-    .complaint-meta .dot { color: #ddd; }
-
-    .complaint-description {
-        background: #faf6f2;
-        border: 1px solid #f0e8e0;
-        border-radius: 14px;
-        padding: 18px 20px;
-        color: #444;
-        font-size: 0.9rem;
-        line-height: 1.6;
-        margin-bottom: 8px;
+    .detail-card .card-title i {
+        color: var(--pk);
+    }
+    .detail-card .card-body {
+        padding: 24px;
     }
 
-    .section-title {
-        font-size: 0.78rem;
-        font-weight: 800;
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .info-item .label {
+        font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        color: #8d6e63;
-        margin: 32px 0 16px;
+        color: #aaa;
+        font-weight: 600;
+        margin-bottom: 4px;
     }
-
-    /* ---- Conversation ---- */
-    .reply-row { display: flex; gap: 12px; margin-bottom: 16px; }
-    .reply-row.from-admin { flex-direction: row-reverse; }
-    .reply-avatar {
-        width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 700; font-size: 0.85rem; color: #fff;
-    }
-    .reply-row.from-client .reply-avatar { background: linear-gradient(135deg,#8d6e63,#6d4c41); }
-    .reply-row.from-admin  .reply-avatar { background: linear-gradient(135deg,#E91E8C,#c2185b); }
-
-    .reply-body { max-width: 75%; }
-    .reply-row.from-admin .reply-body { text-align: right; }
-    .reply-meta { font-size: 0.72rem; color: #aaa; margin-bottom: 4px; }
-    .reply-bubble {
-        display: inline-block;
-        text-align: left;
-        background: #f5f5f5;
-        border-radius: 14px;
-        padding: 12px 16px;
-        font-size: 0.86rem;
-        color: #333;
-        line-height: 1.5;
-    }
-    .reply-row.from-admin .reply-bubble {
-        background: linear-gradient(135deg, #fce4ec, #fbd5e4);
+    .info-item .value {
+        font-size: 0.92rem;
+        font-weight: 600;
         color: #1a1a1a;
     }
-
-    .no-replies {
-        text-align: center;
-        color: #bbb;
-        font-size: 0.85rem;
-        padding: 20px 0;
-        border: 2px dashed #eee;
-        border-radius: 14px;
+    .info-item .value .sub {
+        font-size: 0.78rem;
+        font-weight: 400;
+        color: #999;
     }
 
-    /* ---- Reply form + resolve action (fixed: siblings, not nested) ---- */
-    .reply-form-wrap { margin-top: 24px; }
-    .reply-form-wrap textarea {
-        width: 100%;
-        border: 1.5px solid #e5e0da;
+    .description-box {
+        background: #faf8fa;
         border-radius: 12px;
-        padding: 12px 14px;
+        padding: 16px 20px;
+        border-left: 3px solid var(--pk);
+        margin-bottom: 20px;
+    }
+    .description-box .label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #aaa;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+    .description-box p {
+        margin: 0;
         font-size: 0.88rem;
-        font-family: inherit;
-        resize: vertical;
+        color: #444;
+        line-height: 1.7;
     }
-    .reply-form-wrap textarea:focus {
-        outline: none;
-        border-color: #8d6e63;
-    }
-    .reply-actions {
+
+    .reply-item {
         display: flex;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid #f5f0f5;
+    }
+    .reply-item:last-child {
+        border-bottom: none;
+    }
+    .reply-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--pk), var(--pk-dark));
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+    }
+    .reply-avatar.admin {
+        background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    }
+    .reply-content {
+        flex: 1;
+    }
+    .reply-content .meta {
+        display: flex;
+        align-items: center;
         gap: 10px;
-        margin-top: 12px;
         flex-wrap: wrap;
+        margin-bottom: 4px;
     }
-
-    .btn-primary {
-        display: inline-flex; align-items: center; gap: 8px;
-        padding: 10px 22px; border-radius: 50px;
-        background: linear-gradient(135deg,#8d6e63,#6d4c41);
-        color: #fff; border: none; font-weight: 700; font-size: 0.85rem;
-        cursor: pointer; transition: opacity 0.15s;
+    .reply-content .meta .name {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #1a1a1a;
     }
-    .btn-primary:hover { opacity: 0.9; }
-    .btn-primary.btn-resolve { background: linear-gradient(135deg,#4caf7d,#3fa46a); }
-
-    .btn-outline {
-        display: inline-flex; align-items: center; gap: 8px;
-        padding: 10px 22px; border-radius: 50px;
-        border: 1.5px solid #e5e0da; color: #6d4c41;
-        font-weight: 700; font-size: 0.85rem; text-decoration: none;
-        transition: all 0.15s;
-    }
-    .btn-outline:hover { background: #6d4c41; color: #fff; border-color: #6d4c41; }
-
-    .resolved-banner {
-        display: flex; align-items: center; gap: 10px;
-        background: #e9f7ef; color: #3fa46a; border-radius: 12px;
-        padding: 12px 16px; margin-top: 24px; font-size: 0.85rem; font-weight: 600;
-    }
-
-    /* ---- Sidebar info card ---- */
-    .info-row {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 12px 0; border-bottom: 1px solid #f4f4f4; font-size: 0.86rem;
-    }
-    .info-row:last-of-type { border-bottom: none; }
-    .info-row span:first-child { color: #999; }
-    .info-row strong { color: #1a1a1a; font-weight: 700; }
-    .text-danger  { color: #d9534f !important; }
-    .text-warning { color: #c9982f !important; }
-    .text-success { color: #3fa46a !important; }
-
-    .btn-email {
-        display: flex; align-items: center; justify-content: center; gap: 8px;
-        width: 100%;
-        padding: 11px; margin-top: 16px;
+    .reply-content .meta .tag {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 10px;
         border-radius: 50px;
-        border: 1.5px solid #e5e0da;
-        color: #6d4c41; font-weight: 700; font-size: 0.85rem;
-        text-decoration: none; transition: all 0.15s;
+        background: var(--pk-bg);
+        color: var(--pk);
     }
-    .btn-email:hover { background: #6d4c41; color: #fff; border-color: #6d4c41; }
+    .reply-content .meta .tag.admin-tag {
+        background: rgba(26,26,46,0.08);
+        color: #1a1a2e;
+    }
+    .reply-content .meta .time {
+        font-size: 0.72rem;
+        color: #aaa;
+    }
+    .reply-content .message {
+        font-size: 0.86rem;
+        color: #444;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .reply-form textarea {
+        width: 100%;
+        border: 1.5px solid #e5e0e5;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        font-family: 'Inter', sans-serif;
+        resize: vertical;
+        min-height: 80px;
+        transition: border 0.2s;
+        outline: none;
+    }
+    .reply-form textarea:focus {
+        border-color: var(--pk);
+        box-shadow: 0 0 0 3px rgba(233,30,140,0.06);
+    }
+    .reply-form .btn-send {
+        background: var(--pk);
+        color: #fff;
+        border: none;
+        padding: 10px 28px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-top: 10px;
+    }
+    .reply-form .btn-send:hover {
+        background: var(--pk-dark);
+    }
+
+    .btn-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .btn-status.resolve {
+        background: #d1fae5;
+        color: #059669;
+    }
+    .btn-status.resolve:hover {
+        background: #059669;
+        color: #fff;
+    }
+    .btn-status.delete {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    .btn-status.delete:hover {
+        background: #dc2626;
+        color: #fff;
+    }
+    .btn-status.status-update {
+        background: var(--pk-bg);
+        color: var(--pk);
+        border: 1.5px solid var(--pk-light);
+    }
+    .btn-status.status-update:hover {
+        background: var(--pk);
+        color: #fff;
+    }
+
+    .status-select {
+        padding: 8px 14px;
+        border: 1.5px solid #e5e0e5;
+        border-radius: 10px;
+        font-size: 0.82rem;
+        background: #fff;
+        outline: none;
+        transition: border 0.2s;
+    }
+    .status-select:focus {
+        border-color: var(--pk);
+    }
+
+    .action-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #f5f0f5;
+    }
 </style>
 @endpush
 
@@ -199,104 +272,128 @@
     <i class="fas fa-arrow-left"></i> Back to Complaints
 </a>
 
-<div class="row g-4">
-    {{-- LEFT: Complaint + conversation --}}
-    <div class="col-lg-8">
-        <div class="glam-card">
-            <div class="card-header">
-                <span class="card-title">Complaint #{{ $complaint->id }}</span>
-                <span class="badge {{ $complaint->status == 'open' ? 'badge-danger' : ($complaint->status == 'resolved' ? 'badge-success' : 'badge-warning') }}">
-                    {{ ucfirst($complaint->status) }}
-                </span>
-            </div>
-
-            <div class="card-body">
-                <div class="complaint-subject">{{ $complaint->subject }}</div>
-                <div class="complaint-meta">
-                    <span><i class="fas fa-user"></i>{{ $complaint->client->name ?? 'N/A' }}</span>
-                    <span class="dot">•</span>
-                    <span><i class="fas fa-store"></i>{{ $complaint->salon->name ?? 'N/A' }}</span>
-                    <span class="dot">•</span>
-                    <span>{{ $complaint->created_at->diffForHumans() }}</span>
-                </div>
-
-                <div class="complaint-description">{{ $complaint->description }}</div>
-
-                <div class="section-title">Conversation</div>
-
-                @forelse($complaint->replies as $reply)
-                    @php $isAdmin = $reply->sender_type === 'admin'; @endphp
-                    <div class="reply-row {{ $isAdmin ? 'from-admin' : 'from-client' }}">
-                        <div class="reply-avatar">{{ strtoupper(substr($reply->user->name ?? 'A', 0, 1)) }}</div>
-                        <div class="reply-body">
-                            <div class="reply-meta">{{ $reply->user->name ?? 'Unknown' }} • {{ $reply->created_at->diffForHumans() }}</div>
-                            <div class="reply-bubble">{{ $reply->message }}</div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="no-replies">No replies yet — be the first to respond.</div>
-                @endforelse
-
-                @if($complaint->status != 'resolved')
-                <div class="reply-form-wrap">
-                    <form action="{{ route('admin.complaints.reply', $complaint->id) }}" method="POST">
-                        @csrf
-                        <textarea name="message" rows="3" placeholder="Write a reply..." required></textarea>
-                        <div class="reply-actions">
-                            <button type="submit" class="btn-primary">
-                                <i class="fas fa-paper-plane"></i> Send Reply
-                            </button>
-                        </div>
-                    </form>
-
-                    {{-- Separate form — was previously (incorrectly) nested inside the reply form above --}}
-                    <form action="{{ route('admin.complaints.resolve', $complaint->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn-primary btn-resolve" style="margin-top:10px;">
-                            <i class="fas fa-check-circle"></i> Mark as Resolved
-                        </button>
-                    </form>
-                </div>
-                @else
-                <div class="resolved-banner">
-                    <i class="fas fa-check-circle"></i> This complaint has been resolved.
-                </div>
-                @endif
-            </div>
+{{-- Complaint Details --}}
+<div class="detail-card">
+    <div class="card-head">
+        <div class="card-title">
+            <i class="fas fa-exclamation-circle"></i>
+            Complaint #{{ $complaint->id }}
+        </div>
+        <div>
+            <span class="badge-status badge-{{ $complaint->status }}">
+                {{ ucfirst(str_replace('_', ' ', $complaint->status)) }}
+            </span>
         </div>
     </div>
+    <div class="card-body">
 
-    {{-- RIGHT: Info sidebar --}}
-    <div class="col-lg-4">
-        <div class="glam-card">
-            <div class="card-header">
-                <span class="card-title">Complaint Info</span>
+        {{-- Info Grid --}}
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="label">Client</div>
+                <div class="value">{{ $complaint->client->name ?? 'N/A' }}</div>
+                <div class="value sub">{{ $complaint->client->email ?? '' }}</div>
             </div>
-            <div class="card-body" style="padding:1.2rem 1.5rem;">
-                <div class="info-row">
-                    <span>Type</span>
-                    <strong>{{ ucfirst(str_replace('_',' ',$complaint->type)) }}</strong>
-                </div>
-                <div class="info-row">
-                    <span>Priority</span>
-                    <strong class="{{ $complaint->priority == 'high' ? 'text-danger' : ($complaint->priority == 'medium' ? 'text-warning' : 'text-success') }}">
+            <div class="info-item">
+                <div class="label">Salon</div>
+                <div class="value">{{ $complaint->salon->name ?? 'N/A' }}</div>
+                <div class="value sub">{{ $complaint->salon->city ?? '' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">Appointment</div>
+                <div class="value">#{{ $complaint->appointment_id ?? 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">Priority</div>
+                <div class="value">
+                    <span class="badge-priority priority-{{ $complaint->priority }}">
                         {{ ucfirst($complaint->priority) }}
-                    </strong>
+                    </span>
                 </div>
-                <div class="info-row">
-                    <span>Submitted</span>
-                    <strong>{{ $complaint->created_at->format('d M Y') }}</strong>
-                </div>
-                <div class="info-row">
-                    <span>Status</span>
-                    <strong>{{ ucfirst($complaint->status) }}</strong>
-                </div>
-
-                <a href="mailto:{{ $complaint->client->email }}" class="btn-email">
-                    <i class="fas fa-envelope"></i> Email Client
-                </a>
             </div>
+            <div class="info-item">
+                <div class="label">Submitted</div>
+                <div class="value">{{ $complaint->created_at->format('d M Y, h:i A') }}</div>
+            </div>
+        </div>
+
+        {{-- Subject --}}
+        <div style="margin-bottom:12px;">
+            <div class="label" style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;color:#aaa;font-weight:600;margin-bottom:4px;">Subject</div>
+            <div style="font-size:1rem;font-weight:700;color:#1a1a1a;">{{ $complaint->subject }}</div>
+        </div>
+
+        {{-- Description --}}
+        <div class="description-box">
+            <div class="label">Description</div>
+            <p>{{ $complaint->description }}</p>
+        </div>
+
+        {{-- Replies --}}
+        <div style="margin-top:20px;">
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a1a;margin-bottom:12px;">
+                <i class="fas fa-comments" style="color:var(--pk);margin-right:8px;"></i>Conversation
+            </h4>
+
+            @forelse($complaint->replies as $reply)
+            <div class="reply-item">
+                <div class="reply-avatar {{ $reply->sender_type === 'admin' ? 'admin' : '' }}">
+                    {{ strtoupper(substr($reply->user->name ?? 'A', 0, 1)) }}
+                </div>
+                <div class="reply-content">
+                    <div class="meta">
+                        <span class="name">{{ $reply->user->name ?? 'Support' }}</span>
+                        @if($reply->sender_type === 'admin')
+                            <span class="tag admin-tag">Admin</span>
+                        @endif
+                        <span class="time">{{ $reply->created_at->diffForHumans() }}</span>
+                    </div>
+                    <p class="message">{{ $reply->message }}</p>
+                </div>
+            </div>
+            @empty
+            <div style="color:#aaa;font-size:0.85rem;padding:12px 0;">No replies yet.</div>
+            @endforelse
+
+            {{-- Reply Form --}}
+            <form method="POST" action="{{ route('admin.complaints.reply', $complaint->id) }}" class="reply-form" style="margin-top:16px;padding-top:16px;border-top:1px solid #f5f0f5;">
+                @csrf
+                <textarea name="message" placeholder="Write a reply..." required></textarea>
+                <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i> Send Reply</button>
+            </form>
+        </div>
+
+        {{-- Actions --}}
+        <div class="action-group">
+            <form method="POST" action="{{ route('admin.complaints.resolve', $complaint->id) }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn-status resolve">
+                    <i class="fas fa-check-circle"></i> Mark as Resolved
+                </button>
+            </form>
+
+            <form method="POST" action="{{ route('admin.complaints.update-status', $complaint->id) }}" style="display:inline-flex;align-items:center;gap:8px;">
+                @csrf
+                <select name="status" class="status-select">
+                    <option value="open" {{ $complaint->status == 'open' ? 'selected' : '' }}>Open</option>
+                    <option value="in_review" {{ $complaint->status == 'in_review' ? 'selected' : '' }}>In Review</option>
+                    <option value="resolved" {{ $complaint->status == 'resolved' ? 'selected' : '' }}>Resolved</option>
+                    <option value="closed" {{ $complaint->status == 'closed' ? 'selected' : '' }}>Closed</option>
+                </select>
+                <button type="submit" class="btn-status status-update">
+                    <i class="fas fa-sync-alt"></i> Update
+                </button>
+            </form>
+
+            <form method="POST" action="{{ route('admin.complaints.destroy', $complaint->id) }}" style="display:inline;" onsubmit="return confirm('Delete this complaint permanently?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-status delete">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </form>
         </div>
     </div>
 </div>
+
 @endsection

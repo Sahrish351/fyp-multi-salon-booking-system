@@ -17,7 +17,17 @@ class ComplaintController extends Controller
             ->when($request->priority, fn($q) => $q->where('priority', $request->priority))
             ->latest()
             ->paginate(20);
-        return view('admin.complaints.index', compact('complaints'));
+
+        //  Stats for summary cards
+        $stats = [
+            'total' => Complaint::count(),
+            'open' => Complaint::where('status', 'open')->count(),
+            'in_review' => Complaint::where('status', 'in_review')->count(),
+            'resolved' => Complaint::where('status', 'resolved')->count(),
+            'closed' => Complaint::where('status', 'closed')->count(),
+        ];
+
+        return view('admin.complaints.index', compact('complaints', 'stats'));
     }
 
     public function show(Complaint $complaint)
@@ -43,5 +53,26 @@ class ComplaintController extends Controller
     {
         $complaint->update(['status' => 'resolved']);
         return back()->with('success', 'Complaint resolved.');
+    }
+
+    // ADD THIS METHOD – Update Status
+    public function updateStatus(Request $request, Complaint $complaint)
+    {
+        $request->validate([
+            'status' => 'required|in:open,in_review,resolved,closed'
+        ]);
+
+        $complaint->update(['status' => $request->status]);
+
+        return back()->with('success', 'Complaint status updated successfully.');
+    }
+
+    // ADD THIS METHOD – Delete Complaint
+    public function destroy(Complaint $complaint)
+    {
+        $complaint->delete();
+
+        return redirect()->route('admin.complaints.index')
+            ->with('success', 'Complaint deleted successfully.');
     }
 }

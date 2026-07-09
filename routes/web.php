@@ -276,13 +276,12 @@ Route::delete('/reviews/{review}',        [ReviewManagementController::class, 'd
         
 // COMPLAINT ROUTES
 
-Route::get('/complaints', [App\Http\Controllers\Admin\ComplaintController::class, 'index'])->name('complaints.index');
-    Route::get('/complaints/{complaint}', [App\Http\Controllers\Admin\ComplaintController::class, 'show'])->name('complaints.show');
-    Route::post('/complaints/{complaint}/update-status', [App\Http\Controllers\Admin\ComplaintController::class, 'updateStatus'])->name('complaints.update-status');
-    Route::post('/complaints/{complaint}/reply', [App\Http\Controllers\Admin\ComplaintController::class, 'reply'])->name('complaints.reply');
-    Route::delete('/complaints/{complaint}', [App\Http\Controllers\Admin\ComplaintController::class, 'destroy'])->name('complaints.destroy');
-    
-    // ========== NOTIFICATION ROUTES  ==========
+  Route::get('/complaints', [ComplaintController::class, 'index'])->name('complaints.index');
+Route::get('/complaints/{complaint}', [ComplaintController::class, 'show'])->name('complaints.show');
+Route::post('/complaints/{complaint}/update-status', [ComplaintController::class, 'updateStatus'])->name('complaints.update-status');
+Route::post('/complaints/{complaint}/reply', [ComplaintController::class, 'reply'])->name('complaints.reply');
+Route::post('/complaints/{complaint}/resolve', [ComplaintController::class, 'resolve'])->name('complaints.resolve');
+Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy'])->name('complaints.destroy');
      // ============================================================
         Route::get('/notifications',                    [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/{id}',                [NotificationController::class, 'show'])->name('notifications.show');
@@ -507,10 +506,13 @@ Route::delete('/reviews/{review}', [ReviewSubmitController::class, 'destroy'])->
 
 
         // Complaints
-        Route::get('/complaints',                      [ComplaintSubmitController::class, 'index'])->name('complaints.index');
-        Route::get('/complaints/create/{appointment}', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
-        Route::post('/complaints/{appointment}',       [ComplaintSubmitController::class, 'store'])->name('complaints.store');
-        Route::get('/complaints/{complaint}',          [ComplaintSubmitController::class, 'show'])->name('complaints.show');
+       Route::get('/complaints', [ComplaintSubmitController::class, 'index'])->name('complaints.index');
+Route::get('/complaints/create/{appointment?}', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
+Route::post('/complaints', [ComplaintSubmitController::class, 'store'])->name('complaints.store');
+Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show'])->name('complaints.show');
+Route::get('/complaints/{complaint}/edit', [ComplaintSubmitController::class, 'edit'])->name('complaints.edit');
+Route::put('/complaints/{complaint}', [ComplaintSubmitController::class, 'update'])->name('complaints.update');
+Route::delete('/complaints/{complaint}', [ComplaintSubmitController::class, 'destroy'])->name('complaints.destroy');
  
         // Notifications
         Route::get('/notifications',                    [ClientNotificationController::class, 'index'])->name('notifications.index');

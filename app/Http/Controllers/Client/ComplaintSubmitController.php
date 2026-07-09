@@ -12,8 +12,6 @@ class ComplaintSubmitController extends Controller
 {
     /**
      * List all complaints filed by the currently logged in client.
-     * Supports the status filter pills on the index page
-     * (?status=open|in_review|resolved|rejected|closed).
      */
     public function index(Request $request)
     {
@@ -30,24 +28,31 @@ class ComplaintSubmitController extends Controller
     }
 
     /**
-     * Show the "file a new complaint" form. Only completed appointments
-     * are offered, since you can only complain about a finished service.
+     * Show the "file a new complaint" form.
+     * ✅ Only confirmed and completed appointments.
+     * ✅ If appointmentId is passed, auto-select that appointment.
      */
-    public function create()
+    public function create($appointmentId = null)
     {
         $appointments = Appointment::where('client_id', Auth::id())
-            ->where('status', 'completed')
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->whereDoesntHave('complaint')
             ->latest()
             ->get();
 
-        return view('client.complaints.create', compact('appointments'));
+        $appointment = null;
+        if ($appointmentId) {
+            $appointment = Appointment::where('client_id', Auth::id())
+                ->whereIn('status', ['confirmed', 'completed'])
+                ->where('id', $appointmentId)
+                ->firstOrFail();
+        }
+
+        return view('client.complaints.create', compact('appointments', 'appointment'));
     }
 
     /**
      * Store a newly filed complaint.
-     * NOTE: the appointment is chosen via the dropdown in the form
-     * (appointment_id in the request body), NOT via a route parameter —
-     * this matches the route definition: POST /client/complaints (no {id}).
      */
     public function store(Request $request)
     {
@@ -57,19 +62,31 @@ class ComplaintSubmitController extends Controller
             'description'    => 'required|string|min:10',
         ]);
 
+        // ✅ Handle "Other" subject
+        $subject = $request->subject;
+        if ($subject === 'Other' && $request->filled('custom_subject')) {
+            $subject = $request->custom_subject;
+        }
+
         $appointment = Appointment::where('client_id', Auth::id())
             ->where('id', $request->appointment_id)
             ->firstOrFail();
 
+        // ✅ Check if complaint already exists
         if (Complaint::where('appointment_id', $appointment->id)->exists()) {
             return back()->withInput()->with('error', 'A complaint has already been submitted for this appointment.');
+        }
+
+        // ✅ Check if appointment status allows complaint
+        if (!in_array($appointment->status, ['confirmed', 'completed'])) {
+            return back()->withInput()->with('error', 'Complaints can only be filed for confirmed or completed appointments.');
         }
 
         Complaint::create([
             'client_id'      => Auth::id(),
             'appointment_id' => $appointment->id,
             'salon_id'       => $appointment->salon_id,
-            'subject'        => $request->subject,
+            'subject'        => $subject,
             'description'    => $request->description,
             'status'         => 'open',
             'priority'       => 'medium',
@@ -95,9 +112,6 @@ class ComplaintSubmitController extends Controller
 
     /**
      * Show the edit form — only while the complaint is still 'open'.
-     * Once an owner/admin has started reviewing it (status moved to
-     * in_review/resolved/rejected/closed), the client can no longer
-     * change what they originally reported.
      */
     public function edit($id)
     {
@@ -142,9 +156,7 @@ class ComplaintSubmitController extends Controller
     }
 
     /**
-     * Delete/withdraw an 'open' complaint. Once it's being reviewed,
-     * the client can no longer remove it (there's now a record other
-     * people are acting on).
+     * Delete/withdraw an 'open' complaint.
      */
     public function destroy($id)
     {

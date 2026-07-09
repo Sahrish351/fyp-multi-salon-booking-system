@@ -131,8 +131,6 @@
     .screenshot-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: .8rem; color: var(--pink-dark); font-weight: 700; text-decoration: none; padding: 8px 16px; background: var(--pink-bg); border-radius: 50px; }
     .screenshot-link:hover { background: #fce4ec; }
 
-    /* ---- Manage Booking: row stays white/neutral, ONLY the small
-           trailing button gets bold color (not the whole row/box) ---- */
     .manage-row {
         display: flex;
         align-items: center;
@@ -189,6 +187,27 @@
     .modal-foot button { flex:1; padding: 11px; border-radius: 10px; font-weight: 800; font-size: .84rem; border: none; cursor: pointer; font-family:'Inter',sans-serif; }
     .btn-keep { background: #f2f2f2 !important; color: #555 !important; }
     .btn-confirm-cancel { background: linear-gradient(135deg, var(--cancel-a), var(--cancel-b)); color: #fff; }
+
+    /* ✅ Complaint Button Styles */
+    .mini-btn.complaint {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+    }
+    .mini-btn.complaint:hover {
+        filter: brightness(1.06);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+    .mini-btn.complaint-submitted {
+        background: #f3f4f6;
+        color: #6b7280;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+    .mini-btn.complaint-submitted:hover {
+        filter: none;
+        transform: none;
+        color: #6b7280;
+    }
 </style>
 @endpush
 
@@ -373,11 +392,11 @@
             </div>
         </div>
 
+        {{-- Cancel --}}
         @if(in_array($appointment->status, ['pending_payment', 'confirmed']))
         <div class="glam-card">
             <div class="card-title"><span class="ti-ic"><i class="fas fa-sliders-h"></i></span> Manage Booking</div>
 
-            {{-- Row stays white/neutral — only the small pill button is colored --}}
             <div class="manage-row">
                 <div class="row-left">
                     <span class="ic-box-mini" style="background:#fee2e2;color:#dc2626;"><i class="fas fa-times-circle"></i></span>
@@ -393,6 +412,7 @@
         </div>
         @endif
 
+        {{-- Review --}}
         @if($appointment->status === 'completed' && !$appointment->review)
         <div class="glam-card">
             <div class="manage-row">
@@ -406,6 +426,31 @@
                 <a href="{{ route('client.reviews.create', $appointment->id) }}" class="mini-btn review">
                     <i class="fas fa-star"></i> Review
                 </a>
+            </div>
+        </div>
+        @endif
+
+        {{-- ✅ COMPLAINT BUTTON (Added Here) --}}
+        @if(in_array($appointment->status, ['confirmed', 'completed']))
+        <div class="glam-card">
+            <div class="manage-row">
+                <div class="row-left">
+                    <span class="ic-box-mini" style="background:#fee2e2;color:#dc2626;"><i class="fas fa-flag"></i></span>
+                    <div class="txt">
+                        <div class="t1">Report Complaint</div>
+                        <div class="t2">Issue with service?</div>
+                    </div>
+                </div>
+                @if($appointment->complaint)
+                    <span class="mini-btn complaint-submitted">
+                        <i class="fas fa-check-circle"></i> Submitted
+                    </span>
+                @else
+                    <a href="{{ route('client.complaints.create', ['appointment' => $appointment->id]) }}" 
+                       class="mini-btn complaint">
+                        <i class="fas fa-flag"></i> Report
+                    </a>
+                @endif
             </div>
         </div>
         @endif
