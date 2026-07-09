@@ -26,7 +26,7 @@ use App\Http\Controllers\Admin\OwnerManagementController;
 use App\Http\Controllers\Admin\ClientManagementController;
 use App\Http\Controllers\Admin\AppointmentMonitorController;
 use App\Http\Controllers\Admin\PaymentMonitorController;
-// use App\Http\Controllers\Admin\ReviewManagementController;
+use App\Http\Controllers\Admin\ReviewManagementController;
 use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ReportController;
@@ -267,13 +267,13 @@ Route::get('/payments/{id}',   [PaymentMonitorController::class, 'show'])->name(
 Route::post('/payments/{id}/approve', [PaymentMonitorController::class, 'approve'])->name('payments.approve');
 Route::post('/payments/{id}/reject',  [PaymentMonitorController::class, 'reject'])->name('payments.reject');
  
-        // Reviews
-        // Route::get('/reviews',                          [ReviewManagementController::class, 'index'])->name('reviews.index');
-        // Route::post('/reviews/{review}/toggle-approval',[ReviewManagementController::class, 'toggleApproval'])->name('reviews.toggle-approval');
-        // Route::post('/reviews/{review}/toggle',         [ReviewManagementController::class, 'toggleApproval'])->name('reviews.toggle');
-        // Route::delete('/reviews/{review}',              [ReviewManagementController::class, 'destroy'])->name('reviews.destroy');
- 
-
+       // Reviews
+Route::get('/reviews',                    [ReviewManagementController::class, 'index'])->name('reviews.index');
+Route::get('/reviews/{review}',           [ReviewManagementController::class, 'show'])->name('reviews.show');
+Route::post('/reviews/{review}/hide',     [ReviewManagementController::class, 'hide'])->name('reviews.hide');
+Route::post('/reviews/{review}/publish',  [ReviewManagementController::class, 'publish'])->name('reviews.publish');
+Route::delete('/reviews/{review}',        [ReviewManagementController::class, 'destroy'])->name('reviews.destroy');
+        
 // COMPLAINT ROUTES
 
 Route::get('/complaints', [App\Http\Controllers\Admin\ComplaintController::class, 'index'])->name('complaints.index');
@@ -410,12 +410,9 @@ Route::post('/appointments/{id}/reject-payment', [OwnerAppointmentController::cl
         Route::post('/packages/{package}/toggle-status', [OwnerPackageController::class, 'toggleStatus'])->name('packages.toggle-status');
 
         // Reviews
-        Route::resource('reviews', OwnerReviewController::class);
-        Route::post('/reviews/{review}/approve', [OwnerReviewController::class, 'approve'])->name('reviews.approve');
-        Route::post('/reviews/{review}/reply',   [OwnerReviewController::class, 'reply'])->name('reviews.reply');
-        Route::post('/reviews/{review}/flag',    [OwnerReviewController::class, 'toggleFlag'])->name('reviews.flag');
+       Route::resource('reviews', OwnerReviewController::class);
+Route::post('/reviews/{review}/reply', [OwnerReviewController::class, 'reply'])->name('reviews.reply');
 
-        // Gallery
         Route::resource('gallery', OwnerGalleryController::class);
         Route::post('/gallery/reorder', [OwnerGalleryController::class, 'reorder'])->name('gallery.reorder');
 
@@ -492,6 +489,12 @@ Route::prefix('waitlist')->name('waitlist.')->group(function () {
  
         // Reviews
 Route::get('/reviews', [ReviewSubmitController::class, 'index'])->name('reviews.index');
+Route::get('/reviews/create/{appointment}', [ReviewSubmitController::class, 'create'])->name('reviews.create');
+Route::post('/reviews/{appointment}', [ReviewSubmitController::class, 'store'])->name('reviews.store');
+Route::get('/reviews/{review}', [ReviewSubmitController::class, 'show'])->name('reviews.show');
+Route::get('/reviews/{review}/edit', [ReviewSubmitController::class, 'edit'])->name('reviews.edit');
+Route::put('/reviews/{review}', [ReviewSubmitController::class, 'update'])->name('reviews.update');
+Route::delete('/reviews/{review}', [ReviewSubmitController::class, 'destroy'])->name('reviews.destroy');
 
     // Create form – 'create' literal segment hone ki wajah se {review} wale route se conflict nahi karega
     Route::get('/reviews/create/{appointment}', [ReviewSubmitController::class, 'create'])->name('reviews.create');

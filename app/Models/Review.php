@@ -10,8 +10,14 @@ class Review extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'client_id', 'salon_id', 'appointment_id',
-        'rating', 'comment', 'is_approved', 'is_flagged',
+        'client_id', 
+        'user_id',           // ✅ ADDED to fix the error
+        'salon_id', 
+        'appointment_id',
+        'rating', 
+        'comment', 
+        'is_approved', 
+        'is_flagged',
     ];
 
     protected $casts = [

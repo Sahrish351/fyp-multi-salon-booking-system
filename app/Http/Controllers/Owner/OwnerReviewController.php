@@ -1,123 +1,116 @@
 <?php
- 
+
 namespace App\Http\Controllers\Owner;
- 
+
 use App\Http\Controllers\Controller;
+use App\Models\Review;
+use App\Models\Salon;
+use App\Models\ReviewReply;
+use App\Models\User;
+use App\Notifications\CustomNotification;
 use Illuminate\Http\Request;
- 
+use Illuminate\Support\Facades\Auth;
+
 class OwnerReviewController extends Controller
 {
+    /**
+     * Display a listing of reviews for the owner's salon.
+     */
     public function index(Request $request)
     {
-        $stats = [
-            'avg_rating' => 4.9,
-            'total'      => 1248,
-            'five_star'  => 1089,
-            'this_month' => 87,
-        ];
- 
-        $reviews = $this->dummyReviews();
- 
-        return view('owner.reviews.index', compact('stats', 'reviews'));
-    }
- 
-   
-    public function create()
-    {
-        return view('owner.reviews.create');
-    }
- 
-   
-    public function store(Request $request)
-    {
-        return redirect()->route('owner.reviews.index');
-    }
- 
-    public function show($review)
-    {
-        $reviewData = $this->findDummyReview($review);
- 
-        return view('owner.reviews.show', ['review' => $reviewData]);
-    }
- 
+        $user = Auth::user();
+        $salon = Salon::where('owner_id', $user->id)->first();
 
-    public function edit($review)
-    {
-        $reviewData = $this->findDummyReview($review);
- 
-        return view('owner.reviews.edit', ['review' => $reviewData]);
-    }
- 
-   
-    public function update(Request $request, $review)
-    {
-        return redirect()->route('owner.reviews.show', ['review' => $review]);
-    }
- 
-    public function destroy(Request $request, $review)
-    {
-        return redirect()->route('owner.reviews.index')->with('success', 'Review deleted!');
-    }
- 
-   
-    public function approve(Request $request, $review)
-    {
-        return back()->with('success', 'Review approved!');
-    }
- 
-    public function reply(Request $request, $review)
-    {
-        return back()->with('success', 'Reply posted!');
-    }
- 
-   
-    public function toggleFlag(Request $request, $review)
-    {
-        return back()->with('success', 'Review flagged and hidden from public view.');
-    }
- 
-    private function dummyReviews(): array
-    {
-        return [
-            [
-                'id' => 1, 'client_name' => 'Sarah Johnson', 'service' => 'Hair Styling', 'stylist' => 'Emma Wilson',
-                'date' => 'Jun 7, 2026', 'rating' => 5,
-                'comment' => 'Amazing experience! Emma did an incredible job with my hair. The salon is beautiful and the staff is so professional.',
-                'approved' => true, 'flagged' => false, 'owner_reply' => null,
-            ],
-            [
-                'id' => 2, 'client_name' => 'Michael Chen', 'service' => 'Haircut', 'stylist' => 'James Brown',
-                'date' => 'Jun 6, 2026', 'rating' => 5,
-                'comment' => "Best haircut I've ever had. James really knows what he's doing. Highly recommend!",
-                'approved' => true, 'flagged' => false, 'owner_reply' => 'Thank you so much, Michael! We look forward to seeing you again.',
-            ],
-            [
-                'id' => 3, 'client_name' => 'Emily Davis', 'service' => 'Manicure', 'stylist' => 'Sophia Lee',
-                'date' => 'Jun 5, 2026', 'rating' => 4,
-                'comment' => 'Great service overall, though I had to wait a bit longer than expected. Still very happy with the results.',
-                'approved' => false, 'flagged' => false, 'owner_reply' => null,
-            ],
-            [
-                'id' => 4, 'client_name' => 'David Miller', 'service' => 'Facial Treatment', 'stylist' => 'Olivia Martinez',
-                'date' => 'Jun 4, 2026', 'rating' => 2,
-                'comment' => 'The treatment was rushed and not what I expected for the price.',
-                'approved' => false, 'flagged' => true, 'owner_reply' => null,
-            ],
-        ];
-    }
- 
-   
-    private function findDummyReview($id): array
-    {
-        $reviews = $this->dummyReviews();
- 
-        foreach ($reviews as $r) {
-            if ($r['id'] == $id) {
-                return $r;
+        if (!$salon) {
+            return redirect()->route('owner.profile')
+                ->with('error', 'Please create your salon first.');
+        }
+
+        $query = Review::with(['client', 'appointment.service', 'reply'])
+            ->where('salon_id', $salon->id)
+            ->latest();
+
+        // Filter by status (new/replied)
+        if ($request->filled('status') && $request->status !== 'all') {
+            if ($request->status === 'replied') {
+                $query->whereHas('reply');
+            } elseif ($request->status === 'new') {
+                $query->whereDoesntHave('reply');
             }
         }
- 
-        return $reviews[0];
+
+        $reviews = $query->paginate(15);
+
+        // Stats
+        $stats = [
+            'total'    => Review::where('salon_id', $salon->id)->count(),
+            'new'      => Review::where('salon_id', $salon->id)->whereDoesntHave('reply')->count(),
+            'replied'  => Review::where('salon_id', $salon->id)->whereHas('reply')->count(),
+            'avg_rating' => Review::where('salon_id', $salon->id)->avg('rating') ?? 0,
+        ];
+
+        return view('owner.reviews.index', compact('reviews', 'stats'));
+    }
+
+    /**
+     * Show a single review.
+     */
+    public function show($id)
+    {
+        $user = Auth::user();
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.profile')
+                ->with('error', 'Please create your salon first.');
+        }
+
+        $review = Review::with(['client', 'appointment.service', 'reply.owner'])
+            ->where('salon_id', $salon->id)
+            ->findOrFail($id);
+
+        return view('owner.reviews.show', compact('review'));
+    }
+
+    /**
+     * Reply to a review and send notification to client.
+     */
+    public function reply(Request $request, $id)
+    {
+        $request->validate([
+            'reply' => 'required|string|min:2|max:500',
+        ]);
+
+        $user = Auth::user();
+        $salon = Salon::where('owner_id', $user->id)->first();
+
+        if (!$salon) {
+            return redirect()->route('owner.profile')
+                ->with('error', 'Please create your salon first.');
+        }
+
+        $review = Review::where('salon_id', $salon->id)->findOrFail($id);
+
+        // Create or update reply
+        $reply = ReviewReply::updateOrCreate(
+            ['review_id' => $review->id],
+            [
+                'owner_id' => $user->id,
+                'reply'    => $request->reply,
+            ]
+        );
+
+        // Send notification to client
+        $client = User::find($review->client_id);
+        if ($client) {
+            $client->notify(new CustomNotification(
+                'Owner Replied to Your Review',
+                'The owner of "' . $salon->name . '" has replied to your review.',
+                route('client.reviews.show', $review->id)
+            ));
+        }
+
+        return redirect()->route('owner.reviews.show', $review->id)
+            ->with('success', 'Reply posted successfully! Notification sent to client.');
     }
 }
- 

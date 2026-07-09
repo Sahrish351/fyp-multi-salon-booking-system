@@ -621,6 +621,11 @@
                     <a href="{{ route('admin.payments.index') }}"><i class="fas fa-credit-card"></i> Payments</a>
                 </div>
                 
+                {{-- ✅ Reviews Link Added Here --}}
+                <div class="nav-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.reviews.index') }}"><i class="fas fa-star"></i> Reviews</a>
+                </div>
+                
                 <div class="nav-item {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}">
                     <a href="{{ route('admin.complaints.index') }}"><i class="fas fa-exclamation-triangle"></i> Complaints</a>
                 </div>
