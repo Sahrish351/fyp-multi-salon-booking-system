@@ -437,9 +437,10 @@ Route::post('/waitlist/{id}/notify',   [OwnerWaitlistController::class, 'notify'
         Route::post('/notifications/{id}/read',         [OwnerNotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/notifications/read-all',          [OwnerNotificationController::class, 'markAllRead'])->name('notifications.read-all');
 
-        // Reports
-        Route::get('/reports',         [OwnerReportController::class, 'index'])->name('reports.index');
-        Route::post('/reports/export', [OwnerReportController::class, 'export'])->name('reports.export');
+       // Reports
+Route::get('/reports', [OwnerReportController::class, 'index'])->name('reports.index');
+Route::post('/reports/export', [OwnerReportController::class, 'export'])->name('reports.export');
+Route::get('/reports/download/{file}', [OwnerReportController::class, 'download'])->name('reports.download');
 
         // Analytics
         Route::get('/analytics',         [OwnerAnalyticsController::class, 'index'])->name('analytics.index');

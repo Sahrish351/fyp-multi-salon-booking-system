@@ -16,11 +16,27 @@ class Report extends Model
         'to_date' => 'date',
     ];
 
-    public function generatedBy() { return $this->belongsTo(User::class, 'generated_by'); }
-    public function salon() { return $this->belongsTo(Salon::class); }
+    public function generatedBy()
+    {
+        return $this->belongsTo(User::class, 'generated_by');
+    }
+
+    public function salon()
+    {
+        return $this->belongsTo(Salon::class);
+    }
 
     public function getFileUrlAttribute(): string
     {
         return $this->file_path ? asset('storage/' . $this->file_path) : '';
+    }
+
+    public function getFileSizeAttribute(): string
+    {
+        if ($this->file_path && \Storage::disk('public')->exists($this->file_path)) {
+            $size = \Storage::disk('public')->size($this->file_path);
+            return round($size / 1024 / 1024, 1) . ' MB';
+        }
+        return 'N/A';
     }
 }
