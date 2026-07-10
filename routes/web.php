@@ -349,14 +349,12 @@ Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy']
         Route::put('/profile',              [OwnerProfileController::class, 'update'])->name('profile.update');
         Route::post('/profile/upload-pic',  [OwnerProfileController::class, 'uploadPicture'])->name('profile.upload-pic');
 
-        // Settings
-        Route::get('/settings',             [OwnerSettingController::class, 'index'])->name('settings.index');
-        Route::post('/settings/general',    [OwnerSettingController::class, 'general'])->name('settings.general');
-        Route::post('/settings/password',   [OwnerSettingController::class, 'updatePassword'])->name('settings.password');
-        Route::post('/settings',            [OwnerSettingController::class, 'general'])->name('settings.update');
-
-        // Salons
-        // Route::resource('salons', OwnerSalonController::class);
+        Route::prefix('settings')->name('settings.')->group(function () {
+    Route::get('/', [OwnerSettingController::class, 'index'])->name('index');
+    Route::put('/profile', [OwnerSettingController::class, 'updateProfile'])->name('profile');
+    Route::put('/notifications', [OwnerSettingController::class, 'updateNotifications'])->name('notifications');
+    Route::put('/password', [OwnerSettingController::class, 'updatePassword'])->name('password');
+});
 
        //  SERVICES ROUTES PEHLE
 Route::resource('services', OwnerServiceController::class);
@@ -441,9 +439,10 @@ Route::post('/waitlist/{id}/notify',   [OwnerWaitlistController::class, 'notify'
         Route::post('/notifications/{id}/read',         [OwnerNotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/notifications/read-all',          [OwnerNotificationController::class, 'markAllRead'])->name('notifications.read-all');
 
-        // Reports
-        Route::get('/reports',         [OwnerReportController::class, 'index'])->name('reports.index');
-        Route::post('/reports/export', [OwnerReportController::class, 'export'])->name('reports.export');
+       // Reports
+Route::get('/reports', [OwnerReportController::class, 'index'])->name('reports.index');
+Route::post('/reports/export', [OwnerReportController::class, 'export'])->name('reports.export');
+Route::get('/reports/download/{file}', [OwnerReportController::class, 'download'])->name('reports.download');
 
         // Analytics
         Route::get('/analytics',         [OwnerAnalyticsController::class, 'index'])->name('analytics.index');
