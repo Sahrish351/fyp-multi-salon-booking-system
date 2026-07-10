@@ -5,14 +5,12 @@
 <style>
     :root {
         --pm-pink:   #d4637a;
-        --pm-green:  #1d6f42;
-        --pm-green2: #1d8a4e;
+        --pm-sage:   #6b8f71;
+        --pm-sage-lt:#f0f5f1;
         --pm-amber:  #b07d3a;
         --pm-amber-lt: #fdf6ec;
         --pm-red:    #b84444;
         --pm-red-lt: #fdf0f0;
-        --pm-sage:   #6b8f71;
-        --pm-sage-lt:#f0f5f1;
         --pm-slate:  #5c7a8a;
         --pm-slate-lt:#eef3f6;
         --pm-text:   #2d2d2d;
@@ -31,24 +29,6 @@
     }
     .pm-header-row h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 4px; color: var(--pm-text); }
     .pm-header-row p { margin: 0; color: var(--pm-text-mid); font-size: 0.86rem; }
-
-    .btn-export-xls {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: #4d7a5e;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        text-decoration: none;
-        transition: background .18s ease;
-        white-space: nowrap;
-    }
-    .btn-export-xls:hover { background: #3f6650; color: #fff; }
-    .btn-export-xls i { font-size: 1rem; }
 
     /* Filter card */
     .pm-filter-card {
@@ -119,52 +99,8 @@
     }
     .btn-filter-clear:hover { border-color: var(--pm-pink); color: var(--pm-pink); }
 
-    /* Stats */
-    .pm-stats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
-    .pm-stat {
-        position: relative;
-        overflow: hidden;
-        flex: 1 1 150px;
-        max-width: 200px;
-        border-radius: 18px 18px 18px 8px;
-        padding: 12px 14px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: transform .15s, box-shadow .15s;
-        box-shadow: 0 6px 14px rgba(0,0,0,.12);
-    }
-    .pm-stat::after {
-        content: '';
-        position: absolute;
-        width: 56px; height: 56px;
-        background: rgba(255,255,255,.15);
-        border-radius: 50%;
-        top: -18px; right: -16px;
-    }
-    .pm-stat:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.18); }
-    .pm-stat-icon {
-        position: relative;
-        z-index: 1;
-        width: 36px; height: 36px; border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 0.95rem; flex-shrink: 0;
-        background: rgba(255,255,255,.22);
-        color: #fff;
-    }
-    .pm-stat-val { position: relative; z-index: 1; font-size: 1.18rem; font-weight: 800; line-height: 1; color: #fff; }
-    .pm-stat-lbl { position: relative; z-index: 1; font-size: 0.65rem; margin-top: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: rgba(255,255,255,.85); }
-
-    .pm-stat.total    { background: linear-gradient(135deg, #4A90D9, #2E6DB4); }
-    .pm-stat.approved { background: linear-gradient(135deg, #34A853, #188038); }
-    .pm-stat.pending  { background: linear-gradient(135deg, #FBBC05, #F29900); }
-    .pm-stat.rejected { background: linear-gradient(135deg, #EA4335, #C5221F); }
-    .pm-stat.amount   { background: linear-gradient(135deg, #8E5FD4, #6A3CB5); }
-
     /* Table */
     .pm-table-wrap { overflow-x: auto; }
-    .pm-row-link { cursor: pointer; transition: background .15s; }
-    .pm-row-link:hover { background: #faf8f6; }
 
     .badge {
         display: inline-flex;
@@ -187,48 +123,6 @@
     <div>
         <h1>Payment Monitor</h1>
         <p>All advance payments submitted by clients</p>
-    </div>
-    <a href="{{ route('admin.payments.export') }}" class="btn-export-xls">
-        <i class="fas fa-file-excel"></i> Export to Excel
-    </a>
-</div>
-
-{{-- Stats --}}
-<div class="pm-stats">
-    <div class="pm-stat total">
-        <div class="pm-stat-icon"><i class="fas fa-receipt"></i></div>
-        <div>
-            <div class="pm-stat-val">{{ number_format($stats['total']) }}</div>
-            <div class="pm-stat-lbl">Total</div>
-        </div>
-    </div>
-    <div class="pm-stat approved">
-        <div class="pm-stat-icon"><i class="fas fa-check-circle"></i></div>
-        <div>
-            <div class="pm-stat-val">{{ number_format($stats['approved']) }}</div>
-            <div class="pm-stat-lbl">Approved</div>
-        </div>
-    </div>
-    <div class="pm-stat pending">
-        <div class="pm-stat-icon"><i class="fas fa-clock"></i></div>
-        <div>
-            <div class="pm-stat-val">{{ number_format($stats['pending']) }}</div>
-            <div class="pm-stat-lbl">Pending</div>
-        </div>
-    </div>
-    <div class="pm-stat rejected">
-        <div class="pm-stat-icon"><i class="fas fa-times-circle"></i></div>
-        <div>
-            <div class="pm-stat-val">{{ number_format($stats['rejected']) }}</div>
-            <div class="pm-stat-lbl">Rejected</div>
-        </div>
-    </div>
-    <div class="pm-stat amount">
-        <div class="pm-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
-        <div>
-            <div class="pm-stat-val">Rs. {{ number_format($stats['total_amount']) }}</div>
-            <div class="pm-stat-lbl">Approved Amount</div>
-        </div>
     </div>
 </div>
 
@@ -289,7 +183,7 @@
             </thead>
             <tbody>
                 @forelse($payments as $pay)
-                <tr class="pm-row-link" onclick="window.location='{{ route('admin.payments.show', $pay->id) }}'">
+                <tr>
                     <td style="font-family: monospace; font-weight:600;">#{{ $pay->id }}</td>
                     <td>{{ $pay->client->name ?? 'N/A' }}</td>
                     <td>{{ $pay->salon->name ?? ($pay->appointment->salon->name ?? 'N/A') }}</td>
@@ -301,7 +195,7 @@
                         </span>
                     </td>
                     <td>{{ $pay->created_at->format('d M Y') }}</td>
-                    <td onclick="event.stopPropagation()">
+                    <td>
                         <a href="{{ route('admin.payments.show', $pay->id) }}" class="btn-outline">
                             <i class="fas fa-eye"></i> View
                         </a>

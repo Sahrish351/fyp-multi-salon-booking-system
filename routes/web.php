@@ -297,9 +297,13 @@ Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy']
         Route::post('/reports/export', [ReportController::class, 'export'])->name('reports.export');
  
         // Audit Logs
-        Route::get('/audit-logs',        [AuditLogController::class, 'index'])->name('audit-logs.index');
-        Route::get('/audit-logs/export', [AuditLogController::class, 'export'])->name('audit-logs.export');
- 
+     
+    Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('/audit-logs/{id}', [AuditLogController::class, 'show'])->name('audit-logs.show');
+    Route::get('/audit-logs/export-csv', [AuditLogController::class, 'exportCsv'])->name('audit-logs.export-csv');
+    Route::get('/audit-logs/export-pdf', [AuditLogController::class, 'exportPdf'])->name('audit-logs.export-pdf');
+    Route::delete('/audit-logs/{id}', [AuditLogController::class, 'destroy'])->name('audit-logs.destroy');
+
         // Settings
         Route::get('/settings',           [AdminSettingController::class, 'index'])->name('settings.index');
         Route::post('/settings',          [AdminSettingController::class, 'update'])->name('settings.update');
