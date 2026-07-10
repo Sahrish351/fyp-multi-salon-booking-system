@@ -345,14 +345,12 @@ Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy']
         Route::put('/profile',              [OwnerProfileController::class, 'update'])->name('profile.update');
         Route::post('/profile/upload-pic',  [OwnerProfileController::class, 'uploadPicture'])->name('profile.upload-pic');
 
-        // Settings
-        Route::get('/settings',             [OwnerSettingController::class, 'index'])->name('settings.index');
-        Route::post('/settings/general',    [OwnerSettingController::class, 'general'])->name('settings.general');
-        Route::post('/settings/password',   [OwnerSettingController::class, 'updatePassword'])->name('settings.password');
-        Route::post('/settings',            [OwnerSettingController::class, 'general'])->name('settings.update');
-
-        // Salons
-        // Route::resource('salons', OwnerSalonController::class);
+        Route::prefix('settings')->name('settings.')->group(function () {
+    Route::get('/', [OwnerSettingController::class, 'index'])->name('index');
+    Route::put('/profile', [OwnerSettingController::class, 'updateProfile'])->name('profile');
+    Route::put('/notifications', [OwnerSettingController::class, 'updateNotifications'])->name('notifications');
+    Route::put('/password', [OwnerSettingController::class, 'updatePassword'])->name('password');
+});
 
        //  SERVICES ROUTES PEHLE
 Route::resource('services', OwnerServiceController::class);
