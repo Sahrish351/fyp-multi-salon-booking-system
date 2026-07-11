@@ -17,7 +17,7 @@ class OwnerCategoryController extends Controller
         return Salon::where('owner_id', auth()->id())->first();
     }
 
-    // ✅ Har category ko alag icon aur color milega name ke hisab se
+
     private function getCategoryStyle(string $name, int $id): array
     {
         $nameMap = [
@@ -43,14 +43,13 @@ class OwnerCategoryController extends Controller
 
         $lowerName = strtolower(trim($name));
 
-        // Name match karo
+       
         foreach ($nameMap as $key => $style) {
             if (str_contains($lowerName, $key)) {
                 return $style;
             }
         }
 
-        // Fallback: ID ke hisab se rotate karo (har category alag color)
         $fallbacks = [
             ['icon' => 'grid-fill',        'color' => 'cat-gold'],
             ['icon' => 'stars',            'color' => 'cat-purple'],

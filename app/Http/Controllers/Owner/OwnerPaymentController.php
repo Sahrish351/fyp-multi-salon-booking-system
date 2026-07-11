@@ -29,7 +29,7 @@ class OwnerPaymentController extends Controller
     $salonId = $salon->id;
     $today = Carbon::today();
 
-    // ✅ PAYMENTS KO ARRAY MEIN CONVERT KARO
+   
     $payments = Payment::where('salon_id', $salonId)
         ->with(['appointment.client', 'appointment.service'])
         ->latest()
@@ -50,7 +50,7 @@ class OwnerPaymentController extends Controller
             ];
         });
 
-    // ✅ STATS
+
     $stats = [
         'total_revenue' => Payment::where('salon_id', $salonId)->where('status', 'approved')->sum('amount'),
         'completed' => Payment::where('salon_id', $salonId)->where('status', 'approved')->count(),
@@ -79,7 +79,7 @@ class OwnerPaymentController extends Controller
                 ->with('error', 'Please create your salon first.');
         }
 
-        // Only appointments from this salon that don't already have a payment
+       
         $appointments = Appointment::where('salon_id', $salon->id)
             ->whereDoesntHave('payment')
             ->with(['client', 'service'])
@@ -89,9 +89,6 @@ class OwnerPaymentController extends Controller
         return view('owner.payments.create', compact('appointments', 'salon'));
     }
 
-    /**
-     * Store a manually recorded payment.
-     */
     public function store(Request $request)
     {
         $user = auth()->user();
@@ -132,9 +129,6 @@ class OwnerPaymentController extends Controller
         return redirect()->route('owner.payments.index')->with('success', 'Payment recorded successfully!');
     }
 
-    /**
-     * Display the specified payment.
-     */
     public function show($payment)
     {
         $user = auth()->user();
@@ -160,9 +154,6 @@ class OwnerPaymentController extends Controller
         return view('owner.payments.show', ['payment' => $paymentModel, 'salon' => $salon]);
     }
 
-    /**
-     * Show the form for editing the specified payment.
-     */
     public function edit($payment)
     {
         $user = auth()->user();
@@ -188,9 +179,6 @@ class OwnerPaymentController extends Controller
         return view('owner.payments.edit', ['payment' => $paymentModel, 'salon' => $salon]);
     }
 
-    /**
-     * Update the specified payment.
-     */
     public function update(Request $request, $payment)
     {
         $user = auth()->user();
@@ -228,9 +216,7 @@ class OwnerPaymentController extends Controller
         return redirect()->route('owner.payments.index')->with('success', 'Payment updated successfully!');
     }
 
-    /**
-     * Remove the specified payment.
-     */
+   
     public function destroy(Request $request, $payment)
     {
         $user = auth()->user();
@@ -256,10 +242,7 @@ class OwnerPaymentController extends Controller
         return redirect()->route('owner.payments.index')->with('success', 'Payment deleted successfully!');
     }
 
-    /**
-     * Approve a payment — and confirm the linked appointment, same as
-     * OwnerAppointmentController::verifyPayment() does.
-     */
+  
     public function approve(Request $request, $payment)
     {
         $user = auth()->user();
@@ -290,10 +273,7 @@ class OwnerPaymentController extends Controller
             ->with('success', 'Payment approved!');
     }
 
-    /**
-     * Reject a payment — and send the linked appointment back to
-     * pending_payment, same as OwnerAppointmentController::rejectPayment() does.
-     */
+   
     public function reject(Request $request, $payment)
     {
         $user = auth()->user();
@@ -324,9 +304,6 @@ class OwnerPaymentController extends Controller
             ->with('success', 'Payment rejected.');
     }
 
-    /**
-     * Export this salon's real payments as CSV.
-     */
     public function export(Request $request)
     {
         $user = auth()->user();

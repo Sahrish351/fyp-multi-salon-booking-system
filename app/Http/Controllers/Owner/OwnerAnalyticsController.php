@@ -38,25 +38,24 @@ class OwnerAnalyticsController extends Controller
 
             $salonId = $salon->id;
 
-            // ✅ Get periods from request
+        
             $period1 = $request->input('period1', 'yearly');
             $period2 = $request->input('period2', 'yearly');
             $period3 = $request->input('period3', 'yearly');
             $period4 = $request->input('period4', 'yearly');
 
-            // ✅ STATS
+     
             $stats = $this->getStats($salonId);
 
-            // ✅ CHART 1: Revenue vs Profit (based on period1)
+           
             $chart1Data = $this->getRevenueProfitData($salonId, $period1);
 
-            // ✅ CHART 2: Revenue by Service (based on period2)
+           
             $chart2Data = $this->getRevenueByServiceData($salonId, $period2);
 
-            // ✅ CHART 3: Monthly Expenses (based on period3)
+            
             $chart3Data = $this->getExpensesData($salonId, $period3);
 
-            // ✅ CHART 4: Client Growth (based on period4)
             $chart4Data = $this->getClientGrowthData($salonId, $period4);
 
             return view('owner.analytics.index', array_merge(
@@ -79,9 +78,7 @@ class OwnerAnalyticsController extends Controller
         }
     }
 
-    /**
-     * Get Statistics
-     */
+   
     private function getStats($salonId)
     {
         $totalRevenue = Payment::where('salon_id', $salonId)
@@ -120,9 +117,7 @@ class OwnerAnalyticsController extends Controller
         ];
     }
 
-    /**
-     * CHART 1: Revenue vs Profit
-     */
+   
     private function getRevenueProfitData($salonId, $period)
     {
         $labels = [];
@@ -185,9 +180,7 @@ class OwnerAnalyticsController extends Controller
         ];
     }
 
-    /**
-     * CHART 2: Revenue by Service
-     */
+   
     private function getRevenueByServiceData($salonId, $period)
     {
         $query = DB::table('appointments')
@@ -196,7 +189,7 @@ class OwnerAnalyticsController extends Controller
             ->where('appointments.salon_id', $salonId)
             ->where('payments.status', 'approved');
 
-        // ✅ Apply period filter
+   
         switch ($period) {
             case 'weekly':
                 $query->whereDate('payments.created_at', '>=', Carbon::today()->subDays(6));
@@ -223,9 +216,6 @@ class OwnerAnalyticsController extends Controller
         ];
     }
 
-    /**
-     * CHART 3: Monthly Expenses
-     */
     private function getExpensesData($salonId, $period)
     {
         $labels = [];
@@ -283,9 +273,7 @@ class OwnerAnalyticsController extends Controller
         ];
     }
 
-    /**
-     * CHART 4: Client Growth
-     */
+  
     private function getClientGrowthData($salonId, $period)
     {
         $labels = [];
@@ -353,9 +341,7 @@ class OwnerAnalyticsController extends Controller
         ];
     }
 
-    /**
-     * Empty View for Error State
-     */
+   
     private function emptyView()
     {
         $empty = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

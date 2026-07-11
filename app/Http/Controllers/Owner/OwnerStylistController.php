@@ -19,7 +19,7 @@ class OwnerStylistController extends Controller
     try {
         $user = auth()->user();
 
-        // ✅ SIRF US SALON KI STYLISTS
+       
         $stylists = Stylist::where('salon_id', $user->salon_id ?? 0)
             ->orderBy('name')
             ->get()
@@ -52,17 +52,13 @@ class OwnerStylistController extends Controller
             ->with('error', 'Unable to load team members.');
     }
 }
-    /**
-     * Show the form for creating a new stylist.
-     */
+   
     public function create()
     {
         return view('owner.stylists.create');
     }
 
-    /**
-     * Store a newly created stylist.
-     */
+  
     public function store(Request $request)
     {
         try {
@@ -86,13 +82,13 @@ class OwnerStylistController extends Controller
                     ->withInput();
             }
 
-            // ✅ Handle photo upload
+           
             $photoPath = null;
             if ($request->hasFile('photo')) {
                 $photoPath = $request->file('photo')->store('stylists', 'public');
             }
 
-            // ✅ Save to database
+            
             Stylist::create([
                 'salon_id' => $user->salon_id ?? 1,
                 'name' => $request->name,
@@ -118,9 +114,6 @@ class OwnerStylistController extends Controller
         }
     }
 
-    /**
-     * Display the specified stylist.
-     */
     public function show($id)
     {
         try {
@@ -134,7 +127,7 @@ class OwnerStylistController extends Controller
                     ->with('error', 'Team member not found.');
             }
 
-            // ✅ Calculate stats
+          
             $clientsCount = Appointment::where('stylist_id', $stylist->id)
                 ->distinct('client_id')
                 ->count('client_id');
@@ -145,7 +138,7 @@ class OwnerStylistController extends Controller
 
             $appointmentsCount = Appointment::where('stylist_id', $stylist->id)->count();
 
-            // ✅ Recent appointments
+       
             $recentAppointments = Appointment::where('stylist_id', $stylist->id)
                 ->with(['client', 'service'])
                 ->orderBy('appointment_date', 'desc')
@@ -189,9 +182,6 @@ class OwnerStylistController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified stylist.
-     */
     public function edit($id)
     {
         try {
@@ -227,9 +217,7 @@ class OwnerStylistController extends Controller
         }
     }
 
-    /**
-     * Update the specified stylist.
-     */
+  
     public function update(Request $request, $id)
     {
         try {
@@ -261,7 +249,6 @@ class OwnerStylistController extends Controller
                     ->withInput();
             }
 
-            // ✅ Handle photo upload
             if ($request->hasFile('photo')) {
                 if ($stylist->photo && Storage::disk('public')->exists($stylist->photo)) {
                     Storage::disk('public')->delete($stylist->photo);
@@ -270,7 +257,7 @@ class OwnerStylistController extends Controller
                 $stylist->photo = $photoPath;
             }
 
-            // ✅ Update
+           
             $stylist->name = $request->name;
             $stylist->role = $request->role;
             $stylist->email = $request->email ?? null;
@@ -292,9 +279,7 @@ class OwnerStylistController extends Controller
         }
     }
 
-    /**
-     * Remove the specified stylist.
-     */
+  
     public function destroy($id)
     {
         try {
@@ -308,7 +293,7 @@ class OwnerStylistController extends Controller
                     ->with('error', 'Team member not found.');
             }
 
-            // ✅ Delete photo
+           
             if ($stylist->photo && Storage::disk('public')->exists($stylist->photo)) {
                 Storage::disk('public')->delete($stylist->photo);
             }
@@ -326,19 +311,15 @@ class OwnerStylistController extends Controller
         }
     }
 
-    /**
-     * Store availability for a stylist.
-     */
+ 
     public function storeAvailability(Request $request, $id)
     {
-        // TODO: Implement availability logic
+        
         return redirect()->route('owner.stylists.availability.index', ['stylist' => $id])
             ->with('success', 'Availability updated!');
     }
 
-    /**
-     * Store holiday for a stylist.
-     */
+   
     public function storeHoliday(Request $request, $id)
     {
         // TODO: Implement holiday logic
@@ -346,9 +327,7 @@ class OwnerStylistController extends Controller
             ->with('success', 'Holiday added!');
     }
 
-    /**
-     * Show availability page.
-     */
+   
     public function availability($id)
     {
         try {
@@ -371,9 +350,7 @@ class OwnerStylistController extends Controller
         }
     }
 
-    /**
-     * Destroy availability slot.
-     */
+   
     public function destroyAvailability(Request $request, $stylist, $day)
     {
         return back()->with('success', 'Availability slot removed!');

@@ -15,9 +15,7 @@ class OwnerTimeSlotController extends Controller
 {
     private array $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-    /**
-     * Display time slots for a specific stylist.
-     */
+   
     public function index(Request $request)
     {
         try {
@@ -28,7 +26,6 @@ class OwnerTimeSlotController extends Controller
                     ->with('error', 'Please create your salon first.');
             }
 
-            // ✅ REAL STYLISTS FROM DATABASE
             $stylists = Stylist::where('salon_id', $user->salon_id)
                 ->orderBy('name')
                 ->get()
@@ -45,15 +42,15 @@ class OwnerTimeSlotController extends Controller
                     ->with('error', 'Please create a stylist first.');
             }
 
-            // ✅ SELECTED STYLIST
+         
             $selectedStylistId = $request->get('stylist', $stylists[0]['id']);
             $selectedStylist = $stylists->firstWhere('id', (int)$selectedStylistId) ?? $stylists[0];
 
-            // ✅ GET DATE RANGE (CURRENT WEEK)
+         
             $startDate = Carbon::now()->startOfWeek();
             $endDate = Carbon::now()->endOfWeek();
 
-            // ✅ REAL TIME SLOTS FROM DATABASE
+           
             $weeklySlots = $this->getWeeklySlots($selectedStylist['id'], $startDate, $endDate);
 
             return view('owner.time-slots.index', [
@@ -72,9 +69,7 @@ class OwnerTimeSlotController extends Controller
         }
     }
 
-    /**
-     * Generate time slots for a stylist.
-     */
+   
     public function generate(Request $request)
     {
         try {
@@ -96,7 +91,7 @@ class OwnerTimeSlotController extends Controller
                     ->withInput();
             }
 
-            // ✅ CHECK IF STYLIST BELONGS TO THIS SALON
+        
             $stylist = Stylist::where('salon_id', $user->salon_id)
                 ->find($request->stylist_id);
 
@@ -114,7 +109,7 @@ class OwnerTimeSlotController extends Controller
             $createdCount = 0;
             $weekDays = $request->days;
 
-            // ✅ GENERATE SLOTS FOR EACH WEEK
+      
             for ($week = 0; $week < $weeks; $week++) {
                 $currentDate = $startDate->copy()->addWeeks($week);
 
@@ -127,7 +122,7 @@ class OwnerTimeSlotController extends Controller
                         $startTime = $time->format('H:i:s');
                         $endTime = $time->copy()->addMinutes($interval)->format('H:i:s');
 
-                        // ✅ CREATE OR UPDATE SLOT
+                    
                         $slot = TimeSlot::updateOrCreate(
                             [
                                 'stylist_id' => $request->stylist_id,
@@ -161,15 +156,13 @@ class OwnerTimeSlotController extends Controller
         }
     }
 
-    /**
-     * Toggle time slot status (Available/Booked/Locked).
-     */
+   
     public function toggleStatus(Request $request, $timeSlot)
     {
         try {
             $user = auth()->user();
 
-            // ✅ FIND SLOT
+         
             $slot = TimeSlot::where('salon_id', $user->salon_id)
                 ->find($timeSlot);
 
@@ -180,7 +173,7 @@ class OwnerTimeSlotController extends Controller
                 return back()->with('error', 'Slot not found.');
             }
 
-            // ✅ TOGGLE STATUS
+           
             $newStatus = $slot->status === 'available' ? 'locked' : 'available';
             $slot->status = $newStatus;
             $slot->save();
@@ -218,7 +211,7 @@ class OwnerTimeSlotController extends Controller
             return $group->map(function ($slot) {
                 return [
                     'id' => $slot->id,
-                    // ✅ 12-HOUR FORMAT WITH AM/PM
+                    
                     'time' => Carbon::parse($slot->start_time)->format('g:i A') . ' - ' . Carbon::parse($slot->end_time)->format('g:i A'),
                     'status' => $slot->status,
                     'active' => $slot->status === 'available',

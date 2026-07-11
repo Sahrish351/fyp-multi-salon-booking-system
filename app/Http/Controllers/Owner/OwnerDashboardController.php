@@ -18,9 +18,7 @@ use App\Models\Review;
 
 class OwnerDashboardController extends Controller
 {
-    /**
-     * Owner Dashboard Index
-     */
+    
     public function index(Request $request)
     {
         try {
@@ -89,9 +87,7 @@ class OwnerDashboardController extends Controller
         }
     }
 
-    /**
-     * Get Statistics
-     */
+  
     private function getStats($salonId)
     {
         $today = Carbon::today();
@@ -159,9 +155,7 @@ class OwnerDashboardController extends Controller
         ];
     }
 
-    /**
-     * Get Revenue Data
-     */
+   
     private function getRevenueData($salonId)
     {
         $data = [];
@@ -179,9 +173,6 @@ class OwnerDashboardController extends Controller
         return $data;
     }
 
-    /**
-     * Get Bookings Data
-     */
     private function getBookingsData($salonId)
     {
         $data = [];
@@ -198,9 +189,7 @@ class OwnerDashboardController extends Controller
         return $data;
     }
 
-    /**
-     * Get Services Data
-     */
+    
     private function getServicesData($salonId)
     {
         $services = DB::table('appointments')
@@ -223,9 +212,7 @@ class OwnerDashboardController extends Controller
         return array_values($services);
     }
 
-    /**
-     * Get Services Labels
-     */
+   
     private function getServicesLabels($salonId)
     {
         $labels = DB::table('appointments')
@@ -241,9 +228,7 @@ class OwnerDashboardController extends Controller
         return !empty($labels) ? $labels : ['No Data Available'];
     }
 
-    /**
-     * Get Client Growth Data
-     */
+   
     private function getClientGrowthData($salonId)
     {
         $data = [];
@@ -267,9 +252,7 @@ class OwnerDashboardController extends Controller
         return $data;
     }
 
-    /**
-     * Get Today's Appointments
-     */
+ 
     private function getTodayAppointments($salonId)
     {
         $today = Carbon::today();
@@ -317,9 +300,7 @@ class OwnerDashboardController extends Controller
         })->toArray();
     }
 
-    /**
-     * Get Recent Payments
-     */
+   
     private function getRecentPayments($salonId)
     {
         $payments = Payment::where('salon_id', $salonId)
@@ -351,9 +332,7 @@ class OwnerDashboardController extends Controller
         })->toArray();
     }
 
-    /**
-     * Get Revenue Labels
-     */
+   
     private function getRevenueLabels()
     {
         $labels = [];
@@ -363,25 +342,19 @@ class OwnerDashboardController extends Controller
         return $labels;
     }
 
-    /**
-     * Get Bookings Labels
-     */
+  
     private function getBookingsLabels()
     {
         return $this->getRevenueLabels();
     }
 
-    /**
-     * Get Client Growth Labels
-     */
+  
     private function getClientGrowthLabels()
     {
         return $this->getRevenueLabels();
     }
 
-    /**
-     * Empty Stats for Error State
-     */
+  
     private function getEmptyStats()
     {
         return [
@@ -403,9 +376,7 @@ class OwnerDashboardController extends Controller
         ];
     }
 
-    /**
-     * Get Chart Data for AJAX
-     */
+   
     public function getChartData(Request $request)
     {
         try {
@@ -491,9 +462,7 @@ class OwnerDashboardController extends Controller
         }
     }
 
-    /**
-     * Refresh Dashboard Cache
-     */
+ 
     public function refresh(Request $request)
     {
         $user = auth()->user();
@@ -509,9 +478,7 @@ class OwnerDashboardController extends Controller
             ->with('error', 'Unable to refresh dashboard.');
     }
 
-    /**
-     * ✅ Get Unread Notifications Count for Owner
-     */
+   
     public function getNotifications(Request $request)
     {
         try {
@@ -542,9 +509,7 @@ class OwnerDashboardController extends Controller
         }
     }
 
-    /**
-     * ✅ Mark Notification as Read
-     */
+   
     public function markNotificationRead($id)
     {
         try {
@@ -564,9 +529,7 @@ class OwnerDashboardController extends Controller
         }
     }
 
-    /**
-     * ✅ Mark All Notifications as Read
-     */
+   
     public function markAllNotificationsRead(Request $request)
     {
         try {

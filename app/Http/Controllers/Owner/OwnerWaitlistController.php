@@ -14,9 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class OwnerWaitlistController extends Controller
 {
-    /**
-     * Display a listing of waitlist entries.
-     */
+   
     public function index(Request $request)
     {
         try {
@@ -27,7 +25,6 @@ class OwnerWaitlistController extends Controller
                     ->with('error', 'Please create your salon first.');
             }
 
-            // ✅ REAL DATA FROM DATABASE with relationships
             $waitlistEntries = Waitlist::where('salon_id', $user->salon_id)
                 ->with(['client', 'service', 'stylist'])
                 ->orderBy('position', 'asc')
@@ -68,26 +65,23 @@ class OwnerWaitlistController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new waitlist entry.
-     */
+   
     public function create()
     {
         try {
             $user = auth()->user();
 
-            // ✅ GET CLIENTS (USERS WITH ROLE CLIENT)
+          
             $clients = User::where('role', 'client')
                 ->orderBy('name')
                 ->get(['id', 'name', 'email', 'phone']);
 
-            // ✅ GET SERVICES
+        
             $services = Service::where('salon_id', $user->salon_id ?? 0)
                 ->where('is_active', true)
                 ->orderBy('name')
                 ->get(['id', 'name']);
 
-            // ✅ GET STYLISTS
             $stylists = Stylist::where('salon_id', $user->salon_id ?? 0)
                 ->where('status', 'available')
                 ->orderBy('name')
@@ -102,9 +96,7 @@ class OwnerWaitlistController extends Controller
         }
     }
 
-    /**
-     * Store a newly created waitlist entry.
-     */
+   
     public function store(Request $request)
     {
         try {
@@ -129,7 +121,6 @@ class OwnerWaitlistController extends Controller
                     ->withInput();
             }
 
-            // ✅ SAVE TO DATABASE
             Waitlist::create([
                 'salon_id' => $user->salon_id,
                 'client_id' => $request->client_id,
@@ -152,9 +143,7 @@ class OwnerWaitlistController extends Controller
         }
     }
 
-    /**
-     * Display the specified waitlist entry.
-     */
+  
     public function show($id)
     {
         try {
@@ -196,9 +185,7 @@ class OwnerWaitlistController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified waitlist entry.
-     */
+    
     public function edit($id)
     {
         try {
@@ -251,9 +238,7 @@ class OwnerWaitlistController extends Controller
         }
     }
 
-    /**
-     * Update the specified waitlist entry.
-     */
+   
     public function update(Request $request, $id)
     {
         try {
@@ -300,9 +285,7 @@ class OwnerWaitlistController extends Controller
         }
     }
 
-    /**
-     * Remove the specified waitlist entry.
-     */
+  
     public function destroy($id)
     {
         try {
@@ -328,17 +311,13 @@ class OwnerWaitlistController extends Controller
         }
     }
 
-    /**
-     * Remove alias for destroy.
-     */
+   
     public function remove($id)
     {
         return $this->destroy($id);
     }
 
-    /**
-     * Notify client.
-     */
+  
     public function notify(Request $request, $id)
     {
         try {
@@ -357,7 +336,7 @@ class OwnerWaitlistController extends Controller
                 'notified_at' => now(),
             ]);
 
-            // TODO: Send actual notification to client
+         
 
             return redirect()->route('owner.waitlist.index')
                 ->with('success', 'Client "' . ($entry->client->name ?? 'N/A') . '" has been notified!');

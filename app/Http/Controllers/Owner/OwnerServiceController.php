@@ -14,7 +14,7 @@ use App\Models\Appointment;
  
 class OwnerServiceController extends Controller
 {
-    // ===================== Helper: Salon fetch karna =====================
+   
     private function getOwnerSalon()
     {
         return Salon::where('owner_id', auth()->id())->first();
@@ -30,7 +30,6 @@ class OwnerServiceController extends Controller
                     ->with('error', 'Please create your salon first.');
             }
  
-            // ✅ salon_id filter laga diya
             $services = Service::with('category')
                 ->where('salon_id', $salon->id)
                 ->orderBy('name')
@@ -113,9 +112,8 @@ class OwnerServiceController extends Controller
                 $imagePath = $request->file('image')->store('service-images', 'public');
             }
  
-            // ✅ FIX 1: salon_id null tha, ab sahi set ho raha hai
             $service = Service::create([
-                'salon_id'    => $salon->id,          // ← YE FIX HAI
+                'salon_id'    => $salon->id,          
                 'category_id' => $request->category_id,
                 'name'        => $request->name,
                 'description' => $request->description,
@@ -162,13 +160,12 @@ class OwnerServiceController extends Controller
                 ->whereHas('payment', fn($q) => $q->where('status', 'approved'))
                 ->sum('total_amount');
  
-            // ✅ FIX: reviews table mein service_id column check karna
-            // Agar column nahi hai to 0 return karo — crash nahi hoga
+           
             $avgRating = 0;
             try {
                 $avgRating = \App\Models\Review::where('service_id', $service->id)->avg('rating') ?? 0;
             } catch (\Exception $e) {
-                // reviews table mein service_id column nahi hai — 0 rakho
+          
                 $avgRating = 0;
             }
  
@@ -232,7 +229,7 @@ class OwnerServiceController extends Controller
                 return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
             }
  
-            // ✅ Same fix: manual find with salon_id check
+          
             $service = Service::with('category')
                 ->where('salon_id', $salon->id)
                 ->where('id', $id)
@@ -276,7 +273,6 @@ class OwnerServiceController extends Controller
                 return redirect()->route('owner.salons.create')->with('error', 'Salon not found.');
             }
  
-            // ✅ Manual find with salon_id check
             $service = Service::where('salon_id', $salon->id)->where('id', $id)->first();
  
             if (!$service) {
@@ -336,7 +332,7 @@ class OwnerServiceController extends Controller
                 return redirect()->route('owner.services.index')->with('error', 'Salon not found.');
             }
  
-            // ✅ Manual find with salon_id check
+           
             $service = Service::where('salon_id', $salon->id)->where('id', $id)->first();
  
             if (!$service) {

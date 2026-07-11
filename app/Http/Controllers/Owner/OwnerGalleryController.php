@@ -30,7 +30,6 @@ class OwnerGalleryController extends Controller
                     ->with('error', 'Please create your salon first.');
             }
 
-            // ✅ REAL DATA FROM DATABASE
             $photos = Gallery::where('salon_id', $salon->id)
                 ->with('category')
                 ->orderBy('sort_order')
@@ -47,13 +46,11 @@ class OwnerGalleryController extends Controller
                     ];
                 });
 
-            // ✅ REAL STATS
             $totalPhotos = $photos->count();
             
-            // ✅ REAL TOTAL VIEWS (sum of all photo views)
+        
             $totalViews = Gallery::where('salon_id', $salon->id)->sum('views') ?? 0;
-            
-            // ✅ REAL CATEGORIES COUNT
+     
             $categoriesCount = $photos->pluck('category')->unique()->filter()->count();
 
             $stats = [
@@ -101,13 +98,12 @@ class OwnerGalleryController extends Controller
                     ->withInput();
             }
 
-            // ✅ Upload image
+           
             $imagePath = $request->file('image')->store('gallery', 'public');
 
-            // ✅ Get max sort order
             $maxOrder = Gallery::where('salon_id', $salon->id)->max('sort_order') ?? 0;
 
-            // ✅ Save to database
+         
             Gallery::create([
                 'salon_id' => $salon->id,
                 'category_id' => $request->category_id,
@@ -201,7 +197,7 @@ class OwnerGalleryController extends Controller
                     ->with('error', 'Photo not found.');
             }
 
-            // ✅ Delete image file
+          
             if ($photo->image_path && Storage::disk('public')->exists($photo->image_path)) {
                 Storage::disk('public')->delete($photo->image_path);
             }
@@ -261,9 +257,7 @@ class OwnerGalleryController extends Controller
         }
     }
 
-    /**
-     * Increment view count for a photo.
-     */
+    
     public function incrementView($id)
     {
         try {
