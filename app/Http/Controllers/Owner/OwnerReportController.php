@@ -8,8 +8,6 @@ use App\Models\Payment;
 use App\Models\Salon;
 use App\Models\Report;
 use App\Models\User;
-use App\Models\Service;
-use App\Models\Stylist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -36,7 +34,7 @@ class OwnerReportController extends Controller
 
             $salonId = $salon->id;
 
-            // ✅ REAL STATS
+            // REAL STATS
             $totalRevenue = Payment::where('salon_id', $salonId)
                 ->where('status', 'approved')
                 ->sum('amount');
@@ -58,7 +56,7 @@ class OwnerReportController extends Controller
                 'completed_appointments' => $completedAppointments,
             ];
 
-            // ✅ RECENT REPORTS
+            // RECENT REPORTS
             $recentReports = Report::where('salon_id', $salonId)
                 ->orderBy('created_at', 'desc')
                 ->limit(5)
@@ -72,15 +70,19 @@ class OwnerReportController extends Controller
                         'clients' => 'Clients',
                     ];
                     
+                    // Check if file exists
+                    $fileExists = $report->file_path && Storage::disk('public')->exists($report->file_path);
+                    
                     return [
                         'id' => $report->id,
                         'name' => ($typeLabels[$report->type] ?? ucfirst($report->type)) . ' Report',
                         'type' => $typeLabels[$report->type] ?? ucfirst($report->type),
                         'type_key' => $report->type,
                         'format' => strtoupper($report->format ?? 'Excel'),
-                        'size' => $report->file_path ? '2.4 MB' : 'N/A',
+                        'size' => $fileExists ? $this->getFileSize($report->file_path) : 'N/A',
                         'date' => Carbon::parse($report->created_at)->format('M Y'),
                         'file' => $report->file_path,
+                        'file_exists' => $fileExists,
                     ];
                 });
 
@@ -113,18 +115,26 @@ class OwnerReportController extends Controller
                 $type = 'monthly_sales';
             }
 
-            // ✅ SAVE REPORT
-            $this->saveReport($salon->id, $type, $format);
-
-            // ✅ GENERATE DATA
+            // ✅ DATA GENERATE KARO
             $data = $this->generateReportData($salon->id, $type);
+            
+            // ✅ FILE GENERATE KARO AUR SAVE KARO (YEH IMPORTANT HAI)
+            $filePath = $this->generateAndSaveFile($data, $type, $format, $salon->id);
 
-            // ✅ EXPORT BASED ON FORMAT
-            if ($format === 'pdf') {
-                return $this->exportPdf($data, $type);
-            }
+            // ✅ REPORT DATABASE MEIN SAVE KARO
+            Report::create([
+                'salon_id' => $salon->id,
+                'generated_by' => auth()->id(),
+                'type' => $type,
+                'format' => $format,
+                'file_path' => $filePath,
+                'from_date' => $request->from_date ?? Carbon::now()->subMonth(),
+                'to_date' => $request->to_date ?? Carbon::now(),
+                'status' => 'ready',
+            ]);
 
-            return $this->exportCsv($data, $type);
+            // ✅ DIRECT DOWNLOAD KARO
+            return Storage::disk('public')->download($filePath);
 
         } catch (\Exception $e) {
             Log::error('Report Export Error: ' . $e->getMessage());
@@ -250,7 +260,8 @@ class OwnerReportController extends Controller
         return $data;
     }
 
-    private function exportCsv($data, $type)
+    // ✅ YEH NAYA METHOD HAI - FILE GENERATE AUR SAVE KARTA HAI
+    private function generateAndSaveFile($data, $type, $format, $salonId)
     {
         $typeLabels = [
             'daily_sales' => 'daily-sales',
@@ -260,80 +271,81 @@ class OwnerReportController extends Controller
             'clients' => 'clients',
         ];
 
-        $filename = $typeLabels[$type] . '-report-' . Carbon::now()->format('Y-m-d') . '.csv';
-        
-        $handle = fopen('php://temp', 'w+');
+        $filename = $typeLabels[$type] . '-report-' . Carbon::now()->format('Y-m-d');
+        $extension = $format === 'pdf' ? 'pdf' : 'csv';
+        $fullFilename = $filename . '.' . $extension;
+        $filePath = 'reports/' . $fullFilename;
 
-        if (!empty($data)) {
-            fputcsv($handle, array_keys($data[0]));
+        // FOLDER BANAO AGAR NAHI HAI
+        if (!Storage::disk('public')->exists('reports')) {
+            Storage::disk('public')->makeDirectory('reports');
         }
 
-        foreach ($data as $row) {
-            fputcsv($handle, array_values($row));
+        if ($format === 'pdf') {
+            // PDF GENERATE AUR SAVE
+            $title = $typeLabels[$type] ?? ucfirst($type) . ' Report';
+            $pdf = Pdf::loadView('owner.reports.pdf', compact('data', 'title'));
+            $pdfContent = $pdf->output();
+            Storage::disk('public')->put($filePath, $pdfContent);
+        } else {
+            // CSV GENERATE AUR SAVE
+            $handle = fopen('php://temp', 'w+');
+            if (!empty($data)) {
+                fputcsv($handle, array_keys($data[0]));
+            }
+            foreach ($data as $row) {
+                fputcsv($handle, array_values($row));
+            }
+            rewind($handle);
+            $csv = stream_get_contents($handle);
+            fclose($handle);
+            Storage::disk('public')->put($filePath, $csv);
         }
 
-        rewind($handle);
-        $csv = stream_get_contents($handle);
-        fclose($handle);
-
-        return response($csv)
-            ->header('Content-Type', 'text/csv')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
-            ->header('Cache-Control', 'private, max-age=0, must-revalidate');
-    }
-
-    private function exportPdf($data, $type)
-    {
-        $typeLabels = [
-            'daily_sales' => 'Daily Sales',
-            'monthly_sales' => 'Monthly Sales',
-            'appointments' => 'Appointments',
-            'payments' => 'Payments',
-            'clients' => 'Clients',
-        ];
-
-        $title = $typeLabels[$type] ?? ucfirst($type) . ' Report';
-        $filename = strtolower(str_replace(' ', '-', $title)) . '-report-' . Carbon::now()->format('Y-m-d') . '.pdf';
-
-        $pdf = Pdf::loadView('owner.reports.pdf', compact('data', 'title'));
-        
-        return $pdf->download($filename);
-    }
-
-    private function saveReport($salonId, $type, $format = 'excel')
-    {
-        try {
-            Report::create([
-                'salon_id' => $salonId,
-                'generated_by' => auth()->id(),
-                'type' => $type,
-                'format' => $format,
-                'file_path' => 'reports/' . $type . '-report-' . Carbon::now()->format('Y-m-d') . '.' . ($format === 'pdf' ? 'pdf' : 'csv'),
-                'from_date' => Carbon::now()->subMonth(),
-                'to_date' => Carbon::now(),
-                'status' => 'ready',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Save Report Error: ' . $e->getMessage());
-        }
+        return $filePath;
     }
 
     public function download($file)
     {
         try {
-            if (Storage::disk('public')->exists('reports/' . $file)) {
-                return Storage::disk('public')->download('reports/' . $file);
+            $file = basename($file);
+            
+            // POSSIBLE PATHS CHECK KARO
+            $paths = [
+                'reports/' . $file,
+                'reports/' . $file . '.pdf',
+                'reports/' . $file . '.csv',
+            ];
+
+            foreach ($paths as $path) {
+                if (Storage::disk('public')->exists($path)) {
+                    return Storage::disk('public')->download($path);
+                }
             }
 
-            if (Storage::disk('public')->exists($file)) {
-                return Storage::disk('public')->download($file);
-            }
-
-            return redirect()->back()->with('error', 'File not found.');
+            return redirect()->back()->with('error', 'File not found. Please generate the report again.');
 
         } catch (\Exception $e) {
             Log::error('Report Download Error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to download file.');
         }
+    }
+
+    private function getFileSize($filePath)
+    {
+        try {
+            if (Storage::disk('public')->exists($filePath)) {
+                $bytes = Storage::disk('public')->size($filePath);
+                if ($bytes >= 1048576) {
+                    return number_format($bytes / 1048576, 1) . ' MB';
+                } elseif ($bytes >= 1024) {
+                    return number_format($bytes / 1024, 1) . ' KB';
+                }
+                return $bytes . ' B';
+            }
+        } catch (\Exception $e) {
+            Log::error('File size error: ' . $e->getMessage());
+        }
+        return 'N/A';
     }
 }

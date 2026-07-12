@@ -7,7 +7,7 @@ use App\Models\Appointment;
 use App\Models\Salon;
 use App\Models\Service;
 use App\Models\Stylist;
-use App\Helpers\NotificationHelper; // ✅ IMPORTANT - YE ADD KARO
+use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -34,12 +34,10 @@ class AppointmentController extends Controller
                     ->withInput();
             }
 
-            // Get service details
             $service = Service::find($request->service_id);
             $startTime = Carbon::parse($request->start_time);
             $endTime = $startTime->copy()->addMinutes($service->duration ?? 60);
 
-            // ✅ CREATE APPOINTMENT
             $appointment = Appointment::create([
                 'salon_id' => $request->salon_id,
                 'client_id' => $user->id,
@@ -53,15 +51,23 @@ class AppointmentController extends Controller
                 'booking_ref' => 'BK-' . strtoupper(uniqid()),
             ]);
 
-            // ✅ SEND NOTIFICATION TO OWNER - YEH CODE ADD KARO
-            $salon = Salon::find($request->salon_id);
-            $client = Auth::user();
-
-            NotificationHelper::send($salon->id, 'appointment', [
-                'title'   => '📅 New Appointment Booked',
-                'message' => $client->name . ' booked ' . $service->name . ' on ' . Carbon::parse($request->appointment_date)->format('M d, Y') . ' at ' . $startTime->format('h:i A'),
-                'link'    => route('owner.appointments.show', $appointment->id),
-            ]);
+            // ✅ NOTIFICATION: Client ne appointment book ki
+            try {
+                $salon = Salon::find($request->salon_id);
+                $client = Auth::user();
+                
+                NotificationHelper::send(
+                    $request->salon_id,
+                    'appointment',
+                    [
+                        'title' => '📅 New Appointment Booked',
+                        'message' => "{$client->name} booked {$service->name} on " . Carbon::parse($request->appointment_date)->format('M d, Y') . ' at ' . $startTime->format('h:i A'),
+                        'link' => route('owner.appointments.show', $appointment->id),
+                    ]
+                );
+            } catch (\Exception $e) {
+                \Log::error('Appointment notification error: ' . $e->getMessage());
+            }
 
             return redirect()->route('client.appointments.show', $appointment->id)
                 ->with('success', 'Appointment booked successfully! Please complete payment.');

@@ -411,8 +411,11 @@ Route::post('/appointments/{id}/reject-payment', [OwnerAppointmentController::cl
         Route::post('/packages/{package}/toggle-status', [OwnerPackageController::class, 'toggleStatus'])->name('packages.toggle-status');
 
         // Reviews
-       Route::resource('reviews', OwnerReviewController::class);
+Route::resource('reviews', OwnerReviewController::class);
+Route::post('/reviews/{review}/approve', [OwnerReviewController::class, 'approve'])->name('reviews.approve');  // ✅ ADD THIS
 Route::post('/reviews/{review}/reply', [OwnerReviewController::class, 'reply'])->name('reviews.reply');
+Route::post('/reviews/{review}/flag', [OwnerReviewController::class, 'toggleFlag'])->name('reviews.flag');    // ✅ ADD THIS
+
 
         Route::resource('gallery', OwnerGalleryController::class);
         Route::post('/gallery/reorder', [OwnerGalleryController::class, 'reorder'])->name('gallery.reorder');

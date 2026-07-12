@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class NotificationHelper
 {
@@ -10,17 +11,18 @@ class NotificationHelper
     {
         try {
             DB::table('notifications')->insert([
-                'type'            => $type,
+                'id' => (string) Str::uuid(),
+                'type' => $type,
                 'notifiable_type' => 'App\\Models\\Salon',
-                'notifiable_id'   => $salonId,
-                'salon_id'        => $salonId,
-                'title'           => $data['title'] ?? 'Notification',
-                'data'            => json_encode([
-                    'title'   => $data['title']   ?? '',
+                'notifiable_id' => $salonId,
+                'salon_id' => $salonId,
+                'title' => $data['title'] ?? 'Notification', 
+                'data' => json_encode([
+                    'title' => $data['title'] ?? '',
                     'message' => $data['message'] ?? '',
-                    'link'    => $data['link']    ?? null,
+                    'link' => $data['link'] ?? null,
                 ]),
-                'read_at'    => null,
+                'read_at' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
                 'deleted_at' => null,
