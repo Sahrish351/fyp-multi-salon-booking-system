@@ -64,14 +64,14 @@
         <div class="row g-3 align-items-center">
             <div class="col-md-6">
                 <div class="search-input-wrap">
-                    <i class="bi bi-search"></i>
-                    <input type="text" id="paymentSearchInput" class="form-control input-custom search-input"
-                           placeholder="Search payments...">
-                </div>
+    <i class="bi bi-search"></i>
+    <input type="text" id="paymentSearchInput" class="search-input"
+           placeholder="Search payments by client name...">
+</div>
             </div>
             <div class="col-md-3">
                 <button type="button" class="btn btn-filters w-100" data-bs-toggle="modal" data-bs-target="#filtersModal">
-                    <i class="bi bi-funnel-fill me-2"></i> Filters
+                    <i.search-input-wrap class="bi bi-funnel-fill me-2"></i.search-input-wrap> Filters
                 </button>
             </div>
             <div class="col-md-3">
@@ -266,11 +266,46 @@
     .stat-label-sm { font-size: 13.5px; color: #8a7a88; margin-bottom: 2px; }
     .stat-value-sm { font-size: 22px; font-weight: 700; color: #2d1f2c; }
  
-    .search-input-wrap { position: relative; }
-    .search-input-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #8a7a88; }
-    .search-input { padding-left: 40px !important; }
+    .search-input-wrap {
+    display: flex;
+    align-items: center;
+    background: #fcf6f9;
+    border: 1px solid #f0e8ed;
+    border-radius: 10px;
+    padding: 0 16px;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.search-input-wrap i {
+    color: #b09aa8;
+    font-size: 18px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.search-input-wrap .search-input {
+    border: none !important;
+    background: transparent !important;
+    outline: none !important;
+    padding: 11px 0 !important;
+    font-size: 14.5px;
+    color: #2d1f2c;
+    width: 100%;
+    height: auto !important;
+    box-shadow: none !important;
+}
+
+.search-input-wrap .search-input::placeholder {
+    color: #b09aa8;
+}
+
+.search-input-wrap:focus-within {
+    border-color: #E85588;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15);
+}
  
-    /* ===== FILTERS BUTTON - PINK OUTLINE ===== */
     .btn-filters {
         background: #fff;
         border: 1.5px solid #FF6B9D !important;
