@@ -297,25 +297,25 @@ Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy']
         Route::post('/reports/export', [ReportController::class, 'export'])->name('reports.export');
  
         // Audit Logs
-     
-    Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
-    Route::get('/audit-logs/{id}', [AuditLogController::class, 'show'])->name('audit-logs.show');
-    Route::get('/audit-logs/export-csv', [AuditLogController::class, 'exportCsv'])->name('audit-logs.export-csv');
-    Route::get('/audit-logs/export-pdf', [AuditLogController::class, 'exportPdf'])->name('audit-logs.export-pdf');
-    Route::delete('/audit-logs/{id}', [AuditLogController::class, 'destroy'])->name('audit-logs.destroy');
-
+     Route::get('/audit-logs',              [AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('/audit-logs/export-csv',   [AuditLogController::class, 'exportCsv'])->name('audit-logs.export-csv');
+    Route::get('/audit-logs/export-pdf',   [AuditLogController::class, 'exportPdf'])->name('audit-logs.export-pdf');
+    Route::get('/audit-logs/{id}',         [AuditLogController::class, 'show'])->name('audit-logs.show');
+    Route::delete('/audit-logs/{id}',      [AuditLogController::class, 'destroy'])->name('audit-logs.destroy');
+    
         // Settings
         Route::get('/settings',           [AdminSettingController::class, 'index'])->name('settings.index');
         Route::post('/settings',          [AdminSettingController::class, 'update'])->name('settings.update');
         Route::post('/settings/password', [AdminSettingController::class, 'updatePassword'])->name('settings.password');
  
         // Contact Messages
-        Route::get('/contact-messages',                        [ContactMessageController::class, 'index'])->name('contact-messages.index');
-        Route::get('/contact-messages/{contactMessage}',       [ContactMessageController::class, 'show'])->name('contact-messages.show');
-        Route::post('/contact-messages/{contactMessage}/reply',[ContactMessageController::class, 'reply'])->name('contact-messages.reply');
-        Route::delete('/contact-messages/{contactMessage}',    [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
-        Route::post('/contact-messages/bulk-delete',           [ContactMessageController::class, 'bulkDelete'])->name('contact-messages.bulk-delete');
- 
+        Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+    Route::get('/contact-messages/{id}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
+    Route::post('/contact-messages/{id}/mark-read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.mark-read');
+    Route::post('/contact-messages/{id}/mark-unread', [ContactMessageController::class, 'markAsUnread'])->name('contact-messages.mark-unread');
+    Route::post('/contact-messages/{id}/reply', [ContactMessageController::class, 'reply'])->name('contact-messages.reply');
+    Route::delete('/contact-messages/{id}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
+    Route::post('/contact-messages/bulk-delete', [ContactMessageController::class, 'bulkDelete'])->name('contact-messages.bulk-delete');
         // FAQs
         Route::resource('faqs', FaqController::class);
         Route::post('/faqs/{faq}/toggle-status', [FaqController::class, 'toggleStatus'])->name('faqs.toggle-status');
