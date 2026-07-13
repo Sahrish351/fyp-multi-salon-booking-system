@@ -15,6 +15,7 @@ use App\Models\Service;
 use App\Models\Stylist;
 use App\Models\User;
 use App\Models\Review;
+use App\Models\Complaint;  // ✅ YEH ADD KIYA HAI
 
 class OwnerDashboardController extends Controller
 {
@@ -43,8 +44,12 @@ class OwnerDashboardController extends Controller
             $cacheKey = "owner_dashboard_{$salonId}";
 
             $dashboardData = Cache::remember($cacheKey, 300, function () use ($salonId) {
+                $stats = $this->getStats($salonId);
+                
                 return [
-                    'stats' => $this->getStats($salonId),
+                    'stats' => $stats,
+                    'complaint_stats' => $stats['complaint_stats'],  // ✅ YEH ADD KIYA HAI
+                    'recent_complaints' => $stats['recent_complaints'],  // ✅ YEH ADD KIYA HAI
                     'revenueLabels' => $this->getRevenueLabels(),
                     'revenueData' => $this->getRevenueData($salonId),
                     'bookingsLabels' => $this->getBookingsLabels(),
@@ -72,6 +77,8 @@ class OwnerDashboardController extends Controller
             return view('owner.dashboard')->with([
                 'error' => 'Unable to load dashboard data. Please try again later.',
                 'stats' => $this->getEmptyStats(),
+                'complaint_stats' => $this->getEmptyComplaintStats(),  // ✅ YEH ADD KIYA HAI
+                'recent_complaints' => [],  // ✅ YEH ADD KIYA HAI
                 'revenueLabels' => $this->getRevenueLabels(),
                 'revenueData' => array_fill(0, 12, 0),
                 'bookingsLabels' => $this->getBookingsLabels(),
@@ -136,6 +143,24 @@ class OwnerDashboardController extends Controller
         $clientTrend = $totalClients > 0 ? round(($totalClients / max(User::where('role', 'client')->whereHas('appointments', function($q) use ($salonId) { $q->where('salon_id', $salonId); })->count() - $totalClients, 1)) * 100) : 0;
         $salesTrend = $monthlySales > 0 && $lastMonthSales > 0 ? round((($monthlySales - $lastMonthSales) / $lastMonthSales) * 100) : 0;
 
+        // ✅ COMPLAINT STATS - YEH NAYA HAI
+        $complaintStats = [
+            'total' => Complaint::where('salon_id', $salonId)->count(),
+            'pending' => Complaint::where('salon_id', $salonId)->where('status', 'pending')->count(),
+            'in_progress' => Complaint::where('salon_id', $salonId)->where('status', 'in_progress')->count(),
+            'resolved' => Complaint::where('salon_id', $salonId)->where('status', 'resolved')->count(),
+            'escalated' => Complaint::where('salon_id', $salonId)->where('status', 'escalated')->count(),
+            'closed' => Complaint::where('salon_id', $salonId)->where('status', 'closed')->count(),
+            'rejected' => Complaint::where('salon_id', $salonId)->where('status', 'rejected')->count(),
+        ];
+
+        // ✅ RECENT COMPLAINTS - YEH NAYA HAI
+        $recentComplaints = Complaint::where('salon_id', $salonId)
+            ->with(['client'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         return [
             'today_appointments' => $todayAppointments,
             'pending_appointments' => $pendingAppointments,
@@ -152,6 +177,8 @@ class OwnerDashboardController extends Controller
             'cancelled_appointments' => Appointment::where('salon_id', $salonId)->where('status', 'cancelled')->count(),
             'active_services' => Service::where('salon_id', $salonId)->where('is_active', true)->count(),
             'total_stylists' => Stylist::where('salon_id', $salonId)->where('is_active', true)->count(),
+            'complaint_stats' => $complaintStats,  // ✅ YEH NAYA HAI
+            'recent_complaints' => $recentComplaints,  // ✅ YEH NAYA HAI
         ];
     }
 
@@ -373,6 +400,20 @@ class OwnerDashboardController extends Controller
             'cancelled_appointments' => 0,
             'active_services' => 0,
             'total_stylists' => 0,
+        ];
+    }
+
+    // ✅ YEH NAYA METHOD HAI - EMPTY COMPLAINT STATS KE LIYE
+    private function getEmptyComplaintStats()
+    {
+        return [
+            'total' => 0,
+            'pending' => 0,
+            'in_progress' => 0,
+            'resolved' => 0,
+            'escalated' => 0,
+            'closed' => 0,
+            'rejected' => 0,
         ];
     }
 

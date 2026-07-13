@@ -111,6 +111,14 @@
                 <span>Reviews</span>
             </a>
         </li>
+
+        <li>
+            <a href="{{ route('owner.complaints.index') }}"
+               class="nav-link-item {{ request()->routeIs('owner.complaints.*') ? 'active' : '' }}">
+                <i class="bi bi-exclamation-triangle-fill nav-ico"></i>
+                <span>Complaints</span>
+            </a>
+        </li>
  
         <li>
             <a href="{{ route('owner.gallery.index') }}"
