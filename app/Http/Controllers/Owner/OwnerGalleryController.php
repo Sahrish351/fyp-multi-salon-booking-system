@@ -3,166 +3,193 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
-use App\Models\Gallery;
 use App\Models\Salon;
-use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 class OwnerGalleryController extends Controller
 {
+    private function getOwnerSalon()
+    {
+        return Salon::where('owner_id', auth()->id())->first();
+    }
+
+    /**
+     * ✅ Table: 'galleries' | Column: 'image_path'
+     */
     public function index(Request $request)
     {
         try {
-            $user = auth()->user();
-
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
+            $salon = $this->getOwnerSalon();
             if (!$salon) {
                 return redirect()->route('owner.salons.create')
                     ->with('error', 'Please create your salon first.');
             }
 
-            $photos = Gallery::where('salon_id', $salon->id)
-                ->with('category')
+            $photosRaw = DB::table('galleries')
+                ->where('salon_id', $salon->id)
+                ->whereNull('deleted_at')
                 ->orderBy('sort_order')
-                ->get()
-                ->map(function ($photo) {
-                    return [
-                        'id' => $photo->id,
-                        'url' => $photo->image_path ? asset('storage/' . $photo->image_path) : null,
-                        'caption' => $photo->caption,
-                        'category' => $photo->category->name ?? 'Uncategorized',
-                        'category_id' => $photo->category_id,
-                        'sort_order' => $photo->sort_order ?? 0,
-                        'views' => $photo->views ?? 0,
-                    ];
-                });
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-            $totalPhotos = $photos->count();
-            
-        
-            $totalViews = Gallery::where('salon_id', $salon->id)->sum('views') ?? 0;
-     
-            $categoriesCount = $photos->pluck('category')->unique()->filter()->count();
+            $photos = $photosRaw->map(function ($p) {
+                // ✅ image_path se storage URL banana
+                $url = null;
+                if (!empty($p->image_path)) {
+                    $url = asset('storage/' . $p->image_path);
+                }
 
-            $stats = [
-                'total' => $totalPhotos,
-                'total_views' => $totalViews,
-                'categories' => $categoriesCount,
-            ];
+                // Category naam category_id se
+                $categoryName = 'hair';
+                if (!empty($p->category_id)) {
+                    $cat = DB::table('categories')->find($p->category_id);
+                    $categoryName = $cat ? strtolower($cat->name) : 'hair';
+                }
 
-            return view('owner.gallery.index', compact('photos', 'stats'));
+                return [
+                    'id'         => $p->id,
+                    'url'        => $url,
+                    'caption'    => $p->caption ?? '',
+                    'category'   => $categoryName,
+                    'sort_order' => $p->sort_order ?? 0,
+                    'views'      => $p->views ?? 0,
+                ];
+            })->toArray();
+
+            $totalPhotos      = count($photos);
+            $totalViews       = array_sum(array_column($photos, 'views'));
+            $uniqueCategories = count(array_unique(array_column($photos, 'category')));
+
+            return view('owner.gallery.index', compact(
+                'photos',
+                'totalPhotos',
+                'totalViews',
+                'uniqueCategories'
+            ));
 
         } catch (\Exception $e) {
-            Log::error('Gallery Index Error: ' . $e->getMessage());
+            Log::error('Gallery Index Error: ' . $e->getMessage() . ' | Line: ' . $e->getLine());
             return view('owner.gallery.index', [
-                'photos' => collect([]),
-                'stats' => ['total' => 0, 'total_views' => 0, 'categories' => 0],
-            ])->with('error', 'Unable to load gallery.');
+                'photos'           => [],
+                'totalPhotos'      => 0,
+                'totalViews'       => 0,
+                'uniqueCategories' => 0,
+            ])->with('error', 'Unable to load gallery: ' . $e->getMessage());
         }
     }
 
+    public function create()
+    {
+        return redirect()->route('owner.gallery.index');
+    }
+
+    /**
+     * ✅ 'galleries' table mein insert | 'image_path' column
+     */
     public function store(Request $request)
     {
         try {
-            $user = auth()->user();
-
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
+            $salon = $this->getOwnerSalon();
             if (!$salon) {
-                return redirect()->route('owner.salons.create')
+                return redirect()->route('owner.gallery.index')
                     ->with('error', 'Salon not found.');
             }
 
-            $validator = Validator::make($request->all(), [
-                'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
-                'caption' => 'nullable|string|max:255',
-                'category_id' => 'required|exists:categories,id',
+            $request->validate([
+                'image'    => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+                'caption'  => 'nullable|string|max:255',
+                'category' => 'nullable|string',
             ]);
 
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
+            // ✅ Image storage/gallery/ mein save
+            $path = $request->file('image')->store('gallery', 'public');
+
+            // Category ID dhoondhna
+            $categoryId = null;
+            if ($request->filled('category')) {
+                $cat = DB::table('categories')
+                    ->where('salon_id', $salon->id)
+                    ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($request->category) . '%'])
+                    ->first();
+                $categoryId = $cat ? $cat->id : null;
             }
 
-           
-            $imagePath = $request->file('image')->store('gallery', 'public');
+            $maxOrder = DB::table('galleries')
+                ->where('salon_id', $salon->id)
+                ->max('sort_order') ?? 0;
 
-            $maxOrder = Gallery::where('salon_id', $salon->id)->max('sort_order') ?? 0;
-
-         
-            Gallery::create([
-                'salon_id' => $salon->id,
-                'category_id' => $request->category_id,
-                'image_path' => $imagePath,
-                'caption' => $request->caption,
-                'sort_order' => $maxOrder + 1,
-                'is_active' => true,
-                'views' => 0,
+            DB::table('galleries')->insert([
+                'salon_id'    => $salon->id,
+                'category_id' => $categoryId,
+                'image_path'  => $path,       // ✅ image_path
+                'caption'     => $request->caption ?? null,
+                'sort_order'  => $maxOrder + 1,
+                'views'       => 0,
+                'is_active'   => 1,
+                'created_at'  => now(),
+                'updated_at'  => now(),
+                'deleted_at'  => null,
             ]);
 
             return redirect()->route('owner.gallery.index')
                 ->with('success', 'Photo uploaded successfully!');
 
         } catch (\Exception $e) {
-            Log::error('Gallery Store Error: ' . $e->getMessage());
-            return redirect()->back()
-                ->with('error', 'Unable to upload photo: ' . $e->getMessage())
-                ->withInput();
+            Log::error('Gallery Store Error: ' . $e->getMessage() . ' | Line: ' . $e->getLine());
+            return redirect()->route('owner.gallery.index')
+                ->with('error', 'Unable to upload photo: ' . $e->getMessage());
         }
     }
 
+    public function show($id)
+    {
+        return redirect()->route('owner.gallery.index');
+    }
+
+    public function edit($id)
+    {
+        return redirect()->route('owner.gallery.index');
+    }
+
+    /**
+     * ✅ 'galleries' table update | caption + category
+     */
     public function update(Request $request, $id)
     {
         try {
-            $user = auth()->user();
+            $salon = $this->getOwnerSalon();
 
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
-            if (!$salon) {
-                return redirect()->route('owner.salons.create')
-                    ->with('error', 'Salon not found.');
-            }
-
-            $photo = Gallery::where('salon_id', $salon->id)->find($id);
+            $photo = DB::table('galleries')
+                ->where('id', $id)
+                ->where('salon_id', $salon->id)
+                ->whereNull('deleted_at')
+                ->first();
 
             if (!$photo) {
                 return redirect()->route('owner.gallery.index')
                     ->with('error', 'Photo not found.');
             }
 
-            $validator = Validator::make($request->all(), [
-                'caption' => 'nullable|string|max:255',
-                'category_id' => 'required|exists:categories,id',
-            ]);
-
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
+            $categoryId = $photo->category_id;
+            if ($request->filled('category')) {
+                $cat = DB::table('categories')
+                    ->where('salon_id', $salon->id)
+                    ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($request->category) . '%'])
+                    ->first();
+                if ($cat) $categoryId = $cat->id;
             }
 
-            $photo->update([
-                'caption' => $request->caption,
-                'category_id' => $request->category_id,
-            ]);
+            DB::table('galleries')
+                ->where('id', $id)
+                ->where('salon_id', $salon->id)
+                ->update([
+                    'caption'     => $request->caption ?? $photo->caption,
+                    'category_id' => $categoryId,
+                    'updated_at'  => now(),
+                ]);
 
             return redirect()->route('owner.gallery.index')
                 ->with('success', 'Photo updated successfully!');
@@ -174,38 +201,38 @@ class OwnerGalleryController extends Controller
         }
     }
 
+    /**
+     * ✅ Soft delete + storage file delete | image_path column
+     */
     public function destroy($id)
     {
         try {
-            $user = auth()->user();
+            $salon = $this->getOwnerSalon();
 
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
-            if (!$salon) {
-                return redirect()->route('owner.salons.create')
-                    ->with('error', 'Salon not found.');
-            }
-
-            $photo = Gallery::where('salon_id', $salon->id)->find($id);
+            $photo = DB::table('galleries')
+                ->where('id', $id)
+                ->where('salon_id', $salon->id)
+                ->whereNull('deleted_at')
+                ->first();
 
             if (!$photo) {
                 return redirect()->route('owner.gallery.index')
                     ->with('error', 'Photo not found.');
             }
 
-          
-            if ($photo->image_path && Storage::disk('public')->exists($photo->image_path)) {
+            // ✅ Storage se file delete karo (image_path column)
+            if (!empty($photo->image_path) && Storage::disk('public')->exists($photo->image_path)) {
                 Storage::disk('public')->delete($photo->image_path);
             }
 
-            $photo->delete();
+            // Soft delete
+            DB::table('galleries')
+                ->where('id', $id)
+                ->where('salon_id', $salon->id)
+                ->update(['deleted_at' => now()]);
 
             return redirect()->route('owner.gallery.index')
-                ->with('success', 'Photo deleted successfully!');
+                ->with('success', 'Photo deleted!');
 
         } catch (\Exception $e) {
             Log::error('Gallery Destroy Error: ' . $e->getMessage());
@@ -214,78 +241,30 @@ class OwnerGalleryController extends Controller
         }
     }
 
+    /**
+     * ✅ Reorder — 'galleries' table
+     */
     public function reorder(Request $request)
     {
         try {
-            $user = auth()->user();
+            $salon = $this->getOwnerSalon();
+            $order = $request->input('order', []);
 
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
-            if (!$salon) {
-                return response()->json(['success' => false, 'message' => 'Salon not found.'], 404);
-            }
-
-            $validator = Validator::make($request->all(), [
-                'order' => 'required|array',
-                'order.*' => 'integer',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['success' => false, 'message' => 'Invalid order data.'], 400);
-            }
-
-            foreach ($request->order as $sortOrder => $photoId) {
-                Gallery::where('id', $photoId)
+            foreach ($order as $sortOrder => $photoId) {
+                DB::table('galleries')
+                    ->where('id', $photoId)
                     ->where('salon_id', $salon->id)
-                    ->update(['sort_order' => $sortOrder]);
+                    ->update([
+                        'sort_order' => $sortOrder,
+                        'updated_at' => now(),
+                    ]);
             }
 
-            if ($request->wantsJson()) {
-                return response()->json(['success' => true]);
-            }
-
-            return redirect()->route('owner.gallery.index')
-                ->with('success', 'Gallery reordered successfully!');
+            return response()->json(['success' => true]);
 
         } catch (\Exception $e) {
             Log::error('Gallery Reorder Error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Unable to reorder.'], 500);
-        }
-    }
-
-    
-    public function incrementView($id)
-    {
-        try {
-            $user = auth()->user();
-
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
-            if (!$salon) {
-                return response()->json(['success' => false, 'message' => 'Salon not found.'], 404);
-            }
-
-            $photo = Gallery::where('salon_id', $salon->id)->find($id);
-
-            if (!$photo) {
-                return response()->json(['success' => false, 'message' => 'Photo not found.'], 404);
-            }
-
-            $photo->increment('views');
-
-            return response()->json(['success' => true, 'views' => $photo->views]);
-
-        } catch (\Exception $e) {
-            Log::error('Gallery View Error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Unable to increment view.'], 500);
+            return response()->json(['success' => false, 'error' => $e->getMessage()]);
         }
     }
 }

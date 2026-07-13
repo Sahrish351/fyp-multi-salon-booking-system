@@ -3,458 +3,303 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Salon;
 use App\Models\User;
 use App\Models\Appointment;
-use App\Models\Salon;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
 class OwnerClientController extends Controller
 {
-    /**
-     * Display a listing of clients.
-     */
+    private function getOwnerSalon()
+    {
+        return Salon::where('owner_id', auth()->id())->first();
+    }
+
     public function index(Request $request)
     {
         try {
-            $user = auth()->user();
-
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
+            $salon = $this->getOwnerSalon();
             if (!$salon) {
                 return redirect()->route('owner.salons.create')
                     ->with('error', 'Please create your salon first.');
             }
 
-            $salonId = $salon->id;
+            // ✅ SAB CLIENTS LEKAR AO (JO ROLE = CLIENT HAIN)
+            $clientsRaw = User::where('role', 'client')
+                ->orderBy('name')
+                ->get();
 
-            // ✅ REAL CLIENTS FROM DATABASE (Users with role = client who have appointments)
-            $clients = User::where('role', 'client')
-                ->whereHas('appointments', function ($query) use ($salonId) {
-                    $query->where('salon_id', $salonId);
-                })
-                ->with(['appointments' => function ($query) use ($salonId) {
-                    $query->where('salon_id', $salonId)->orderBy('appointment_date', 'desc');
-                }])
-                ->get()
-                ->map(function ($client) {
-                    $totalVisits = $client->appointments->count();
-                    $totalSpent = $client->appointments->sum('total_amount');
-                    $lastVisit = $client->appointments->first();
+            $clients = $clientsRaw->map(function ($user) use ($salon) {
+                // Appointments count
+                $appointments = Appointment::where('salon_id', $salon->id)
+                    ->where('client_id', $user->id)
+                    ->orderBy('appointment_date', 'desc')
+                    ->get();
 
-                    return [
-                        'id' => $client->id,
-                        'name' => $client->name,
-                        'email' => $client->email,
-                        'phone' => $client->phone ?? 'N/A',
-                        'join_date' => $client->created_at ? date('M d, Y', strtotime($client->created_at)) : 'N/A',
-                        'join_date_raw' => $client->created_at ? date('Y-m-d', strtotime($client->created_at)) : null,
-                        'total_visits' => $totalVisits,
-                        'total_spent' => $totalSpent,
-                        'last_visit' => $lastVisit ? date('M d, Y', strtotime($lastVisit->appointment_date)) : 'Never',
-                        'status' => $totalVisits > 10 ? 'VIP' : ($totalVisits > 5 ? 'Regular' : 'New'),
-                        'notes' => null,
-                    ];
-                });
+                $totalVisits = $appointments->count();
 
-            // ✅ STATS
+                // Total spent
+                $totalSpent = Payment::where('salon_id', $salon->id)
+                    ->where('client_id', $user->id)
+                    ->where('status', 'approved')
+                    ->sum('amount');
+
+                $lastAppt      = $appointments->first();
+                $lastVisitDate = $lastAppt
+                    ? Carbon::parse($lastAppt->appointment_date)->format('M d, Y')
+                    : 'N/A';
+
+                // Status logic
+                $status = $user->status ?? 'New';
+                if ($status == 'New' && ($totalVisits >= 10 || $totalSpent >= 50000)) {
+                    $status = 'VIP';
+                } elseif ($status == 'New' && $totalVisits >= 3) {
+                    $status = 'Regular';
+                }
+
+                return [
+                    'id'            => $user->id,
+                    'name'          => $user->name,
+                    'email'         => $user->email,
+                    'phone'         => $user->phone ?? 'N/A',
+                    'join_date'     => Carbon::parse($user->created_at)->format('M d, Y'),
+                    'join_date_raw' => Carbon::parse($user->created_at)->format('Y-m-d'),
+                    'total_visits'  => $totalVisits,
+                    'total_spent'   => $totalSpent,
+                    'last_visit'    => $lastVisitDate,
+                    'status'        => $status,
+                    'notes'         => $user->notes ?? '',
+                ];
+            });
+
+            // Stats
             $stats = [
-                'total' => $clients->count(),
-                'vip' => $clients->where('status', 'VIP')->count(),
-                'new_this_month' => User::where('role', 'client')
-                    ->whereHas('appointments', function ($query) use ($salonId) {
-                        $query->where('salon_id', $salonId);
-                    })
-                    ->whereMonth('created_at', Carbon::now()->month)
-                    ->whereYear('created_at', Carbon::now()->year)
-                    ->count(),
-                'active_today' => Appointment::where('salon_id', $salonId)
-                    ->whereDate('appointment_date', Carbon::today())
-                    ->distinct('client_id')
-                    ->count('client_id'),
+                'total'          => $clients->count(),
+                'vip'            => $clients->where('status', 'VIP')->count(),
+                'new_this_month' => $clientsRaw->filter(function ($u) {
+                    return Carbon::parse($u->created_at)->month === now()->month
+                        && Carbon::parse($u->created_at)->year  === now()->year;
+                })->count(),
+                'active_today'   => Appointment::where('salon_id', $salon->id)
+                                        ->whereDate('appointment_date', today())
+                                        ->distinct('client_id')
+                                        ->count('client_id'),
             ];
 
             return view('owner.clients.index', compact('stats', 'clients'));
 
         } catch (\Exception $e) {
-            Log::error('Client Index Error: ' . $e->getMessage());
+            Log::error('Client Index Error: ' . $e->getMessage() . ' | Line: ' . $e->getLine());
             return view('owner.clients.index', [
-                'stats' => ['total' => 0, 'vip' => 0, 'new_this_month' => 0, 'active_today' => 0],
-                'clients' => collect([])
-            ])->with('error', 'Unable to load clients.');
+                'stats'   => ['total' => 0, 'vip' => 0, 'new_this_month' => 0, 'active_today' => 0],
+                'clients' => collect([]),
+            ])->with('error', 'Unable to load clients: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Show the form for creating a new client.
-     */
     public function create()
     {
         return view('owner.clients.create');
     }
 
-    /**
-     * Store a newly created client.
-     */
     public function store(Request $request)
     {
         try {
-            $user = auth()->user();
-
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
+            $request->validate([
+                'name'  => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
-                'phone' => 'required|string|max:20',
-                'status' => 'required|in:New,Regular,VIP,Inactive',
-                'join_date' => 'required|date',
-                'notes' => 'nullable|string',
+                'phone' => 'nullable|string|max:20',
             ]);
 
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
-
-            // ✅ CREATE CLIENT USER
-            $client = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'role' => 'client',
-                'password' => bcrypt('password123'), // Default password
-                'is_active' => $request->status !== 'Inactive',
+            $user = User::create([
+                'name'     => $request->name,
+                'email'    => $request->email,
+                'phone'    => $request->phone ?? null,
+                'password' => Hash::make('Welcome@123'),
+                'role'     => 'client',
+                'is_active' => true,
+                // ✅ STATUS AUR NOTES SAVE KARO
+                'status'   => $request->status ?? 'New',
+                'notes'    => $request->notes ?? null,
             ]);
 
             return redirect()->route('owner.clients.index')
-                ->with('success', 'Client "' . $client->name . '" added successfully!');
+                ->with('success', 'Client "' . $user->name . '" added! Default password: Welcome@123');
 
         } catch (\Exception $e) {
             Log::error('Client Store Error: ' . $e->getMessage());
             return redirect()->back()
-                ->with('error', 'Unable to add client.')
+                ->with('error', 'Unable to add client: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
-    /**
-     * Display the specified client.
-     */
     public function show($id)
     {
         try {
-            $user = auth()->user();
+            $salon = $this->getOwnerSalon();
+            $user  = User::findOrFail($id);
 
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
+            $appointments = Appointment::where('salon_id', $salon->id)
+                ->where('client_id', $user->id)
+                ->with(['service', 'stylist'])
+                ->orderBy('appointment_date', 'desc')
+                ->get();
+
+            $totalVisits = $appointments->count();
+            $totalSpent  = Payment::where('salon_id', $salon->id)
+                ->where('client_id', $user->id)
+                ->where('status', 'approved')
+                ->sum('amount');
+
+            $lastAppt = $appointments->first();
+            
+            // ✅ STATUS LOGIC
+            $status = $user->status ?? 'New';
+            if ($status == 'New' && ($totalVisits >= 10 || $totalSpent >= 50000)) {
+                $status = 'VIP';
+            } elseif ($status == 'New' && $totalVisits >= 3) {
+                $status = 'Regular';
             }
 
-            $salon = Salon::where('owner_id', $user->id)->first();
-
-            if (!$salon) {
-                return redirect()->route('owner.salons.create')
-                    ->with('error', 'Please create your salon first.');
-            }
-
-            $salonId = $salon->id;
-
-            // ✅ FIND CLIENT
-            $client = User::where('role', 'client')
-                ->whereHas('appointments', function ($query) use ($salonId) {
-                    $query->where('salon_id', $salonId);
-                })
-                ->with(['appointments' => function ($query) use ($salonId) {
-                    $query->where('salon_id', $salonId)
-                        ->with(['service', 'stylist'])
-                        ->orderBy('appointment_date', 'desc');
-                }])
-                ->find($id);
-
-            if (!$client) {
-                return redirect()->route('owner.clients.index')
-                    ->with('error', 'Client not found.');
-            }
-
-            $totalVisits = $client->appointments->count();
-            $totalSpent = $client->appointments->sum('total_amount');
-            $lastVisit = $client->appointments->first();
-
-            $clientData = [
-                'id' => $client->id,
-                'name' => $client->name,
-                'email' => $client->email,
-                'phone' => $client->phone ?? 'N/A',
-                'join_date' => $client->created_at ? date('M d, Y', strtotime($client->created_at)) : 'N/A',
-                'join_date_raw' => $client->created_at ? date('Y-m-d', strtotime($client->created_at)) : null,
-                'total_visits' => $totalVisits,
-                'total_spent' => $totalSpent,
-                'last_visit' => $lastVisit ? date('M d, Y', strtotime($lastVisit->appointment_date)) : 'Never',
-                'status' => $totalVisits > 10 ? 'VIP' : ($totalVisits > 5 ? 'Regular' : 'New'),
-                'notes' => null,
+            $client = [
+                'id'            => $user->id,
+                'name'          => $user->name,
+                'email'         => $user->email,
+                'phone'         => $user->phone ?? 'N/A',
+                'join_date'     => Carbon::parse($user->created_at)->format('M d, Y'),
+                'join_date_raw' => Carbon::parse($user->created_at)->format('Y-m-d'),
+                'total_visits'  => $totalVisits,
+                'total_spent'   => $totalSpent,
+                'last_visit'    => $lastAppt
+                    ? Carbon::parse($lastAppt->appointment_date)->format('M d, Y')
+                    : 'N/A',
+                'status'        => $status,
+                'notes'         => $user->notes ?? '',
             ];
 
-            // ✅ VISIT HISTORY
-            $visitHistory = $client->appointments->take(10)->map(function ($appointment) {
+            $visitHistory = $appointments->map(function ($appt) {
                 return [
-                    'service' => $appointment->service->name ?? 'N/A',
-                    'stylist' => $appointment->stylist->name ?? 'N/A',
-                    'date' => $appointment->appointment_date ? date('M d, Y', strtotime($appointment->appointment_date)) : 'N/A',
-                    'amount' => $appointment->total_amount ?? 0,
-                    'status' => ucfirst($appointment->status ?? 'pending'),
+                    'service' => optional($appt->service)->name ?? 'N/A',
+                    'stylist' => optional($appt->stylist)->name ?? 'N/A',
+                    'date'    => Carbon::parse($appt->appointment_date)->format('M d, Y'),
+                    'amount'  => $appt->total_amount ?? 0,
+                    'status'  => ucfirst($appt->status ?? 'N/A'),
                 ];
             })->toArray();
 
-            return view('owner.clients.show', [
-                'client' => $clientData,
-                'visitHistory' => $visitHistory,
-            ]);
+            return view('owner.clients.show', compact('client', 'visitHistory'));
 
         } catch (\Exception $e) {
             Log::error('Client Show Error: ' . $e->getMessage());
             return redirect()->route('owner.clients.index')
-                ->with('error', 'Client not found.');
+                ->with('error', 'Client not found: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Show the form for editing the specified client.
-     */
     public function edit($id)
     {
         try {
-            $user = auth()->user();
+            $user = User::findOrFail($id);
 
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
-            if (!$salon) {
-                return redirect()->route('owner.salons.create')
-                    ->with('error', 'Please create your salon first.');
-            }
-
-            $salonId = $salon->id;
-
-            $client = User::where('role', 'client')
-                ->whereHas('appointments', function ($query) use ($salonId) {
-                    $query->where('salon_id', $salonId);
-                })
-                ->find($id);
-
-            if (!$client) {
-                return redirect()->route('owner.clients.index')
-                    ->with('error', 'Client not found.');
-            }
-
-            $totalVisits = Appointment::where('client_id', $client->id)
-                ->where('salon_id', $salonId)
-                ->count();
-
-            $clientData = [
-                'id' => $client->id,
-                'name' => $client->name,
-                'email' => $client->email,
-                'phone' => $client->phone ?? 'N/A',
-                'join_date_raw' => $client->created_at ? date('Y-m-d', strtotime($client->created_at)) : null,
-                'status' => $totalVisits > 10 ? 'VIP' : ($totalVisits > 5 ? 'Regular' : 'New'),
-                'notes' => null,
+            $client = [
+                'id'            => $user->id,
+                'name'          => $user->name,
+                'email'         => $user->email,
+                'phone'         => $user->phone ?? '',
+                'join_date_raw' => Carbon::parse($user->created_at)->format('Y-m-d'),
+                'status'        => $user->status ?? 'New',
+                'notes'         => $user->notes ?? '',
             ];
 
-            return view('owner.clients.edit', ['client' => $clientData]);
+            return view('owner.clients.edit', compact('client'));
 
         } catch (\Exception $e) {
-            Log::error('Client Edit Error: ' . $e->getMessage());
             return redirect()->route('owner.clients.index')
                 ->with('error', 'Client not found.');
         }
     }
 
-    /**
-     * Update the specified client.
-     */
     public function update(Request $request, $id)
     {
         try {
-            $user = auth()->user();
+            $user = User::findOrFail($id);
 
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
-            if (!$salon) {
-                return redirect()->route('owner.salons.create')
-                    ->with('error', 'Salon not found.');
-            }
-
-            $salonId = $salon->id;
-
-            $client = User::where('role', 'client')
-                ->whereHas('appointments', function ($query) use ($salonId) {
-                    $query->where('salon_id', $salonId);
-                })
-                ->find($id);
-
-            if (!$client) {
-                return redirect()->route('owner.clients.index')
-                    ->with('error', 'Client not found.');
-            }
-
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
+            $request->validate([
+                'name'  => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $id,
-                'phone' => 'required|string|max:20',
-                'status' => 'required|in:New,Regular,VIP,Inactive',
-                'join_date' => 'required|date',
-                'notes' => 'nullable|string',
+                'phone' => 'nullable|string|max:20',
             ]);
 
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
-
-            $client->update([
-                'name' => $request->name,
+            $user->update([
+                'name'  => $request->name,
                 'email' => $request->email,
-                'phone' => $request->phone,
-                'is_active' => $request->status !== 'Inactive',
+                'phone' => $request->phone ?? $user->phone,
+                'status' => $request->status ?? $user->status,
+                'notes'  => $request->notes ?? $user->notes,
             ]);
 
             return redirect()->route('owner.clients.index')
-                ->with('success', 'Client "' . $client->name . '" updated successfully!');
+                ->with('success', 'Client "' . $user->name . '" updated successfully!');
 
         } catch (\Exception $e) {
             Log::error('Client Update Error: ' . $e->getMessage());
             return redirect()->back()
-                ->with('error', 'Unable to update client.')
+                ->with('error', 'Unable to update: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
-    /**
-     * Remove the specified client.
-     */
     public function destroy($id)
     {
         try {
-            $user = auth()->user();
-
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
-            if (!$salon) {
-                return redirect()->route('owner.salons.create')
-                    ->with('error', 'Salon not found.');
-            }
-
-            $salonId = $salon->id;
-
-            $client = User::where('role', 'client')
-                ->whereHas('appointments', function ($query) use ($salonId) {
-                    $query->where('salon_id', $salonId);
-                })
-                ->find($id);
-
-            if (!$client) {
-                return redirect()->route('owner.clients.index')
-                    ->with('error', 'Client not found.');
-            }
-
-            $clientName = $client->name;
-
-            // Check if client has appointments
-            $appointmentCount = Appointment::where('client_id', $client->id)
-                ->where('salon_id', $salonId)
-                ->count();
-
-            if ($appointmentCount > 0) {
-                return redirect()->route('owner.clients.index')
-                    ->with('error', 'Cannot delete "' . $clientName . '" because they have ' . $appointmentCount . ' appointment(s).');
-            }
-
-            $client->delete();
+            $user = User::findOrFail($id);
+            $name = $user->name;
+            $user->delete();
 
             return redirect()->route('owner.clients.index')
-                ->with('success', 'Client "' . $clientName . '" deleted successfully!');
+                ->with('success', 'Client "' . $name . '" removed.');
 
         } catch (\Exception $e) {
-            Log::error('Client Destroy Error: ' . $e->getMessage());
             return redirect()->route('owner.clients.index')
                 ->with('error', 'Unable to delete client.');
         }
     }
 
-    /**
-     * Export clients as CSV.
-     */
     public function export(Request $request)
     {
         try {
-            $user = auth()->user();
-
-            if ($user->role !== 'owner') {
-                abort(403, 'Unauthorized access.');
-            }
-
-            $salon = Salon::where('owner_id', $user->id)->first();
-
-            if (!$salon) {
-                return redirect()->route('owner.salons.create')
-                    ->with('error', 'Salon not found.');
-            }
-
-            $salonId = $salon->id;
-
-            $clients = User::where('role', 'client')
-                ->whereHas('appointments', function ($query) use ($salonId) {
-                    $query->where('salon_id', $salonId);
-                })
-                ->with(['appointments' => function ($query) use ($salonId) {
-                    $query->where('salon_id', $salonId);
-                }])
+            $salon     = $this->getOwnerSalon();
+            
+            // ✅ SAB CLIENTS EXPORT KARO
+            $clients   = User::where('role', 'client')
+                ->orderBy('name')
                 ->get();
 
-            $csv = "Name,Email,Phone,Join Date,Total Visits,Total Spent,Status\n";
-            foreach ($clients as $client) {
-                $totalVisits = $client->appointments->count();
-                $totalSpent = $client->appointments->sum('total_amount');
-                $status = $totalVisits > 10 ? 'VIP' : ($totalVisits > 5 ? 'Regular' : 'New');
-
-                $csv .= $client->name . ",";
-                $csv .= $client->email . ",";
-                $csv .= ($client->phone ?? 'N/A') . ",";
-                $csv .= ($client->created_at ? date('M d, Y', strtotime($client->created_at)) : 'N/A') . ",";
-                $csv .= $totalVisits . ",";
-                $csv .= $totalSpent . ",";
-                $csv .= $status . "\n";
+            $csv = "Name,Email,Phone,Join Date,Status\n";
+            foreach ($clients as $c) {
+                $csv .= sprintf(
+                    "%s,%s,%s,%s,%s\n",
+                    str_replace(',', ' ', $c->name),
+                    $c->email,
+                    str_replace(',', ' ', $c->phone ?? 'N/A'),
+                    Carbon::parse($c->created_at)->format('Y-m-d'),
+                    $c->status ?? 'New'
+                );
             }
 
             return response($csv)
                 ->header('Content-Type', 'text/csv')
-                ->header('Content-Disposition', 'attachment; filename="clients-' . now()->format('Y-m-d') . '.csv"');
+                ->header('Content-Disposition', 'attachment; filename="clients-' . date('Y-m-d') . '.csv"');
 
         } catch (\Exception $e) {
-            Log::error('Client Export Error: ' . $e->getMessage());
             return redirect()->route('owner.clients.index')
-                ->with('error', 'Unable to export clients.');
+                ->with('error', 'Export failed.');
         }
     }
 }
