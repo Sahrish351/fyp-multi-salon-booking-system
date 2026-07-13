@@ -78,10 +78,10 @@
         <div class="row g-2 align-items-center">
             <div class="col-md-8">
                 <div class="search-input-wrap">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" id="serviceSearchInput" class="form-control input-custom search-input"
-                           placeholder="Search services...">
-                </div>
+    <i class="bi bi-search"></i>
+    <input type="text" id="serviceSearchInput" class="search-input"
+           placeholder="Search services by name...">
+</div>
             </div>
             <div class="col-md-4">
                 <button type="button" class="btn btn-filters w-100" data-bs-toggle="modal" data-bs-target="#filtersModal">
@@ -294,24 +294,44 @@
     .icon-blue { background: linear-gradient(135deg, #4A7FE0, #3568C4); }
 
     .search-input-wrap {
-        position: relative;
-        width: 100%;
-    }
-    .search-input-wrap .search-icon {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--ink-500);
-        font-size: 16px;
-        z-index: 2;
-    }
-    .search-input {
-        padding-left: 44px !important;
-        height: 46px;
-        font-size: 14px;
-        width: 100%;
-    }
+    display: flex;
+    align-items: center;
+    background: #fcf6f9;
+    border: 1px solid #f0e8ed;
+    border-radius: 10px;
+    padding: 0 16px;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.search-input-wrap i {
+    color: #b09aa8;
+    font-size: 18px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.search-input-wrap .search-input {
+    border: none !important;
+    background: transparent !important;
+    outline: none !important;
+    padding: 11px 0 !important;
+    font-size: 14.5px;
+    color: #2d1f2c;
+    width: 100%;
+    height: auto !important;
+    box-shadow: none !important;
+}
+
+.search-input-wrap .search-input::placeholder {
+    color: #b09aa8;
+}
+
+.search-input-wrap:focus-within {
+    border-color: #E85588;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15);
+}
 
     .btn-filters {
         background: var(--white);

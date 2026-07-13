@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
 
 class AppointmentUpdateNotification extends Notification
 {
@@ -14,11 +15,6 @@ class AppointmentUpdateNotification extends Notification
     protected string $type;
     protected array $extra;
 
-    /**
-     * @param Appointment $appointment
-     * @param string $type  'cancelled' | 'rescheduled'
-     * @param array $extra  e.g. ['old_date' => '...', 'old_time' => '...']
-     */
     public function __construct(Appointment $appointment, string $type, array $extra = [])
     {
         $this->appointment = $appointment;
@@ -51,15 +47,23 @@ class AppointmentUpdateNotification extends Notification
             'rescheduled' => "Your appointment with {$salonName} has been rescheduled.",
         ];
 
+        $title = match($this->type) {
+            'cancelled' => '❌ Appointment Cancelled',
+            'rescheduled' => '🔄 Appointment Rescheduled',
+            default => '📅 Appointment Updated',
+        };
+
         return [
+            'id' => (string) Str::uuid(),
+            'title' => $title,  
             'appointment_id' => $appointment->id,
-            'booking_ref'    => $appointment->booking_ref,
-            'type'           => $this->type,
-            'message'        => $messages[$this->type] ?? 'Your appointment has been updated.',
-            'old_date'       => $this->extra['old_date'] ?? null,
-            'old_time'       => $this->extra['old_time'] ?? null,
-            'new_date'       => optional($appointment->appointment_date)->format('d M Y'),
-            'new_time'       => $appointment->start_time
+            'booking_ref' => $appointment->booking_ref,
+            'type' => $this->type,
+            'message' => $messages[$this->type] ?? 'Your appointment has been updated.',
+            'old_date' => $this->extra['old_date'] ?? null,
+            'old_time' => $this->extra['old_time'] ?? null,
+            'new_date' => optional($appointment->appointment_date)->format('d M Y'),
+            'new_time' => $appointment->start_time
                                     ? \Carbon\Carbon::parse($appointment->start_time)->format('h:i A')
                                     : null,
         ];

@@ -4,22 +4,22 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
-use App\Notifications\AppointmentUpdateNotification;
+use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class AppointmentManageController extends Controller
 {
     public function index(Request $request)
     {
-        // ✅ WITH TRASHED - so deleted services/stylists still show
         $query = Appointment::with([
             'salon',
             'service' => function ($q) {
-                $q->withTrashed(); // ✅ Include soft-deleted services
+                $q->withTrashed();
             },
             'stylist' => function ($q) {
-                $q->withTrashed(); // ✅ Include soft-deleted stylists
+                $q->withTrashed();
             },
             'payment'
         ])
@@ -54,7 +54,6 @@ class AppointmentManageController extends Controller
             abort(403);
         }
 
-        // ✅ WITH TRASHED - so deleted services/stylists still show
         $appointment->load([
             'salon',
             'service' => function ($q) {
@@ -97,12 +96,25 @@ class AppointmentManageController extends Controller
                     $appointment->appointment_date->format('Y-m-d')
                 );
             } catch (\Exception $e) {
-                // Waitlist controller exists but method might not
-                // Silently ignore - main functionality still works
+                // Silently ignore
             }
         }
 
-        Auth::user()->notify(new AppointmentUpdateNotification($appointment, 'cancelled'));
+        // ✅ NOTIFICATION: Client ne appointment cancel ki
+        try {
+            $client = Auth::user();
+            NotificationHelper::send(
+                $appointment->salon_id,
+                'appointment',
+                [
+                    'title' => '❌ Appointment Cancelled',
+                    'message' => "{$client->name} cancelled their appointment for " . Carbon::parse($appointment->appointment_date)->format('M d, Y'),
+                    'link' => route('owner.appointments.show', $appointment->id),
+                ]
+            );
+        } catch (\Exception $e) {
+            \Log::error('Cancel notification error: ' . $e->getMessage());
+        }
 
         return redirect()->route('client.appointments.show', $appointment->id)
             ->with('success', 'Your appointment has been cancelled.');
@@ -127,13 +139,13 @@ class AppointmentManageController extends Controller
 
         $service = $appointment->service;
 
-        $newStart = \Carbon\Carbon::parse($request->new_time)->format('H:i:s');
-        $newEnd   = \Carbon\Carbon::parse($request->new_time)
+        $newStart = Carbon::parse($request->new_time)->format('H:i:s');
+        $newEnd   = Carbon::parse($request->new_time)
                         ->addMinutes($service->duration ?? 60)
                         ->format('H:i:s');
 
-        $oldDate = \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y');
-        $oldTime = \Carbon\Carbon::parse($appointment->start_time)->format('h:i A');
+        $oldDate = Carbon::parse($appointment->appointment_date)->format('d M Y');
+        $oldTime = Carbon::parse($appointment->start_time)->format('h:i A');
 
         $appointment->update([
             'appointment_date' => $request->new_date,
@@ -146,18 +158,26 @@ class AppointmentManageController extends Controller
             ),
         ]);
 
-        Auth::user()->notify(new AppointmentUpdateNotification($appointment, 'rescheduled', [
-            'old_date' => $oldDate,
-            'old_time' => $oldTime,
-        ]));
+        // ✅ NOTIFICATION: Client ne appointment reschedule ki
+        try {
+            $client = Auth::user();
+            NotificationHelper::send(
+                $appointment->salon_id,
+                'appointment',
+                [
+                    'title' => '🔄 Appointment Rescheduled',
+                    'message' => "{$client->name} rescheduled appointment from {$oldDate} {$oldTime} to " . Carbon::parse($request->new_date)->format('M d, Y') . ' at ' . Carbon::parse($request->new_time)->format('h:i A'),
+                    'link' => route('owner.appointments.show', $appointment->id),
+                ]
+            );
+        } catch (\Exception $e) {
+            \Log::error('Reschedule notification error: ' . $e->getMessage());
+        }
 
         return redirect()->route('client.appointments.show', $appointment->id)
             ->with('success', 'Your appointment has been rescheduled successfully!');
     }
 
-    /**
-     * Show reschedule form.
-     */
     public function rescheduleForm(Appointment $appointment)
     {
         if ($appointment->client_id !== Auth::id()) {
@@ -169,7 +189,6 @@ class AppointmentManageController extends Controller
                 ->with('error', 'This appointment can no longer be rescheduled.');
         }
 
-        // Get available time slots for this stylist on the appointment date
         $timeSlots = \App\Models\TimeSlot::where('stylist_id', $appointment->stylist_id)
             ->where('slot_date', $appointment->appointment_date)
             ->where('status', 'available')
@@ -178,9 +197,6 @@ class AppointmentManageController extends Controller
         return view('client.appointments.reschedule', compact('appointment', 'timeSlots'));
     }
 
-    /**
-     * Get available time slots for reschedule (AJAX).
-     */
     public function getAvailableSlots(Request $request)
     {
         $request->validate([
@@ -208,7 +224,7 @@ class AppointmentManageController extends Controller
                     'id' => $slot->id,
                     'start_time' => $slot->start_time,
                     'end_time' => $slot->end_time,
-                    'display' => \Carbon\Carbon::parse($slot->start_time)->format('h:i A') . ' - ' . \Carbon\Carbon::parse($slot->end_time)->format('h:i A'),
+                    'display' => Carbon::parse($slot->start_time)->format('h:i A') . ' - ' . Carbon::parse($slot->end_time)->format('h:i A'),
                 ];
             });
 
