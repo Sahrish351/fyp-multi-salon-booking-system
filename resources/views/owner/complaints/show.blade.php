@@ -78,7 +78,7 @@
                     <div class="mt-4 p-3 bg-warning bg-opacity-10 rounded border border-warning">
                         <h6 class="fw-bold">
                             <i class="bi bi-shield-fill me-1"></i> Admin's Response
-                            <small class="text-muted ms-2">{{ $complaint->admin_actioned_at ? $complaint->admin_actioned_at->format('M d, Y h:i A') : '' }}</small>
+                            <small class="text-muted ms-2">{{ $complaint->admin_actioned_at ? \Carbon\Carbon::parse($complaint->admin_actioned_at)->format('M d, Y h:i A') : '' }}</small>
                         </h6>
                         <p class="mb-0">{{ $complaint->admin_response }}</p>
                     </div>
@@ -92,7 +92,7 @@
                 @if($complaint->owner_reply)
                     <div class="p-3 bg-light rounded">
                         <p class="mb-0">{{ $complaint->owner_reply }}</p>
-                        <small class="text-muted">{{ $complaint->owner_replied_at ? $complaint->owner_replied_at->format('M d, Y h:i A') : '' }}</small>
+                        <small class="text-muted">{{ $complaint->owner_replied_at ? \Carbon\Carbon::parse($complaint->owner_replied_at)->format('M d, Y h:i A') : '' }}</small>
                     </div>
                 @else
                     <p class="text-muted">No reply yet.</p>
@@ -179,7 +179,7 @@
                     @if($complaint->owner_replied_at)
                         <li class="mb-2">
                             <i class="bi bi-check-circle-fill text-info me-2"></i>
-                            Owner Replied ({{ $complaint->owner_replied_at->format('M d, Y h:i A') }})
+                            Owner Replied ({{ \Carbon\Carbon::parse($complaint->owner_replied_at)->format('M d, Y h:i A') }})
                         </li>
                     @endif
 
@@ -200,7 +200,7 @@
                     @if($complaint->client_action == 'accept')
                         <li class="mb-2">
                             <i class="bi bi-check-circle-fill text-success me-2"></i>
-                            Client Accepted ({{ $complaint->client_actioned_at->format('M d, Y h:i A') }})
+                            Client Accepted ({{ $complaint->client_actioned_at ? \Carbon\Carbon::parse($complaint->client_actioned_at)->format('M d, Y h:i A') : 'N/A' }})
                         </li>
                     @endif
 
@@ -214,14 +214,14 @@
                     @if($complaint->status == 'escalated')
                         <li class="mb-2">
                             <i class="bi bi-check-circle-fill text-danger me-2"></i>
-                            Escalated to Admin ({{ $complaint->client_actioned_at->format('M d, Y h:i A') }})
+                            Escalated to Admin ({{ $complaint->client_actioned_at ? \Carbon\Carbon::parse($complaint->client_actioned_at)->format('M d, Y h:i A') : 'N/A' }})
                         </li>
                     @endif
 
                     @if($complaint->status == 'rejected')
                         <li class="mb-2">
                             <i class="bi bi-x-circle-fill text-danger me-2"></i>
-                            Rejected ({{ $complaint->rejected_at->format('M d, Y h:i A') }})
+                            Rejected ({{ $complaint->rejected_at ? \Carbon\Carbon::parse($complaint->rejected_at)->format('M d, Y h:i A') : 'N/A' }})
                         </li>
                     @endif
                 </ul>
