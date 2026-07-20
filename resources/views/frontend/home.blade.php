@@ -1,12 +1,10 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Glamora — Book Premium Beauty Services in Pakistan</title>
+    <title>Beauty Blush Salons — Book Premium Beauty Services in Pakistan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -15,10 +13,12 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; -webkit-font-smoothing: antialiased; }
     a { text-decoration: none; color: inherit; }
- 
+
+    /* ===== NAVBAR WITH LOGO ===== */
     .g-nav {
-        background: #fff;
-        border-bottom: 1px solid #ebebeb;
+        background: rgba(255,255,255,0.97);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #fce4ec;
         padding: 0 32px;
         height: 64px;
         display: flex;
@@ -27,33 +27,59 @@
         position: sticky;
         top: 0;
         z-index: 1000;
+        box-shadow: 0 2px 20px rgba(233,30,140,0.06);
     }
     .g-nav .brand {
-        font-size: 1.5rem;
-        font-weight: 900;
-        letter-spacing: -1px;
-        background: linear-gradient(135deg, #E91E8C, #9333ea);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-style: italic;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        transition: all 0.3s ease;
     }
+    .g-nav .brand:hover {
+        transform: scale(1.02);
+    }
+    .g-nav .brand .brand-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #E91E8C, #C9A96E);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(233,30,140,0.25);
+        transition: all 0.3s ease;
+    }
+    .g-nav .brand .brand-icon i {
+        color: #fff;
+        font-size: 1.2rem;
+    }
+    .g-nav .brand .brand-text {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .g-nav .brand .brand-text .pink { color: #E91E8C; }
+    .g-nav .brand .brand-text .gold { color: #C9A96E; }
+
     .g-nav .nav-right { display: flex; align-items: center; gap: 8px; }
+
     .btn-nav-ghost {
-    background: transparent;
-    border: 1.5px solid #1a1a1a;
-    color: #1a1a1a;
-    font-size: 0.88rem;
-    font-weight: 600;
-    padding: 8px 18px;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-.btn-nav-ghost:hover { 
-    background: #1a1a1a !important; 
-    color: #fff !important; 
-}
+        background: transparent;
+        border: 1.5px solid #1a1a1a;
+        color: #1a1a1a;
+        font-size: 0.88rem;
+        font-weight: 600;
+        padding: 8px 18px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .btn-nav-ghost:hover {
+        background: #1a1a1a !important;
+        color: #fff !important;
+    }
     .btn-nav-outline {
         background: #fff;
         border: 1.5px solid #1a1a1a;
@@ -63,6 +89,7 @@
         padding: 8px 18px;
         border-radius: 50px;
         cursor: pointer;
+        transition: all 0.2s ease;
     }
     .btn-nav-outline:hover { background: #1a1a1a; color: #fff; }
     .btn-nav-menu {
@@ -78,13 +105,14 @@
         gap: 8px;
         cursor: pointer;
         position: relative;
+        transition: all 0.2s ease;
     }
-    .btn-nav-menu:hover {  background: #1a1a1a; color: #fff; }
- 
-    /* Menu Dropdown - Right side small box */
+    .btn-nav-menu:hover { background: #1a1a1a; color: #fff; }
+
+    /* Menu Dropdown */
     .menu-dropdown {
         position: absolute;
-        top:100%;
+        top: 100%;
         right: 0;
         background: #fff;
         border-radius: 16px;
@@ -95,9 +123,7 @@
         min-width: 200px;
         display: none;
     }
-    .menu-dropdown.show {
-        display: block;
-    }
+    .menu-dropdown.show { display: block; }
     .menu-dropdown a {
         display: block;
         padding: 10px 20px;
@@ -107,11 +133,9 @@
         text-decoration: none;
         transition: all 0.2s;
     }
-    .menu-dropdown a:hover {
-        background: #f5f5f5;
-        color: #E91E8C;
-    }
- 
+    .menu-dropdown a:hover { background: #f5f5f5; color: #E91E8C; }
+
+    /* ===== HERO ===== */
     .hero {
         background: linear-gradient(145deg, #ede8f5 0%, #f5e6f5 20%, #fce8f3 50%, #fdf5fb 80%, #fff 100%);
         padding: 100px 32px 140px;
@@ -148,7 +172,8 @@
         margin-bottom: 40px;
         line-height: 1.65;
     }
- 
+
+    /* ===== SEARCH PILL ===== */
     .search-pill {
         display: flex;
         align-items: center;
@@ -170,12 +195,7 @@
         cursor: pointer;
         padding: 0 4px;
     }
-    .search-pill .sp-divider {
-        width: 0;
-        height: 24px;
-        background: none;
-        margin: 0;
-    }
+    .search-pill .sp-divider { width: 1px; height: 28px; background: #e8e8e8; margin: 0 4px; flex-shrink: 0; }
     .search-pill .sp-segment:hover::before {
         content: '';
         position: absolute;
@@ -209,11 +229,13 @@
         font-size: 1rem;
         flex-shrink: 0;
         cursor: pointer;
+        transition: all 0.2s ease;
     }
     .btn-search-pill:hover { background: #E91E8C; transform: scale(1.05); }
-    .hero-count { font-size: 0.92rem; color: #666; margin-top: 22px; }
+    .hero-count { font-size: 0.92rem; color: #666; margin-top: 50px; }
     .hero-count strong { color: #1a1a1a; font-weight: 700; }
- 
+
+    /* ===== DROPDOWNS ===== */
     .sp-dropdown {
         position: absolute;
         top: 100%;
@@ -224,35 +246,14 @@
         padding: 1rem;
         z-index: 9999;
         display: none;
-    }
-    .sp-dropdown.show { display: block; }
-    
-    #treatmentsDD {
-        left: 0;
-        right: auto;
         min-width: 260px;
         max-height: 400px;
         overflow-y: auto;
     }
-    
-    #locationDD {
-        left: 50%;
-        transform: translateX(-50%);
-        right: auto;
-        min-width: 260px;
-        max-height: none;
-        overflow-y: visible;
-    }
-    
-    #timeDD {
-        right: 0;
-        left: auto;
-        min-width: 380px;
-        max-width: 420px;
-        max-height: none;
-        overflow-y: visible;
-    }
-    
+    .sp-dropdown.show { display: block; }
+    #treatmentsDD { left: 0; right: auto; }
+    #locationDD { left: 50%; transform: translateX(-50%); }
+    #timeDD { right: 0; left: auto; min-width: 380px; max-width: 420px; max-height: none; }
     .sp-dropdown-item {
         display: flex;
         align-items: center;
@@ -266,7 +267,8 @@
     }
     .sp-dropdown-item:hover { background: #f5f5f5; }
     .sp-dropdown-item i { color: #E91E8C; width: 16px; }
- 
+
+    /* ===== FLATPICKR ===== */
     .flatpickr-calendar.inline {
         width: 100% !important;
         box-shadow: none !important;
@@ -286,7 +288,6 @@
         background: #E91E8C !important;
         border-color: #E91E8C !important;
     }
- 
     .time-option-btn {
         border: 1.5px solid #e0e0e0;
         border-radius: 50px;
@@ -295,12 +296,11 @@
         font-weight: 500;
         background: #fff;
         cursor: pointer;
+        transition: all 0.2s;
     }
-    .time-option-btn:hover {
-        border-color: #E91E8C;
-        color: #E91E8C;
-    }
- 
+    .time-option-btn:hover { border-color: #E91E8C; color: #E91E8C; }
+
+    /* ===== SECTIONS ===== */
     .g-section { padding: 44px 0; }
     .g-section-head {
         display: flex;
@@ -312,7 +312,8 @@
     .g-section-head h2 { font-size: 1.5rem; font-weight: 800; color: #1a1a1a; letter-spacing: -0.3px; }
     .see-all { font-size: 0.85rem; font-weight: 600; color: #555; display: flex; align-items: center; gap: 5px; }
     .see-all:hover { color: #E91E8C; }
- 
+
+    /* ===== SLIDER ===== */
     .slider-outer { position: relative; }
     .slider-scroll-area {
         overflow-x: auto;
@@ -330,7 +331,7 @@
     @media(max-width: 1200px) { .slider-track { grid-auto-columns: calc((100% - 80px) / 3); } }
     @media(max-width: 768px)  { .slider-track { grid-auto-columns: calc((100% - 48px) / 2); } }
     @media(max-width: 576px)  { .slider-track { grid-auto-columns: 75vw; } }
- 
+
     .slider-arrow-btn {
         position: absolute;
         top: 40%;
@@ -346,11 +347,13 @@
         cursor: pointer;
         z-index: 10;
         box-shadow: 0 2px 16px rgba(0,0,0,0.14);
+        transition: all 0.2s;
     }
     .slider-arrow-btn:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .slider-arrow-btn.left { left: 8px; }
     .slider-arrow-btn.right { right: 8px; }
- 
+
+    /* ===== SALON CARD ===== */
     .salon-card { cursor: pointer; display: block; }
     .salon-card .sc-img {
         width: 100%;
@@ -431,7 +434,8 @@
     .salon-card .sc-rating-inline .star { color: #ffc107; font-size: 0.8rem; }
     .salon-card .sc-addr { font-size: 0.8rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .salon-card .sc-meta { font-size: 0.8rem; color: #888; }
- 
+
+    /* ===== REVIEW CARD ===== */
     .rev-card {
         background: #f5f5f5;
         border-radius: 20px;
@@ -467,16 +471,18 @@
     }
     .rev-card .rc-name { font-weight: 700; font-size: 0.88rem; color: #1a1a1a; }
     .rev-card .rc-loc { font-size: 0.78rem; color: #888; }
- 
+
+    /* ===== STATS ===== */
     .stats-sec { padding: 80px 32px; text-align: center; background: #1a1a1a; }
     .stats-sec .st-title { font-size: clamp(1.4rem,3vw,2rem); font-weight: 800; color: #fff; margin-bottom: 8px; }
     .stats-sec .st-sub { font-size: 0.92rem; color: #aaa; margin-bottom: 44px; }
-    .stats-sec .big-num { font-size: clamp(3.5rem,9vw,6.5rem); font-weight: 900; color: #E91E8C; letter-spacing: -4px; margin-bottom: 8px; }
+    .stats-sec .big-num { font-size: clamp(3.5rem,9vw,6.5rem); font-weight: 700; color: #E91E8C; letter-spacing: -5px; margin-bottom: 8px; }
     .stats-sec .big-lbl { font-size: 0.95rem; color: #aaa; margin-bottom: 50px; }
     .stats-sec .mini-stats { display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
     .stats-sec .ms-num { font-size: 2rem; font-weight: 900; color: #fff; }
     .stats-sec .ms-lbl { font-size: 0.82rem; color: #aaa; margin-top: 2px; }
- 
+
+    /* ===== CITY ===== */
     .city-sec { background: #fafafa; padding: 60px 32px; }
     .city-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 30px; }
     .city-tab-btn {
@@ -488,6 +494,7 @@
         color: #555;
         background: #fff;
         cursor: pointer;
+        transition: all 0.2s;
     }
     .city-tab-btn.active, .city-tab-btn:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .city-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 2.5rem; }
@@ -495,20 +502,22 @@
     .city-col h6 { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; }
     .city-col a { display: block; font-size: 0.81rem; color: #666; padding: 3px 0; }
     .city-col a:hover { color: #E91E8C; }
- 
+
+    /* ===== BIZ SECTION ===== */
     .biz-sec { background: #1a1a1a; padding: 80px 32px; }
     .biz-sec h2 { font-size: clamp(1.8rem,4vw,2.8rem); font-weight: 900; color: #fff; margin-bottom: 16px; }
     .biz-sec p { color: #888; font-size: 0.92rem; margin-bottom: 28px; }
-    .btn-biz { background: #fff; color: #1a1a1a; border-radius: 50px; padding: 14px 32px; font-weight: 700; display: inline-block; }
+    .btn-biz { background: #fff; color: #1a1a1a; border-radius: 50px; padding: 14px 32px; font-weight: 700; display: inline-block; transition: all 0.2s; }
     .btn-biz:hover { background: #E91E8C; color: #fff; }
- 
+
+    /* ===== FOOTER ===== */
     .g-footer { background: #f5f5f5; padding: 56px 32px 30px; }
     .g-footer .foot-brand {
         font-size: 1.4rem;
         font-weight: 900;
         letter-spacing: -0.5px;
         font-style: italic;
-        background: linear-gradient(135deg, #E91E8C, #9333ea);
+        background: linear-gradient(135deg, #E91E8C, #C9A96E);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 6px;
@@ -517,12 +526,60 @@
     .g-footer h6 { font-size: 0.82rem; font-weight: 700; margin-bottom: 14px; }
     .g-footer a { display: block; font-size: 0.8rem; color: #666; margin-bottom: 9px; }
     .g-footer a:hover { color: #E91E8C; }
+
+    /* ===== RESPONSIVE ===== */
+    @media(max-width:768px) {
+        .g-nav { padding: 0 16px; height: 56px; }
+        .g-nav .brand .brand-text { font-size: 1.1rem; }
+        .g-nav .brand .brand-icon { width: 36px; height: 36px; }
+        .g-nav .brand .brand-icon i { font-size: 1rem; }
+        .btn-nav-ghost, .btn-nav-outline { font-size: 0.75rem; padding: 6px 12px; }
+        .btn-nav-menu { font-size: 0.75rem; padding: 6px 10px; }
+        .hero { padding: 60px 16px 80px; }
+        .hero h1 { font-size: 1.8rem; }
+        .search-pill { flex-wrap: wrap; border-radius: 20px; padding: 8px 12px; gap: 6px; }
+        .search-pill .sp-segment { flex: 1 1 100%; padding: 4px 0; }
+        .search-pill .sp-divider { display: none; }
+        .search-pill .sp-field { font-size: 0.8rem; }
+        .btn-search-pill { width: 40px; height: 40px; }
+        .sp-dropdown { position: fixed; left: 16px !important; right: 16px !important; top: auto !important; transform: none !important; min-width: auto !important; max-height: 50vh !important; }
+        #timeDD { min-width: auto !important; max-width: 100% !important; }
+        .slider-track { grid-auto-columns: calc((100% - 32px) / 1.5); }
+        .slider-arrow-btn { display: none; }
+        .g-section-head { padding: 0 16px; }
+        .g-section-head h2 { font-size: 1.2rem; }
+        .city-grid { grid-template-columns: repeat(2,1fr); gap: 1.5rem; }
+        .stats-sec { padding: 40px 16px; }
+        .stats-sec .mini-stats { gap: 30px; }
+        .biz-sec { padding: 40px 16px; }
+        .g-footer { padding: 30px 16px; }
+        .rev-card { padding: 1.2rem; }
+    }
+    @media(max-width:480px) {
+        .g-nav .brand .brand-text { font-size: 0.95rem; }
+        .g-nav .brand .brand-icon { width: 32px; height: 32px; }
+        .g-nav .brand .brand-icon i { font-size: 0.85rem; }
+        .btn-nav-ghost, .btn-nav-outline { font-size: 0.65rem; padding: 4px 10px; }
+        .btn-nav-menu { font-size: 0.65rem; padding: 4px 8px; gap: 4px; }
+        .hero h1 { font-size: 1.4rem; }
+        .hero p { font-size: 0.9rem; }
+        .search-pill .sp-field { font-size: 0.75rem; }
+    }
     </style>
 </head>
 <body>
- 
+
 <nav class="g-nav">
-    <a href="{{ route('home') }}" class="brand">Beauty Blush Salon</a>
+    <a href="{{ route('home') }}" class="brand">
+        <div class="brand-icon">
+            <i class="fas fa-spa"></i>
+        </div>
+        <span class="brand-text">
+            <span class="pink">Beauty</span>
+            <span class="gold"> Blush</span>
+            <span class="pink"> Salons</span>
+        </span>
+    </a>
     <div class="nav-right">
         @auth
             @if(Auth::user()->isAdmin())
@@ -552,14 +609,14 @@
         </div>
     </div>
 </nav>
- 
+
 <section class="hero">
     <h1>Book premium beauty services</h1>
     <p>Discover top-rated salons, bridal studios, nail artists and beauty experts<br class="d-none d-md-block"> trusted by thousands across Pakistan</p>
- 
+
     <form action="{{ route('salons.index') }}" method="GET" id="heroSearchForm">
         <div class="search-pill" id="searchPill">
- 
+
             <div class="sp-segment" onclick="toggleDropdown('treatmentsDD')">
                 <i class="fas fa-search sp-icon"></i>
                 <input type="text" name="search" id="treatmentInput" class="sp-field" placeholder="All treatments" readonly>
@@ -585,9 +642,9 @@
                 </div>
                 @endforeach
             </div>
- 
+
             <div class="sp-divider"></div>
- 
+
             <div class="sp-segment" onclick="toggleDropdown('locationDD')">
                 <i class="fas fa-map-marker-alt sp-icon" style="color:#E91E8C;"></i>
                 <input type="text" name="city" id="locationInput" class="sp-field" placeholder="Current location" readonly>
@@ -603,9 +660,9 @@
                 <div class="sp-dropdown-item" onclick="selectCity('Peshawar')"><i class="fas fa-map-marker-alt"></i> Peshawar</div>
                 <div class="sp-dropdown-item" onclick="selectCity('Quetta')"><i class="fas fa-map-marker-alt"></i> Quetta</div>
             </div>
- 
+
             <div class="sp-divider"></div>
- 
+
             <div class="sp-segment" onclick="toggleDropdown('timeDD')">
                 <i class="fas fa-calendar sp-icon"></i>
                 <input type="text" id="dateTimeInput" class="sp-field" placeholder="Any time" readonly>
@@ -625,17 +682,17 @@
                 </div>
                 <button type="button" onclick="applyDateTime()" class="btn-search-pill" style="width:100%;border-radius:12px;margin-top:12px;height:44px;">Apply</button>
             </div>
- 
+
             <button type="submit" class="btn-search-pill">
                 <i class="fas fa-search"></i>
             </button>
         </div>
     </form>
- 
+
     <p class="hero-count"><strong>{{ number_format($totalBookings) }}</strong> appointments booked today</p>
 </section>
- 
-<!-- RECOMMENDED SECTION - 4 CARDS -->
+
+<!-- RECOMMENDED SECTION -->
 <section class="g-section" style="background:#fff;padding-top:36px;">
     <div class="g-section-head">
         <h2>Recommended</h2>
@@ -662,7 +719,7 @@
                     </div>
                     <div class="sc-body">
                         <div class="sc-name-row">
-                            <div class="sc-name">{{ $salon->name ?? 'Glamora Elite' }} <i class="fas fa-check-circle vc"></i></div>
+                            <div class="sc-name">{{ $salon->name ?? 'Beauty Blush Elite' }} <i class="fas fa-check-circle vc"></i></div>
                             <div class="sc-rating-inline"><i class="fas fa-star star"></i> {{ $ratings[$index % count($ratings)] }}</div>
                         </div>
                         <div class="sc-addr">{{ $salon->address ?? 'Main Boulevard Gulberg, Lahore' }}</div>
@@ -670,67 +727,21 @@
                     </div>
                 </a>
                 @empty
-
-                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon1.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Glamora Elite Salon <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 5.0</div></div><div class="sc-addr">Main Boulevard Gulberg, Lahore</div><div class="sc-meta">Luxury Salon · 128 reviews</div></div></a>
+                <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon1.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Beauty Blush Elite <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 5.0</div></div><div class="sc-addr">Main Boulevard Gulberg, Lahore</div><div class="sc-meta">Luxury Salon · 128 reviews</div></div></a>
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon2.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Aura Beauty Studio <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.9</div></div><div class="sc-addr">DHA Phase 5, Lahore</div><div class="sc-meta">Spa · 89 reviews</div></div></a>
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon3.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">The Royal Glow Salon <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.8</div></div><div class="sc-addr">MM Alam Road, Lahore</div><div class="sc-meta">Bridal · 234 reviews</div></div></a>
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon4.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Elegance Hair & Beauty Lounge <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.7</div></div><div class="sc-addr">Clifton Block 5, Karachi</div><div class="sc-meta">Hair Salon · 156 reviews</div></div></a>
-
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row">
-                            <div class="sc-name">Glamora Elite <i class="fas fa-check-circle vc"></i></div>
-                            <div class="sc-rating-inline"><i class="fas fa-star star"></i> 5.0</div>
-                        </div>
-                        <div class="sc-addr">Main Boulevard, Gulberg, Lahore</div>
-                        <div class="sc-meta">Luxury Salon · 128 reviews</div>
-                    </div>
-                </a>
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row">
-                            <div class="sc-name">Serenity Spa & Salon <i class="fas fa-check-circle vc"></i></div>
-                            <div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.9</div>
-                        </div>
-                        <div class="sc-addr">DHA Phase 5, Lahore</div>
-                        <div class="sc-meta">Spa · 89 reviews</div>
-                    </div>
-                </a>
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row">
-                            <div class="sc-name">Royal Bridal Studio <i class="fas fa-check-circle vc"></i></div>
-                            <div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.8</div>
-                        </div>
-                        <div class="sc-addr">MM Alam Road, Lahore</div>
-                        <div class="sc-meta">Bridal · 234 reviews</div>
-                    </div>
-                </a>
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row">
-                            <div class="sc-name">The Hair Lounge <i class="fas fa-check-circle vc"></i></div>
-                            <div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.7</div>
-                        </div>
-                        <div class="sc-addr">Clifton, Karachi</div>
-                        <div class="sc-meta">Hair Salon · 156 reviews</div>
-                    </div>
-                </a>
                 @endforelse
             </div>
         </div>
         <button class="slider-arrow-btn right" onclick="slide('rec',1)"><i class="fas fa-chevron-right"></i></button>
     </div>
 </section>
- 
-<!-- NEW TO GLAMORA SECTION - 4 CARDS -->
+
+<!-- NEW TO BEAUTY BLUSH SECTION -->
 <section class="g-section" style="background:linear-gradient(180deg,#fff 0%,#fdf5fb 100%);">
     <div class="g-section-head">
-        <h2>New to Glamora</h2>
+        <h2>New to Beauty Blush</h2>
         <a href="{{ route('salons.index') }}" class="see-all">See all <i class="fas fa-arrow-right"></i></a>
     </div>
     <div class="slider-outer">
@@ -757,53 +768,18 @@
                     </div>
                 </a>
                 @empty
-
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon11.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">New Style Studio <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">Johar Town, Lahore</div><div class="sc-meta">New · 45 reviews</div></div></a>
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon20.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Urban Nails & Spa <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">Gulshan, Karachi</div><div class="sc-meta">New · 32 reviews</div></div></a>
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon13.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Bliss Beauty Bar <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">F-7, Islamabad</div><div class="sc-meta">New · 28 reviews</div></div></a>
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon29.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">The Makeup Loft <i class="fas fa-check-circle vc"></i></div></div><div class="sc-addr">Saddar, Rawalpindi</div><div class="sc-meta">New · 67 reviews</div></div></a>
-
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row"><div class="sc-name">New Style Studio <i class="fas fa-check-circle vc"></i></div></div>
-                        <div class="sc-addr">Johar Town, Lahore</div>
-                        <div class="sc-meta">New · 45 reviews</div>
-                    </div>
-                </a>
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row"><div class="sc-name">Urban Nails & Spa <i class="fas fa-check-circle vc"></i></div></div>
-                        <div class="sc-addr">Gulshan, Karachi</div>
-                        <div class="sc-meta">New · 32 reviews</div>
-                    </div>
-                </a>
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row"><div class="sc-name">Bliss Beauty Bar <i class="fas fa-check-circle vc"></i></div></div>
-                        <div class="sc-addr">F-7, Islamabad</div>
-                        <div class="sc-meta">New · 28 reviews</div>
-                    </div>
-                </a>
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row"><div class="sc-name">The Makeup Loft <i class="fas fa-check-circle vc"></i></div></div>
-                        <div class="sc-addr">Saddar, Rawalpindi</div>
-                        <div class="sc-meta">New · 67 reviews</div>
-                    </div>
-                </a>
-
                 @endforelse
             </div>
         </div>
         <button class="slider-arrow-btn right" onclick="slide('newto',1)"><i class="fas fa-chevron-right"></i></button>
     </div>
 </section>
- 
-<!-- TRENDING SECTION - 4 CARDS -->
+
+<!-- TRENDING SECTION -->
 <section class="g-section" style="background:#fff;">
     <div class="g-section-head">
         <h2>Trending</h2>
@@ -836,64 +812,18 @@
                     </div>
                 </a>
                 @empty
-
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon21.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Trending Now <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.9</div></div><div class="sc-addr">Liberty Market, Lahore</div><div class="sc-meta">234 reviews</div></div></a>
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon22.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Vogue Beauty Lounge <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.8</div></div><div class="sc-addr">Clifton, Karachi</div><div class="sc-meta">189 reviews</div></div></a>
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon23.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Elegance Salon <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.7</div></div><div class="sc-addr">F-10, Islamabad</div><div class="sc-meta">156 reviews</div></div></a>
                 <a href="#" class="salon-card"><div class="sc-img"><img src="{{ asset('storage/images/salon24.jpg') }}" alt="Salon"></div><div class="sc-body"><div class="sc-name-row"><div class="sc-name">Style Studio <i class="fas fa-check-circle vc"></i></div><div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.6</div></div><div class="sc-addr">Saddar, Rawalpindi</div><div class="sc-meta">102 reviews</div></div></a>
-
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row">
-                            <div class="sc-name">Trending Now <i class="fas fa-check-circle vc"></i></div>
-                            <div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.9</div>
-                        </div>
-                        <div class="sc-addr">Liberty Market, Lahore</div>
-                        <div class="sc-meta">234 reviews</div>
-                    </div>
-                </a>
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row">
-                            <div class="sc-name">Vogue Beauty Lounge <i class="fas fa-check-circle vc"></i></div>
-                            <div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.8</div>
-                        </div>
-                        <div class="sc-addr">Clifton, Karachi</div>
-                        <div class="sc-meta">189 reviews</div>
-                    </div>
-                </a>
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row">
-                            <div class="sc-name">Elegance Salon <i class="fas fa-check-circle vc"></i></div>
-                            <div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.7</div>
-                        </div>
-                        <div class="sc-addr">F-10, Islamabad</div>
-                        <div class="sc-meta">156 reviews</div>
-                    </div>
-                </a>
-                <a href="{{ route('salons.index') }}" class="salon-card">
-                    <div class="sc-img"><img src="#" alt="Salon"></div>
-                    <div class="sc-body">
-                        <div class="sc-name-row">
-                            <div class="sc-name">Style Studio <i class="fas fa-check-circle vc"></i></div>
-                            <div class="sc-rating-inline"><i class="fas fa-star star"></i> 4.6</div>
-                        </div>
-                        <div class="sc-addr">Saddar, Rawalpindi</div>
-                        <div class="sc-meta">102 reviews</div>
-                    </div>
-                </a>
-
                 @endforelse
             </div>
         </div>
         <button class="slider-arrow-btn right" onclick="slide('trending',1)"><i class="fas fa-chevron-right"></i></button>
     </div>
 </section>
- 
+
+<!-- REVIEWS SECTION -->
 <section class="g-section" style="background:#fff;">
     <div class="g-section-head">
         <h2>Reviews</h2>
@@ -901,10 +831,10 @@
     <div style="padding:0 32px;">
         <div class="row g-4">
             @foreach([
-                ['The best booking system','Great experience, easy to book. Paying for treatments is so convenient — no cash needed! Glamora made everything seamless.','Ayesha K.','Lahore, Pakistan','#E91E8C'],
-                ['Easy to use & explore','Glamora\'s reminders make life so much easier. I found amazing salons I didn\'t know existed. Highly recommend to everyone!','Sana M.','Karachi, Pakistan','#9333ea'],
-                ['Great for finding salons','I\'ve been using Glamora for months and it\'s by far the best booking platform I\'ve used. The waitlist feature is brilliant!','Fatima R.','Islamabad, Pakistan','#0ea5e9'],
-                ['My go-to for beauty','Glamora is my go-to app for salon bookings. I can easily find and book places near me — absolutely love it!','Hina B.','Lahore, Pakistan','#10b981'],
+                ['The best booking system','Great experience, easy to book. Paying for treatments is so convenient — no cash needed! Beauty Blush made everything seamless.','Ayesha K.','Lahore, Pakistan','#E91E8C'],
+                ['Easy to use & explore','Beauty Blush\'s reminders make life so much easier. I found amazing salons I didn\'t know existed. Highly recommend to everyone!','Sana M.','Karachi, Pakistan','#9333ea'],
+                ['Great for finding salons','I\'ve been using Beauty Blush for months and it\'s by far the best booking platform I\'ve used. The waitlist feature is brilliant!','Fatima R.','Islamabad, Pakistan','#0ea5e9'],
+                ['My go-to for beauty','Beauty Blush is my go-to app for salon bookings. I can easily find and book places near me — absolutely love it!','Hina B.','Lahore, Pakistan','#10b981'],
             ] as [$title,$text,$name,$loc,$color])
             <div class="col-lg-3 col-md-6">
                 <div class="rev-card">
@@ -924,19 +854,21 @@
         </div>
     </div>
 </section>
- 
+
+<!-- STATS SECTION -->
 <section class="stats-sec">
     <h2 class="st-title">The top-rated destination for beauty in Pakistan</h2>
     <p class="st-sub">One platform. Trusted by the best in the beauty industry.</p>
     <div class="big-num">{{ number_format($totalBookings) }}+</div>
-    <div class="big-lbl">appointments booked on Glamora</div>
+    <div class="big-lbl">appointments booked on Beauty Blush</div>
     <div class="mini-stats">
         <div><div class="ms-num">{{ number_format($totalSalons) }}+</div><div class="ms-lbl">partner salons</div></div>
         <div><div class="ms-num">50+</div><div class="ms-lbl">cities covered</div></div>
         <div><div class="ms-num">{{ number_format($totalClients) }}+</div><div class="ms-lbl">happy clients</div></div>
     </div>
 </section>
- 
+
+<!-- BROWSE BY CITY SECTION -->
 <section class="city-sec">
     <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:20px;">Browse by City</h2>
     <div class="city-tabs">
@@ -952,62 +884,111 @@
         <div class="city-col"><h6>Rawalpindi</h6><a href="#">Hair Salons Rawalpindi</a><a href="#">Nail Salons Rawalpindi</a><a href="#">Bridal Salons Rawalpindi</a></div>
     </div>
 </section>
- 
+
+<!-- GROW YOUR BUSINESS SECTION -->
 <section class="biz-sec">
     <div class="container"><div class="row"><div class="col-lg-7">
-        <h2>Grow your salon business with Glamora</h2>
+        <h2>Grow your salon business with Beauty Blush</h2>
         <p>Join thousands of salon owners across Pakistan who manage bookings, payments, and clients from one beautiful dashboard. Completely free to register.</p>
         <a href="{{ route('register.owner') }}" class="btn-biz">List your business — it's free</a>
     </div></div></div>
 </section>
- 
-<footer class="g-footer">
-    <div class="row g-4">
-        <div class="col-lg-3 col-md-6">
-            <div class="foot-brand">glamora</div>
-            <div class="foot-copy">© {{ date('Y') }} Glamora. All rights reserved.</div>
-            <div style="display:flex;gap:10px;margin-top:16px;">
-                @foreach(['fab fa-facebook-f','fab fa-instagram','fab fa-tiktok','fab fa-youtube'] as $icon)
-                <a href="#" style="width:34px;height:34px;border-radius:50%;background:#e8e8e8;display:flex;align-items:center;justify-content:center;color:#555;font-size:0.78rem;transition:all .15s;"
-                   onmouseover="this.style.background='#E91E8C';this.style.color='#fff'"
-                   onmouseout="this.style.background='#e8e8e8';this.style.color='#555'">
-                    <i class="{{ $icon }}"></i>
-                </a>
-                @endforeach
+
+<!-- ===== FOOTER ===== -->
+<footer style="background: #f8f5f7; color: #555; padding-top: 60px; border-top: 1px solid #f0e8ed;">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Brand Column -->
+            <div class="col-lg-3 col-md-6">
+                <h3 class="fw-bold mb-3" style="font-family:'Playfair Display',serif; font-size:1.6rem; margin-top:0; padding-top:0;">
+                    <span style="color:#E91E8C;">Beauty</span>
+                    <span style="color:#C9A96E;"> Blush</span>
+                    <span style="color:#E91E8C;"> Salons</span>
+                </h3>
+                <p style="color:#777; line-height:1.8; font-size:0.88rem;">
+                    Pakistan's premium multi-salon booking platform. Discover top salons,
+                    book appointments, and experience beauty like never before.
+                </p>
+                <p style="color:#888; font-size:0.78rem; margin-top:10px;">
+                    <i class="fas fa-map-marker-alt" style="color:#E91E8C; margin-right:8px; width:16px;"></i>
+                    Gulberg III, Lahore, Pakistan
+                </p>
+                <p style="color:#888; font-size:0.78rem;">
+                    <i class="fas fa-phone" style="color:#E91E8C; margin-right:8px; width:16px;"></i>
+                    <a href="tel:+923001234567" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">+92 300 1234567</a>
+                </p>
+                <p style="color:#888; font-size:0.78rem;">
+                    <i class="fas fa-envelope" style="color:#E91E8C; margin-right:8px; width:16px;"></i>
+                    <a href="mailto:hello@beautyblush.pk" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">hello@beautyblush.pk</a>
+                </p>
             </div>
+
+            <!-- Quick Links - 5 Links -->
+            <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
+                <h6 class="fw-bold mb-4" style="color:#E91E8C; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{{ route('home') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>Home</a></li>
+                    <li class="mb-2"><a href="{{ route('salons.index') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>Salons</a></li>
+                    <li class="mb-2"><a href="{{ route('about') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>About</a></li>
+                    <li class="mb-2"><a href="{{ route('contact') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>Contact</a></li>
+                    <li class="mb-2"><a href="{{ route('register.owner') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>List Your Salon</a></li>
+                </ul>
+            </div>
+
+            <!-- For Business - 5 Links -->
+            <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
+                <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">For Business</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{{ route('register.owner') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>List Your Salon</a></li>
+                    <li class="mb-2">
+    <a href="{{ route('partner.with.us') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';">
+        <i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Partner With Us
+    </a>
+</li>
+                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Pricing</a></li>
+                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Support</a></li>
+                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>FAQ</a></li>
+                </ul>
+            </div>
+
+            <!-- Follow Us - 5 Social Icons -->
+            <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
+                <h6 class="fw-bold mb-4" style="color:#E91E8C; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Follow Us</h6>
+                <ul class="list-unstyled" style="display:flex; flex-direction:column; gap:6px;">
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-facebook-f" style="width:20px; color:#E91E8C;"></i> Facebook</a></li>
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-instagram" style="width:20px; color:#E91E8C;"></i> Instagram</a></li>
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-tiktok" style="width:20px; color:#E91E8C;"></i> TikTok</a></li>
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-youtube" style="width:20px; color:#E91E8C;"></i> YouTube</a></li>
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-twitter" style="width:20px; color:#E91E8C;"></i> Twitter</a></li>
+                </ul>
+            </div>
+
+            <!-- Legal - 5 Links -->
+            <div class="col-lg-3 col-md-6" style="padding-top: 8px;">
+                <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Legal</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-shield-alt me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Privacy Policy</a></li>
+                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-file-contract me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Terms &amp; Conditions</a></li>
+                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-gavel me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Terms of Use</a></li>
+                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-cookie-bite me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Cookie Policy</a></li>
+                    <li class="mb-2"><a href="{{ route('about') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-info-circle me-2" style="font-size:0.6rem; color:#C9A96E;"></i>About Us</a></li>
+                </ul>
+            </div>
+
         </div>
-        <div class="col-lg-2 col-md-6">
-            <h6>About Glamora</h6>
-            <a href="{{ route('about') }}">About us</a>
-            <a href="#">Careers</a>
-            <a href="{{ route('contact') }}">Help & Support</a>
-            <a href="#">Blog</a>
-            <a href="#">Sitemap</a>
-        </div>
-        <div class="col-lg-2 col-md-6">
-            <h6>For business</h6>
-            <a href="{{ route('register.owner') }}">List your salon</a>
-            <a href="#">For partners</a>
-            <a href="#">Pricing</a>
-            <a href="#">Payments</a>
-            <a href="#">Support</a>
-        </div>
-        <div class="col-lg-2 col-md-6">
-            <h6>Legal</h6>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of service</a>
-            <a href="#">Terms of use</a>
-            <a href="#">Cookie policy</a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <h6>Find us on social</h6>
-            @foreach(['Facebook','Instagram','Twitter (X)','LinkedIn'] as $sm)
-            <a href="#">↗ {{ $sm }}</a>
-            @endforeach
+    </div>
+
+    <!-- Footer Bottom -->
+    <div style="border-top: 1px solid #f0e8ed; margin-top: 40px; padding: 20px 0;">
+        <div class="container">
+            <p style="text-align:center; color:#aaa; font-size:0.82rem; margin:0; letter-spacing:0.5px;">
+                &copy; {{ date('Y') }} <span style="color:#E91E8C; font-weight:600;">Beauty Blush Salons</span> — All rights reserved.
+                
+            </p>
         </div>
     </div>
 </footer>
- 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
@@ -1017,13 +998,13 @@ function slide(id, dir) {
     const cardWidth = firstCard ? firstCard.offsetWidth + 16 : 280;
     el.scrollBy({ left: dir * cardWidth * 4, behavior: 'smooth' });
 }
- 
+
 function toggleDropdown(id) {
     const all = document.querySelectorAll('.sp-dropdown');
     all.forEach(d => { if (d.id !== id) d.classList.remove('show'); });
     document.getElementById(id).classList.toggle('show');
 }
- 
+
 function selectTreatment(name) {
     document.getElementById('treatmentInput').value = name;
     document.getElementById('treatmentsDD').classList.remove('show');
@@ -1036,7 +1017,7 @@ function selectTreatment(name) {
     }
     hidden.value = name;
 }
- 
+
 function selectCity(city) {
     document.getElementById('locationInput').value = city;
     document.getElementById('locationDD').classList.remove('show');
@@ -1049,10 +1030,10 @@ function selectCity(city) {
     }
     hidden.value = city;
 }
- 
+
 let selectedDate = '';
 let selectedTime = '';
- 
+
 flatpickr('#inlineCal', {
     inline: true,
     dateFormat: 'Y-m-d',
@@ -1064,7 +1045,7 @@ flatpickr('#inlineCal', {
     yearSelectorType: 'dropdown',
     monthSelectorType: 'dropdown'
 });
- 
+
 function selectTime(t) {
     selectedTime = t;
     updateDateTimeDisplay();
@@ -1077,7 +1058,7 @@ function selectTime(t) {
     event.target.style.color = '#E91E8C';
     event.target.style.background = 'rgba(233,30,140,0.05)';
 }
- 
+
 function updateDateTimeDisplay() {
     const parts = [];
     if (selectedDate) {
@@ -1087,23 +1068,23 @@ function updateDateTimeDisplay() {
     if (selectedTime && selectedTime !== 'Any time') parts.push(selectedTime);
     document.getElementById('dateTimeInput').value = parts.join(' · ') || '';
 }
- 
+
 function applyDateTime() {
     updateDateTimeDisplay();
     document.getElementById('timeDD').classList.remove('show');
 }
- 
+
 function switchCity(btn, city) {
     document.querySelectorAll('.city-tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     if (city !== 'All') window.location = '{{ route("salons.index") }}?city=' + encodeURIComponent(city);
 }
- 
+
 function toggleMenuDropdown() {
     const menu = document.getElementById('menuDropdown');
     menu.classList.toggle('show');
 }
- 
+
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.search-pill')) {
         document.querySelectorAll('.sp-dropdown').forEach(d => d.classList.remove('show'));
@@ -1116,4 +1097,3 @@ document.addEventListener('click', function(e) {
 </script>
 </body>
 </html>
-

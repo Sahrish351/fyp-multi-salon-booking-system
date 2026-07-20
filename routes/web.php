@@ -80,6 +80,11 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
+// PARTNER WITH US ROUTE - YEH ADD KARO
+Route::get('/partner-with-us', function () {
+    return view('frontend.partner-with-us');
+})->name('partner.with.us');
+
 Route::get('/salons', [PublicSalonController::class, 'index'])->name('salons.index');
 Route::get('/salons/search', [PublicSalonController::class, 'search'])->name('salons.search');
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
