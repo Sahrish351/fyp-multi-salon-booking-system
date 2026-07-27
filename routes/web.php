@@ -18,6 +18,7 @@ use App\Http\Controllers\Frontend\PublicServiceController;
 use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\BookingController;
+use App\Http\Controllers\Frontend\PageController;
 
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\SalonRequestController;
@@ -80,10 +81,19 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
-// PARTNER WITH US ROUTE - YEH ADD KARO
-Route::get('/partner-with-us', function () {
-    return view('frontend.partner-with-us');
-})->name('partner.with.us');
+Route::get('/partner-with-us', [PageController::class, 'partner'])->name('partner');
+Route::post('/partner-with-us', [PageController::class, 'partnerSubmit'])->name('partner.submit');
+
+Route::get('/pricing', [PageController::class, 'pricing'])->name('pricing');
+Route::get('/support', [PageController::class, 'support'])->name('support');
+Route::post('/support', [PageController::class, 'supportSubmit'])->name('support.submit');
+Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+
+// Legal Pages
+Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [PageController::class, 'terms'])->name('terms');
+Route::get('/terms-of-use', [PageController::class, 'termsOfUse'])->name('terms.of.use');
+Route::get('/cookie-policy', [PageController::class, 'cookies'])->name('cookies');
 
 Route::get('/salons', [PublicSalonController::class, 'index'])->name('salons.index');
 Route::get('/salons/search', [PublicSalonController::class, 'search'])->name('salons.search');

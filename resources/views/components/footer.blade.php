@@ -39,18 +39,17 @@
                 </ul>
             </div>
 
-            <!-- For Business - 5 Links -->
-            <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
-                <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">For Business</h6>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="{{ route('register.owner') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>List Your Salon</a></li>
-                    <li class="mb-2"><a href="{{ route('partner.with.us') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Partner With Us</a></li>
-                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Pricing</a></li>
-                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Support</a></li>
-                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>FAQ</a></li>
-                </ul>
-            </div>
-
+           <!-- For Business - 5 Links -->
+<div class="col-lg-2 col-md-6" style="padding-top: 8px;">
+    <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">For Business</h6>
+    <ul class="list-unstyled">
+        <li class="mb-2"><a href="{{ route('register.owner') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>List Your Salon</a></li>
+        <li class="mb-2"><a href="{{ route('partner') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Partner With Us</a></li>
+        <li class="mb-2"><a href="/pricing" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Pricing</a></li>
+        <li class="mb-2"><a href="/support" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Support</a></li>
+        <li class="mb-2"><a href="/faq" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>FAQ</a></li>
+    </ul>
+</div>
             <!-- Follow Us - 5 Social Icons -->
             <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
                 <h6 class="fw-bold mb-4" style="color:#E91E8C; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Follow Us</h6>
