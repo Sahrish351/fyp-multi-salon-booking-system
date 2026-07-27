@@ -50,14 +50,6 @@
         70% { transform: scale(0.95); }
         100% { transform: scale(1); }
     }
-    @keyframes shimmerBtn {
-        0% { background-position: -200% center; }
-        100% { background-position: 200% center; }
-    }
-    @keyframes ring {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
 
     .animate-float { animation: float 8s ease-in-out infinite; }
     .animate-float-reverse { animation: floatReverse 10s ease-in-out infinite; }
@@ -76,7 +68,7 @@
     .delay-6 { animation-delay: 0.6s; }
 
     /* ============================================================ */
-    /* SUPPORT CARDS */
+    /* SUPPORT CARDS - PROFESSIONAL DESIGN */
     /* ============================================================ */
     .support-card {
         transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -136,6 +128,7 @@
         justify-content: center;
         margin-bottom: 20px;
         font-size: 32px;
+        flex-shrink: 0;
     }
 
     .support-btn {
@@ -153,6 +146,7 @@
         cursor: pointer;
         position: relative;
         overflow: hidden;
+        color: #fff !important;
     }
     .support-btn::after {
         content: '';
@@ -242,14 +236,177 @@
             padding: 12px 14px;
             font-size: 13px;
         }
+        .support-btn {
+            padding: 10px 20px;
+            font-size: 12px;
+        }
     }
+
+    /* ============================================================ */
+    /* HERO SECTION */
+    /* ============================================================ */
+    .hero-support {
+        background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%);
+        padding: 100px 0 70px;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-support .hero-badge {
+        display: inline-block;
+        background: rgba(244,114,182,0.12);
+        color: #F472B6;
+        padding: 8px 28px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        margin-bottom: 24px;
+        border: 1px solid rgba(244,114,182,0.2);
+        backdrop-filter: blur(10px);
+    }
+    .hero-support h1 {
+        font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+        font-weight: 900;
+        color: #fff;
+        margin-bottom: 16px;
+        line-height: 1.15;
+    }
+    .hero-support p {
+        font-size: clamp(1rem, 1.5vw, 1.2rem);
+        color: rgba(255,255,255,0.75);
+        max-width: 580px;
+        margin: 0 auto;
+        line-height: 1.9;
+    }
+
+    /* ============================================================ */
+    /* FAQ STYLES */
+    /* ============================================================ */
+    .faq-item {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 12px;
+        border: 1px solid #FFE8F0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .faq-item:hover {
+        border-color: #EC4899;
+        box-shadow: 0 4px 20px rgba(236,72,153,0.06);
+    }
+    .faq-item.active {
+        border-color: #EC4899;
+        background: #FFF9FC;
+    }
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    opacity 0.4s ease, 
+                    padding 0.4s ease;
+        opacity: 0;
+        padding: 0 0 0 32px;
+    }
+    .faq-item.active .faq-answer {
+        max-height: 200px;
+        opacity: 1;
+        padding: 12px 0 4px 32px;
+    }
+    .faq-icon {
+        color: #EC4899;
+        transition: transform 0.4s ease;
+        display: inline-block;
+    }
+    .faq-item.active .faq-icon {
+        transform: rotate(180deg);
+    }
+
+    /* ============================================================ */
+    /* STATS SECTION */
+    /* ============================================================ */
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #FFE8F0;
+        transition: all 0.3s ease;
+    }
+    .stat-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 40px rgba(236,72,153,0.08);
+    }
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #EC4899;
+    }
+    .stat-label {
+        font-size: 14px;
+        color: #888;
+        margin-top: 4px;
+    }
+
+    /* ============================================================ */
+    /* CTA SECTION */
+    /* ============================================================ */
+    .cta-support {
+        background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%);
+        padding: 60px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .cta-support .cta-btn {
+        background: linear-gradient(135deg, #F472B6, #DB2777);
+        color: #fff;
+        padding: 16px 44px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 15px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 35px rgba(219,39,119,0.35);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .cta-support .cta-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 50px rgba(219,39,119,0.5);
+        color: #fff;
+    }
+
+    /* ============================================================ */
+    /* 6 CHANNELS - UNIQUE ICON COLORS */
+    /* ============================================================ */
+    .icon-email { color: #8B5CF6; }
+    .icon-phone { color: #10B981; }
+    .icon-whatsapp { color: #25D366; }
+    .icon-messenger { color: #0084FF; }
+    .icon-instagram { color: #E4405F; }
+    .icon-247 { color: #F59E0B; }
+
+    .bg-email { background: rgba(139,92,246,0.08); }
+    .bg-phone { background: rgba(16,185,129,0.08); }
+    .bg-whatsapp { background: rgba(37,211,102,0.08); }
+    .bg-messenger { background: rgba(0,132,255,0.08); }
+    .bg-instagram { background: rgba(228,64,95,0.08); }
+    .bg-247 { background: rgba(245,158,11,0.08); }
+
+    .btn-email { background: linear-gradient(135deg, #8B5CF6, #6D28D9) !important; }
+    .btn-phone { background: linear-gradient(135deg, #10B981, #059669) !important; }
+    .btn-whatsapp { background: linear-gradient(135deg, #25D366, #128C7E) !important; }
+    .btn-messenger { background: linear-gradient(135deg, #0084FF, #0063D4) !important; }
+    .btn-instagram { background: linear-gradient(135deg, #E4405F, #C13584) !important; }
+    .btn-247 { background: linear-gradient(135deg, #F59E0B, #D97706) !important; }
 </style>
 
 <!-- ============================================================ -->
 <!-- HERO SECTION -->
 <!-- ============================================================ -->
-<section style="background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%); padding: 100px 0 70px; position: relative; overflow: hidden;">
-    
+<section class="hero-support">
     <div class="animate-float" style="position: absolute; top: -30%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%); border-radius: 50%;"></div>
     <div class="animate-float-reverse" style="position: absolute; bottom: -20%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(244,114,182,0.05) 0%, transparent 70%); border-radius: 50%;"></div>
     <div class="animate-rotate" style="position: absolute; top: 15%; left: 20%; width: 200px; height: 200px; border: 1px solid rgba(244,114,182,0.05); border-radius: 50%;"></div>
@@ -258,14 +415,15 @@
     <div class="container" style="position: relative; z-index: 1;">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <div class="animate-slide-up" style="display: inline-block; background: rgba(244,114,182,0.12); color: #F472B6; padding: 8px 28px; border-radius: 50px; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; margin-bottom: 24px; border: 1px solid rgba(244,114,182,0.2); backdrop-filter: blur(10px);">
+                <div class="hero-badge animate-slide-up">
                     <i class="fas fa-headset me-2"></i> We're Here to Help
                 </div>
-                <h1 class="animate-slide-up delay-1" style="font-size: clamp(2.2rem, 5.5vw, 3.8rem); font-weight: 900; color: #fff; margin-bottom: 16px; line-height: 1.15;">
+                <h1 class="animate-slide-up delay-1">
                     How Can We <span class="gradient-text">Help You?</span>
                 </h1>
-                <p class="animate-slide-up delay-2" style="font-size: clamp(1rem, 1.5vw, 1.2rem); color: rgba(255,255,255,0.75); max-width: 580px; margin: 0 auto; line-height: 1.9;">
-                    Our dedicated support team is available 24/7 to assist you with any questions, issues, or concerns. We're just a message away.
+                <p class="animate-slide-up delay-2">
+                    Our dedicated support team is available to assist you with any questions, 
+                    issues, or concerns. We're just a message away.
                 </p>
             </div>
         </div>
@@ -273,7 +431,7 @@
 </section>
 
 <!-- ============================================================ -->
-<!-- SUPPORT CHANNELS SECTION -->
+<!-- SUPPORT CHANNELS SECTION - 6 CHANNELS WITH REAL ICONS -->
 <!-- ============================================================ -->
 <section style="padding: 60px 0 70px; background: #FFF9FC;">
     <div class="container">
@@ -290,79 +448,93 @@
             @php
                 $channels = [
                     [
-                        'icon' => 'fa-comment-dots',
-                        'color' => '#EC4899',
-                        'bg' => 'rgba(236,72,153,0.08)',
-                        'title' => 'Live Chat',
-                        'desc' => 'Chat with our support team instantly. Get real-time assistance for any issue.',
-                        'action' => 'Start Chat',
-                        'link' => '#',
-                        'btn_bg' => 'linear-gradient(135deg, #F472B6, #DB2777)'
-                    ],
-                    [
                         'icon' => 'fa-envelope',
-                        'color' => '#8B5CF6',
-                        'bg' => 'rgba(139,92,246,0.08)',
+                        'icon_type' => 'fas',
+                        'icon_class' => 'icon-email',
+                        'bg_class' => 'bg-email',
+                        'btn_class' => 'btn-email',
                         'title' => 'Email Support',
                         'desc' => 'Send us an email and we\'ll respond within 12 hours. Perfect for detailed queries.',
                         'action' => 'Email Us',
-                        'link' => 'mailto:support@beautyblush.pk',
-                        'btn_bg' => 'linear-gradient(135deg, #8B5CF6, #6D28D9)'
+                        'link' => 'mailto:support@beautyblush.pk'
                     ],
                     [
                         'icon' => 'fa-phone-alt',
-                        'color' => '#10B981',
-                        'bg' => 'rgba(16,185,129,0.08)',
+                        'icon_type' => 'fas',
+                        'icon_class' => 'icon-phone',
+                        'bg_class' => 'bg-phone',
+                        'btn_class' => 'btn-phone',
                         'title' => 'Phone Support',
                         'desc' => 'Call us during business hours. Speak directly with a support representative.',
                         'action' => 'Call Us',
-                        'link' => 'tel:+923001234567',
-                        'btn_bg' => 'linear-gradient(135deg, #10B981, #059669)'
+                        'link' => 'tel:+923069734142'
                     ],
                     [
                         'icon' => 'fa-whatsapp',
-                        'color' => '#25D366',
-                        'bg' => 'rgba(37,211,102,0.08)',
+                        'icon_type' => 'fab',
+                        'icon_class' => 'icon-whatsapp',
+                        'bg_class' => 'bg-whatsapp',
+                        'btn_class' => 'btn-whatsapp',
                         'title' => 'WhatsApp',
                         'desc' => 'Message us on WhatsApp for quick responses. Available 24/7 for your convenience.',
                         'action' => 'Chat on WhatsApp',
-                        'link' => 'https://wa.me/923001234567',
-                        'btn_bg' => 'linear-gradient(135deg, #25D366, #128C7E)'
+                        'link' => 'https://wa.me/923069734142'
                     ],
                     [
                         'icon' => 'fa-facebook-messenger',
-                        'color' => '#0084FF',
-                        'bg' => 'rgba(0,132,255,0.08)',
+                        'icon_type' => 'fab',
+                        'icon_class' => 'icon-messenger',
+                        'bg_class' => 'bg-messenger',
+                        'btn_class' => 'btn-messenger',
                         'title' => 'Messenger',
                         'desc' => 'Reach out via Facebook Messenger. Our team is active and ready to help.',
                         'action' => 'Message Us',
-                        'link' => '#',
-                        'btn_bg' => 'linear-gradient(135deg, #0084FF, #0063D4)'
+                        'link' => 'https://m.me/beautyblushsalons'
+                    ],
+                    [
+                        'icon' => 'fa-instagram',
+                        'icon_type' => 'fab',
+                        'icon_class' => 'icon-instagram',
+                        'bg_class' => 'bg-instagram',
+                        'btn_class' => 'btn-instagram',
+                        'title' => 'Instagram DM',
+                        'desc' => 'Send us a direct message on Instagram. We respond within hours.',
+                        'action' => 'DM Us',
+                        'link' => 'https://instagram.com/beautyblushsalons'
                     ],
                     [
                         'icon' => 'fa-clock',
-                        'color' => '#F59E0B',
-                        'bg' => 'rgba(245,158,11,0.08)',
+                        'icon_type' => 'fas',
+                        'icon_class' => 'icon-247',
+                        'bg_class' => 'bg-247',
+                        'btn_class' => 'btn-247',
                         'title' => '24/7 Support',
                         'desc' => 'Our support team is available round the clock. We\'re always here for you.',
                         'action' => 'Learn More',
                         'link' => '#',
-                        'btn_bg' => 'linear-gradient(135deg, #F59E0B, #D97706)'
+                        'onclick' => 'show247Info()'
                     ],
                 ];
             @endphp
             @foreach($channels as $channel)
                 <div class="col-lg-4 col-md-6 animate-slide-up" style="animation-delay: {{ 0.1 + $loop->index * 0.05 }}s;">
                     <div class="support-card">
-                        <div class="support-icon" style="background: {{ $channel['bg'] }}; color: {{ $channel['color'] }};">
-                            <i class="fas {{ $channel['icon'] }}"></i>
+                        <div class="support-icon {{ $channel['bg_class'] }} {{ $channel['icon_class'] }}">
+                            <i class="{{ $channel['icon_type'] }} {{ $channel['icon'] }}"></i>
                         </div>
                         <h4 style="font-size: 18px; font-weight: 800; color: #1a0a14; margin-bottom: 8px;">{{ $channel['title'] }}</h4>
                         <p style="font-size: 14px; color: #888; line-height: 1.7; margin-bottom: 20px; flex: 1;">{{ $channel['desc'] }}</p>
-                        <a href="{{ $channel['link'] }}" class="support-btn" style="background: {{ $channel['btn_bg'] }}; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                            {{ $channel['action'] }}
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
+                        @if(isset($channel['onclick']))
+                            <button onclick="{{ $channel['onclick'] }}" class="support-btn {{ $channel['btn_class'] }}" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                                {{ $channel['action'] }}
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        @else
+                            <a href="{{ $channel['link'] }}" target="_blank" class="support-btn {{ $channel['btn_class'] }}" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                                {{ $channel['action'] }}
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endforeach
@@ -380,16 +552,18 @@
                             <p style="font-size: 13px; color: #888; margin: 0;">Sunday: 10:00 AM – 4:00 PM</p>
                         </div>
                         <div>
-                            <i class="fas fa-clock" style="color: #10B981; font-size: 20px;"></i>
+                            <i class="fas fa-headset" style="color: #8B5CF6; font-size: 20px;"></i>
                             <h6 style="font-weight: 700; color: #1a0a14; margin-top: 8px; font-size: 14px;">Support Hours</h6>
-                            <p style="font-size: 13px; color: #888; margin: 0;">24/7 Live Chat Support</p>
                             <p style="font-size: 13px; color: #888; margin: 0;">Email Response: Within 12 Hours</p>
+                            <p style="font-size: 13px; color: #888; margin: 0;">WhatsApp: Within 2 Hours</p>
+                            <p style="font-size: 13px; color: #888; margin: 0;">Phone: Business Hours</p>
                         </div>
                         <div>
-                            <i class="fas fa-headset" style="color: #8B5CF6; font-size: 20px;"></i>
-                            <h6 style="font-weight: 700; color: #1a0a14; margin-top: 8px; font-size: 14px;">Average Response Time</h6>
-                            <p style="font-size: 13px; color: #888; margin: 0;">Live Chat: 2-3 Minutes</p>
-                            <p style="font-size: 13px; color: #888; margin: 0;">Email: 2-4 Hours</p>
+                            <i class="fas fa-trophy" style="color: #F59E0B; font-size: 20px;"></i>
+                            <h6 style="font-weight: 700; color: #1a0a14; margin-top: 8px; font-size: 14px;">Our Promise</h6>
+                            <p style="font-size: 13px; color: #888; margin: 0;">100% Response Rate</p>
+                            <p style="font-size: 13px; color: #888; margin: 0;">Friendly Professional Support</p>
+                            <p style="font-size: 13px; color: #888; margin: 0;">No Question Unanswered</p>
                         </div>
                     </div>
                 </div>
@@ -410,7 +584,8 @@
                     We'll Get Back to You <span style="color: #EC4899;">Quickly</span>
                 </h2>
                 <p style="color: #777; font-size: 16px; line-height: 1.8; margin-bottom: 20px;">
-                    Fill out the form below and our support team will respond to you within 24 hours. For urgent issues, please use our live chat feature.
+                    Fill out the form below and our support team will respond to you within 24 hours. 
+                    For urgent issues, please use WhatsApp or call us directly.
                 </p>
                 
                 <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -425,6 +600,10 @@
                     <div style="display: flex; align-items: center; gap: 12px; background: #FFF9FC; padding: 14px 18px; border-radius: 12px; border: 1px solid #FFE8F0;">
                         <i class="fas fa-check-circle" style="color: #10B981;"></i>
                         <span style="font-size: 14px; color: #555;">Friendly and professional support</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; background: #FFF9FC; padding: 14px 18px; border-radius: 12px; border: 1px solid #FFE8F0;">
+                        <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                        <span style="font-size: 14px; color: #555;">Available 24/7 via WhatsApp</span>
                     </div>
                 </div>
             </div>
@@ -466,7 +645,7 @@
 
                         <div>
                             <label class="form-label">Phone Number</label>
-                            <input type="tel" name="phone" class="form-input" placeholder="+92 300 1234567" value="{{ old('phone') }}">
+                            <input type="tel" name="phone" class="form-input" placeholder="+92 306 9734142" value="{{ old('phone') }}">
                         </div>
 
                         <div>
@@ -520,24 +699,25 @@
             <div class="col-lg-8">
                 @php
                     $faqs = [
-                        ['q'=>'How quickly will I get a response?', 'a'=>'Our average response time is 2-4 hours. For live chat, response is within 2-3 minutes. We prioritize urgent issues and resolve them as quickly as possible.'],
-                        ['q'=>'Can I get support 24/7?', 'a'=>'Yes! Our live chat and WhatsApp support are available 24/7. Email support is available 24/7, but responses may be slower outside business hours.'],
+                        ['q'=>'How quickly will I get a response?', 'a'=>'Our average response time is 2-4 hours. For WhatsApp, response is within 2 hours. We prioritize urgent issues and resolve them as quickly as possible.'],
+                        ['q'=>'Can I get support on weekends?', 'a'=>'Yes! Our WhatsApp and email support are available 24/7, including weekends. Phone support is available Monday to Saturday during business hours.'],
                         ['q'=>'How do I cancel my subscription?', 'a'=>'You can cancel your subscription anytime from your account settings. Go to Settings → Subscription → Cancel. No questions asked.'],
-                        ['q'=>'What if I have a technical issue with the platform?', 'a'=>'Please contact our support team immediately. We have technical experts available to help you resolve any platform-related issues.'],
-                        ['q'=>'How do I report a problem with a salon?', 'a'=>'If you have an issue with a salon, please contact us via live chat or email. We take all complaints seriously and will investigate within 24 hours.'],
+                        ['q'=>'What if I have a technical issue with the platform?', 'a'=>'Please contact our support team immediately via WhatsApp or email. We have technical experts available to help you resolve any platform-related issues.'],
+                        ['q'=>'How do I report a problem with a salon?', 'a'=>'If you have an issue with a salon, please contact us via email or WhatsApp. We take all complaints seriously and will investigate within 24 hours.'],
+                        ['q'=>'Do you offer refunds?', 'a'=>'Yes, we offer refunds as per our refund policy. Please contact our support team with your booking details and we will assist you accordingly.'],
                     ];
                 @endphp
                 @foreach($faqs as $faq)
-                    <div class="faq-item" style="background: #fff; border-radius: 16px; padding: 20px 24px; margin-bottom: 12px; border: 1px solid #FFE8F0; transition: all 0.3s ease; cursor: pointer;" onclick="toggleFaq(this)">
+                    <div class="faq-item" onclick="toggleFaq(this)">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             <h4 style="font-size: 16px; font-weight: 700; color: #1a0a14; margin: 0; display: flex; align-items: center; gap: 12px;">
                                 <span style="color: #EC4899; font-size: 18px;">❓</span> {{ $faq['q'] }}
                             </h4>
-                            <span class="faq-icon" style="color: #EC4899; transition: transform 0.4s ease;">
+                            <span class="faq-icon">
                                 <i class="fas fa-chevron-down"></i>
                             </span>
                         </div>
-                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease, padding 0.4s ease; opacity: 0; padding: 0 0 0 32px;">
+                        <div class="faq-answer">
                             <p style="font-size: 14px; color: #888; line-height: 1.8; margin: 0;">{{ $faq['a'] }}</p>
                         </div>
                     </div>
@@ -550,7 +730,7 @@
 <!-- ============================================================ -->
 <!-- CTA SECTION -->
 <!-- ============================================================ -->
-<section style="background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%); padding: 60px 0; text-align: center; position: relative; overflow: hidden;">
+<section class="cta-support">
     <div class="animate-float" style="position: absolute; top: -40%; right: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(244,114,182,0.06) 0%, transparent 70%); border-radius: 50%;"></div>
     <div class="animate-float-reverse" style="position: absolute; bottom: -30%; left: -15%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(244,114,182,0.04) 0%, transparent 70%); border-radius: 50%;"></div>
     
@@ -562,8 +742,8 @@
             <p style="color: rgba(255,255,255,0.7); font-size: 16px; max-width: 500px; margin: 0 auto 28px; line-height: 1.8;">
                 Our team is here for you. Don't hesitate to reach out — we're always happy to help.
             </p>
-            <a href="#" style="background: linear-gradient(135deg, #F472B6, #DB2777); color: #fff; padding: 16px 44px; border-radius: 50px; font-weight: 700; font-size: 15px; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 8px 35px rgba(219,39,119,0.35); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 14px 50px rgba(219,39,119,0.5)';" onmouseout="this.style.transform=''; this.style.boxShadow='0 8px 35px rgba(219,39,119,0.35)';">
-                <i class="fas fa-headset"></i> Contact Support
+            <a href="https://wa.me/923069734142" target="_blank" class="cta-btn">
+                <i class="fab fa-whatsapp"></i> Chat on WhatsApp
             </a>
         </div>
     </div>
@@ -574,37 +754,70 @@
     // FAQ TOGGLE
     // ============================================================
     function toggleFaq(element) {
-        const parent = element;
-        const answer = parent.querySelector('.faq-answer');
-        const icon = parent.querySelector('.faq-icon');
+        const isActive = element.classList.contains('active');
         
-        if (answer.style.maxHeight === '0px' || answer.style.maxHeight === '') {
-            document.querySelectorAll('.faq-answer').forEach(a => {
-                if (a !== answer) {
-                    a.style.maxHeight = '0px';
-                    a.style.opacity = '0';
-                    a.style.padding = '0 0 0 32px';
-                    const otherIcon = a.closest('.faq-item').querySelector('.faq-icon');
-                    if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
-                }
-            });
-            
-            answer.style.maxHeight = answer.scrollHeight + 20 + 'px';
-            answer.style.opacity = '1';
-            answer.style.padding = '12px 0 4px 32px';
-            icon.style.transform = 'rotate(180deg)';
-        } else {
-            answer.style.maxHeight = '0px';
-            answer.style.opacity = '0';
-            answer.style.padding = '0 0 0 32px';
-            icon.style.transform = 'rotate(0deg)';
+        // Close all FAQs
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Open clicked FAQ if it wasn't active
+        if (!isActive) {
+            element.classList.add('active');
         }
+    }
+
+    // ============================================================
+    // 24/7 SUPPORT INFO
+    // ============================================================
+    function show247Info() {
+        Swal.fire({
+            title: '🌟 24/7 Support',
+            html: `
+                <p style="font-size: 15px; color: #555; line-height: 1.8;">
+                    Our support team is available <strong>24/7</strong> through:
+                </p>
+                <div style="text-align: left; margin: 15px 0; padding: 0 20px;">
+                    <p style="font-size: 14px; color: #333; margin: 8px 0;">
+                        <i class="fab fa-whatsapp" style="color: #25D366; width: 24px;"></i> WhatsApp
+                    </p>
+                    <p style="font-size: 14px; color: #333; margin: 8px 0;">
+                        <i class="fas fa-envelope" style="color: #8B5CF6; width: 24px;"></i> Email
+                    </p>
+                    <p style="font-size: 14px; color: #333; margin: 8px 0;">
+                        <i class="fab fa-facebook-messenger" style="color: #0084FF; width: 24px;"></i> Messenger
+                    </p>
+                    <p style="font-size: 14px; color: #333; margin: 8px 0;">
+                        <i class="fab fa-instagram" style="color: #E4405F; width: 24px;"></i> Instagram DM
+                    </p>
+                </div>
+                <p style="font-size: 14px; color: #888; margin-top: 10px;">
+                    <i class="fas fa-clock" style="color: #F59E0B;"></i> Average response: 2-4 hours
+                </p>
+            `,
+            icon: 'info',
+            confirmButtonColor: '#EC4899',
+            confirmButtonText: 'Got it!',
+            background: '#fff',
+            backdrop: 'rgba(0,0,0,0.4)',
+            customClass: {
+                popup: 'animated fadeInUp'
+            }
+        });
     }
 
     // ============================================================
     // SCROLL REVEAL
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
+        // Load SweetAlert2
+        if (typeof Swal === 'undefined') {
+            var swalScript = document.createElement('script');
+            swalScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+            document.head.appendChild(swalScript);
+        }
+        
+        // Scroll Reveal
         const elements = document.querySelectorAll('.animate-slide-up, .animate-slide-left, .animate-slide-right, .animate-scale');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -617,5 +830,8 @@
         elements.forEach(el => observer.observe(el));
     });
 </script>
+
+<!-- Font Awesome - With all brand icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 @endsection

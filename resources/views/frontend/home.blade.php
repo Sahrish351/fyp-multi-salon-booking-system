@@ -960,16 +960,16 @@
             </div>
 
             <!-- Legal - 5 Links -->
-            <div class="col-lg-3 col-md-6" style="padding-top: 8px;">
-                <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Legal</h6>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-shield-alt me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Privacy Policy</a></li>
-                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-file-contract me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Terms &amp; Conditions</a></li>
-                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-gavel me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Terms of Use</a></li>
-                    <li class="mb-2"><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-cookie-bite me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Cookie Policy</a></li>
-                    <li class="mb-2"><a href="{{ route('about') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-info-circle me-2" style="font-size:0.6rem; color:#C9A96E;"></i>About Us</a></li>
-                </ul>
-            </div>
+<div class="col-lg-3 col-md-6" style="padding-top: 8px;">
+    <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Legal</h6>
+    <ul class="list-unstyled">
+        <li class="mb-2"><a href="{{ route('privacy') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-shield-alt me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Privacy Policy</a></li>
+        <li class="mb-2"><a href="{{ route('terms') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-file-contract me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Terms &amp; Conditions</a></li>
+        <li class="mb-2"><a href="{{ route('terms.of.use') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-gavel me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Terms of Use</a></li>
+        <li class="mb-2"><a href="{{ route('cookies') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-cookie-bite me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Cookie Policy</a></li>
+        <li class="mb-2"><a href="{{ route('about') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-info-circle me-2" style="font-size:0.6rem; color:#C9A96E;"></i>About Us</a></li>
+    </ul>
+</div>
 
         </div>
     </div>
