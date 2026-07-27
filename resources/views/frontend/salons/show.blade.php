@@ -1,16 +1,9 @@
+@extends('layouts.guest')
+@section('title', $salon->name . ' — Beauty Blush Salons')
+@section('description', $salon->description ?? 'Book appointments at '.$salon->name.' on Beauty Blush Salons.')
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $salon->name }} — Glamora</title>
-    <meta name="description" content="{{ $salon->description ?? 'Book appointments at '.$salon->name.' on Glamora.' }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
+@push('styles')
+<style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; -webkit-font-smoothing: antialiased; }
     a { text-decoration: none; color: inherit; }
@@ -245,7 +238,6 @@
     }
     @media(max-width:992px) { .content-grid { grid-template-columns: 1fr; } }
  
-    /* ✅ Tabs are now pure scroll-navigation, not show/hide controllers */
     .salon-tabs {
         display: flex;
         align-items: center;
@@ -277,8 +269,6 @@
     .salon-tab:hover { color: #1a1a1a; }
     .salon-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
  
-    /* ✅ Each section now has spacing + a scroll-margin so the sticky
-         tab bar doesn't cover the heading when we scroll to it */
     .page-section { margin-bottom: 56px; scroll-margin-top: 130px; }
     .page-section:last-child { margin-bottom: 0; }
     .page-section h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 16px; }
@@ -297,6 +287,9 @@
     }
     .svc-cat-btn.active, .svc-cat-btn:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
  
+    /* ============================================================ */
+    /* SERVICES - PINK HOVER EFFECTS */
+    /* ============================================================ */
     .service-list { display: flex; flex-direction: column; gap: 0; }
     .service-row {
         display: flex;
@@ -306,27 +299,59 @@
         border: 1px solid #e8e8e8;
         border-radius: 12px;
         margin-bottom: 8px;
-        transition: all .15s;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         cursor: pointer;
+        background: #fff;
     }
-    .service-row:hover { border-color: #1a1a1a; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-    .service-row .sr-left .sr-name { font-size: 0.92rem; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
-    .service-row .sr-left .sr-duration { font-size: 0.8rem; color: #888; margin-bottom: 6px; }
-    .service-row .sr-left .sr-price { font-size: 1rem; font-weight: 700; color: #1a1a1a; }
+    .service-row:hover {
+        border-color: #E91E8C !important;
+        box-shadow: 0 4px 20px rgba(233,30,140,0.08) !important;
+        transform: translateY(-2px);
+    }
+    .service-row .sr-left .sr-name {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+    .service-row .sr-left .sr-duration {
+        font-size: 0.8rem;
+        color: #888;
+        margin-bottom: 4px;
+    }
+    .service-row .sr-left .sr-price {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        transition: color 0.3s ease;
+    }
+    .service-row:hover .sr-price {
+        color: #E91E8C !important;
+    }
     .btn-book-service {
-        border: 1.5px solid #e0e0e0;
+        border: 2px solid #E91E8C !important;
         border-radius: 50px;
         padding: 8px 20px;
         font-size: 0.83rem;
         font-weight: 600;
-        color: #1a1a1a;
-        background: #fff;
+        color: #E91E8C !important;
+        background: #fff !important;
         cursor: pointer;
-        transition: all .15s;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         flex-shrink: 0;
         white-space: nowrap;
     }
-    .btn-book-service:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .btn-book-service:hover {
+        background: #E91E8C !important;
+        color: #fff !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(233,30,140,0.3) !important;
+    }
+    .service-row:hover .btn-book-service {
+        background: #E91E8C !important;
+        color: #fff !important;
+        box-shadow: 0 4px 20px rgba(233,30,140,0.25) !important;
+    }
  
     .team-grid {
         display: grid;
@@ -378,7 +403,16 @@
     .big-rating .br-stars { color: #ffc107; font-size: 1.5rem; }
     .big-rating .br-count { font-size: 0.85rem; color: #888; }
  
-    .about-section p { font-size: 0.9rem; color: #555; line-height: 1.8; margin-bottom: 24px; }
+    /* ============================================================ */
+    /* ABOUT SECTION - FIXED LAYOUT */
+    /* ============================================================ */
+    .about-section p { 
+        font-size: 0.9rem; 
+        color: #555; 
+        line-height: 1.8; 
+        margin-bottom: 24px;
+        font-family: 'Inter', sans-serif;
+    }
     .map-placeholder {
         width: 100%;
         height: 280px;
@@ -400,24 +434,112 @@
         gap: 8px;
         cursor: pointer;
     }
-    .address-line { font-size: 0.88rem; color: #555; margin-bottom: 24px; }
+    .address-line { 
+        font-size: 0.88rem; 
+        color: #555; 
+        margin-bottom: 24px;
+        font-family: 'Inter', sans-serif;
+    }
     .address-line a { color: #E91E8C; font-weight: 600; }
-    .hours-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 24px; }
-    @media(max-width:576px) { .hours-grid { grid-template-columns: 1fr; } }
-    .hours-table h4 { font-size: 1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; }
-    .hour-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 0.85rem; }
-    .hour-row .day { color: #555; display: flex; align-items: center; gap: 8px; }
-    .hour-row .day .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .hour-row .day .dot.open { background: #22c55e; }
-    .hour-row .day .dot.closed { background: #ccc; }
-    .hour-row .time { color: #1a1a1a; font-weight: 500; }
-    .hour-row .time.closed { color: #888; }
-    .hour-row.today .day { font-weight: 700; color: #1a1a1a; }
-    .hour-row.today .time { font-weight: 700; }
-    .add-info h4 { font-size: 1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; }
-    .add-info-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #555; margin-bottom: 10px; }
-    .add-info-item i { color: #7c3aed; width: 16px; }
- 
+    .address-line a:hover { text-decoration: underline; }
+
+    /* ============================================================ */
+/* HOURS & INFO GRID - FIXED SPACING */
+/* ============================================================ */
+.hours-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 24px;
+}
+@media(max-width:576px) {
+    .hours-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+.hours-table h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0e8ed;
+    font-family: 'Inter', sans-serif;
+}
+
+.hour-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+}
+.hour-row:last-child {
+    border-bottom: none;
+}
+.hour-row .day {
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.hour-row .day .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.hour-row .day .dot.open { background: #22c55e; }
+.hour-row .day .dot.closed { background: #ccc; }
+.hour-row .time {
+    color: #1a1a1a;
+    font-weight: 500;
+}
+.hour-row .time.closed { color: #888; }
+.hour-row.today .day {
+    font-weight: 700;
+    color: #E91E8C;
+}
+.hour-row.today .time {
+    font-weight: 700;
+    color: #E91E8C;
+}
+
+.add-info {
+    padding-left: 0;
+}
+.add-info h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0e8ed;
+    font-family: 'Inter', sans-serif;
+}
+.add-info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #555;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-family: 'Inter', sans-serif;
+}
+.add-info-item:last-child {
+    border-bottom: none;
+}
+.add-info-item i {
+    color: #E91E8C;
+    width: 18px;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
     .nearby-section { margin-top: 8px; }
     .nearby-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     @media(max-width:768px) { .nearby-grid { grid-template-columns: 1fr 1fr; } }
@@ -495,11 +617,6 @@
     }
     .btn-book-now:hover { background: #E91E8C; transform: translateY(-1px); }
  
-    /* ✅ FIX: Open/Closed status row — was overlapping the Book now
-       button because the dash + hours text could wrap onto a second
-       line with no extra spacing. Now uses flex-wrap with a proper
-       line-height and bottom margin so it never visually touches the
-       button above it, however many lines it wraps to. */
     .bs-info-row {
         display: flex;
         align-items: flex-start;
@@ -529,12 +646,52 @@
     .photo-modal-inner { max-width: 90vw; max-height: 90vh; position: relative; }
     .photo-modal-inner img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 12px; }
     .photo-modal-close { position: absolute; top: -40px; right: 0; color: #fff; font-size: 1.4rem; cursor: pointer; background: none; border: none; }
-    </style>
-</head>
-<body>
- 
+
+    @media (max-width: 768px) {
+        .g-nav { padding: 0 16px; height: 56px; }
+        .g-nav .brand { font-size: 1.1rem; }
+        .btn-nav-ghost, .btn-nav-outline { font-size: 0.75rem; padding: 6px 12px; }
+        .btn-nav-menu { font-size: 0.75rem; padding: 6px 10px; }
+        .breadcrumb-bar { padding: 10px 16px; font-size: 0.7rem; }
+        .detail-wrap { padding: 0 12px; }
+        .content-grid { padding: 20px 0 40px; gap: 30px; }
+        .salon-tabs { top: 56px; }
+        .salon-tab { padding: 10px 14px; font-size: 0.78rem; }
+        .photo-grid { height: auto; }
+        .photo-grid .main-photo { grid-row: auto; height: 280px; }
+        .photo-grid .side-photo { height: 140px; }
+        .booking-sidebar { position: relative; top: 0; }
+        .nearby-grid { grid-template-columns: 1fr 1fr; }
+        .other-biz-grid { grid-template-columns: repeat(3,1fr); }
+        .hours-grid { grid-template-columns: 1fr; gap: 20px; }
+        .map-placeholder { height: 200px; }
+        .service-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .service-row .sr-left { width: 100%; }
+        .btn-book-service { width: 100%; text-align: center; }
+    }
+    @media (max-width: 576px) {
+        .salon-title { font-size: 1.3rem; }
+        .salon-meta-row { font-size: 0.75rem; gap: 6px; }
+        .photo-grid .main-photo { height: 200px; }
+        .photo-grid .side-photo { height: 100px; }
+        .team-grid { grid-template-columns: repeat(2, 1fr); }
+        .nearby-grid { grid-template-columns: 1fr; }
+        .other-biz-grid { grid-template-columns: repeat(2,1fr); }
+        .g-nav .brand { font-size: 0.95rem; }
+        .btn-nav-ghost, .btn-nav-outline { font-size: 0.65rem; padding: 4px 10px; }
+        .btn-nav-menu { font-size: 0.65rem; padding: 4px 8px; }
+        .booking-sidebar { padding: 16px; }
+        .booking-sidebar .bs-name { font-size: 1.1rem; }
+        .bs-info-row .bs-info-text { font-size: 0.78rem; }
+        .breadcrumb-bar { flex-wrap: wrap; gap: 4px; }
+    }
+</style>
+@endpush
+
+@section('content')
+
 <nav class="g-nav">
-    <a href="{{ route('home') }}" class="brand" style="flex-shrink:0;">glamora</a>
+    <a href="{{ route('home') }}" class="brand" style="flex-shrink:0;">Beauty Blush Salons</a>
  
     <form action="{{ route('salons.index') }}" method="GET" class="nav-search-pill d-none d-md-flex">
         <i class="fas fa-search ns-icon" style="color:#999;"></i>
@@ -613,16 +770,11 @@
                         $closeTime = $salon->close_time ? \Carbon\Carbon::parse($salon->close_time) : null;
                         $isOpen = $openTime && $closeTime && $now->format('H:i') >= $openTime->format('H:i') && $now->format('H:i') <= $closeTime->format('H:i');
  
-                        // ✅ Build a precise Google Maps URL. If lat/lng exist on the
-                        // salon, use them directly (most accurate — pinpoints the
-                        // exact spot). Otherwise fall back to a clean text search
-                        // query, avoiding duplicate city names in the string.
                         $hasCoords = !empty($salon->latitude) && !empty($salon->longitude);
                         if ($hasCoords) {
                             $mapsUrl = "https://www.google.com/maps/search/?api=1&query={$salon->latitude},{$salon->longitude}";
                         } else {
                             $addressForMap = trim($salon->address);
-                            // avoid "Lahore, Lahore" style duplication if address already ends with the city name
                             if (!str_ends_with(strtolower($addressForMap), strtolower($salon->city))) {
                                 $addressForMap .= ', ' . $salon->city;
                             }
@@ -667,18 +819,18 @@
  
     {{-- PHOTO GRID --}}
     <div class="photo-grid" id="photoGrid">
-        <div class="main-photo" onclick="openPhoto('{{ $salon->cover_url }}')">
-            <img src="{{ $salon->cover_url }}" alt="{{ $salon->name }}"
+        <div class="main-photo" onclick="openPhoto('{{ $salon->cover_image }}')">
+            <img src="{{ $salon->cover_image }}" alt="{{ $salon->name }}"
                  onerror="this.src='https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80'">
         </div>
         @php $galleryImages = $salon->gallery->take(2); @endphp
-        <div class="side-photo" onclick="openPhoto('{{ $galleryImages->first()?->image_url ?? $salon->logo_url }}')">
-            <img src="{{ $galleryImages->first()?->image_url ?? 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=70' }}"
+        <div class="side-photo" onclick="openPhoto('{{ $galleryImages->first()?->image_url ?? $salon->cover_image }}')">
+            <img src="{{ $galleryImages->first()?->image_url ?? $salon->cover_image }}"
                  alt="{{ $salon->name }}"
                  onerror="this.src='https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=70'">
         </div>
-        <div class="side-photo last" onclick="openPhoto('{{ $galleryImages->skip(1)->first()?->image_url ?? $salon->logo_url }}')">
-            <img src="{{ $galleryImages->skip(1)->first()?->image_url ?? 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=70' }}"
+        <div class="side-photo last" onclick="openPhoto('{{ $galleryImages->skip(1)->first()?->image_url ?? $salon->cover_image }}')">
+            <img src="{{ $galleryImages->skip(1)->first()?->image_url ?? $salon->cover_image }}"
                  alt="{{ $salon->name }}"
                  onerror="this.src='https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=70'">
             <a href="{{ route('salons.gallery', $salon->slug) }}" class="see-all-photos" style="text-decoration:none; color:#1a1a1a;" onclick="event.stopPropagation()">
@@ -690,10 +842,8 @@
     {{-- CONTENT GRID --}}
     <div class="content-grid">
  
-        {{-- LEFT: Tabs (scroll-nav only) + all sections stacked --}}
+        {{-- LEFT --}}
         <div>
-            {{-- ✅ TABS now just scroll to the matching section.
-                 Nothing is hidden — every section stays on the page. --}}
             <div class="salon-tabs" id="salonTabs">
                 <button class="salon-tab active" data-section="services" onclick="scrollToSection('services')">Services</button>
                 <button class="salon-tab" data-section="team" onclick="scrollToSection('team')">Team</button>
@@ -702,7 +852,7 @@
                 <button class="salon-tab" data-section="features" onclick="scrollToSection('features')">Features</button>
             </div>
  
-            {{-- ===== SERVICES SECTION ===== --}}
+            {{-- SERVICES --}}
             <div id="section-services" class="page-section">
                 <h3>Services</h3>
  
@@ -732,7 +882,7 @@
                 </div>
             </div>
  
-            {{-- ===== TEAM SECTION ===== --}}
+            {{-- TEAM --}}
             <div id="section-team" class="page-section">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h3 style="margin-bottom:0;">Team</h3>
@@ -761,7 +911,7 @@
                 </div>
             </div>
  
-            {{-- ===== REVIEWS SECTION ===== --}}
+            {{-- REVIEWS --}}
             <div id="section-reviews" class="page-section">
                 <h3>Reviews</h3>
                 <div class="big-rating">
@@ -808,37 +958,39 @@
                 @endforelse
             </div>
  
-            {{-- ===== ABOUT SECTION ===== --}}
+            {{-- ABOUT --}}
             <div id="section-about" class="page-section">
                 <div class="about-section">
                     <h3>About</h3>
                     <p>{{ $salon->description ?? 'Welcome to '.$salon->name.'. We are dedicated to providing top-quality beauty services in '.$salon->city.'. Our experienced team of stylists and beauty experts are here to give you the best experience possible. Book your appointment today!' }}</p>
  
                     <div class="map-placeholder">
-    @if(config('services.google_maps.key'))
-        <iframe
-            width="100%"
-            height="100%"
-            style="border:0;border-radius:16px;"
-            loading="lazy"
-            allowfullscreen
-            referrerpolicy="no-referrer-when-downgrade"
-            src="https://www.google.com/maps/embed/v1/place?key={{ config('services.google_maps.key') }}&q={{ urlencode($salon->address . ', ' . $salon->city . ', Pakistan') }}&zoom=15">
-        </iframe>
-    @else
-        <div class="map-fallback" onclick="window.open('{{ $mapsUrl }}','_blank')">
-            <i class="fas fa-map-marker-alt" style="font-size:2rem;color:#7c3aed;"></i>
-            <div style="font-size:0.85rem;color:#555;font-weight:600;">{{ $salon->name }}</div>
-            <div style="font-size:0.78rem;color:#888;">{{ $salon->address }}, {{ $salon->city }}</div>
-        </div>
-    @endif
-</div>
+                        @if(config('services.google_maps.key'))
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                style="border:0;border-radius:16px;"
+                                loading="lazy"
+                                allowfullscreen
+                                referrerpolicy="no-referrer-when-downgrade"
+                                src="https://www.google.com/maps/embed/v1/place?key={{ config('services.google_maps.key') }}&q={{ urlencode($salon->address . ', ' . $salon->city . ', Pakistan') }}&zoom=15">
+                            </iframe>
+                        @else
+                            <div class="map-fallback" onclick="window.open('{{ $mapsUrl }}','_blank')">
+                                <i class="fas fa-map-marker-alt" style="font-size:2rem;color:#7c3aed;"></i>
+                                <div style="font-size:0.85rem;color:#555;font-weight:600;">{{ $salon->name }}</div>
+                                <div style="font-size:0.78rem;color:#888;">{{ $salon->address }}, {{ $salon->city }}</div>
+                            </div>
+                        @endif
+                    </div>
                     <p class="address-line">
                         {{ $salon->address }}, {{ $salon->city }}, Pakistan
                         <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="directions-link"> Get directions</a>
                     </p>
  
+                    {{-- HOURS & INFO GRID --}}
                     <div class="hours-grid">
+                        {{-- LEFT: Opening Times --}}
                         <div class="hours-table">
                             <h4>Opening times</h4>
                             @php
@@ -864,7 +1016,8 @@
                             </div>
                             @endforeach
                         </div>
- 
+
+                        {{-- RIGHT: Additional Information --}}
                         <div class="add-info">
                             <h4>Additional information</h4>
                             <div class="add-info-item">
@@ -901,7 +1054,7 @@
                             @foreach($similarSalons->take(3) as $nearby)
                             <a href="{{ route('salons.show', $nearby->slug) }}" class="nearby-card">
                                 <div class="nc-img">
-                                    <img src="{{ $nearby->cover_url }}" alt="{{ $nearby->name }}"
+                                    <img src="{{ $nearby->cover_image }}" alt="{{ $nearby->name }}"
                                          onerror="this.src='https://images.unsplash.com/photo-1560066984-138dadb4c035?w=300&q=60'">
                                     <button class="nc-fav" onclick="event.preventDefault()"><i class="fas fa-heart"></i></button>
                                 </div>
@@ -932,7 +1085,7 @@
                 </div>
             </div>
  
-            {{-- ===== FEATURES SECTION ===== --}}
+            {{-- FEATURES --}}
             <div id="section-features" class="page-section">
                 <h3>Salon Features</h3>
  
@@ -960,7 +1113,7 @@
  
         </div>{{-- end left --}}
  
-        {{-- RIGHT: Sticky Booking Sidebar --}}
+        {{-- RIGHT --}}
         <div class="d-none d-lg-block">
             <div class="booking-sidebar">
                 <div class="bs-name">{{ $salon->name }}</div>
@@ -1029,7 +1182,7 @@
  
     </div>{{-- end content-grid --}}
  
-    {{-- Mobile Book Now button --}}
+    {{-- Mobile Book Now --}}
     <div class="d-lg-none" style="position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid #f0f0f0;z-index:500;">
         <a href="{{ route('booking.step1', $salon->id) }}" style="display:block;text-align:center;background:#1a1a1a;color:#fff;border-radius:12px;padding:14px;font-size:1rem;font-weight:700;">
             Book now
@@ -1048,11 +1201,6 @@
  
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ========================
-// ✅ SCROLL-TO-SECTION (replaces old show/hide tab switching)
-// All sections stay visible; clicking a tab just scrolls smoothly
-// to that section's heading, and highlights the matching tab.
-// ========================
 const sectionIds = ['services','team','reviews','about','features'];
  
 function scrollToSection(section) {
@@ -1078,9 +1226,6 @@ function setActiveTabFromScroll() {
  
 window.addEventListener('scroll', setActiveTabFromScroll, { passive: true });
  
-// ========================
-// SERVICE CATEGORY FILTER (unchanged — filters within the Services section only)
-// ========================
 function filterServiceCat(cat, btn) {
     document.querySelectorAll('.svc-cat-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -1089,17 +1234,11 @@ function filterServiceCat(cat, btn) {
     });
 }
  
-// ========================
-// HOURS TOGGLE
-// ========================
 function toggleHours() {
     const panel = document.getElementById('bsHoursPanel');
     panel.classList.toggle('show');
 }
  
-// ========================
-// PHOTO MODAL
-// ========================
 function openPhoto(url) {
     document.getElementById('modalImg').src = url;
     document.getElementById('photoModal').classList.add('show');
@@ -1110,9 +1249,6 @@ function closePhoto() {
     document.body.style.overflow = '';
 }
  
-// ========================
-// MOBILE MENU
-// ========================
 function toggleMobileMenu() {
     const menu = document.getElementById('mobileMenu');
     menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
@@ -1125,5 +1261,5 @@ document.addEventListener('click', e => {
     }
 });
 </script>
-</body>
-</html>
+
+@endsection

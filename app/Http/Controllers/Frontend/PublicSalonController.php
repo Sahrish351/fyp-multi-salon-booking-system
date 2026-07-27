@@ -26,7 +26,10 @@ class PublicSalonController extends Controller
             ->paginate(12);
 
         $categories = Category::where('is_active', true)->get();
-        $cities = Salon::where('status', 'approved')->distinct('city')->pluck('city');
+        $cities = Salon::where('status', 'approved')
+            ->whereNotNull('city')
+            ->distinct('city')
+            ->pluck('city');
 
         return view('frontend.salons.index', compact('salons', 'categories', 'cities'));
     }
@@ -49,6 +52,20 @@ class PublicSalonController extends Controller
                 $q->where('is_active', true);
             },
         ])->where('slug', $slug)->where('status', 'approved')->firstOrFail();
+
+        // ✅ FIX: total_reviews properly calculate karein
+        $totalReviews = Review::where('salon_id', $salon->id)
+            ->where('is_approved', true)
+            ->count();
+
+        // ✅ FIX: rating calculate karein
+        $ratingAvg = Review::where('salon_id', $salon->id)
+            ->where('is_approved', true)
+            ->avg('rating') ?? 0;
+
+        // ✅ FIX: Dynamically assign to salon object
+        $salon->total_reviews = $totalReviews;
+        $salon->rating = round($ratingAvg, 1) ?: 4.5;
 
         $isFavorite = Auth::check() 
             ? Auth::user()->favorites()->where('salon_id', $salon->id)->exists()
@@ -81,7 +98,6 @@ class PublicSalonController extends Controller
         ));
     }
 
-    // ✅ YEH METHOD ADD KARO (Gallery Page ke liye)
     public function gallery($slug)
     {
         $salon = Salon::with(['gallery' => function($q) {

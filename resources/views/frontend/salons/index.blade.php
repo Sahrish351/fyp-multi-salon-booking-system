@@ -1,4 +1,3 @@
-
 @extends('layouts.guest')
 @section('title', 'Find Best Salons - Glamora')
  
@@ -198,8 +197,7 @@
  
 <div class="container">
  
-    {{-- ✅ Filter form — submits to the same route with GET params,
-         which PublicSalonController@index already reads via request() --}}
+    {{-- Filter form --}}
     <div class="filter-card">
         <form method="GET" action="{{ route('salons.index') }}" class="row g-3">
             <div class="col-md-4">
@@ -233,12 +231,12 @@
         <i class="fas fa-store me-1"></i> <strong>{{ $salons->total() }}</strong> premium salon{{ $salons->total() === 1 ? '' : 's' }} found
     </div>
  
-    {{-- ✅ Real database-driven salon cards — replaces the old hardcoded list --}}
+    {{-- ✅ FIXED: cover_url se cover_image kiya gaya --}}
     <div class="salons-grid">
         @forelse($salons as $salon)
         <div class="salon-card">
             <div class="salon-image">
-                <img src="{{ $salon->cover_url ?? 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500' }}"
+                <img src="{{ $salon->cover_image ?? 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500' }}"
                      alt="{{ $salon->name }}"
                      onerror="this.src='https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500'">
                 <div class="salon-badge"><i class="fas fa-map-marker-alt me-1"></i>{{ $salon->city }}</div>
@@ -252,8 +250,6 @@
                     <span style="color:#aaa;font-weight:400;">({{ $salon->reviews->count() }} reviews)</span>
                 </div>
                 <p class="salon-desc">{{ Str::limit($salon->description ?? 'Premium salon offering professional beauty services with experienced staff.', 110) }}</p>
-                {{-- ✅ THIS is the link that opens the real detail page —
-                     uses the salon's actual slug from the database --}}
                 <a href="{{ route('salons.show', $salon->slug) }}" class="btn-view">
                     View Details →
                 </a>
