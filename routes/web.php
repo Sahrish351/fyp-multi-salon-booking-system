@@ -100,6 +100,8 @@ Route::get('/salons/search', [PublicSalonController::class, 'search'])->name('sa
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
 Route::get('/salons/{slug}/gallery', [PublicSalonController::class, 'gallery'])->name('salons.gallery');
 
+Route::get('/stylist/profile/{salonSlug}/{stylistId}', [App\Http\Controllers\Frontend\StylistController::class, 'profile'])->name('stylist.profile');
+
 Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
 Route::get('/services/category/{slug}', [PublicServiceController::class, 'byCategory'])->name('services.by-category');
 Route::get('/salons/{salonSlug}/services/{serviceId}', [PublicServiceController::class, 'show'])->name('services.show');

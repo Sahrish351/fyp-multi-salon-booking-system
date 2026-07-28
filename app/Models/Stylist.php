@@ -26,6 +26,12 @@ class Stylist extends Model
     public function appointments() { return $this->hasMany(Appointment::class); }
     public function waitlists() { return $this->hasMany(Waitlist::class); }
 
+    // ✅ YEH RELATION ADD KAREIN (Stylist ki reviews)
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'stylist_id');
+    }
+
     public function getAvatarUrlAttribute(): string
     {
         return $this->avatar ? asset('storage/' . $this->avatar) : asset('images/default-avatar.jpg');
