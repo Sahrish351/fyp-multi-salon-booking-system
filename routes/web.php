@@ -95,13 +95,28 @@ Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 Route::get('/terms-of-use', [PageController::class, 'termsOfUse'])->name('terms.of.use');
 Route::get('/cookie-policy', [PageController::class, 'cookies'])->name('cookies');
 
+// ============================================================
+// SALON ROUTES
+// ============================================================
 Route::get('/salons', [PublicSalonController::class, 'index'])->name('salons.index');
 Route::get('/salons/search', [PublicSalonController::class, 'search'])->name('salons.search');
 Route::get('/salons/{slug}', [PublicSalonController::class, 'show'])->name('salons.show');
 Route::get('/salons/{slug}/gallery', [PublicSalonController::class, 'gallery'])->name('salons.gallery');
 
+// ✅ ADD THIS ROUTE (Team page)
+Route::get('/salons/{slug}/team', [PublicSalonController::class, 'team'])->name('salons.team');
+
+// ✅ ADD THIS ROUTE (Reviews page)
+Route::get('/salons/{slug}/reviews', [PublicSalonController::class, 'reviews'])->name('salons.reviews');
+
+// ============================================================
+// STYLIST ROUTES
+// ============================================================
 Route::get('/stylist/profile/{salonSlug}/{stylistId}', [App\Http\Controllers\Frontend\StylistController::class, 'profile'])->name('stylist.profile');
 
+// ============================================================
+// SERVICE ROUTES
+// ============================================================
 Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
 Route::get('/services/category/{slug}', [PublicServiceController::class, 'byCategory'])->name('services.by-category');
 Route::get('/salons/{salonSlug}/services/{serviceId}', [PublicServiceController::class, 'show'])->name('services.show');
@@ -109,10 +124,20 @@ Route::get('/salons/{salonSlug}/services/{serviceId}', [PublicServiceController:
 Route::get('/stylists', fn() => redirect()->route('salons.index'))->name('stylists.index');
 Route::get('/gallery', fn() => redirect()->route('salons.index'))->name('gallery.index');
 
+
 // ============================================================
 // BOOKING ROUTES
 // ============================================================
 Route::prefix('booking')->name('booking.')->middleware('auth')->group(function () {
+    
+    Route::get('/create/{salonSlug}/{serviceId?}', function($salonSlug, $serviceId = null) {
+        $salon = \App\Models\Salon::where('slug', $salonSlug)->firstOrFail();
+        if ($serviceId) {
+            return redirect()->route('booking.step1', ['salon_id' => $salon->id]) . '?service=' . $serviceId;
+        }
+        return redirect()->route('booking.step1', ['salon_id' => $salon->id]);
+    })->name('create');
+
     Route::get('/services/{salon_id}', [BookingController::class, 'step1Services'])->name('step1');
     Route::post('/services/{salon_id}', [BookingController::class, 'postStep1Services'])->name('step1.post');
     Route::get('/stylist/{salon_id}', [BookingController::class, 'step2Stylist'])->name('step2');
