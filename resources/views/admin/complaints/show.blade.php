@@ -1,399 +1,573 @@
 @extends('layouts.admin')
-@section('title', 'Complaint Details - Glamora Admin')
+@section('title', 'Complaint #' . $complaint->id)
 
-@push('styles')
+@section('content')
+
 <style>
     :root {
-        --pk: #E91E8C;
-        --pk-dark: #c2185b;
+        --pk: #c2185b;
         --pk-light: #fce4ec;
         --pk-bg: #fff0f7;
     }
 
-    .back-link {
+    /* ── Page Header ── */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin: 0;
+    }
+    .page-header h1 i {
+        color: var(--pk);
+        margin-right: 10px;
+    }
+    .page-header p {
+        color: #999;
+        font-size: 0.85rem;
+        margin: 2px 0 0 0;
+    }
+
+    .btn-back {
+        background: #fff;
+        border: 1px solid #e5e0e5;
+        color: #666;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 10px 22px;
+        border-radius: 10px;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 18px;
-        border-radius: 50px;
-        border: 1.5px solid #e5e0e5;
-        color: #666;
-        font-size: 0.82rem;
-        font-weight: 600;
         text-decoration: none;
         transition: all 0.2s;
-        margin-bottom: 20px;
     }
-    .back-link:hover {
+    .btn-back:hover {
         border-color: var(--pk);
         color: var(--pk);
         background: var(--pk-bg);
     }
 
-    .detail-card {
+    /* ── Cards ── */
+    .panel-card {
         background: #fff;
         border: 1px solid #f0edf0;
-        border-radius: 18px;
-        overflow: hidden;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
         margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
     }
-    .detail-card .card-head {
-        padding: 18px 24px;
-        border-bottom: 1px solid #f5f0f5;
+    .panel-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #1a1a1a;
+        margin-bottom: 16px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 12px;
+        gap: 8px;
     }
-    .detail-card .card-title {
+    .panel-title i {
+        color: var(--pk);
+    }
+
+    /* ── Status Badge ── */
+    .badge-status {
+        display: inline-block;
+        padding: 5px 16px;
+        border-radius: 50px;
+        font-size: 0.7rem;
         font-weight: 700;
-        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-progress { background: #dbeafe; color: #1e40af; }
+    .badge-resolved { background: #d1fae5; color: #065f46; }
+    .badge-closed { background: #e5e7eb; color: #4b5563; }
+    .badge-escalated { background: #fee2e2; color: #991b1b; }
+    .badge-rejected { background: #f3f4f6; color: #6b7280; }
+
+    /* ── Info Grid ── */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .info-item {
+        background: #f9f8fa;
+        padding: 12px 16px;
+        border-radius: 10px;
+    }
+    .info-item .label {
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        color: #aaa;
+    }
+    .info-item .value {
+        font-size: 0.9rem;
+        font-weight: 600;
         color: #1a1a1a;
+        margin-top: 2px;
+    }
+
+    /* ── Description Box ── */
+    .desc-box {
+        background: #fcf6f9;
+        border-radius: 12px;
+        padding: 16px 20px;
+        border-left: 4px solid var(--pk);
+        margin-top: 4px;
+    }
+    .desc-box p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #333;
+        line-height: 1.8;
+    }
+
+    /* ── Reply Bubbles ── */
+    .reply-bubble {
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+    .reply-bubble.client {
+        background: #f0f7ff;
+        border-left: 4px solid #3b82f6;
+    }
+    .reply-bubble.owner {
+        background: #fdf0f5;
+        border-left: 4px solid var(--pk);
+    }
+    .reply-bubble.admin {
+        background: #fef3c7;
+        border-left: 4px solid #f59e0b;
+    }
+    .reply-bubble .reply-header {
         display: flex;
         align-items: center;
         gap: 10px;
-    }
-    .detail-card .card-title i {
-        color: var(--pk);
-    }
-    .detail-card .card-body {
-        padding: 24px;
-    }
-
-    .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-    .info-item .label {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #aaa;
-        font-weight: 600;
-        margin-bottom: 4px;
-    }
-    .info-item .value {
-        font-size: 0.92rem;
-        font-weight: 600;
-        color: #1a1a1a;
-    }
-    .info-item .value .sub {
-        font-size: 0.78rem;
-        font-weight: 400;
-        color: #999;
-    }
-
-    .description-box {
-        background: #faf8fa;
-        border-radius: 12px;
-        padding: 16px 20px;
-        border-left: 3px solid var(--pk);
-        margin-bottom: 20px;
-    }
-    .description-box .label {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #aaa;
-        font-weight: 600;
+        flex-wrap: wrap;
         margin-bottom: 6px;
     }
-    .description-box p {
-        margin: 0;
+    .reply-bubble .reply-name {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #1a1a1a;
+    }
+    .reply-bubble .reply-role {
+        font-size: 0.6rem;
+        font-weight: 700;
+        padding: 2px 12px;
+        border-radius: 50px;
+        text-transform: uppercase;
+    }
+    .reply-bubble .reply-role.client { background: #dbeafe; color: #1e40af; }
+    .reply-bubble .reply-role.owner { background: #fce4ec; color: var(--pk); }
+    .reply-bubble .reply-role.admin { background: #fef3c7; color: #92400e; }
+    .reply-bubble .reply-time {
+        font-size: 0.7rem;
+        color: #999;
+    }
+    .reply-bubble .reply-text {
         font-size: 0.88rem;
-        color: #444;
+        color: #333;
         line-height: 1.7;
+        margin: 0;
     }
 
-    .reply-item {
+    /* ── Action Buttons ── */
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 22px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        text-decoration: none;
+    }
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+    .btn-action.btn-respond {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
+    }
+    .btn-action.btn-respond:hover {
+        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+    }
+    .btn-action.btn-close {
+        background: #ef4444;
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+    }
+    .btn-action.btn-close:hover {
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .timeline li {
         display: flex;
-        gap: 14px;
-        padding: 14px 0;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 0;
         border-bottom: 1px solid #f5f0f5;
     }
-    .reply-item:last-child {
+    .timeline li:last-child {
         border-bottom: none;
     }
-    .reply-avatar {
-        width: 38px;
-        height: 38px;
+    .timeline .tl-icon {
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--pk), var(--pk-dark));
-        color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
-        font-size: 0.75rem;
+        font-size: 12px;
         flex-shrink: 0;
+        margin-top: 2px;
     }
-    .reply-avatar.admin {
-        background: linear-gradient(135deg, #1a1a2e, #0f3460);
-    }
-    .reply-content {
-        flex: 1;
-    }
-    .reply-content .meta {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 4px;
-    }
-    .reply-content .meta .name {
-        font-weight: 700;
-        font-size: 0.85rem;
-        color: #1a1a1a;
-    }
-    .reply-content .meta .tag {
-        font-size: 0.65rem;
-        font-weight: 700;
-        padding: 2px 10px;
-        border-radius: 50px;
-        background: var(--pk-bg);
-        color: var(--pk);
-    }
-    .reply-content .meta .tag.admin-tag {
-        background: rgba(26,26,46,0.08);
-        color: #1a1a2e;
-    }
-    .reply-content .meta .time {
-        font-size: 0.72rem;
-        color: #aaa;
-    }
-    .reply-content .message {
-        font-size: 0.86rem;
-        color: #444;
-        line-height: 1.6;
-        margin: 0;
-    }
+    .timeline .tl-icon.success { background: #d1fae5; color: #065f46; }
+    .timeline .tl-icon.info { background: #dbeafe; color: #1e40af; }
+    .timeline .tl-icon.danger { background: #fee2e2; color: #991b1b; }
+    .timeline .tl-icon.warning { background: #fef3c7; color: #92400e; }
+    .timeline .tl-icon.secondary { background: #e5e7eb; color: #4b5563; }
+    .timeline .tl-text { flex: 1; }
+    .timeline .tl-text strong { font-size: 0.85rem; color: #1a1a1a; display: block; }
+    .timeline .tl-text span { font-size: 0.7rem; color: #999; }
 
-    .reply-form textarea {
-        width: 100%;
-        border: 1.5px solid #e5e0e5;
+    /* ── Alert Boxes ── */
+    .alert-box {
+        padding: 14px 18px;
         border-radius: 12px;
-        padding: 12px 16px;
+        font-weight: 600;
         font-size: 0.85rem;
-        font-family: 'Inter', sans-serif;
-        resize: vertical;
-        min-height: 80px;
-        transition: border 0.2s;
-        outline: none;
     }
-    .reply-form textarea:focus {
-        border-color: var(--pk);
-        box-shadow: 0 0 0 3px rgba(233,30,140,0.06);
-    }
-    .reply-form .btn-send {
-        background: var(--pk);
-        color: #fff;
-        border: none;
-        padding: 10px 28px;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 0.82rem;
-        cursor: pointer;
-        transition: background 0.2s;
-        margin-top: 10px;
-    }
-    .reply-form .btn-send:hover {
-        background: var(--pk-dark);
-    }
+    .alert-box.success { background: #d1fae5; color: #065f46; border-left: 4px solid #22c55e; }
+    .alert-box.danger { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+    .alert-box.warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
 
-    .btn-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 20px;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 0.78rem;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-    .btn-status.resolve {
-        background: #d1fae5;
-        color: #059669;
-    }
-    .btn-status.resolve:hover {
-        background: #059669;
-        color: #fff;
-    }
-    .btn-status.delete {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-    .btn-status.delete:hover {
-        background: #dc2626;
-        color: #fff;
-    }
-    .btn-status.status-update {
-        background: var(--pk-bg);
-        color: var(--pk);
-        border: 1.5px solid var(--pk-light);
-    }
-    .btn-status.status-update:hover {
-        background: var(--pk);
-        color: #fff;
-    }
-
-    .status-select {
-        padding: 8px 14px;
+    /* ── Form ── */
+    .form-control {
         border: 1.5px solid #e5e0e5;
         border-radius: 10px;
-        font-size: 0.82rem;
-        background: #fff;
-        outline: none;
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        width: 100%;
         transition: border 0.2s;
+        font-family: inherit;
     }
-    .status-select:focus {
+    .form-control:focus {
         border-color: var(--pk);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(194, 24, 91, 0.1);
+    }
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #333;
+        margin-bottom: 6px;
+        display: block;
     }
 
-    .action-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid #f5f0f5;
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .btn-back {
+            justify-content: center;
+        }
+        .info-grid {
+            grid-template-columns: 1fr 1fr;
+        }
     }
 </style>
-@endpush
 
-@section('content')
-
-<a href="{{ route('admin.complaints.index') }}" class="back-link">
-    <i class="fas fa-arrow-left"></i> Back to Complaints
-</a>
-
-{{-- Complaint Details --}}
-<div class="detail-card">
-    <div class="card-head">
-        <div class="card-title">
-            <i class="fas fa-exclamation-circle"></i>
-            Complaint #{{ $complaint->id }}
-        </div>
-        <div>
-            <span class="badge-status badge-{{ $complaint->status }}">
-                {{ ucfirst(str_replace('_', ' ', $complaint->status)) }}
-            </span>
-        </div>
+{{-- ── Page Header ── --}}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-exclamation-circle"></i> Complaint #{{ $complaint->id }}</h1>
+        <p>Submitted by {{ $complaint->client->name ?? 'N/A' }} on {{ \Carbon\Carbon::parse($complaint->created_at)->format('M d, Y h:i A') }}</p>
     </div>
-    <div class="card-body">
+    <a href="{{ route('admin.complaints.index') }}" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Back to Complaints
+    </a>
+</div>
 
-        {{-- Info Grid --}}
-        <div class="info-grid">
-            <div class="info-item">
-                <div class="label">Client</div>
-                <div class="value">{{ $complaint->client->name ?? 'N/A' }}</div>
-                <div class="value sub">{{ $complaint->client->email ?? '' }}</div>
+<div class="row g-4">
+
+    {{-- ── LEFT COLUMN ── --}}
+    <div class="col-lg-8">
+
+        {{-- Complaint Details --}}
+        <div class="panel-card">
+            <div class="panel-title"><i class="fas fa-info-circle"></i> Complaint Details</div>
+
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                <h5 style="font-weight:700;color:#1a1a1a;margin:0;">{{ $complaint->subject }}</h5>
+                <span class="badge-status {{ $complaint->status_badge }}">{{ $complaint->status_label }}</span>
             </div>
-            <div class="info-item">
-                <div class="label">Salon</div>
-                <div class="value">{{ $complaint->salon->name ?? 'N/A' }}</div>
-                <div class="value sub">{{ $complaint->salon->city ?? '' }}</div>
-            </div>
-            <div class="info-item">
-                <div class="label">Appointment</div>
-                <div class="value">#{{ $complaint->appointment_id ?? 'N/A' }}</div>
-            </div>
-            <div class="info-item">
-                <div class="label">Priority</div>
-                <div class="value">
-                    <span class="badge-priority priority-{{ $complaint->priority }}">
-                        {{ ucfirst($complaint->priority) }}
-                    </span>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">Type</div>
+                    <div class="value">{{ $complaint->type_label }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Salon</div>
+                    <div class="value">{{ $complaint->salon->name ?? 'N/A' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Owner</div>
+                    <div class="value">{{ $complaint->owner->name ?? 'N/A' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Appointment</div>
+                    <div class="value">{{ $complaint->appointment->appointment_date ? \Carbon\Carbon::parse($complaint->appointment->appointment_date)->format('M d, Y') : 'N/A' }}</div>
                 </div>
             </div>
-            <div class="info-item">
-                <div class="label">Submitted</div>
-                <div class="value">{{ $complaint->created_at->format('d M Y, h:i A') }}</div>
+
+            <div class="desc-box">
+                <p>{{ $complaint->description }}</p>
             </div>
-        </div>
 
-        {{-- Subject --}}
-        <div style="margin-bottom:12px;">
-            <div class="label" style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;color:#aaa;font-weight:600;margin-bottom:4px;">Subject</div>
-            <div style="font-size:1rem;font-weight:700;color:#1a1a1a;">{{ $complaint->subject }}</div>
-        </div>
-
-        {{-- Description --}}
-        <div class="description-box">
-            <div class="label">Description</div>
-            <p>{{ $complaint->description }}</p>
-        </div>
-
-        {{-- Replies --}}
-        <div style="margin-top:20px;">
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a1a;margin-bottom:12px;">
-                <i class="fas fa-comments" style="color:var(--pk);margin-right:8px;"></i>Conversation
-            </h4>
-
-            @forelse($complaint->replies as $reply)
-            <div class="reply-item">
-                <div class="reply-avatar {{ $reply->sender_type === 'admin' ? 'admin' : '' }}">
-                    {{ strtoupper(substr($reply->user->name ?? 'A', 0, 1)) }}
+            @if($complaint->image)
+                <div class="mt-3">
+                    <a href="{{ asset('storage/' . $complaint->image) }}" target="_blank" class="btn" style="background:#e8f0fe;color:#1e40af;border-radius:8px;padding:6px 16px;font-size:0.8rem;font-weight:600;text-decoration:none;">
+                        <i class="fas fa-image me-1"></i> View Attachment
+                    </a>
                 </div>
-                <div class="reply-content">
-                    <div class="meta">
-                        <span class="name">{{ $reply->user->name ?? 'Support' }}</span>
-                        @if($reply->sender_type === 'admin')
-                            <span class="tag admin-tag">Admin</span>
-                        @endif
-                        <span class="time">{{ $reply->created_at->diffForHumans() }}</span>
+            @endif
+
+            @if($complaint->rejection_reason)
+                <div class="mt-3" style="background:#fee2e2;border-radius:12px;padding:14px 18px;border-left:4px solid #ef4444;">
+                    <strong style="color:#991b1b;font-size:0.8rem;"><i class="fas fa-times-circle me-1"></i> Rejection Reason</strong>
+                    <p class="mb-0" style="color:#374151;font-size:0.85rem;margin-top:4px;">{{ $complaint->rejection_reason }}</p>
+                </div>
+            @endif
+        </div>
+
+        {{-- Conversation --}}
+        <div class="panel-card">
+            <div class="panel-title"><i class="fas fa-comments"></i> Conversation</div>
+
+            {{-- Client --}}
+            <div class="reply-bubble client">
+                <div class="reply-header">
+                    <span class="reply-name">{{ $complaint->client->name ?? 'Client' }}</span>
+                    <span class="reply-role client">Client</span>
+                    <span class="reply-time">{{ \Carbon\Carbon::parse($complaint->created_at)->format('M d, Y h:i A') }}</span>
+                </div>
+                <p class="reply-text">{{ $complaint->description }}</p>
+            </div>
+
+            {{-- Owner Reply --}}
+            @if($complaint->owner_reply)
+                <div class="reply-bubble owner">
+                    <div class="reply-header">
+                        <span class="reply-name">{{ $complaint->owner->name ?? 'Salon Owner' }}</span>
+                        <span class="reply-role owner">Owner</span>
+                        <span class="reply-time">{{ $complaint->owner_replied_at ? \Carbon\Carbon::parse($complaint->owner_replied_at)->format('M d, Y h:i A') : '' }}</span>
                     </div>
-                    <p class="message">{{ $reply->message }}</p>
+                    <p class="reply-text">{{ $complaint->owner_reply }}</p>
                 </div>
-            </div>
-            @empty
-            <div style="color:#aaa;font-size:0.85rem;padding:12px 0;">No replies yet.</div>
-            @endforelse
+            @endif
 
-            {{-- Reply Form --}}
-            <form method="POST" action="{{ route('admin.complaints.reply', $complaint->id) }}" class="reply-form" style="margin-top:16px;padding-top:16px;border-top:1px solid #f5f0f5;">
-                @csrf
-                <textarea name="message" placeholder="Write a reply..." required></textarea>
-                <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i> Send Reply</button>
-            </form>
+            {{-- Client Action --}}
+            @if($complaint->client_action == 'escalate')
+                <div style="background:#fee2e2;border-radius:12px;padding:12px 18px;border-left:4px solid #ef4444;margin-bottom:12px;">
+                    <p class="mb-0" style="color:#991b1b;font-weight:600;font-size:0.85rem;">
+                        <i class="fas fa-exclamation-triangle me-1"></i> Client escalated this complaint to Admin
+                        <span style="font-weight:400;color:#6b7280;">({{ $complaint->client_actioned_at ? \Carbon\Carbon::parse($complaint->client_actioned_at)->format('M d, Y h:i A') : '' }})</span>
+                    </p>
+                </div>
+            @elseif($complaint->client_action == 'accept')
+                <div style="background:#d1fae5;border-radius:12px;padding:12px 18px;border-left:4px solid #22c55e;margin-bottom:12px;">
+                    <p class="mb-0" style="color:#065f46;font-weight:600;font-size:0.85rem;">
+                        <i class="fas fa-check-circle me-1"></i> Client accepted the resolution
+                        <span style="font-weight:400;color:#6b7280;">({{ $complaint->client_actioned_at ? \Carbon\Carbon::parse($complaint->client_actioned_at)->format('M d, Y h:i A') : '' }})</span>
+                    </p>
+                </div>
+            @endif
+
+            {{-- Admin Response --}}
+            @if($complaint->admin_response)
+                <div class="reply-bubble admin">
+                    <div class="reply-header">
+                        <span class="reply-name">Admin</span>
+                        <span class="reply-role admin">Admin</span>
+                        <span class="reply-time">{{ $complaint->admin_actioned_at ? \Carbon\Carbon::parse($complaint->admin_actioned_at)->format('M d, Y h:i A') : '' }}</span>
+                    </div>
+                    <p class="reply-text">{{ $complaint->admin_response }}</p>
+                </div>
+            @endif
         </div>
+
+        {{-- Admin Response Form --}}
+        @if($complaint->status == 'escalated')
+            <div class="panel-card">
+                <div class="panel-title"><i class="fas fa-shield-alt" style="color:#f59e0b;"></i> Admin Response</div>
+                <form action="{{ route('admin.complaints.respond', $complaint->id) }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label">Final Response <span style="color:#ef4444;">*</span></label>
+                        <textarea name="admin_response" class="form-control" rows="5" required placeholder="Write your final response to resolve this complaint..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-action btn-respond" style="width:auto;padding:11px 30px;">
+                        <i class="fas fa-check-circle me-2"></i> Respond & Close
+                    </button>
+                </form>
+            </div>
+        @endif
+
+    </div>
+
+    {{-- ── RIGHT COLUMN ── --}}
+    <div class="col-lg-4">
 
         {{-- Actions --}}
-        <div class="action-group">
-            <form method="POST" action="{{ route('admin.complaints.resolve', $complaint->id) }}" style="display:inline;">
-                @csrf
-                <button type="submit" class="btn-status resolve">
-                    <i class="fas fa-check-circle"></i> Mark as Resolved
-                </button>
-            </form>
+        <div class="panel-card">
+            <div class="panel-title"><i class="fas fa-cog"></i> Actions</div>
 
-            <form method="POST" action="{{ route('admin.complaints.update-status', $complaint->id) }}" style="display:inline-flex;align-items:center;gap:8px;">
-                @csrf
-                <select name="status" class="status-select">
-                    <option value="open" {{ $complaint->status == 'open' ? 'selected' : '' }}>Open</option>
-                    <option value="in_review" {{ $complaint->status == 'in_review' ? 'selected' : '' }}>In Review</option>
-                    <option value="resolved" {{ $complaint->status == 'resolved' ? 'selected' : '' }}>Resolved</option>
-                    <option value="closed" {{ $complaint->status == 'closed' ? 'selected' : '' }}>Closed</option>
-                </select>
-                <button type="submit" class="btn-status status-update">
-                    <i class="fas fa-sync-alt"></i> Update
-                </button>
-            </form>
+            @if($complaint->status == 'escalated')
+                <form action="{{ route('admin.complaints.close', $complaint->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-action btn-close">
+                        <i class="fas fa-times-circle me-2"></i> Close Without Response
+                    </button>
+                </form>
+            @endif
 
-            <form method="POST" action="{{ route('admin.complaints.destroy', $complaint->id) }}" style="display:inline;" onsubmit="return confirm('Delete this complaint permanently?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn-status delete">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </form>
+            @if($complaint->status == 'closed')
+                <div class="alert-box success">
+                    <i class="fas fa-check-circle me-2"></i> This complaint is closed.
+                </div>
+            @endif
+
+            @if($complaint->status == 'rejected')
+                <div class="alert-box danger">
+                    <i class="fas fa-times-circle me-2"></i> This complaint was rejected.
+                </div>
+            @endif
         </div>
+
+        {{-- Status Timeline --}}
+        <div class="panel-card">
+            <div class="panel-title"><i class="fas fa-clock"></i> Status Timeline</div>
+            <ul class="timeline">
+                <li>
+                    <span class="tl-icon success"><i class="fas fa-check"></i></span>
+                    <div class="tl-text">
+                        <strong>Submitted</strong>
+                        <span>{{ \Carbon\Carbon::parse($complaint->created_at)->format('M d, Y h:i A') }}</span>
+                    </div>
+                </li>
+
+                @if($complaint->owner_replied_at)
+                    <li>
+                        <span class="tl-icon info"><i class="fas fa-reply"></i></span>
+                        <div class="tl-text">
+                            <strong>Owner Replied</strong>
+                            <span>{{ \Carbon\Carbon::parse($complaint->owner_replied_at)->format('M d, Y h:i A') }}</span>
+                        </div>
+                    </li>
+                @endif
+
+                @if($complaint->status == 'in_progress')
+                    <li>
+                        <span class="tl-icon info"><i class="fas fa-spinner"></i></span>
+                        <div class="tl-text">
+                            <strong>In Progress</strong>
+                        </div>
+                    </li>
+                @endif
+
+                @if($complaint->status == 'resolved')
+                    <li>
+                        <span class="tl-icon success"><i class="fas fa-check-circle"></i></span>
+                        <div class="tl-text">
+                            <strong>Resolved</strong>
+                        </div>
+                    </li>
+                @endif
+
+                @if($complaint->client_action == 'escalate')
+                    <li>
+                        <span class="tl-icon danger"><i class="fas fa-exclamation-triangle"></i></span>
+                        <div class="tl-text">
+                            <strong>Escalated to Admin</strong>
+                            <span>{{ $complaint->client_actioned_at ? \Carbon\Carbon::parse($complaint->client_actioned_at)->format('M d, Y h:i A') : '' }}</span>
+                        </div>
+                    </li>
+                @endif
+
+                @if($complaint->client_action == 'accept')
+                    <li>
+                        <span class="tl-icon success"><i class="fas fa-check-double"></i></span>
+                        <div class="tl-text">
+                            <strong>Client Accepted</strong>
+                            <span>{{ $complaint->client_actioned_at ? \Carbon\Carbon::parse($complaint->client_actioned_at)->format('M d, Y h:i A') : '' }}</span>
+                        </div>
+                    </li>
+                @endif
+
+                @if($complaint->admin_response)
+                    <li>
+                        <span class="tl-icon warning"><i class="fas fa-shield-alt"></i></span>
+                        <div class="tl-text">
+                            <strong>Admin Reviewed</strong>
+                            <span>{{ $complaint->admin_actioned_at ? \Carbon\Carbon::parse($complaint->admin_actioned_at)->format('M d, Y h:i A') : '' }}</span>
+                        </div>
+                    </li>
+                @endif
+
+                @if($complaint->status == 'closed')
+                    <li>
+                        <span class="tl-icon success"><i class="fas fa-check-double"></i></span>
+                        <div class="tl-text">
+                            <strong>Closed</strong>
+                        </div>
+                    </li>
+                @endif
+
+                @if($complaint->status == 'rejected')
+                    <li>
+                        <span class="tl-icon danger"><i class="fas fa-times"></i></span>
+                        <div class="tl-text">
+                            <strong>Rejected</strong>
+                            <span>{{ $complaint->rejected_at ? \Carbon\Carbon::parse($complaint->rejected_at)->format('M d, Y h:i A') : '' }}</span>
+                        </div>
+                    </li>
+                @endif
+            </ul>
+        </div>
+
     </div>
+
 </div>
 
 @endsection

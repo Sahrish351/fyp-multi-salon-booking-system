@@ -67,5 +67,4 @@
                 <i class="fas fa-sign-out-alt me-2"></i> Logout
             </button>
         </form>
-    </div>
-</div>
+    </div></div>

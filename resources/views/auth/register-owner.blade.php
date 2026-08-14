@@ -3,220 +3,524 @@
 
 @push('styles')
 <style>
-.auth-page {
-    min-height: 100vh;
-    background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-}
-
-.register-wrapper {
-    max-width: 550px;
-    width: 100%;
-    margin: 0 auto;
-}
-
-.auth-card {
-    background: #ffffff;
-    border-radius: 32px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    padding: 2.5rem;
-    animation: fadeInUp 0.5s ease;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    /* ── Base ── */
+    .auth-page {
+        min-height: 100vh;
+        background: linear-gradient(160deg, #f8f0f5 0%, #fce4ec 30%, #f3e5f5 60%, #e8eaf6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.2rem;
+        margin: 0;
+        position: relative;
+        overflow: hidden;
     }
-    to {
-        opacity: 1;
+
+    .auth-page::before {
+        content: '';
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(233,30,140,0.06), transparent 70%);
+        top: -150px;
+        right: -150px;
+        pointer-events: none;
+    }
+
+    .auth-page::after {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201,169,110,0.05), transparent 70%);
+        bottom: -100px;
+        left: -100px;
+        pointer-events: none;
+    }
+
+    .register-wrapper {
+        max-width: 520px;
+        width: 100%;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-card {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(20px);
+        border-radius: 32px;
+        box-shadow: 
+            0 20px 60px rgba(0,0,0,0.06),
+            0 8px 20px rgba(233,30,140,0.04),
+            inset 0 1px 0 rgba(255,255,255,0.8);
+        padding: 2rem 2rem 1.8rem;
+        animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.97);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* ── Header ── */
+    .auth-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .auth-header .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(145deg, #E91E8C, #c2185b);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.7rem;
+        box-shadow: 0 8px 25px rgba(233,30,140,0.2);
+        position: relative;
+    }
+
+    .auth-header .icon-wrapper::after {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, rgba(233,30,140,0.15), rgba(201,169,110,0.15));
+        z-index: -1;
+        animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.08); opacity: 0.5; }
+    }
+
+    .auth-header .icon-wrapper i {
+        font-size: 1.6rem;
+        color: white;
+    }
+
+    .auth-header h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 0.1rem;
+        letter-spacing: -0.3px;
+    }
+
+    .auth-header p {
+        color: #8e8e9a;
+        font-size: 0.8rem;
+        font-weight: 400;
+        letter-spacing: 0.2px;
+        margin: 0;
+    }
+
+    /* ── Alert ── */
+    .alert-danger {
+        background: rgba(233,30,140,0.05);
+        border: 1px solid rgba(233,30,140,0.12);
+        border-radius: 12px;
+        color: #c2185b;
+        font-size: 0.78rem;
+        padding: 0.5rem 0.8rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .alert-danger ul {
+        margin: 0;
+        padding-left: 1rem;
+    }
+
+    .alert-danger li {
+        margin-bottom: 0.1rem;
+    }
+
+    /* ── Form ── */
+    .form-group {
+        margin-bottom: 0.8rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 0.3rem;
+        display: block;
+        font-size: 0.78rem;
+        letter-spacing: 0.2px;
+    }
+
+    .form-control, .form-select, textarea.form-control {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        font-size: 0.82rem;
+        transition: all 0.3s ease;
+        background: rgba(255,255,255,0.8);
+        color: #1a1a2e;
+        appearance: none;
+        font-family: inherit;
+    }
+
+    .form-control:focus, .form-select:focus, textarea.form-control:focus {
+        border-color: #E91E8C;
+        box-shadow: 0 0 0 3px rgba(233,30,140,0.06);
+        outline: none;
+        background: #ffffff;
+    }
+
+    .form-control::placeholder, textarea.form-control::placeholder {
+        color: #b0b0b8;
+        font-size: 0.78rem;
+    }
+
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236c757d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.9rem center;
+        background-size: 14px 10px;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 55px;
+    }
+
+    .form-control.is-invalid, .form-select.is-invalid {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 3px rgba(220,53,69,0.06);
+    }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.7rem;
+        margin-top: 0.2rem;
+        display: block;
+    }
+
+    /* ── Row / Grid ── */
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -0.4rem;
+    }
+
+    .col-md-6 {
+        width: 50%;
+        padding: 0 0.4rem;
+    }
+
+    .col-md-12 {
+        width: 100%;
+        padding: 0 0.4rem;
+    }
+
+    /* ── Checkbox ── */
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .form-check-input {
+        width: 0.95rem;
+        height: 0.95rem;
+        cursor: pointer;
+        accent-color: #E91E8C;
+        border-radius: 4px;
+        flex-shrink: 0;
+        margin: 0;
+    }
+
+    .form-check-label {
+        color: #6c757d;
+        font-size: 0.78rem;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .form-check-label a {
+        color: #E91E8C;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .form-check-label a:hover {
+        text-decoration: underline;
+    }
+
+    /* ── Register Button ── */
+    .btn-register {
+        width: 100%;
+        padding: 0.7rem;
+        background: linear-gradient(145deg, #E91E8C, #c2185b);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 15px rgba(233,30,140,0.15);
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(233,30,140,0.25);
+    }
+
+    .btn-register:active {
         transform: translateY(0);
     }
-}
 
-.text-center {
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-
-.icon-circle {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #E91E8C, #c2185b);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-}
-
-.icon-circle i {
-    font-size: 2rem;
-    color: white;
-}
-
-h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.3rem;
-}
-
-.subtitle {
-    color: #6c757d;
-    font-size: 0.85rem;
-}
-
-.form-control, .form-select {
-    border-radius: 12px;
-    padding: 0.85rem 1rem;
-    border: 2px solid #e9ecef;
-    width: 100%;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #E91E8C;
-    box-shadow: 0 0 0 3px rgba(233,30,140,0.1);
-    outline: none;
-}
-
-.form-label {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-    display: block;
-    font-size: 0.85rem;
-}
-
-.btn-register {
-    background: linear-gradient(135deg, #E91E8C, #c2185b);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 0.9rem;
-    font-weight: 600;
-    font-size: 1rem;
-    width: 100%;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    margin-top: 0.5rem;
-}
-
-.btn-register:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(233,30,140,0.3);
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 -0.5rem;
-}
-
-.col-md-6 {
-    width: 50%;
-    padding: 0 0.5rem;
-}
-
-.col-md-12 {
-    width: 100%;
-    padding: 0 0.5rem;
-}
-
-.mb-3 {
-    margin-bottom: 1rem;
-}
-
-.mt-3 {
-    margin-top: 1rem;
-}
-
-.mt-4 {
-    margin-top: 1.5rem;
-}
-
-.form-check {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.form-check-input {
-    width: 1rem;
-    height: 1rem;
-    cursor: pointer;
-    accent-color: #E91E8C;
-}
-
-.form-check-label {
-    color: #6c757d;
-    font-size: 0.85rem;
-}
-
-.form-check-label a {
-    color: #E91E8C;
-    text-decoration: none;
-}
-
-.form-check-label a:hover {
-    text-decoration: underline;
-}
-
-.alert {
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    margin-bottom: 1rem;
-    font-size: 0.85rem;
-}
-
-.alert-danger {
-    background: #f8d7da;
-    color: #721c24;
-    border: none;
-}
-
-.alert-danger ul {
-    margin: 0;
-    padding-left: 1rem;
-}
-
-.login-link {
-    text-align: center;
-    margin-top: 1.5rem;
-}
-
-.login-link p {
-    color: #6c757d;
-    font-size: 0.85rem;
-    margin: 0;
-}
-
-.login-link a {
-    color: #E91E8C;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.login-link a:hover {
-    text-decoration: underline;
-}
-
-@media (max-width: 576px) {
-    .auth-card {
-        padding: 1.5rem;
+    .btn-register i {
+        font-size: 0.9rem;
     }
-    .col-md-6 {
-        width: 100%;
+
+    /* ── Footer Link ── */
+    .footer-link {
+        text-align: center;
+        margin-top: 1.2rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid rgba(0,0,0,0.04);
     }
-    .register-wrapper {
-        max-width: 95%;
+
+    .footer-link p {
+        color: #8e8e9a;
+        font-size: 0.78rem;
+        margin: 0;
     }
-}
+
+    .footer-link a {
+        color: #E91E8C;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .footer-link a:hover {
+        text-decoration: underline;
+    }
+
+    /* ── Responsive ── */
+
+    /* Tablet */
+    @media (max-width: 992px) {
+        .auth-card {
+            padding: 1.8rem 1.8rem 1.5rem;
+        }
+        .register-wrapper {
+            max-width: 440px;
+        }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+        .auth-page {
+            padding: 1rem;
+        }
+
+        .auth-card {
+            padding: 1.5rem 1.2rem 1.2rem;
+            border-radius: 24px;
+        }
+
+        .register-wrapper {
+            max-width: 100%;
+        }
+
+        .auth-header .icon-wrapper {
+            width: 50px;
+            height: 50px;
+        }
+
+        .auth-header .icon-wrapper i {
+            font-size: 1.3rem;
+        }
+
+        .auth-header h3 {
+            font-size: 1.15rem;
+        }
+
+        .auth-header p {
+            font-size: 0.75rem;
+        }
+
+        .auth-header {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 0.7rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .form-control, .form-select, textarea.form-control {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+            border-radius: 10px;
+        }
+
+        .form-control::placeholder, textarea.form-control::placeholder {
+            font-size: 0.75rem;
+        }
+
+        textarea.form-control {
+            min-height: 45px;
+        }
+
+        .btn-register {
+            padding: 0.6rem;
+            font-size: 0.82rem;
+            border-radius: 10px;
+        }
+
+        .form-check {
+            margin-top: 0.5rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .form-check-label {
+            font-size: 0.75rem;
+        }
+
+        .form-check-input {
+            width: 0.9rem;
+            height: 0.9rem;
+        }
+
+        .footer-link {
+            margin-top: 1rem;
+            padding-top: 0.6rem;
+        }
+
+        .footer-link p {
+            font-size: 0.75rem;
+        }
+
+        .alert-danger {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.7rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .text-danger {
+            font-size: 0.68rem;
+        }
+
+        /* Mobile: 2 columns se 1 column */
+        .col-md-6 {
+            width: 100%;
+            padding: 0;
+        }
+
+        .row {
+            margin: 0;
+        }
+
+        .col-md-6:first-child {
+            margin-bottom: 0.2rem;
+        }
+    }
+
+    /* Small Mobile */
+    @media (max-width: 400px) {
+        .auth-card {
+            padding: 1.2rem 0.9rem 1rem;
+            border-radius: 20px;
+        }
+
+        .auth-header .icon-wrapper {
+            width: 44px;
+            height: 44px;
+        }
+
+        .auth-header .icon-wrapper i {
+            font-size: 1.1rem;
+        }
+
+        .auth-header h3 {
+            font-size: 1rem;
+        }
+
+        .auth-header p {
+            font-size: 0.7rem;
+        }
+
+        .auth-header {
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 0.6rem;
+        }
+
+        .form-group label {
+            font-size: 0.7rem;
+        }
+
+        .form-control, .form-select, textarea.form-control {
+            padding: 0.5rem 0.7rem;
+            font-size: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .form-control::placeholder, textarea.form-control::placeholder {
+            font-size: 0.7rem;
+        }
+
+        textarea.form-control {
+            min-height: 40px;
+        }
+
+        .btn-register {
+            padding: 0.55rem;
+            font-size: 0.78rem;
+            border-radius: 8px;
+        }
+
+        .form-check-label {
+            font-size: 0.7rem;
+        }
+
+        .form-check-input {
+            width: 0.85rem;
+            height: 0.85rem;
+        }
+
+        .footer-link p {
+            font-size: 0.7rem;
+        }
+
+        .alert-danger {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+        }
+    }
 </style>
 @endpush
 
@@ -224,17 +528,17 @@ h3 {
 <div class="auth-page">
     <div class="register-wrapper">
         <div class="auth-card">
-            <div class="text-center">
-                <div class="icon-circle">
+            <div class="auth-header">
+                <div class="icon-wrapper">
                     <i class="fas fa-store"></i>
                 </div>
                 <h3>Register Your Salon</h3>
-                <p class="subtitle">Join Pakistan's fastest growing beauty platform</p>
+                <p>Join Pakistan's fastest growing beauty platform</p>
             </div>
 
             @if($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
+                <div class="alert-danger">
+                    <ul class="mb-0">
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -245,44 +549,47 @@ h3 {
             <form action="{{ route('register.owner.store') }}" method="POST">
                 @csrf
 
-                <div class="mb-3">
-                    <label class="form-label">Full Name *</label>
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label>Full Name *</label>
                     <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
                            value="{{ old('name') }}" placeholder="Your full name" required>
-                    @error('name')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                    @error('name')<span class="text-danger">{{ $message }}</span>@enderror
                 </div>
 
+                <!-- Email & Phone -->
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Email Address *</label>
+                        <div class="form-group">
+                            <label>Email Address *</label>
                             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" 
                                    value="{{ old('email') }}" placeholder="business@email.com" required>
-                            @error('email')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            @error('email')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Phone Number *</label>
+                        <div class="form-group">
+                            <label>Phone Number *</label>
                             <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror" 
                                    value="{{ old('phone') }}" placeholder="03XXXXXXXXX" required>
-                            @error('phone')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            @error('phone')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
                 </div>
 
+                <!-- CNIC & City -->
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">CNIC Number *</label>
+                        <div class="form-group">
+                            <label>CNIC Number *</label>
                             <input type="text" name="cnic" class="form-control @error('cnic') is-invalid @enderror" 
                                    value="{{ old('cnic') }}" placeholder="XXXXX-XXXXXXX-X" required>
-                            @error('cnic')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            @error('cnic')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">City *</label>
+                        <div class="form-group">
+                            <label>City *</label>
                             <select name="city" class="form-select @error('city') is-invalid @enderror" required>
                                 <option value="">Select city</option>
                                 <option value="Lahore" {{ old('city')=='Lahore' ? 'selected' : '' }}>Lahore</option>
@@ -292,56 +599,60 @@ h3 {
                                 <option value="Faisalabad" {{ old('city')=='Faisalabad' ? 'selected' : '' }}>Faisalabad</option>
                                 <option value="Multan" {{ old('city')=='Multan' ? 'selected' : '' }}>Multan</option>
                             </select>
-                            @error('city')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            @error('city')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Salon Name *</label>
+                <!-- Salon Name -->
+                <div class="form-group">
+                    <label>Salon Name *</label>
                     <input type="text" name="salon_name" class="form-control @error('salon_name') is-invalid @enderror" 
                            value="{{ old('salon_name') }}" placeholder="Your salon name" required>
-                    @error('salon_name')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                    @error('salon_name')<span class="text-danger">{{ $message }}</span>@enderror
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Salon Address *</label>
+                <!-- Salon Address -->
+                <div class="form-group">
+                    <label>Salon Address *</label>
                     <textarea name="address" class="form-control @error('address') is-invalid @enderror" 
                               rows="2" placeholder="Complete salon address" required>{{ old('address') }}</textarea>
-                    @error('address')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                    @error('address')<span class="text-danger">{{ $message }}</span>@enderror
                 </div>
 
+                <!-- Password & Confirm -->
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Password *</label>
+                        <div class="form-group">
+                            <label>Password *</label>
                             <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" 
                                    placeholder="Min 8 characters" required>
-                            @error('password')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            @error('password')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Confirm Password *</label>
+                        <div class="form-group">
+                            <label>Confirm Password *</label>
                             <input type="password" name="password_confirmation" class="form-control" 
                                    placeholder="Confirm password" required>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-check mb-3">
+                <!-- Terms -->
+                <div class="form-check">
                     <input type="checkbox" class="form-check-input" name="terms" id="terms" required>
                     <label class="form-check-label" for="terms">
-                        I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                        I agree to the <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a>
                     </label>
                 </div>
 
                 <button type="submit" class="btn-register">
-                    <i class="fas fa-store me-2"></i>Register Salon
+                    <i class="fas fa-store"></i> Register Salon
                 </button>
             </form>
 
-            <div class="login-link">
+            <div class="footer-link">
                 <p>Already have an account? <a href="{{ route('owner.login.form') }}">Login Here</a></p>
             </div>
         </div>

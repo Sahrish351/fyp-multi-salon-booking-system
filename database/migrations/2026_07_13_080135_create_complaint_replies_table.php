@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('complaint_id')->constrained('complaints')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->text('message');
-            $table->enum('sender_type', ['admin', 'client']);
+            $table->enum('sender_type', ['client', 'owner', 'admin'])->default('client');
             $table->timestamps();
         });
     }

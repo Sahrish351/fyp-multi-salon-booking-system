@@ -1,463 +1,443 @@
 @extends('layouts.admin')
-@section('title', 'Complaints - Glamora Admin')
+@section('title', 'Complaints - Admin')
 
 @push('styles')
 <style>
-    :root {
-        --pk: #E91E8C;
-        --pk-dark: #c2185b;
-        --pk-light: #fce4ec;
-        --pk-bg: #fff0f7;
-    }
+:root {
+    --dpink: #c2185b;
+    --dpink-lt: #fce4ec;
+    --border: #e5e7eb;
+}
 
-    /* ── Page Header ── */
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-    .page-header h1 {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: #1a1a1a;
-        margin: 0;
-    }
-    .page-header h1 i {
-        color: var(--pk);
-        margin-right: 10px;
-    }
-    .page-header p {
-        color: #999;
-        font-size: 0.85rem;
-        margin: 2px 0 0 0;
-    }
+/* ── Page Header ── */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1a1a1a;
+}
+.page-header h1 i { color: var(--dpink); margin-right: 0.5rem; }
+.page-header p { margin: 0; color: #6b7280; font-size: 0.85rem; }
 
-    /* ── Stats ── */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 12px;
-        margin-bottom: 24px;
-    }
-    .stat-box {
-        background: #fff;
-        border: 1px solid #f0edf0;
-        border-radius: 14px;
-        padding: 16px 20px;
-        text-align: center;
-        transition: all 0.2s;
-    }
-    .stat-box:hover {
-        border-color: var(--pk);
-    }
-    .stat-box .number {
-        font-size: 1.8rem;
-        font-weight: 800;
-        line-height: 1.2;
-    }
-    .stat-box .number.pink { color: var(--pk); }
-    .stat-box .number.red { color: #ef4444; }
-    .stat-box .number.orange { color: #f59e0b; }
-    .stat-box .number.green { color: #22c55e; }
-    .stat-box .label {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #aaa;
-        font-weight: 600;
-        margin-top: 4px;
-    }
+/* ── Stats Row - All Cards in One Line ── */
+.stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+.stat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 120px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.stat-icon.bg-danger { background: #ef4444; }
+.stat-icon.bg-warning { background: #f59e0b; }
+.stat-icon.bg-primary { background: #3b82f6; }
+.stat-icon.bg-success { background: #22c55e; }
+.stat-icon.bg-secondary { background: #6b7280; }
+.stat-icon.bg-dark { background: #374151; }
 
-    /* ── Filter Bar ── */
-    .filter-bar {
-        background: #fff;
-        border: 1px solid #f0edf0;
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin-bottom: 24px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 12px;
-    }
-    .filter-bar .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .filter-bar label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #999;
-        white-space: nowrap;
-    }
-    .filter-bar select,
-    .filter-bar input {
-        padding: 8px 14px;
-        border: 1.5px solid #e5e0e5;
-        border-radius: 10px;
-        font-size: 0.82rem;
-        background: #fff;
-        color: #333;
-        outline: none;
-        transition: border 0.2s;
-        min-width: 130px;
-    }
-    .filter-bar select:focus,
-    .filter-bar input:focus {
-        border-color: var(--pk);
-        box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
-    }
-    .filter-bar .btn-filter {
-        background: var(--pk);
-        color: #fff;
-        border: none;
-        padding: 8px 22px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.82rem;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-    .filter-bar .btn-filter:hover {
-        background: var(--pk-dark);
-    }
-    .filter-bar .btn-clear {
-        background: transparent;
-        color: #999;
-        border: 1.5px solid #e5e0e5;
-        padding: 8px 22px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.82rem;
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-    .filter-bar .btn-clear:hover {
-        border-color: var(--pk);
-        color: var(--pk);
-    }
+.stat-info { flex: 1; min-width: 0; }
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.2;
+}
+.stat-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 700;
+    color: #9ca3af;
+    margin-top: 2px;
+}
 
-    /* ── Table Card ── */
-    .table-card {
-        background: #fff;
-        border: 1px solid #f0edf0;
-        border-radius: 18px;
-        overflow: hidden;
-    }
-    .table-card .card-head {
-        padding: 16px 22px;
-        border-bottom: 1px solid #f5f0f5;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .table-card .card-title {
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: #1a1a1a;
-    }
-    .table-card .card-title i {
-        color: var(--pk);
-        margin-right: 8px;
-    }
-    .table-card .record-count {
-        font-size: 0.75rem;
-        color: #aaa;
-    }
+/* ── Filter Bar ── */
+.filter-bar {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 140px;
+}
+.filter-group label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+}
+.search-wrapper {
+    position: relative;
+    flex: 2;
+    min-width: 200px;
+}
+.search-wrapper i {
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--dpink);
+    font-size: 0.85rem;
+}
+.search-input {
+    width: 100%;
+    padding: 0.6rem 1rem 0.6rem 2.4rem;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    font-size: 0.88rem;
+    background: #f9fafb;
+    color: #111;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.search-input:focus {
+    border-color: var(--dpink);
+    background: #fff;
+}
+.filter-select {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    font-size: 0.85rem;
+    background: #f9fafb;
+    color: #111;
+    cursor: pointer;
+    outline: none;
+}
+.filter-select:focus { border-color: var(--dpink); }
+.filter-actions { display: flex; gap: 0.5rem; align-items: flex-end; }
+.btn-search {
+    padding: 0.6rem 1.2rem;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    background: var(--dpink);
+    color: #fff;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+.btn-search:hover { background: #ad1457; }
+.btn-clear {
+    padding: 0.6rem 0.9rem;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: #6b7280;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.btn-clear:hover { border-color: var(--dpink); color: var(--dpink); }
 
-    .data-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .data-table th {
-        text-align: left;
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 700;
-        color: #aaa;
-        padding: 14px 20px;
-        border-bottom: 1.5px solid #f5f0f5;
-        white-space: nowrap;
-    }
-    .data-table td {
-        padding: 14px 20px;
-        font-size: 0.85rem;
-        color: #333;
-        border-bottom: 1px solid #f8f4f8;
-        vertical-align: middle;
-    }
-    .data-table tbody tr {
-        cursor: pointer;
-        transition: background 0.15s;
-    }
-    .data-table tbody tr:hover {
-        background: var(--pk-bg);
-    }
-    .data-table tbody tr:last-child td {
-        border-bottom: none;
-    }
-    .data-table .empty-cell {
-        text-align: center;
-        padding: 50px 20px;
-        color: #ccc;
-    }
-    .data-table .empty-cell i {
-        font-size: 2.5rem;
-        display: block;
-        margin-bottom: 10px;
-        color: #eee;
-    }
+/* ── Table Card ── */
+.complaints-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.complaints-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.card-title { font-weight: 700; font-size: 0.95rem; color: #1a1a1a; }
+.card-title i { color: var(--dpink); margin-right: 0.5rem; }
+.result-count {
+    font-size: 0.75rem;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+}
 
-    .client-cell {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .client-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--pk), var(--pk-dark));
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.75rem;
-        flex-shrink: 0;
-    }
-    .client-name {
-        font-weight: 600;
-        color: #1a1a1a;
-    }
+/* ── Table ── */
+.complaints-table { width: 100%; border-collapse: collapse; }
+.complaints-table thead tr { background: #f9fafb; }
+.complaints-table thead th {
+    padding: 0.7rem 1rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+}
+.complaints-table tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.complaints-table tbody tr:last-child { border-bottom: none; }
+.complaints-table tbody tr:hover { background: #fdf0f5; }
+.complaints-table td {
+    padding: 0.7rem 1rem;
+    font-size: 0.85rem;
+    color: #374151;
+    vertical-align: middle;
+}
 
-    .badge-status {
-        display: inline-flex;
-        padding: 4px 14px;
-        border-radius: 50px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: capitalize;
-    }
-    .badge-open { background: #fee2e2; color: #dc2626; }
-    .badge-in_review { background: #fef3c7; color: #d97706; }
-    .badge-resolved { background: #d1fae5; color: #059669; }
-    .badge-closed { background: #f3f4f6; color: #6b7280; }
+.client-cell { display: flex; align-items: center; gap: 0.7rem; }
+.client-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--dpink-lt);
+    color: var(--dpink);
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.client-name { font-weight: 600; color: #111827; }
+.client-email { font-size: 0.7rem; color: #9ca3af; }
 
-    .badge-priority {
-        display: inline-flex;
-        padding: 3px 12px;
-        border-radius: 50px;
-        font-size: 0.65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-    .priority-high { background: #fee2e2; color: #dc2626; }
-    .priority-medium { background: #fef3c7; color: #d97706; }
-    .priority-low { background: #d1fae5; color: #059669; }
+.badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+.badge-pending { background: #fef3c7; color: #92400e; }
+.badge-progress { background: #dbeafe; color: #1e40af; }
+.badge-resolved { background: #d1fae5; color: #065f46; }
+.badge-closed { background: #e5e7eb; color: #4b5563; }
+.badge-escalated { background: #fee2e2; color: #991b1b; }
+.badge-rejected { background: #f3f4f6; color: #6b7280; }
 
-    .btn-view {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 16px;
-        border-radius: 50px;
-        border: 1.5px solid #e5e0e5;
-        color: #666;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-    .btn-view:hover {
-        border-color: var(--pk);
-        color: var(--pk);
-        background: var(--pk-bg);
-    }
+.btn-view {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    background: #e0f7fa;
+    color: #00838f;
+    border: none;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+.btn-view:hover { background: #00838f; color: #fff; }
 
-    .pagination-wrap {
-        padding: 16px 22px;
-        border-top: 1px solid #f5f0f5;
-    }
-    .pagination-wrap nav {
-        display: flex;
-        justify-content: center;
-    }
-    .pagination-wrap .pagination {
-        margin: 0;
-    }
-    .pagination-wrap .page-item.active .page-link {
-        background: var(--pk);
-        border-color: var(--pk);
-        color: #fff;
-    }
-    .pagination-wrap .page-link {
-        color: #666;
-        border-color: #e5e0e5;
-    }
-    .pagination-wrap .page-link:hover {
-        color: var(--pk);
-        border-color: var(--pk-light);
-    }
+.empty-state { text-align: center; padding: 3rem 1rem; color: #9ca3af; }
+.empty-state i { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+.pagination-wrapper { padding: 0.8rem 1.2rem; border-top: 1px solid var(--border); }
 
-    .subject-text {
-        max-width: 200px;
-        display: inline-block;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    @media (max-width: 768px) {
-        .filter-bar {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        .filter-bar .filter-group {
-            flex-wrap: wrap;
-        }
-        .filter-bar select,
-        .filter-bar input {
-            min-width: 100%;
-        }
-        .data-table {
-            font-size: 0.8rem;
-        }
-        .data-table th,
-        .data-table td {
-            padding: 10px 14px;
-        }
-        .subject-text {
-            max-width: 100px;
-        }
-    }
+@media (max-width: 768px) {
+    .stats-row { flex-wrap: wrap; }
+    .stat-card { min-width: 80px; flex: 1 1 calc(33% - 10px); }
+    .filter-bar { flex-direction: column; }
+    .search-wrapper, .filter-group { min-width: 100%; }
+    .filter-actions { width: 100%; }
+    .btn-search, .btn-clear { flex: 1; text-align: center; }
+}
 </style>
 @endpush
 
 @section('content')
 
-{{-- Header --}}
+{{-- ── Page Header ── --}}
 <div class="page-header">
     <div>
-        <h1><i class="fas fa-exclamation-circle"></i>Complaints</h1>
-        <p>Review and resolve client complaints</p>
+        <h1><i class="fas fa-exclamation-circle"></i> Complaints</h1>
+        <p>{{ $complaints->total() }} total complaints</p>
     </div>
 </div>
 
-{{-- Stats --}}
-<div class="stats-grid">
-    <div class="stat-box">
-        <div class="number pink">{{ $stats['total'] ?? 0 }}</div>
-        <div class="label">Total</div>
+{{-- ── Stats Row (All Cards in One Horizontal Line) ── --}}
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-icon bg-danger"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="stat-info">
+            <div class="stat-value">{{ $stats['escalated'] ?? 0 }}</div>
+            <div class="stat-label">Escalated</div>
+        </div>
     </div>
-    <div class="stat-box">
-        <div class="number red">{{ $stats['open'] ?? 0 }}</div>
-        <div class="label">Open</div>
+    <div class="stat-card">
+        <div class="stat-icon bg-warning"><i class="fas fa-clock"></i></div>
+        <div class="stat-info">
+            <div class="stat-value">{{ $stats['pending'] ?? 0 }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
     </div>
-    <div class="stat-box">
-        <div class="number orange">{{ $stats['in_review'] ?? 0 }}</div>
-        <div class="label">In Review</div>
+    <div class="stat-card">
+        <div class="stat-icon bg-primary"><i class="fas fa-spinner"></i></div>
+        <div class="stat-info">
+            <div class="stat-value">{{ $stats['in_progress'] ?? 0 }}</div>
+            <div class="stat-label">In Progress</div>
+        </div>
     </div>
-    <div class="stat-box">
-        <div class="number green">{{ $stats['resolved'] ?? 0 }}</div>
-        <div class="label">Resolved</div>
+    <div class="stat-card">
+        <div class="stat-icon bg-success"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-info">
+            <div class="stat-value">{{ $stats['resolved'] ?? 0 }}</div>
+            <div class="stat-label">Resolved</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon bg-secondary"><i class="fas fa-check-double"></i></div>
+        <div class="stat-info">
+            <div class="stat-value">{{ $stats['closed'] ?? 0 }}</div>
+            <div class="stat-label">Closed</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon bg-dark"><i class="fas fa-times-circle"></i></div>
+        <div class="stat-info">
+            <div class="stat-value">{{ $stats['rejected'] ?? 0 }}</div>
+            <div class="stat-label">Rejected</div>
+        </div>
     </div>
 </div>
 
-{{-- Filter Bar --}}
+{{-- ── Filter Bar ── --}}
+<form method="GET" action="{{ route('admin.complaints.index') }}">
 <div class="filter-bar">
-    <form method="GET" action="{{ route('admin.complaints.index') }}" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;width:100%;">
-        <div class="filter-group">
-            <label>Status</label>
-            <select name="status">
-                <option value="">All</option>
-                <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
-                <option value="in_review" {{ request('status') == 'in_review' ? 'selected' : '' }}>In Review</option>
-                <option value="resolved" {{ request('status') == 'resolved' ? 'selected' : '' }}>Resolved</option>
-                <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Priority</label>
-            <select name="priority">
-                <option value="">All</option>
-                <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
-                <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
-                <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
-            </select>
-        </div>
-        <div class="filter-group" style="flex:1;min-width:180px;">
-            <label>Search</label>
-            <input type="text" name="search" placeholder="Client or subject..." value="{{ request('search') }}" style="min-width:180px;width:100%;">
-        </div>
-        <button type="submit" class="btn-filter"><i class="fas fa-search"></i> Filter</button>
-        <a href="{{ route('admin.complaints.index') }}" class="btn-clear">Clear</a>
-    </form>
+    <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" name="search" class="search-input" placeholder="Search by client, subject…" value="{{ request('search') }}">
+    </div>
+    <div class="filter-group">
+        <label>Status</label>
+        <select name="status" class="filter-select">
+            <option value="">All</option>
+            <option value="pending" {{ request('status')=='pending' ? 'selected':'' }}>Pending</option>
+            <option value="in_progress" {{ request('status')=='in_progress' ? 'selected':'' }}>In Progress</option>
+            <option value="resolved" {{ request('status')=='resolved' ? 'selected':'' }}>Resolved</option>
+            <option value="closed" {{ request('status')=='closed' ? 'selected':'' }}>Closed</option>
+            <option value="escalated" {{ request('status')=='escalated' ? 'selected':'' }}>Escalated</option>
+            <option value="rejected" {{ request('status')=='rejected' ? 'selected':'' }}>Rejected</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>Type</label>
+        <select name="type" class="filter-select">
+            <option value="">All</option>
+            <option value="service" {{ request('type')=='service' ? 'selected':'' }}>Service</option>
+            <option value="staff" {{ request('type')=='staff' ? 'selected':'' }}>Staff</option>
+            <option value="payment" {{ request('type')=='payment' ? 'selected':'' }}>Payment</option>
+            <option value="product" {{ request('type')=='product' ? 'selected':'' }}>Product</option>
+            <option value="other" {{ request('type')=='other' ? 'selected':'' }}>Other</option>
+        </select>
+    </div>
+    <div class="filter-actions">
+        <button type="submit" class="btn-search"><i class="fas fa-search"></i> Filter</button>
+        @if(request()->hasAny(['search','status','type']))
+            <a href="{{ route('admin.complaints.index') }}" class="btn-clear">Clear</a>
+        @endif
+    </div>
 </div>
+</form>
 
-{{-- Table --}}
-<div class="table-card">
-    <div class="card-head">
-        <span class="card-title"><i class="fas fa-list"></i>Complaints List</span>
-        <span class="record-count">{{ $complaints->total() }} records</span>
+{{-- ── Table ── --}}
+<div class="complaints-card">
+    <div class="complaints-card-header">
+        <span class="card-title"><i class="fas fa-list"></i> Complaints List</span>
+        <span class="result-count">{{ $complaints->total() }} records</span>
     </div>
 
-    <div class="table-responsive">
-        <table class="data-table">
+    <div style="overflow-x:auto;">
+        <table class="complaints-table">
             <thead>
                 <tr>
                     <th>#</th>
                     <th>Client</th>
                     <th>Salon</th>
                     <th>Subject</th>
-                    <th>Priority</th>
-                    <th>Status</th>
+                    <th>Type</th>
                     <th>Date</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($complaints as $c)
-                <tr onclick="window.location='{{ route('admin.complaints.show', $c->id) }}'">
-                    <td style="font-weight:600;color:#aaa;">#{{ $c->id }}</td>
+                @forelse($complaints as $complaint)
+                <tr onclick="window.location='{{ route('admin.complaints.show', $complaint->id) }}'">
+                    <td style="color:#9ca3af;">#{{ $complaint->id }}</td>
                     <td>
                         <div class="client-cell">
-                            <div class="client-avatar">{{ strtoupper(substr($c->client->name ?? 'N', 0, 1)) }}</div>
-                            <span class="client-name">{{ $c->client->name ?? 'N/A' }}</span>
+                            <div class="client-avatar">{{ strtoupper(substr($complaint->client->name ?? 'N', 0, 1)) }}</div>
+                            <div>
+                                <div class="client-name">{{ $complaint->client->name ?? 'N/A' }}</div>
+                                <div class="client-email">{{ $complaint->client->email ?? '' }}</div>
+                            </div>
                         </div>
                     </td>
-                    <td>{{ $c->salon->name ?? 'N/A' }}</td>
-                    <td>
-                        <span class="subject-text" title="{{ $c->subject }}">{{ Str::limit($c->subject, 35) }}</span>
-                    </td>
-                    <td>
-                        <span class="badge-priority priority-{{ $c->priority }}">
-                            {{ ucfirst($c->priority) }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="badge-status badge-{{ $c->status }}">
-                            {{ ucfirst(str_replace('_', ' ', $c->status)) }}
-                        </span>
-                    </td>
-                    <td style="color:#999;font-size:0.8rem;white-space:nowrap;">{{ $c->created_at->format('d M Y') }}</td>
-                    <td onclick="event.stopPropagation();">
-                        <a href="{{ route('admin.complaints.show', $c->id) }}" class="btn-view">
-                            <i class="fas fa-eye"></i> View
-                        </a>
+                    <td>{{ $complaint->salon->name ?? 'N/A' }}</td>
+                    <td>{{ Str::limit($complaint->subject, 30) }}</td>
+                    <td><span style="background:#f3f4f6;padding:2px 10px;border-radius:12px;font-size:0.7rem;">{{ $complaint->type_label }}</span></td>
+                    <td style="font-size:0.8rem;color:#6b7280;">{{ $complaint->created_at->format('d M Y') }}</td>
+                    <td><span class="badge {{ $complaint->status_badge }}">{{ $complaint->status_label }}</span></td>
+                    <td onclick="event.stopPropagation()">
+                        <a href="{{ route('admin.complaints.show', $complaint->id) }}" class="btn-view"><i class="fas fa-eye"></i></a>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="empty-cell">
-                        <i class="fas fa-check-circle"></i>
-                        No complaints found
+                    <td colspan="8" style="padding:3rem 1rem;text-align:center;color:#9ca3af;">
+                        <i class="fas fa-exclamation-circle" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i>
+                        No complaints found.
                     </td>
                 </tr>
                 @endforelse
@@ -466,8 +446,8 @@
     </div>
 
     @if($complaints->hasPages())
-    <div class="pagination-wrap">
-        {{ $complaints->links() }}
+    <div class="pagination-wrapper">
+        {{ $complaints->appends(request()->query())->links() }}
     </div>
     @endif
 </div>

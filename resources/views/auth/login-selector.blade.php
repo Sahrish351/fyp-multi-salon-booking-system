@@ -1,198 +1,366 @@
 @extends('layouts.auth')
-@section('title', 'Select Login Type — Glamora')
+@section('title', 'Welcome Back — Glamora')
 
 @push('styles')
 <style>
-.login-selector-page {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    margin: 0;
-}
-
-.selector-card {
-    background: #ffffff;
-    border-radius: 28px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    padding: 2.5rem;
-    max-width: 850px;
-    width: 100%;
-    margin: 0 auto;
-    animation: fadeInUp 0.5s ease;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.selector-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.selector-header .icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #E91E8C, #c2185b);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-}
-
-.selector-header .icon i {
-    font-size: 2rem;
-    color: white;
-}
-
-.selector-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #E91E8C, #C9A96E);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem;
-}
-
-.selector-header p {
-    color: #6c757d;
-    font-size: 0.9rem;
-}
-
-.role-card {
-    background: #f8f9fa;
-    border-radius: 20px;
-    padding: 1.8rem 1.2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-    height: 100%;
-    text-decoration: none;
-    display: block;
-}
-
-.role-card:hover {
-    transform: translateY(-5px);
-    border-color: #E91E8C;
-    background: #ffffff;
-    box-shadow: 0 10px 25px rgba(233,30,140,0.12);
-}
-
-.role-icon {
-    width: 65px;
-    height: 65px;
-    background: linear-gradient(135deg, rgba(233,30,140,0.1), rgba(201,169,110,0.05));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-}
-
-.role-icon i {
-    font-size: 1.8rem;
-    color: #E91E8C;
-}
-
-.role-card h4 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.6rem;
-}
-
-.role-card p {
-    font-size: 0.8rem;
-    color: #6c757d;
-    line-height: 1.4;
-    margin-bottom: 0.8rem;
-    min-height: 55px;
-}
-
-.role-badge {
-    display: inline-block;
-    padding: 0.3rem 1rem;
-    background: rgba(233,30,140,0.1);
-    color: #E91E8C;
-    border-radius: 50px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
-.role-card:hover .role-badge {
-    background: #E91E8C;
-    color: white;
-}
-
-.footer-link {
-    text-align: center;
-    margin-top: 2rem;
-    padding-top: 0.5rem;
-}
-
-.footer-link p {
-    color: #6c757d;
-    font-size: 0.85rem;
-    margin: 0;
-}
-
-.footer-link a {
-    color: #E91E8C;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.footer-link a:hover {
-    text-decoration: underline;
-}
-
-/* Row and Column */
-.row {
-    display: flex;
-    justify-content: center;
-    margin: 0 -0.75rem;
-}
-
-.col-md-4 {
-    padding: 0 0.75rem;
-    display: flex;
-}
-
-@media (max-width: 768px) {
-    .selector-card {
+    /* ── Base ── */
+    .login-selector-page {
+        min-height: 100vh;
+        background: linear-gradient(160deg, #f8f0f5 0%, #fce4ec 30%, #f3e5f5 60%, #e8eaf6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding: 1.5rem;
-        max-width: 95%;
+        margin: 0;
+        position: relative;
+        overflow: hidden;
     }
+
+    /* Decorative circles */
+    .login-selector-page::before {
+        content: '';
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(233,30,140,0.06), transparent 70%);
+        top: -200px;
+        right: -200px;
+        pointer-events: none;
+    }
+
+    .login-selector-page::after {
+        content: '';
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201,169,110,0.05), transparent 70%);
+        bottom: -100px;
+        left: -100px;
+        pointer-events: none;
+    }
+
+    .selector-card {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(20px);
+        border-radius: 40px;
+        box-shadow: 
+            0 30px 80px rgba(0,0,0,0.08),
+            0 10px 30px rgba(233,30,140,0.05),
+            inset 0 1px 0 rgba(255,255,255,0.8);
+        padding: 3rem 2.5rem;
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid rgba(255,255,255,0.3);
+        position: relative;
+        z-index: 1;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.96);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .selector-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .selector-header .icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(145deg, #E91E8C, #c2185b);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        box-shadow: 0 12px 35px rgba(233,30,140,0.25);
+        position: relative;
+    }
+
+    .selector-header .icon-wrapper::after {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, rgba(233,30,140,0.2), rgba(201,169,110,0.2));
+        z-index: -1;
+        animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.6; }
+    }
+
+    .selector-header .icon-wrapper i {
+        font-size: 2.2rem;
+        color: white;
+    }
+
+    .selector-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #E91E8C, #C9A96E);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.3rem;
+        letter-spacing: -0.5px;
+    }
+
+    .selector-header p {
+        color: #8e8e9a;
+        font-size: 0.95rem;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+    }
+
+    /* ── Role Cards ── */
+    .role-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
     .role-card {
-        padding: 1.2rem;
+        background: #faf8f9;
+        border-radius: 24px;
+        padding: 2rem 1.2rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 2px solid transparent;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        min-height: 220px;
+        position: relative;
+        overflow: hidden;
     }
+
+    .role-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(145deg, rgba(233,30,140,0.03), rgba(201,169,110,0.02));
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .role-card:hover::before {
+        opacity: 1;
+    }
+
+    .role-card:hover {
+        transform: translateY(-8px);
+        border-color: #E91E8C;
+        background: #ffffff;
+        box-shadow: 0 20px 50px rgba(233,30,140,0.12);
+    }
+
     .role-icon {
-        width: 50px;
-        height: 50px;
+        width: 72px;
+        height: 72px;
+        background: linear-gradient(145deg, rgba(233,30,140,0.08), rgba(201,169,110,0.04));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.8rem;
+        flex-shrink: 0;
+        transition: all 0.4s ease;
     }
+
+    .role-card:hover .role-icon {
+        background: linear-gradient(145deg, rgba(233,30,140,0.15), rgba(201,169,110,0.08));
+        transform: scale(1.05);
+    }
+
     .role-icon i {
-        font-size: 1.4rem;
+        font-size: 2rem;
+        color: #E91E8C;
+        transition: all 0.4s ease;
     }
+
+    .role-card:hover .role-icon i {
+        color: #c2185b;
+        transform: scale(1.1);
+    }
+
     .role-card h4 {
-        font-size: 1rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 0.3rem;
+        letter-spacing: -0.3px;
     }
+
     .role-card p {
-        font-size: 0.7rem;
-        min-height: auto;
+        font-size: 0.78rem;
+        color: #8e8e9a;
+        line-height: 1.5;
+        margin-bottom: 0.8rem;
+        flex-grow: 1;
+        max-width: 200px;
     }
-}
+
+    .role-badge {
+        display: inline-block;
+        padding: 0.3rem 1.2rem;
+        background: rgba(233,30,140,0.08);
+        color: #E91E8C;
+        border-radius: 50px;
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-top: auto;
+        transition: all 0.4s ease;
+    }
+
+    .role-card:hover .role-badge {
+        background: #E91E8C;
+        color: white;
+        box-shadow: 0 8px 25px rgba(233,30,140,0.25);
+    }
+
+    /* Special badge colors */
+    .role-card.admin .role-badge {
+        background: rgba(156,39,176,0.1);
+        color: #7B1FA2;
+    }
+    .role-card.admin:hover .role-badge {
+        background: #7B1FA2;
+        color: white;
+    }
+
+    .role-card.owner .role-badge {
+        background: rgba(201,169,110,0.15);
+        color: #C9A96E;
+    }
+    .role-card.owner:hover .role-badge {
+        background: #C9A96E;
+        color: white;
+    }
+
+    .role-card.client .role-badge {
+        background: rgba(233,30,140,0.08);
+        color: #E91E8C;
+    }
+    .role-card.client:hover .role-badge {
+        background: #E91E8C;
+        color: white;
+    }
+
+    /* ── Footer ── */
+    .footer-link {
+        text-align: center;
+        padding-top: 0.8rem;
+        border-top: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .footer-link p {
+        color: #8e8e9a;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    .footer-link a {
+        color: #E91E8C;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .footer-link a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #E91E8C;
+        transition: width 0.3s ease;
+    }
+
+    .footer-link a:hover::after {
+        width: 100%;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 992px) {
+        .selector-card { padding: 2.5rem 1.8rem; }
+        .role-grid { gap: 1rem; }
+        .role-card { padding: 1.5rem 1rem; min-height: 190px; }
+        .role-card p { font-size: 0.72rem; }
+    }
+
+    @media (max-width: 768px) {
+        .login-selector-page { padding: 1rem; }
+        .selector-card { padding: 1.8rem 1.2rem; border-radius: 28px; }
+        .selector-header .icon-wrapper { width: 60px; height: 60px; }
+        .selector-header .icon-wrapper i { font-size: 1.6rem; }
+        .selector-header h2 { font-size: 1.6rem; }
+
+        .role-grid {
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+        }
+
+        .role-card {
+            flex-direction: row;
+            align-items: center;
+            text-align: left;
+            padding: 1rem 1.2rem;
+            min-height: auto;
+            gap: 1rem;
+        }
+
+        .role-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+        .role-icon i { font-size: 1.4rem; }
+
+        .role-card .role-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .role-card h4 { font-size: 1rem; margin-bottom: 0.1rem; }
+        .role-card p { font-size: 0.72rem; margin-bottom: 0.2rem; max-width: none; }
+        .role-badge { align-self: flex-start; font-size: 0.55rem; padding: 0.15rem 0.8rem; margin-top: 0.2rem; }
+        .role-card:hover { transform: none; }
+    }
+
+    @media (max-width: 400px) {
+        .selector-card { padding: 1.2rem 0.8rem; }
+        .role-card { padding: 0.8rem 1rem; gap: 0.8rem; }
+        .role-icon { width: 40px; height: 40px; }
+        .role-icon i { font-size: 1.1rem; }
+        .role-card h4 { font-size: 0.85rem; }
+        .role-card p { font-size: 0.65rem; }
+        .selector-header h2 { font-size: 1.3rem; }
+        .footer-link p { font-size: 0.75rem; }
+    }
 </style>
 @endpush
 
@@ -200,53 +368,53 @@
 <div class="login-selector-page">
     <div class="selector-card">
         <div class="selector-header">
-            <div class="icon">
+            <div class="icon-wrapper">
                 <i class="fas fa-spa"></i>
             </div>
-            <h2>Welcome to Glamora</h2>
-            <p>Select how you want to login</p>
+            <h2>Welcome Back</h2>
+            <p>Sign in to continue your beauty journey</p>
         </div>
 
-        <div class="row">
+        <div class="role-grid">
             <!-- Client Login -->
-            <div class="col-md-4">
-                <a href="{{ route('client.login.form') }}" class="role-card">
-                    <div class="role-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
+            <a href="{{ route('client.login.form') }}" class="role-card client">
+                <div class="role-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="role-content">
                     <h4>Client</h4>
-                    <p>Book appointments, discover salons, and manage your beauty routine</p>
+                    <p>Book appointments &amp; discover salons</p>
                     <span class="role-badge">Recommended</span>
-                </a>
-            </div>
+                </div>
+            </a>
 
             <!-- Owner Login -->
-            <div class="col-md-4">
-                <a href="{{ route('owner.login.form') }}" class="role-card">
-                    <div class="role-icon">
-                        <i class="fas fa-store"></i>
-                    </div>
+            <a href="{{ route('owner.login.form') }}" class="role-card owner">
+                <div class="role-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="role-content">
                     <h4>Salon Owner</h4>
-                    <p>Manage your salon, appointments, and business analytics</p>
+                    <p>Manage your salon &amp; appointments</p>
                     <span class="role-badge">Business</span>
-                </a>
-            </div>
+                </div>
+            </a>
 
             <!-- Admin Login -->
-            <div class="col-md-4">
-                <a href="{{ route('admin.login.form') }}" class="role-card">
-                    <div class="role-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
+            <a href="{{ route('admin.login.form') }}" class="role-card admin">
+                <div class="role-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="role-content">
                     <h4>Administrator</h4>
-                    <p>Platform management, user oversight, and system controls</p>
-                    <span class="role-badge">Admin Only</span>
-                </a>
-            </div>
+                    <p>Platform management &amp; controls</p>
+                    <span class="role-badge">Admin</span>
+                </div>
+            </a>
         </div>
 
         <div class="footer-link">
-            <p>Don't have an account? <a href="{{ route('register.selector') }}">Register Now</a></p>
+            <p>Don't have an account? <a href="{{ route('register.selector') }}">Create Account</a></p>
         </div>
     </div>
 </div>

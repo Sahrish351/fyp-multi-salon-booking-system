@@ -1,5 +1,3 @@
-
- 
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
  
 <aside class="sidebar" id="ownerSidebar">
@@ -111,6 +109,14 @@
                 <span>Reviews</span>
             </a>
         </li>
+
+        <li>
+            <a href="{{ route('owner.complaints.index') }}"
+               class="nav-link-item {{ request()->routeIs('owner.complaints.*') ? 'active' : '' }}">
+                <i class="bi bi-exclamation-triangle-fill nav-ico"></i>
+                <span>Complaints</span>
+            </a>
+        </li>
  
         <li>
             <a href="{{ route('owner.gallery.index') }}"
@@ -137,6 +143,15 @@
         </li>
  
         <div class="nav-divider"></div>
+
+        {{-- 🌐 Visit Website --}}
+        <li>
+            <a href="{{ url('/') }}" target="_blank" class="nav-link-item">
+                <i class="bi bi-globe2 nav-ico"></i>
+                <span>Visit Website</span>
+                <i class="bi bi-box-arrow-up-right ms-auto" style="font-size:10px;color:#999;"></i>
+            </a>
+        </li>
  
         <li>
             <a href="{{ route('owner.settings.index') }}"
@@ -158,4 +173,3 @@
  
     </ul>
 </aside>
- 

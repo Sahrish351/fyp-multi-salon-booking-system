@@ -31,6 +31,6 @@ class AboutController extends Controller
             ->take(6)
             ->get();
 
-        return view('frontend.about', compact('stats', 'featuredSalons', 'topRatedReviews'));
+        return view('frontend.pages.about', compact('stats', 'featuredSalons', 'topRatedReviews'));
     }
 }
