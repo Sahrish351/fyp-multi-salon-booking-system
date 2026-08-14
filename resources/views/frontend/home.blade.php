@@ -14,7 +14,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
     a { text-decoration: none; color: inherit; }
-
+ 
     /* ── navbar ── */
     .g-nav {
       background: rgba(255,255,255,0.97);
@@ -76,7 +76,7 @@
     }
     .menu-dropdown a:hover { background: #f5f5f5; color: #E91E8C; }
     .menu-dropdown .mobile-auth { display: block; }
-
+ 
     @media(min-width:769px) {
       .g-nav { padding: 0 32px; height: 64px; }
       .g-nav .brand .brand-text { font-size: 1.5rem; }
@@ -92,7 +92,7 @@
       .g-nav .brand .brand-icon i { font-size: 0.85rem; }
       .btn-nav-menu { font-size: 0.7rem; padding: 4px 10px; }
     }
-
+ 
     /* ── HERO ── */
     .hero {
       background: linear-gradient(145deg, #ede8f5 0%, #f5e6f5 20%, #fce8f3 50%, #fdf5fb 80%, #fff 100%);
@@ -148,7 +148,7 @@
       .hero p { font-size: 0.85rem; margin-bottom: 20px; }
       .hero-count { font-size: 0.75rem; margin-top: 40px; }
     }
-
+ 
     /* ── search pill ── */
     .search-pill {
       display: flex; flex-direction: column;
@@ -189,7 +189,7 @@
       .btn-search-pill { width: 48px; height: 48px; margin-top: 0; }
       .search-pill .sp-field { font-size: 0.92rem; }
     }
-
+ 
     /* ── DROPDOWNS (FIXED) ── */
     .sp-dropdown {
       position: absolute;
@@ -209,7 +209,7 @@
       margin-top: 4px;
     }
     .sp-dropdown.show { display: block; }
-
+ 
     /* Mobile view: fixed position */
     @media(max-width:768px) {
       .sp-dropdown {
@@ -222,7 +222,7 @@
         margin-top: 0;
       }
     }
-
+ 
     /* Laptop view: specific positioning */
     @media(min-width:769px) {
       #treatmentsDD { 
@@ -241,7 +241,7 @@
         max-height: none; 
       }
     }
-
+ 
     .sp-dropdown-item {
       display: flex; align-items: center; gap: 10px; padding: 10px 12px;
       border-radius: 10px; cursor: pointer; transition: background .15s;
@@ -249,7 +249,7 @@
     }
     .sp-dropdown-item:hover { background: #f5f5f5; }
     .sp-dropdown-item i { color: #E91E8C; width: 16px; }
-
+ 
     /* ── flatpickr inline ── */
     .flatpickr-calendar.inline { width: 100% !important; box-shadow: none !important; border: none !important; }
     .flatpickr-calendar.inline .flatpickr-days { width: 100% !important; }
@@ -262,7 +262,7 @@
       transition: all 0.2s;
     }
     .time-option-btn:hover { border-color: #E91E8C; color: #E91E8C; }
-
+ 
     /* ── sections ── */
     .g-section { padding: 30px 0; }
     .g-section-head {
@@ -277,7 +277,7 @@
       .g-section-head { padding: 0 32px; }
       .g-section-head h2 { font-size: 1.5rem; }
     }
-
+ 
     /* ── slider ── */
     .slider-outer { position: relative; }
     .slider-scroll-area {
@@ -294,7 +294,7 @@
     @media(min-width:768px) { .slider-track { grid-auto-columns: calc((100% - 48px) / 2); } }
     @media(min-width:992px) { .slider-track { grid-auto-columns: calc((100% - 80px) / 3); } }
     @media(min-width:1200px) { .slider-track { grid-auto-columns: calc((100% - 96px) / 4); } }
-
+ 
     .slider-arrow-btn {
       display: none;
       position: absolute; top: 40%; transform: translateY(-50%);
@@ -307,13 +307,15 @@
     .slider-arrow-btn.left { left: 4px; }
     .slider-arrow-btn.right { right: 4px; }
     @media(min-width:768px) { .slider-arrow-btn { display: flex; } }
-
+ 
     /* ── salon card ── */
     .salon-card { cursor: pointer; display: block; }
     .salon-card .sc-img {
       width: 100%; aspect-ratio: 4/3; border-radius: 16px; overflow: hidden;
       position: relative; background: #f0f0f0;
+      transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
     }
+    .salon-card:hover .sc-img { transform: translateY(-8px); box-shadow: 0 18px 32px rgba(0,0,0,0.18); }
     .salon-card .sc-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .salon-card .sc-badge {
       position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.95);
@@ -336,7 +338,7 @@
     .salon-card .sc-rating-inline .star { color: #ffc107; font-size: 0.75rem; }
     .salon-card .sc-addr { font-size: 0.75rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .salon-card .sc-meta { font-size: 0.75rem; color: #888; }
-
+ 
     /* ── review scroll ── */
     .review-wrapper { overflow: hidden; padding: 0 16px; position: relative; }
     .review-scroll {
@@ -365,7 +367,7 @@
     }
     .rev-card .rc-name { font-weight: 700; font-size: 0.82rem; color: #1a1a1a; }
     .rev-card .rc-loc { font-size: 0.7rem; color: #888; }
-
+ 
     @keyframes scrollReviews {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
@@ -378,7 +380,7 @@
       .rev-card { flex: 0 0 220px; padding: 1rem; }
       .rev-card .rc-text { font-size: 0.75rem; }
     }
-
+ 
     /* ── stats ── */
     .stats-sec { padding: 40px 16px; text-align: center; background: #1a1a1a; }
     .stats-sec .st-title { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
@@ -395,35 +397,61 @@
       .stats-sec .mini-stats { gap: 80px; }
       .stats-sec .ms-num { font-size: 2rem; }
     }
-
+ 
     /* ── city ── */
-    .city-sec { background: #fafafa; padding: 40px 16px; }
-    .city-sec h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 16px; }
-    .city-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+    .city-sec { background: #fafafa; padding: 48px 16px; }
+    .city-sec h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; }
+    .city-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
     .city-tab-btn {
-      border: 1.5px solid #e0e0e0; border-radius: 50px; padding: 5px 14px;
-      font-size: 0.75rem; font-weight: 600; color: #555; background: #fff;
+      border: 1.5px solid #e0e0e0; border-radius: 50px; padding: 7px 18px;
+      font-size: 0.78rem; font-weight: 600; color: #555; background: #fff;
       cursor: pointer; transition: all 0.2s;
     }
     .city-tab-btn.active, .city-tab-btn:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .city-grid {
-      display: grid; grid-template-columns: repeat(2,1fr); gap: 1.2rem;
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 2.2rem 1.6rem;
     }
-    .city-col h6 { font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; }
-    .city-col a { display: block; font-size: 0.75rem; color: #666; padding: 2px 0; }
-    .city-col a:hover { color: #E91E8C; }
-    @media(min-width:576px) { .city-grid { grid-template-columns: repeat(3,1fr); } }
-    @media(min-width:992px) { .city-grid { grid-template-columns: repeat(5,1fr); gap: 2.5rem; } }
-    @media(min-width:768px) { .city-sec { padding: 60px 32px; } }
-
+    .city-col h6 { font-size: 0.85rem; font-weight: 700; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #f0dce9; color: #1a1a1a; }
+    .city-col a { display: block; font-size: 0.8rem; color: #666; padding: 6px 0; transition: color .2s ease, padding-left .2s ease; }
+    .city-col a:hover { color: #E91E8C; padding-left: 4px; }
+    @media(min-width:576px) { .city-grid { grid-template-columns: repeat(3,1fr); gap: 2.6rem 2rem; } }
+    @media(min-width:992px) { .city-grid { grid-template-columns: repeat(5,1fr); gap: 3rem; } }
+    @media(min-width:768px) { .city-sec { padding: 70px 32px; } .city-col h6 { font-size: 0.9rem; } .city-col a { font-size: 0.85rem; padding: 7px 0; } }
+ 
     /* ── biz ── */
-    .biz-sec { background: #1a1a1a; padding: 40px 16px; }
-    .biz-sec h2 { font-size: 1.4rem; font-weight: 900; color: #fff; margin-bottom: 12px; }
-    .biz-sec p { color: #888; font-size: 0.85rem; margin-bottom: 20px; }
-    .btn-biz { background: #fff; color: #1a1a1a; border-radius: 50px; padding: 12px 28px; font-weight: 700; display: inline-block; transition: all 0.2s; }
-    .btn-biz:hover { background: #E91E8C; color: #fff; }
-    @media(min-width:768px) { .biz-sec { padding: 80px 32px; } .biz-sec h2 { font-size: 2.2rem; } }
-
+    .biz-sec {
+      background: radial-gradient(circle at 15% 20%, rgba(233,30,140,0.35) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 80%, rgba(201,169,110,0.28) 0%, transparent 50%),
+                  #1a1a1a;
+      padding: 44px 16px; position: relative; overflow: hidden;
+    }
+    .biz-inner { display: grid; grid-template-columns: 1fr; gap: 30px; max-width: 1100px; margin: 0 auto; align-items: center; }
+    .biz-sec .eyebrow { color: #E91E8C; }
+    .biz-sec h2 { font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 12px; line-height: 1.25; }
+    .biz-sec p { color: #aaa; font-size: 0.88rem; margin-bottom: 22px; line-height: 1.6; max-width: 440px; }
+    .btn-biz { background: #fff; color: #1a1a1a; border-radius: 50px; padding: 13px 30px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s ease; }
+    .btn-biz:hover { background: #E91E8C; color: #fff; transform: translateY(-2px); }
+    .biz-perks { display: flex; flex-direction: column; gap: 14px; }
+    .biz-perk {
+      display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 16px 18px;
+      backdrop-filter: blur(6px); transition: background .25s ease, transform .25s ease;
+    }
+    .biz-perk:hover { background: rgba(255,255,255,0.09); transform: translateX(4px); }
+    .biz-perk .bp-icon {
+      width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+      background: linear-gradient(135deg,#E91E8C,#C9A96E); display: flex; align-items: center; justify-content: center;
+    }
+    .biz-perk .bp-icon i { color: #fff; font-size: 1rem; }
+    .biz-perk h5 { font-size: 0.86rem; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .biz-perk span { font-size: 0.74rem; color: #999; }
+    @media(min-width:768px) {
+      .biz-sec { padding: 90px 32px; }
+      .biz-inner { grid-template-columns: 1.15fr 1fr; gap: 60px; }
+      .biz-sec h2 { font-size: 2.3rem; }
+      .biz-sec p { font-size: 0.98rem; }
+    }
+ 
     /* ── footer ── */
     footer { background: #f8f5f7; color: #555; padding-top: 40px; border-top: 1px solid #f0e8ed; }
     footer h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; }
@@ -432,10 +460,102 @@
     footer a:hover { color: #E91E8C; }
     footer .list-unstyled li { margin-bottom: 2px; }
     @media(min-width:768px) { footer { padding-top: 60px; } }
+ 
+    /* ═══════════════════════════════════════════════
+       NEW SECTIONS — added below the 3 salon sliders
+       ═══════════════════════════════════════════════ */
+ 
+    /* shared scroll-reveal helper */
+    .reveal-up { opacity: 0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+    .reveal-up.in-view { opacity: 1; transform: translateY(0); }
+    .reveal-stagger.in-view > * { animation: staggerUp .6s cubic-bezier(.22,1,.36,1) both; }
+    .reveal-stagger.in-view > *:nth-child(1){animation-delay:.05s;}
+    .reveal-stagger.in-view > *:nth-child(2){animation-delay:.15s;}
+    .reveal-stagger.in-view > *:nth-child(3){animation-delay:.25s;}
+    .reveal-stagger.in-view > *:nth-child(4){animation-delay:.35s;}
+    .reveal-stagger.in-view > *:nth-child(5){animation-delay:.45s;}
+    .reveal-stagger.in-view > *:nth-child(6){animation-delay:.55s;}
+    .reveal-stagger.in-view > *:nth-child(7){animation-delay:.65s;}
+    .reveal-stagger.in-view > *:nth-child(8){animation-delay:.75s;}
+    .reveal-stagger > * { opacity: 0; transform: translateY(20px); }
+    @keyframes staggerUp { to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal-up, .reveal-stagger > * { opacity: 1 !important; transform: none !important; animation: none !important; transition: none !important; }
+    }
+ 
+    .eyebrow {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: #E91E8C; margin-bottom: 8px; display: block;
+    }
+    .section-title-center { text-align: center; padding: 0 16px; margin-bottom: 28px; }
+    .section-title-center h2 { font-size: 1.5rem; font-weight: 800; color: #1a1a1a; margin-bottom: 8px; }
+    .section-title-center p { font-size: 0.88rem; color: #777; max-width: 520px; margin: 0 auto; }
+    @media(min-width:768px) {
+      .section-title-center h2 { font-size: 2.1rem; }
+      .section-title-center p { font-size: 1rem; }
+    }
+ 
+    /* ── How It Works ── */
+    .how-sec { background: #fff; padding: 50px 16px; }
+    .how-grid { display: grid; grid-template-columns: 1fr; gap: 22px; max-width: 1100px; margin: 0 auto; position: relative; }
+    .how-card { text-align: center; padding: 32px 22px; border-radius: 22px; background: #fdf5fb; position: relative; }
+    .how-icon {
+      width: 62px; height: 62px; border-radius: 50%;
+      background: linear-gradient(135deg, #E91E8C, #C9A96E);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;
+      box-shadow: 0 10px 24px rgba(233,30,140,0.28);
+      transition: transform .3s ease;
+    }
+    .how-card:hover .how-icon { transform: scale(1.1) rotate(-6deg); }
+    .how-icon i { color: #fff; font-size: 1.3rem; }
+    .how-step-num { font-family: 'Playfair Display', serif; font-size: 0.75rem; font-weight: 700; color: #C9A96E; letter-spacing: 2px; margin-bottom: 6px; }
+    .how-card h3 { font-size: 1.05rem; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+    .how-card p { font-size: 0.82rem; color: #777; line-height: 1.6; }
+    @media(min-width:768px) {
+      .how-sec { padding: 80px 32px; }
+      .how-grid { grid-template-columns: repeat(3,1fr); gap: 28px; }
+      .how-card::after {
+        content: ''; position: absolute; top: 31px; left: calc(100% + 14px);
+        width: calc(28px - 4px); border-top: 2px dashed #eeccdf;
+      }
+      .how-card:last-child::after { display: none; }
+    }
+ 
+    /* ── Popular Categories (circular) ── */
+    .cat-sec { background: linear-gradient(180deg,#fff 0%,#fdf5fb 100%); padding: 50px 16px; }
+    .cat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px 12px; max-width: 1100px; margin: 0 auto; }
+    .cat-tile {
+      background: transparent; border: none; box-shadow: none; padding: 0; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
+    }
+    .cat-tile .cat-icon {
+      width: 74px; height: 74px; border-radius: 50%; flex-shrink: 0;
+      background: #fff; border: 1.5px solid #f2d9e8;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 16px rgba(233,30,140,0.08);
+      transition: all .3s cubic-bezier(.22,1,.36,1);
+    }
+    .cat-tile:hover .cat-icon { background: linear-gradient(135deg,#E91E8C,#C9A96E); border-color: transparent; transform: translateY(-6px) scale(1.06); box-shadow: 0 14px 28px rgba(233,30,140,0.28); }
+    .cat-tile .cat-icon i { color: #E91E8C; font-size: 1.3rem; transition: color .3s ease; }
+    .cat-tile:hover .cat-icon i { color: #fff; }
+    .cat-tile span { font-size: 0.78rem; font-weight: 600; color: #1a1a1a; }
+    @media(min-width:576px) { .cat-grid { grid-template-columns: repeat(4,1fr); gap: 26px 16px; } }
+    @media(min-width:992px) { .cat-grid { grid-template-columns: repeat(8,1fr); gap: 30px 20px; } }
+    @media(min-width:768px) { .cat-sec { padding: 80px 32px; } .cat-tile .cat-icon { width: 92px; height: 92px; } .cat-tile .cat-icon i { font-size: 1.6rem; } .cat-tile span { font-size: 0.88rem; } }
+ 
+    /* ── Why Choose Us (light theme so it reads as a distinct section from the dark Stats block) ── */
+    .trust-sec { background: #fff; padding: 50px 16px; }
+    .trust-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 1000px; margin: 0 auto; }
+    .trust-card { background: #fdf5fb; border: 1px solid #f2d9e8; border-radius: 18px; padding: 24px 16px; text-align: center; transition: transform .25s ease, box-shadow .25s ease; }
+    .trust-card:hover { transform: translateY(-6px); box-shadow: 0 14px 28px rgba(233,30,140,0.14); }
+    .trust-card i { font-size: 1.4rem; background: linear-gradient(135deg,#E91E8C,#C9A96E); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 10px; display: inline-block; }
+    .trust-card h4 { font-size: 0.88rem; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+    .trust-card p { font-size: 0.74rem; color: #777; line-height: 1.5; }
+    @media(min-width:768px) { .trust-sec { padding: 80px 32px; } .trust-grid { grid-template-columns: repeat(4,1fr); gap: 24px; } .trust-card { padding: 34px 20px; } }
   </style>
 </head>
 <body>
-
+ 
 <!-- ===== NAVBAR ===== -->
 <nav class="g-nav">
   <a href="{{ route('home') }}" class="brand">
@@ -476,7 +596,7 @@
     </div>
   </div>
 </nav>
-
+ 
 <!-- ===== HERO ===== -->
 <section class="hero">
   <h1>Book premium beauty services</h1>
@@ -506,7 +626,7 @@
         <div class="sp-dropdown-item" onclick="selectTreatment('{{ $cat->name }}')"><i class="fas fa-spa"></i> {{ $cat->name }}</div>
         @endforeach
       </div>
-
+ 
       <div class="sp-divider"></div>
       <div class="sp-segment" onclick="toggleDropdown('locationDD')">
         <i class="fas fa-map-marker-alt sp-icon" style="color:#E91E8C;"></i>
@@ -523,7 +643,7 @@
         <div class="sp-dropdown-item" onclick="selectCity('Peshawar')"><i class="fas fa-map-marker-alt"></i> Peshawar</div>
         <div class="sp-dropdown-item" onclick="selectCity('Quetta')"><i class="fas fa-map-marker-alt"></i> Quetta</div>
       </div>
-
+ 
       <div class="sp-divider"></div>
       <div class="sp-segment" onclick="toggleDropdown('timeDD')">
         <i class="fas fa-calendar sp-icon"></i>
@@ -544,13 +664,13 @@
         </div>
         <button type="button" onclick="applyDateTime()" class="btn-search-pill" style="width:100%;border-radius:12px;margin-top:10px;height:44px;">Apply</button>
       </div>
-
+ 
       <button type="submit" class="btn-search-pill"><i class="fas fa-search"></i></button>
     </div>
   </form>
   <p class="hero-count"><strong>{{ number_format($totalBookings ?? 0) }}</strong> appointments booked today</p>
 </section>
-
+ 
 <!-- ===== RECOMMENDED ===== -->
 <section class="g-section" style="background:#fff;padding-top:20px;">
   <div class="g-section-head">
@@ -588,7 +708,7 @@
     <button class="slider-arrow-btn right" onclick="slide('rec',1)"><i class="fas fa-chevron-right"></i></button>
   </div>
 </section>
-
+ 
 <!-- ===== NEW TO BEAUTY BLUSH ===== -->
 <section class="g-section" style="background:linear-gradient(180deg,#fff 0%,#fdf5fb 100%);">
   <div class="g-section-head">
@@ -619,7 +739,7 @@
     <button class="slider-arrow-btn right" onclick="slide('newto',1)"><i class="fas fa-chevron-right"></i></button>
   </div>
 </section>
-
+ 
 <!-- ===== TRENDING ===== -->
 <section class="g-section" style="background:#fff;">
   <div class="g-section-head">
@@ -653,7 +773,55 @@
     <button class="slider-arrow-btn right" onclick="slide('trending',1)"><i class="fas fa-chevron-right"></i></button>
   </div>
 </section>
-
+ 
+<!-- ═══════════════════ NEW: HOW IT WORKS ═══════════════════ -->
+<section class="how-sec">
+  <div class="section-title-center reveal-up">
+    <span class="eyebrow">Simple &amp; Fast</span>
+    <h2>How Beauty Blush works</h2>
+    <p>From discovery to a finished look — three easy steps, no phone calls needed.</p>
+  </div>
+  <div class="how-grid reveal-stagger">
+    <div class="how-card">
+      <div class="how-icon"><i class="fas fa-magnifying-glass"></i></div>
+      <div class="how-step-num">STEP 01</div>
+      <h3>Search &amp; Discover</h3>
+      <p>Browse verified salons near you by treatment, city or preferred time.</p>
+    </div>
+    <div class="how-card">
+      <div class="how-icon"><i class="fas fa-calendar-check"></i></div>
+      <div class="how-step-num">STEP 02</div>
+      <h3>Book Instantly</h3>
+      <p>Pick your stylist and slot, confirm payment, and you're booked in seconds.</p>
+    </div>
+    <div class="how-card">
+      <div class="how-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+      <div class="how-step-num">STEP 03</div>
+      <h3>Enjoy &amp; Review</h3>
+      <p>Walk in, get pampered, and share your experience with the community.</p>
+    </div>
+  </div>
+</section>
+ 
+<!-- ═══════════════════ NEW: POPULAR CATEGORIES ═══════════════════ -->
+<section class="cat-sec">
+  <div class="section-title-center reveal-up">
+    <span class="eyebrow">Browse</span>
+    <h2>Popular categories</h2>
+    <p>Whatever you're in the mood for, there's a salon ready to deliver it.</p>
+  </div>
+  <div class="cat-grid reveal-stagger">
+    <a href="{{ route('salons.index') }}?category=hair" class="cat-tile"><div class="cat-icon"><i class="fas fa-cut"></i></div><span>Hair</span></a>
+    <a href="{{ route('salons.index') }}?category=nails" class="cat-tile"><div class="cat-icon"><i class="fas fa-hand-sparkles"></i></div><span>Nails</span></a>
+    <a href="{{ route('salons.index') }}?category=bridal" class="cat-tile"><div class="cat-icon"><i class="fas fa-ring"></i></div><span>Bridal</span></a>
+    <a href="{{ route('salons.index') }}?category=makeup" class="cat-tile"><div class="cat-icon"><i class="fas fa-brush"></i></div><span>Makeup</span></a>
+    <a href="{{ route('salons.index') }}?category=spa" class="cat-tile"><div class="cat-icon"><i class="fas fa-spa"></i></div><span>Spa &amp; Massage</span></a>
+    <a href="{{ route('salons.index') }}?category=skincare" class="cat-tile"><div class="cat-icon"><i class="fas fa-face-smile"></i></div><span>Skincare</span></a>
+    <a href="{{ route('salons.index') }}?category=mehndi" class="cat-tile"><div class="cat-icon"><i class="fas fa-palette"></i></div><span>Mehndi</span></a>
+    <a href="{{ route('salons.index') }}?category=men" class="cat-tile"><div class="cat-icon"><i class="fas fa-user-tie"></i></div><span>Men's Grooming</span></a>
+  </div>
+</section>
+ 
 <!-- ===== REVIEWS ===== -->
 <section class="g-section" style="background:#fff;">
   <div class="g-section-head">
@@ -702,7 +870,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- ===== STATS ===== -->
 <section class="stats-sec">
   <h2 class="st-title">The top-rated destination for beauty in Pakistan</h2>
@@ -715,7 +883,22 @@
     <div><div class="ms-num">{{ number_format($totalClients ?? 0) }}+</div><div class="ms-lbl">happy clients</div></div>
   </div>
 </section>
-
+ 
+<!-- ═══════════════════ NEW: WHY CHOOSE US ═══════════════════ -->
+<section class="trust-sec">
+  <div class="section-title-center reveal-up">
+    <span class="eyebrow">Why Beauty Blush</span>
+    <h2>Booking beauty, made trustworthy</h2>
+    <p>Every salon on our platform is vetted, every payment is protected.</p>
+  </div>
+  <div class="trust-grid reveal-stagger">
+    <div class="trust-card"><i class="fas fa-shield-halved"></i><h4>Verified Salons</h4><p>Every partner is manually reviewed before going live.</p></div>
+    <div class="trust-card"><i class="fas fa-lock"></i><h4>Secure Payments</h4><p>EasyPaisa, JazzCash, bank transfer or card — your choice.</p></div>
+    <div class="trust-card"><i class="fas fa-bolt"></i><h4>Instant Confirmation</h4><p>No waiting on hold — your slot is confirmed in seconds.</p></div>
+    <div class="trust-card"><i class="fas fa-headset"></i><h4>Real Support</h4><p>Our team is on hand for rescheduling or any concerns.</p></div>
+  </div>
+</section>
+ 
 <!-- ===== BROWSE BY CITY ===== -->
 <section class="city-sec">
   <h2>Browse by City</h2>
@@ -732,50 +915,130 @@
     <div class="city-col"><h6>Rawalpindi</h6><a href="#">Hair Salons Rawalpindi</a><a href="#">Nail Salons Rawalpindi</a><a href="#">Bridal Salons Rawalpindi</a></div>
   </div>
 </section>
-
+ 
 <!-- ===== GROW YOUR BUSINESS ===== -->
 <section class="biz-sec">
-  <div class="container"><div class="row"><div class="col-lg-7">
-    <h2>Grow your salon business with Beauty Blush</h2>
-    <p>Join thousands of salon owners across Pakistan who manage bookings, payments, and clients from one beautiful dashboard. Completely free to register.</p>
-    <a href="{{ route('register.owner') }}" class="btn-biz">List your business — it's free</a>
-  </div></div></div>
-</section>
-
-<!-- ===== FOOTER ===== -->
-<footer>
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-lg-3 col-md-6">
-        <h3><span style="color:#E91E8C;">Beauty</span><span style="color:#C9A96E;"> Blush</span><span style="color:#E91E8C;"> Salons</span></h3>
-        <p style="color:#777; line-height:1.6; font-size:0.85rem;">Pakistan's premium multi-salon booking platform. Discover top salons, book appointments, and experience beauty like never before.</p>
-        <p style="color:#888; font-size:0.75rem;"><i class="fas fa-map-marker-alt" style="color:#E91E8C; width:16px;"></i> Gulberg III, Lahore, Pakistan</p>
-        <p style="color:#888; font-size:0.75rem;"><i class="fas fa-phone" style="color:#E91E8C; width:16px;"></i> <a href="tel:+923001234567" style="color:#888;">+92 300 1234567</a></p>
-        <p style="color:#888; font-size:0.75rem;"><i class="fas fa-envelope" style="color:#E91E8C; width:16px;"></i> <a href="mailto:hello@beautyblush.pk" style="color:#888;">hello@beautyblush.pk</a></p>
+  <div class="biz-inner">
+    <div>
+      <span class="eyebrow">For Salon Owners</span>
+      <h2>Grow your salon business with Beauty Blush</h2>
+      <p>Join thousands of salon owners across Pakistan who manage bookings, payments, and clients from one beautiful dashboard. Completely free to register.</p>
+      <a href="{{ route('register.owner') }}" class="btn-biz">List your business — it's free <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="biz-perks">
+      <div class="biz-perk">
+        <div class="bp-icon"><i class="fas fa-sack-dollar"></i></div>
+        <div><h5>0% setup fee</h5><span>Free forever to list your salon</span></div>
       </div>
-      <div class="col-lg-2 col-md-6">
-        <h6 style="color:#E91E8C;">Quick Links</h6>
-        <ul class="list-unstyled"><li><a href="{{ route('home') }}">Home</a></li><li><a href="{{ route('salons.index') }}">Salons</a></li><li><a href="{{ route('about') }}">About</a></li><li><a href="{{ route('contact') }}">Contact</a></li><li><a href="{{ route('register.owner') }}">List Your Salon</a></li></ul>
+      <div class="biz-perk">
+        <div class="bp-icon"><i class="fas fa-calendar-check"></i></div>
+        <div><h5>Manage bookings &amp; payments</h5><span>One dashboard for everything</span></div>
       </div>
-      <div class="col-lg-2 col-md-6">
-        <h6 style="color:#C9A96E;">For Business</h6>
-        <ul class="list-unstyled"><li><a href="{{ route('register.owner') }}">List Your Salon</a></li><li><a href="{{ route('partner') }}">Partner With Us</a></li><li><a href="/pricing">Pricing</a></li><li><a href="/support">Support</a></li><li><a href="/faq">FAQ</a></li></ul>
-      </div>
-      <div class="col-lg-2 col-md-6">
-        <h6 style="color:#E91E8C;">Follow Us</h6>
-        <ul class="list-unstyled"><li><a href="#"><i class="fab fa-facebook-f" style="width:18px;color:#E91E8C;"></i> Facebook</a></li><li><a href="#"><i class="fab fa-instagram" style="width:18px;color:#E91E8C;"></i> Instagram</a></li><li><a href="#"><i class="fab fa-tiktok" style="width:18px;color:#E91E8C;"></i> TikTok</a></li><li><a href="#"><i class="fab fa-youtube" style="width:18px;color:#E91E8C;"></i> YouTube</a></li><li><a href="#"><i class="fab fa-twitter" style="width:18px;color:#E91E8C;"></i> Twitter</a></li></ul>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <h6 style="color:#C9A96E;">Legal</h6>
-        <ul class="list-unstyled"><li><a href="{{ route('privacy') }}">Privacy Policy</a></li><li><a href="{{ route('terms') }}">Terms &amp; Conditions</a></li><li><a href="{{ route('terms.of.use') }}">Terms of Use</a></li><li><a href="{{ route('cookies') }}">Cookie Policy</a></li><li><a href="{{ route('about') }}">About Us</a></li></ul>
+      <div class="biz-perk">
+        <div class="bp-icon"><i class="fas fa-users"></i></div>
+        <div><h5>Reach new clients</h5><span>Get discovered across Pakistan</span></div>
       </div>
     </div>
   </div>
-  <div style="border-top:1px solid #f0e8ed; margin-top:30px; padding:16px 0;">
-    <div class="container"><p style="text-align:center; color:#aaa; font-size:0.75rem; margin:0;">&copy; {{ date('Y') }} <span style="color:#E91E8C; font-weight:600;">Beauty Blush Salons</span> — All rights reserved.</p></div>
-  </div>
+</section>
+ 
+<!-- ===== FOOTER ===== -->
+<footer style="background: #f8f5f7; color: #555; padding-top: 60px; border-top: 1px solid #f0e8ed;">
+    <div class="container">
+        <div class="row g-4">
+ 
+            <!-- Brand Column -->
+            <div class="col-lg-3 col-md-6">
+                <h3 class="fw-bold mb-3" style="font-family:'Playfair Display',serif; font-size:1.6rem; margin-top:0; padding-top:0;">
+                    <span style="color:#E91E8C;">Beauty</span>
+                    <span style="color:#C9A96E;"> Blush</span>
+                    <span style="color:#E91E8C;"> Salons</span>
+                </h3>
+                <p style="color:#777; line-height:1.8; font-size:0.88rem;">
+                    Pakistan's premium multi-salon booking platform. Discover top salons,
+                    book appointments, and experience beauty like never before.
+                </p>
+                
+                <!-- Address -->
+                <p style="color:#888; font-size:0.78rem; margin-top:10px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-map-marker-alt" style="color:#E91E8C; width:16px; text-align:center;"></i>
+                    <span>Gulberg III, Lahore, Pakistan</span>
+                </p>
+                
+                <!-- Phone -->
+                <p style="color:#888; font-size:0.78rem; margin-bottom:4px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-phone" style="color:#E91E8C; width:16px; text-align:center;"></i>
+                    <a href="tel:+923001234567" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">+92 300 1234567</a>
+                </p>
+                
+                <!-- Email -->
+                <p style="color:#888; font-size:0.78rem; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-envelope" style="color:#E91E8C; width:16px; text-align:center;"></i>
+                    <a href="mailto:hello@beautyblush.pk" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">hello@beautyblush.pk</a>
+                </p>
+            </div>
+ 
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
+                <h6 class="fw-bold mb-4" style="color:#E91E8C; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{{ route('home') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>Home</a></li>
+                    <li class="mb-2"><a href="{{ route('salons.index') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>Salons</a></li>
+                    <li class="mb-2"><a href="{{ route('about') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>About</a></li>
+                    <li class="mb-2"><a href="{{ route('contact') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>Contact</a></li>
+                    <li class="mb-2"><a href="{{ route('register.owner') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#E91E8C'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-chevron-right me-2" style="font-size:0.6rem; color:#E91E8C;"></i>List Your Salon</a></li>
+                </ul>
+            </div>
+ 
+            <!-- For Business -->
+            <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
+                <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">For Business</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{{ route('register.owner') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>List Your Salon</a></li>
+                    <li class="mb-2"><a href="{{ route('partner') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Partner With Us</a></li>
+                    <li class="mb-2"><a href="/pricing" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Pricing</a></li>
+                    <li class="mb-2"><a href="/support" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Support</a></li>
+                    <li class="mb-2"><a href="/faq" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-star me-2" style="font-size:0.6rem; color:#C9A96E;"></i>FAQ</a></li>
+                </ul>
+            </div>
+ 
+            <!-- Follow Us -->
+            <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
+                <h6 class="fw-bold mb-4" style="color:#E91E8C; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Follow Us</h6>
+                <ul class="list-unstyled" style="display:flex; flex-direction:column; gap:6px;">
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-facebook-f" style="width:20px; color:#E91E8C;"></i> Facebook</a></li>
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-instagram" style="width:20px; color:#E91E8C;"></i> Instagram</a></li>
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-tiktok" style="width:20px; color:#E91E8C;"></i> TikTok</a></li>
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-youtube" style="width:20px; color:#E91E8C;"></i> YouTube</a></li>
+                    <li><a href="#" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:flex; align-items:center; gap:10px;" onmouseover="this.style.color='#E91E8C';" onmouseout="this.style.color='#777';"><i class="fab fa-twitter" style="width:20px; color:#E91E8C;"></i> Twitter</a></li>
+                </ul>
+            </div>
+ 
+            <!-- Legal -->
+            <div class="col-lg-3 col-md-6" style="padding-top: 8px;">
+                <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Legal</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{{ route('privacy') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-shield-alt me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Privacy Policy</a></li>
+                    <li class="mb-2"><a href="{{ route('terms') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-gavel me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Terms &amp; Conditions</a></li>
+                    <li class="mb-2"><a href="{{ route('terms.of.use') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-gavel me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Terms of Use</a></li>
+                    <li class="mb-2"><a href="{{ route('cookies') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-cookie-bite me-2" style="font-size:0.6rem; color:#C9A96E;"></i>Cookie Policy</a></li>
+                    <li class="mb-2"><a href="{{ route('about') }}" style="color:#777; text-decoration:none; font-size:0.85rem; transition: all 0.2s; display:block;" onmouseover="this.style.color='#C9A96E'; this.style.paddingLeft='6px';" onmouseout="this.style.color='#777'; this.style.paddingLeft='0px';"><i class="fas fa-info-circle me-2" style="font-size:0.6rem; color:#C9A96E;"></i>About Us</a></li>
+                </ul>
+            </div>
+ 
+        </div>
+    </div>
+ 
+    <!-- Footer Bottom -->
+    <div style="border-top: 1px solid #f0e8ed; margin-top: 40px; padding: 20px 0;">
+        <div class="container">
+            <p style="text-align:center; color:#aaa; font-size:0.82rem; margin:0; letter-spacing:0.5px;">
+                &copy; {{ date('Y') }} <span style="color:#E91E8C; font-weight:600;">Beauty Blush Salons</span> — All rights reserved.
+            </p>
+        </div>
+    </div>
 </footer>
-
+ 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
@@ -785,13 +1048,13 @@
     const cardWidth = firstCard ? firstCard.offsetWidth + 16 : 280;
     el.scrollBy({ left: dir * cardWidth * 3, behavior: 'smooth' });
   }
-
+ 
   function toggleDropdown(id) {
     const all = document.querySelectorAll('.sp-dropdown');
     all.forEach(d => { if (d.id !== id) d.classList.remove('show'); });
     document.getElementById(id).classList.toggle('show');
   }
-
+ 
   function selectTreatment(name) {
     document.getElementById('treatmentInput').value = name;
     document.getElementById('treatmentsDD').classList.remove('show');
@@ -799,7 +1062,7 @@
     if (!hidden) { hidden = document.createElement('input'); hidden.type = 'hidden'; hidden.name = 'search'; document.getElementById('heroSearchForm').appendChild(hidden); }
     hidden.value = name;
   }
-
+ 
   function selectCity(city) {
     document.getElementById('locationInput').value = city;
     document.getElementById('locationDD').classList.remove('show');
@@ -807,9 +1070,9 @@
     if (!hidden) { hidden = document.createElement('input'); hidden.type = 'hidden'; hidden.name = 'city'; document.getElementById('heroSearchForm').appendChild(hidden); }
     hidden.value = city;
   }
-
+ 
   let selectedDate = '', selectedTime = '';
-
+ 
   flatpickr('#inlineCal', {
     inline: true,
     dateFormat: 'Y-m-d',
@@ -821,7 +1084,7 @@
     yearSelectorType: 'dropdown',
     monthSelectorType: 'dropdown'
   });
-
+ 
   function selectTime(t) {
     selectedTime = t;
     updateDateTimeDisplay();
@@ -834,30 +1097,47 @@
       event.target.style.background = 'rgba(233,30,140,0.05)';
     }
   }
-
+ 
   function updateDateTimeDisplay() {
     const parts = [];
     if (selectedDate) { const d = new Date(selectedDate); parts.push(d.toLocaleDateString('en-PK', { day:'numeric', month:'short' })); }
     if (selectedTime && selectedTime !== 'Any time') parts.push(selectedTime);
     document.getElementById('dateTimeInput').value = parts.join(' · ') || '';
   }
-
+ 
   function applyDateTime() { updateDateTimeDisplay(); document.getElementById('timeDD').classList.remove('show'); }
-
+ 
   function switchCity(btn, city) {
     document.querySelectorAll('.city-tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     if (city !== 'All') window.location = '{{ route("salons.index") }}?city=' + encodeURIComponent(city);
   }
-
+ 
   function toggleMenuDropdown() {
     document.getElementById('menuDropdown').classList.toggle('show');
   }
-
+ 
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.search-pill')) document.querySelectorAll('.sp-dropdown').forEach(d => d.classList.remove('show'));
     if (!e.target.closest('.btn-nav-menu') && !e.target.closest('.menu-dropdown')) document.getElementById('menuDropdown')?.classList.remove('show');
   });
+ 
+  /* ── NEW: scroll-reveal animation for the new sections ── */
+  const revealTargets = document.querySelectorAll('.reveal-up, .reveal-stagger');
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealTargets.forEach(el => revealObserver.observe(el));
+  } else {
+    revealTargets.forEach(el => el.classList.add('in-view'));
+  }
+ 
 </script>
 </body>
 </html>
