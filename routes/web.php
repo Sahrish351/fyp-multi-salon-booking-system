@@ -327,15 +327,16 @@ Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy']
         Route::post('/hero-sliders/update-order',               [HeroSliderController::class, 'updateOrder'])->name('hero-sliders.update-order');
  
         // System Settings
-        Route::get('/system-settings',                [SystemSettingController::class, 'index'])->name('system-settings.index');
-        Route::post('/system-settings/general',       [SystemSettingController::class, 'updateGeneral'])->name('system-settings.general');
-        Route::post('/system-settings/payment',       [SystemSettingController::class, 'updatePayment'])->name('system-settings.payment');
-        Route::post('/system-settings/email',         [SystemSettingController::class, 'updateEmail'])->name('system-settings.email');
-        Route::post('/system-settings/social',        [SystemSettingController::class, 'updateSocial'])->name('system-settings.social');
-        Route::post('/system-settings/test-email',    [SystemSettingController::class, 'testEmail'])->name('system-settings.test-email');
-        Route::post('/system-settings/clear-cache',   [SystemSettingController::class, 'clearCache'])->name('system-settings.clear-cache');
-    });
- 
+       Route::get('/system-settings', [SystemSettingController::class, 'index'])->name('system-settings.index');
+Route::post('/system-settings/general', [SystemSettingController::class, 'updateGeneral'])->name('system-settings.general');
+Route::post('/system-settings/payment', [SystemSettingController::class, 'updatePayment'])->name('system-settings.payment');
+Route::post('/system-settings/email', [SystemSettingController::class, 'updateEmail'])->name('system-settings.email');
+Route::post('/system-settings/social', [SystemSettingController::class, 'updateSocial'])->name('system-settings.social');
+Route::post('/system-settings/test-email', [SystemSettingController::class, 'testEmail'])->name('system-settings.test-email');
+Route::post('/system-settings/clear-cache', [SystemSettingController::class, 'clearCache'])->name('system-settings.clear-cache');
+Route::post('/settings/update', [AdminSettingController::class, 'update'])->name('settings.update');
+Route::post('/settings/password', [AdminSettingController::class, 'updatePassword'])->name('settings.password');
+});
     // ========================================================
     // OWNER ROUTES
     // ========================================================
@@ -412,9 +413,9 @@ Route::post('/appointments/{id}/reject-payment', [OwnerAppointmentController::cl
 
         // Reviews
 Route::resource('reviews', OwnerReviewController::class);
-Route::post('/reviews/{review}/approve', [OwnerReviewController::class, 'approve'])->name('reviews.approve');  // ✅ ADD THIS
+Route::post('/reviews/{review}/approve', [OwnerReviewController::class, 'approve'])->name('reviews.approve');  //
 Route::post('/reviews/{review}/reply', [OwnerReviewController::class, 'reply'])->name('reviews.reply');
-Route::post('/reviews/{review}/flag', [OwnerReviewController::class, 'toggleFlag'])->name('reviews.flag');    // ✅ ADD THIS
+Route::post('/reviews/{review}/flag', [OwnerReviewController::class, 'toggleFlag'])->name('reviews.flag');    // 
 
 
         Route::resource('gallery', OwnerGalleryController::class);
