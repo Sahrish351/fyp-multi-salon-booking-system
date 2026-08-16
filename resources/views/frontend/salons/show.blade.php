@@ -2,6 +2,10 @@
 @section('title', $salon->name . ' — Beauty Blush Salons')
 @section('description', $salon->description ?? 'Book appointments at '.$salon->name.' on Beauty Blush Salons.')
 
+{{-- CHANGE 1: this tells layouts/guest.blade.php to hide its own Home/Services/About/Contact navbar
+     (requires the small @unless edit in guest.blade.php — see chat instructions) --}}
+@section('hideMainNav', true)
+
 @push('styles')
 <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,7 +32,8 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        font-style: italic;
+        display: inline-block;
+        padding-right: 6px;
     }
     .nav-search-pill {
         display: flex;
@@ -234,7 +239,6 @@
         grid-template-columns: 1fr 340px;
         gap: 48px;
         padding: 32px 0 60px;
-        align-items: start;
     }
     @media(max-width:992px) { .content-grid { grid-template-columns: 1fr; } }
  
@@ -452,6 +456,13 @@
     gap: 60px;
     margin-bottom: 24px;
 }
+/* CHANGE 3: tablet-size fix so the two columns don't feel cramped before the 576px breakpoint */
+@media(max-width:768px) {
+    .hours-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
 @media(max-width:576px) {
     .hours-grid {
         grid-template-columns: 1fr;
@@ -580,9 +591,10 @@
         background: #fff;
         border: 1.5px solid #e8e8e8;
         border-radius: 20px;
-        padding: 24px;
+        padding: 26px;
         position: sticky;
         top: 80px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.05);
     }
     .booking-sidebar .bs-name { font-size: 1.4rem; font-weight: 800; color: #1a1a1a; letter-spacing: -0.3px; margin-bottom: 12px; line-height: 1.2; }
     .booking-sidebar .bs-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
@@ -591,14 +603,16 @@
     .booking-sidebar .bs-rating .count { color: #E91E8C; font-size: 0.85rem; font-weight: 500; cursor: pointer; }
     .booking-sidebar .bs-rating .count:hover { text-decoration: underline; }
     .bs-featured {
-        background: #f5f5f5;
+        background: linear-gradient(135deg, #fdf2f8, #f3e8ff);
+        border: 1px solid #f3d9ea;
         border-radius: 50px;
         padding: 5px 14px;
-        font-size: 0.78rem;
-        font-weight: 600;
-        color: #555;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #9333ea;
         display: inline-block;
         margin-bottom: 20px;
+        letter-spacing: 0.2px;
     }
     .btn-book-now {
         background: #1a1a1a;
@@ -611,34 +625,65 @@
         width: 100%;
         cursor: pointer;
         transition: all .2s;
-        margin-bottom: 22px;
+        margin-bottom: 24px;
         display: block;
         text-align: center;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
     }
-    .btn-book-now:hover { background: #E91E8C; transform: translateY(-1px); }
- 
+    .btn-book-now:hover { background: #E91E8C; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(233,30,140,0.25); }
+
+    .bs-divider { height: 1px; background: #f0f0f0; margin: 4px 0 18px; }
+
     .bs-info-row {
         display: flex;
         align-items: flex-start;
-        gap: 10px;
-        margin-bottom: 16px;
+        gap: 12px;
+        margin-bottom: 18px;
         cursor: pointer;
     }
-    .bs-info-row i { font-size: 0.9rem; margin-top: 2px; flex-shrink: 0; }
+    .bs-info-row .bs-icon-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #fdf2f8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .bs-info-row .bs-icon-circle i { font-size: 0.82rem; color: #E91E8C; margin: 0; }
+    .bs-info-row .bs-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #aaa;
+        margin-bottom: 3px;
+    }
     .bs-info-row .bs-info-text {
-        font-size: 0.85rem;
-        color: #555;
-        line-height: 1.6;
+        font-size: 0.87rem;
+        color: #333;
+        line-height: 1.55;
         flex-wrap: wrap;
     }
-    .bs-info-row .bs-info-text .status-open { color: #22c55e; font-weight: 600; }
-    .bs-info-row .bs-info-text .status-closed { color: #E91E8C; font-weight: 600; }
-    .bs-info-row .bs-info-text .bs-toggle { color: #888; cursor: pointer; font-size: 0.78rem; margin-left: 4px; }
-    .bs-info-row .directions-link { color: #E91E8C; font-weight: 600; font-size: 0.82rem; }
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+    .status-pill .dot-live { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+    .bs-info-row .bs-info-text .status-open { color: #16a34a; }
+    .bs-info-row .bs-info-text .status-open .dot-live { background: #16a34a; }
+    .bs-info-row .bs-info-text .status-closed { color: #dc2626; }
+    .bs-info-row .bs-info-text .status-closed .dot-live { background: #dc2626; }
+    .bs-info-row .bs-info-text .bs-toggle { color: #999; cursor: pointer; font-size: 0.78rem; margin-left: 4px; }
+    .bs-info-row .directions-link { color: #E91E8C; font-weight: 600; font-size: 0.82rem; display: inline-block; margin-top: 2px; }
     .bs-info-row .directions-link:hover { text-decoration: underline; }
-    .bs-hours-expand { background: #f9f9f9; border-radius: 10px; padding: 12px; margin-bottom: 16px; display: none; }
+    .bs-hours-expand { background: #faf9fb; border-radius: 10px; padding: 12px 14px; margin: 8px 0 18px 44px; display: none; }
     .bs-hours-expand.show { display: block; }
-    .bs-hours-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; color: #555; }
+    .bs-hours-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; color: #666; }
     .bs-hours-row.today { font-weight: 700; color: #1a1a1a; }
  
     .photo-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center; }
@@ -663,7 +708,6 @@
         .booking-sidebar { position: relative; top: 0; }
         .nearby-grid { grid-template-columns: 1fr 1fr; }
         .other-biz-grid { grid-template-columns: repeat(3,1fr); }
-        .hours-grid { grid-template-columns: 1fr; gap: 20px; }
         .map-placeholder { height: 200px; }
         .service-row { flex-direction: column; align-items: flex-start; gap: 10px; }
         .service-row .sr-left { width: 100%; }
@@ -804,7 +848,7 @@
                 @auth
                 <form action="{{ route('client.favorites.toggle', $salon->id) }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn-icon-round {{ Auth::user()->favoriteSalons()->where('salon_id',$salon->id)->exists() ? 'liked' : '' }}" title="Save">
+                    <button type="submit" class="btn-icon-round {{ $isFavorite ? 'liked' : '' }}" title="Save">
                         <i class="fas fa-heart"></i>
                     </button>
                 </form>
@@ -963,25 +1007,19 @@
                 <div class="about-section">
                     <h3>About</h3>
                     <p>{{ $salon->description ?? 'Welcome to '.$salon->name.'. We are dedicated to providing top-quality beauty services in '.$salon->city.'. Our experienced team of stylists and beauty experts are here to give you the best experience possible. Book your appointment today!' }}</p>
- 
-                    <div class="map-placeholder">
-                        @if(config('services.google_maps.key'))
-                            <iframe
-                                width="100%"
-                                height="100%"
-                                style="border:0;border-radius:16px;"
-                                loading="lazy"
-                                allowfullscreen
-                                referrerpolicy="no-referrer-when-downgrade"
-                                src="https://www.google.com/maps/embed/v1/place?key={{ config('services.google_maps.key') }}&q={{ urlencode($salon->address . ', ' . $salon->city . ', Pakistan') }}&zoom=15">
-                            </iframe>
-                        @else
+
+                    {{-- CHANGE 2: Map now uses Leaflet (free, no API key) with the salon's real
+                         latitude/longitude when available, instead of relying on a Google Maps
+                         API key that most likely isn't configured in .env. Falls back to the
+                         same click-to-open card if coordinates are missing. --}}
+                    <div class="map-placeholder" id="salonMap" style="{{ $hasCoords ? 'height:280px;' : '' }}">
+                        @unless($hasCoords)
                             <div class="map-fallback" onclick="window.open('{{ $mapsUrl }}','_blank')">
                                 <i class="fas fa-map-marker-alt" style="font-size:2rem;color:#7c3aed;"></i>
                                 <div style="font-size:0.85rem;color:#555;font-weight:600;">{{ $salon->name }}</div>
                                 <div style="font-size:0.78rem;color:#888;">{{ $salon->address }}, {{ $salon->city }}</div>
                             </div>
-                        @endif
+                        @endunless
                     </div>
                     <p class="address-line">
                         {{ $salon->address }}, {{ $salon->city }}, Pakistan
@@ -1133,19 +1171,21 @@
                 <a href="{{ route('booking.step1', $salon->id) }}" class="btn-book-now">
                     Book now
                 </a>
+
+                <div class="bs-divider"></div>
  
                 <div class="bs-info-row" onclick="toggleHours()">
-                    <i class="fas fa-clock" style="color:#E91E8C;"></i>
+                    <div class="bs-icon-circle"><i class="fas fa-clock"></i></div>
                     <div class="bs-info-text">
-                        @if($isOpen)
-                        <span class="status-open">Open</span>
-                        @else
-                        <span class="status-closed">Closed</span>
-                        @endif
+                        <div class="bs-label">Hours today</div>
+                        <span class="status-pill {{ $isOpen ? 'status-open' : 'status-closed' }}">
+                            <span class="dot-live"></span>
+                            {{ $isOpen ? 'Open' : 'Closed' }}
+                        </span>
                         @if($openTime && $closeTime)
-                        – {{ $openTime->format('g:i A') }} – {{ $closeTime->format('g:i A') }}
+                        <span style="color:#666;font-weight:500;"> · {{ $openTime->format('g:i A') }} – {{ $closeTime->format('g:i A') }}</span>
                         @endif
-                        <span class="bs-toggle">˅</span>
+                        <span class="bs-toggle">See full hours ˅</span>
                     </div>
                 </div>
                 <div class="bs-hours-expand" id="bsHoursPanel">
@@ -1159,8 +1199,9 @@
                 </div>
  
                 <div class="bs-info-row">
-                    <i class="fas fa-map-marker-alt" style="color:#E91E8C;"></i>
+                    <div class="bs-icon-circle"><i class="fas fa-map-marker-alt"></i></div>
                     <div class="bs-info-text">
+                        <div class="bs-label">Location</div>
                         {{ $salon->address }}, {{ $salon->city }}
                         <br>
                         <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="directions-link">Get directions</a>
@@ -1168,9 +1209,10 @@
                 </div>
  
                 @if($salon->paymentDetails->count())
-                <div class="bs-info-row">
-                    <i class="fas fa-mobile-alt" style="color:#7c3aed;"></i>
+                <div class="bs-info-row" style="margin-bottom:0;">
+                    <div class="bs-icon-circle"><i class="fas fa-mobile-alt"></i></div>
                     <div class="bs-info-text">
+                        <div class="bs-label">Payment options</div>
                         @foreach($salon->paymentDetails as $pd)
                         {{ $pd->method_label }}{{ !$loop->last ? ' & ' : '' }}
                         @endforeach
@@ -1198,6 +1240,12 @@
         <img id="modalImg" src="" alt="">
     </div>
 </div>
+
+{{-- CHANGE 2 (continued): Leaflet library + map init script, only loaded when real coordinates exist --}}
+@if($hasCoords)
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+@endif
  
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -1260,6 +1308,36 @@ document.addEventListener('click', e => {
         menu.style.display = 'none';
     }
 });
+
+{{-- CHANGE 2 (continued): initialize the real Leaflet map, only when coordinates exist --}}
+@if($hasCoords)
+document.addEventListener('DOMContentLoaded', function () {
+    // Wait a tiny bit to ensure the container is rendered
+    setTimeout(function() {
+        const mapContainer = document.getElementById('salonMap');
+        if (mapContainer) {
+            // Ensure container has height
+            if (mapContainer.offsetHeight === 0) {
+                mapContainer.style.height = '280px';
+            }
+            
+            const map = L.map('salonMap').setView([{{ $salon->latitude }}, {{ $salon->longitude }}], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+            L.marker([{{ $salon->latitude }}, {{ $salon->longitude }}])
+                .addTo(map)
+                .bindPopup(@json($salon->name));
+                
+            // Force a resize after a moment to ensure proper rendering
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 100);
+        }
+    }, 100);
+});
+@endif
 </script>
 
 @endsection

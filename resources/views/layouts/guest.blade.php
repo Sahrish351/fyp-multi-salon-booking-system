@@ -17,9 +17,10 @@
 </head>
 <body>
     
-    @include('components.navbar')
+    @unless(View::hasSection('hideMainNav'))
+       @include('components.navbar')
+   @endunless
  
-   
     <main>
         @yield('content')
     </main>
