@@ -291,9 +291,7 @@
     }
     .svc-cat-btn.active, .svc-cat-btn:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
  
-    /* ============================================================ */
     /* SERVICES - PINK HOVER EFFECTS */
-    /* ============================================================ */
     .service-list { display: flex; flex-direction: column; gap: 0; }
     .service-row {
         display: flex;
@@ -407,9 +405,7 @@
     .big-rating .br-stars { color: #ffc107; font-size: 1.5rem; }
     .big-rating .br-count { font-size: 0.85rem; color: #888; }
  
-    /* ============================================================ */
     /* ABOUT SECTION - FIXED LAYOUT */
-    /* ============================================================ */
     .about-section p { 
         font-size: 0.9rem; 
         color: #555; 
@@ -447,110 +443,107 @@
     .address-line a { color: #E91E8C; font-weight: 600; }
     .address-line a:hover { text-decoration: underline; }
 
-    /* ============================================================ */
-/* HOURS & INFO GRID - FIXED SPACING */
-/* ============================================================ */
-.hours-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    margin-bottom: 24px;
-}
-/* CHANGE 3: tablet-size fix so the two columns don't feel cramped before the 576px breakpoint */
-@media(max-width:768px) {
+    /* HOURS & INFO GRID - FIXED SPACING */
     .hours-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        margin-bottom: 24px;
     }
-}
-@media(max-width:576px) {
-    .hours-grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
+    @media(max-width:768px) {
+        .hours-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
     }
-}
+    @media(max-width:576px) {
+        .hours-grid {
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+    }
 
-.hours-table h4 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 14px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #f0e8ed;
-    font-family: 'Inter', sans-serif;
-}
+    .hours-table h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #f0e8ed;
+        font-family: 'Inter', sans-serif;
+    }
 
-.hour-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #f5f5f5;
-    font-size: 0.85rem;
-    font-family: 'Inter', sans-serif;
-}
-.hour-row:last-child {
-    border-bottom: none;
-}
-.hour-row .day {
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.hour-row .day .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-.hour-row .day .dot.open { background: #22c55e; }
-.hour-row .day .dot.closed { background: #ccc; }
-.hour-row .time {
-    color: #1a1a1a;
-    font-weight: 500;
-}
-.hour-row .time.closed { color: #888; }
-.hour-row.today .day {
-    font-weight: 700;
-    color: #E91E8C;
-}
-.hour-row.today .time {
-    font-weight: 700;
-    color: #E91E8C;
-}
+    .hour-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 0.85rem;
+        font-family: 'Inter', sans-serif;
+    }
+    .hour-row:last-child {
+        border-bottom: none;
+    }
+    .hour-row .day {
+        color: #555;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .hour-row .day .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .hour-row .day .dot.open { background: #22c55e; }
+    .hour-row .day .dot.closed { background: #ccc; }
+    .hour-row .time {
+        color: #1a1a1a;
+        font-weight: 500;
+    }
+    .hour-row .time.closed { color: #888; }
+    .hour-row.today .day {
+        font-weight: 700;
+        color: #E91E8C;
+    }
+    .hour-row.today .time {
+        font-weight: 700;
+        color: #E91E8C;
+    }
 
-.add-info {
-    padding-left: 0;
-}
-.add-info h4 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 14px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #f0e8ed;
-    font-family: 'Inter', sans-serif;
-}
-.add-info-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.85rem;
-    color: #555;
-    padding: 8px 0;
-    border-bottom: 1px solid #f5f5f5;
-    font-family: 'Inter', sans-serif;
-}
-.add-info-item:last-child {
-    border-bottom: none;
-}
-.add-info-item i {
-    color: #E91E8C;
-    width: 18px;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-}
+    .add-info {
+        padding-left: 0;
+    }
+    .add-info h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #f0e8ed;
+        font-family: 'Inter', sans-serif;
+    }
+    .add-info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+        color: #555;
+        padding: 8px 0;
+        border-bottom: 1px solid #f5f5f5;
+        font-family: 'Inter', sans-serif;
+    }
+    .add-info-item:last-child {
+        border-bottom: none;
+    }
+    .add-info-item i {
+        color: #E91E8C;
+        width: 18px;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
     .nearby-section { margin-top: 8px; }
     .nearby-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     @media(max-width:768px) { .nearby-grid { grid-template-columns: 1fr 1fr; } }
@@ -1008,19 +1001,25 @@
                     <h3>About</h3>
                     <p>{{ $salon->description ?? 'Welcome to '.$salon->name.'. We are dedicated to providing top-quality beauty services in '.$salon->city.'. Our experienced team of stylists and beauty experts are here to give you the best experience possible. Book your appointment today!' }}</p>
 
-                    {{-- CHANGE 2: Map now uses Leaflet (free, no API key) with the salon's real
-                         latitude/longitude when available, instead of relying on a Google Maps
-                         API key that most likely isn't configured in .env. Falls back to the
-                         same click-to-open card if coordinates are missing. --}}
-                    <div class="map-placeholder" id="salonMap" style="{{ $hasCoords ? 'height:280px;' : '' }}">
-                        @unless($hasCoords)
-                            <div class="map-fallback" onclick="window.open('{{ $mapsUrl }}','_blank')">
-                                <i class="fas fa-map-marker-alt" style="font-size:2rem;color:#7c3aed;"></i>
-                                <div style="font-size:0.85rem;color:#555;font-weight:600;">{{ $salon->name }}</div>
-                                <div style="font-size:0.78rem;color:#888;">{{ $salon->address }}, {{ $salon->city }}</div>
-                            </div>
-                        @endunless
+                    {{-- MAP EMBED INTEGRATION --}}
+                    <div class="map-placeholder">
+                        @php
+                            if (!empty($salon->latitude) && !empty($salon->longitude)) {
+                                $mapEmbedLocation = $salon->latitude . ',' . $salon->longitude;
+                            } else {
+                                $mapEmbedLocation = urlencode($salon->name . ', ' . $salon->address . ', ' . $salon->city . ', Pakistan');
+                            }
+                        @endphp
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            loading="lazy" 
+                            allowfullscreen 
+                            src="https://maps.google.com/maps?q={{ $mapEmbedLocation }}&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                        </iframe>
                     </div>
+
                     <p class="address-line">
                         {{ $salon->address }}, {{ $salon->city }}, Pakistan
                         <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="directions-link"> Get directions</a>
@@ -1240,12 +1239,6 @@
         <img id="modalImg" src="" alt="">
     </div>
 </div>
-
-{{-- CHANGE 2 (continued): Leaflet library + map init script, only loaded when real coordinates exist --}}
-@if($hasCoords)
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-@endif
  
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -1308,36 +1301,6 @@ document.addEventListener('click', e => {
         menu.style.display = 'none';
     }
 });
-
-{{-- CHANGE 2 (continued): initialize the real Leaflet map, only when coordinates exist --}}
-@if($hasCoords)
-document.addEventListener('DOMContentLoaded', function () {
-    // Wait a tiny bit to ensure the container is rendered
-    setTimeout(function() {
-        const mapContainer = document.getElementById('salonMap');
-        if (mapContainer) {
-            // Ensure container has height
-            if (mapContainer.offsetHeight === 0) {
-                mapContainer.style.height = '280px';
-            }
-            
-            const map = L.map('salonMap').setView([{{ $salon->latitude }}, {{ $salon->longitude }}], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(map);
-            L.marker([{{ $salon->latitude }}, {{ $salon->longitude }}])
-                .addTo(map)
-                .bindPopup(@json($salon->name));
-                
-            // Force a resize after a moment to ensure proper rendering
-            setTimeout(function() {
-                map.invalidateSize();
-            }, 100);
-        }
-    }, 100);
-});
-@endif
 </script>
 
 @endsection

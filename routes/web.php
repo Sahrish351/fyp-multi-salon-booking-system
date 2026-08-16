@@ -303,21 +303,6 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('hero-sliders', HeroSliderController::class);
         Route::post('/hero-sliders/{heroSlider}/toggle-status', [HeroSliderController::class, 'toggleStatus'])->name('hero-sliders.toggle-status');
-<<<<<<< HEAD
-        Route::post('/hero-sliders/update-order',               [HeroSliderController::class, 'updateOrder'])->name('hero-sliders.update-order');
- 
-        // System Settings
-       Route::get('/system-settings', [SystemSettingController::class, 'index'])->name('system-settings.index');
-Route::post('/system-settings/general', [SystemSettingController::class, 'updateGeneral'])->name('system-settings.general');
-Route::post('/system-settings/payment', [SystemSettingController::class, 'updatePayment'])->name('system-settings.payment');
-Route::post('/system-settings/email', [SystemSettingController::class, 'updateEmail'])->name('system-settings.email');
-Route::post('/system-settings/social', [SystemSettingController::class, 'updateSocial'])->name('system-settings.social');
-Route::post('/system-settings/test-email', [SystemSettingController::class, 'testEmail'])->name('system-settings.test-email');
-Route::post('/system-settings/clear-cache', [SystemSettingController::class, 'clearCache'])->name('system-settings.clear-cache');
-Route::post('/settings/update', [AdminSettingController::class, 'update'])->name('settings.update');
-Route::post('/settings/password', [AdminSettingController::class, 'updatePassword'])->name('settings.password');
-});
-=======
         Route::post('/hero-sliders/update-order', [HeroSliderController::class, 'updateOrder'])->name('hero-sliders.update-order');
 
         Route::get('/system-settings', [SystemSettingController::class, 'index'])->name('system-settings.index');
@@ -329,7 +314,6 @@ Route::post('/settings/password', [AdminSettingController::class, 'updatePasswor
         Route::post('/system-settings/clear-cache', [SystemSettingController::class, 'clearCache'])->name('system-settings.clear-cache');
     }); // ✅ ADMIN ROUTES CLOSED
 
->>>>>>> 6d3db46e2014289c37cc3f0bfaf72ac7ab76f5b6
     // ========================================================
     // OWNER ROUTES
     // ========================================================
@@ -393,19 +377,10 @@ Route::post('/settings/password', [AdminSettingController::class, 'updatePasswor
         Route::resource('packages', OwnerPackageController::class);
         Route::post('/packages/{package}/toggle-status', [OwnerPackageController::class, 'toggleStatus'])->name('packages.toggle-status');
 
-<<<<<<< HEAD
-        // Reviews
-Route::resource('reviews', OwnerReviewController::class);
-Route::post('/reviews/{review}/approve', [OwnerReviewController::class, 'approve'])->name('reviews.approve');  //
-Route::post('/reviews/{review}/reply', [OwnerReviewController::class, 'reply'])->name('reviews.reply');
-Route::post('/reviews/{review}/flag', [OwnerReviewController::class, 'toggleFlag'])->name('reviews.flag');    // 
-
-=======
         Route::resource('reviews', OwnerReviewController::class);
         Route::post('/reviews/{review}/approve', [OwnerReviewController::class, 'approve'])->name('reviews.approve');
         Route::post('/reviews/{review}/reply', [OwnerReviewController::class, 'reply'])->name('reviews.reply');
         Route::post('/reviews/{review}/flag', [OwnerReviewController::class, 'toggleFlag'])->name('reviews.flag');
->>>>>>> 6d3db46e2014289c37cc3f0bfaf72ac7ab76f5b6
 
         Route::resource('gallery', OwnerGalleryController::class);
         Route::post('/gallery/reorder', [OwnerGalleryController::class, 'reorder'])->name('gallery.reorder');
