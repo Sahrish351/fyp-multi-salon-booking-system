@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,6 +52,7 @@
     .detail-item:last-child { border-bottom: none; }
     .detail-item span:first-child { color: #999; flex-shrink: 0; }
     .detail-item span:last-child { font-weight: 700; color: #1a1a1a; text-align: right; }
+    .detail-item span.waitlist-badge { color: #b45309; }
  
     .status-pill-pending { background: #fff8ec; color: #92400e; padding: 4px 14px; border-radius: 20px; font-size: .78rem; font-weight: 700; border: 1px solid #fde68a; }
     .status-pill-amount  { background: #f0fdf4; color: #16a34a; padding: 4px 14px; border-radius: 20px; font-size: .78rem; font-weight: 700; }
@@ -94,6 +94,15 @@
  
     <div class="booking-id">Booking ID: <strong>#{{ $appointment->booking_ref ?? $appointment->id }}</strong></div>
  
+    @php
+        // Waitlist bookings are saved with a '00:00:00' placeholder time (no
+        // real slot assigned yet) — flagged via the notes field set in
+        // BookingController@postPayment. Show a clear waitlist label instead
+        // of a misleading "12:00 AM".
+        $isWaitlistPlaceholder = $appointment->start_time === '00:00:00'
+            && str_contains((string) $appointment->notes, 'Waitlist');
+    @endphp
+ 
     <div class="detail-grid">
         <div class="detail-item">
             <span>Salon</span>
@@ -113,7 +122,11 @@
         </div>
         <div class="detail-item">
             <span>Time</span>
-            <span>{{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }}</span>
+            @if($isWaitlistPlaceholder)
+                <span class="waitlist-badge">⏳ To be assigned</span>
+            @else
+                <span>{{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }}</span>
+            @endif
         </div>
         <div class="detail-item">
             <span>Advance Paid</span>
@@ -125,6 +138,15 @@
         </div>
     </div>
  
+    @if($isWaitlistPlaceholder)
+    <div class="pending-notice">
+        <i class="fas fa-list-ol"></i>
+        <div>
+            <strong>You're on the priority waitlist</strong>
+            <p>We'll email and notify you the moment a slot opens up for this stylist. You'll have 20 minutes to accept it — so keep an eye on your inbox!</p>
+        </div>
+    </div>
+    @else
     <div class="pending-notice">
         <i class="fas fa-bell"></i>
         <div>
@@ -132,6 +154,7 @@
             <p>Admin will review your payment screenshot and approve your booking. You'll receive a confirmation email as soon as it's approved — usually within a few hours.</p>
         </div>
     </div>
+    @endif
  
     <div class="action-row">
         <a href="{{ route('client.appointments.index') }}" class="btn-primary">

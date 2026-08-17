@@ -185,14 +185,19 @@
                 <div class="col-6">
                     <div class="info-pill">
                         <div class="pill-label"><i class="fas fa-calendar me-1" style="color:#3b82f6;"></i>Preferred Date</div>
-                        <div class="pill-value">{{ $wl->preferred_date->format('d M Y') }}</div>
+                        <div class="pill-value">{{ $wl->preferred_date ? $wl->preferred_date->format('d M Y') : 'Any Date' }}</div>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="info-pill">
                         <div class="pill-label"><i class="fas fa-clock me-1" style="color:#8b5cf6;"></i>Time Slot</div>
                         <div class="pill-value">
-                            {{ \Carbon\Carbon::parse($wl->timeSlot->start_time)->format('h:i A') }}
+                            {{-- ✅ FIX: Null safe check for timeSlot --}}
+                            @if($wl->timeSlot && $wl->timeSlot->start_time)
+                                {{ \Carbon\Carbon::parse($wl->timeSlot->start_time)->format('h:i A') }}
+                            @else
+                                <span class="text-muted">Any Available Slot</span>
+                            @endif
                         </div>
                     </div>
                 </div>

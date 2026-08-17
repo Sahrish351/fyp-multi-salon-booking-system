@@ -62,6 +62,8 @@
     .appt-card .meta-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
     .appt-card .meta-list span { font-size: .8rem; color: #888; display: flex; align-items: center; gap: 8px; }
     .appt-card .meta-list i { color: var(--pink); width: 14px; }
+    .appt-card .meta-list span.waitlist-time { color: #b45309; font-weight: 700; }
+    .appt-card .meta-list span.waitlist-time i { color: #d97706; }
     .appt-card .price-row {
         display: flex; align-items: center; justify-content: space-between;
         background: var(--pink-bg); border-radius: 12px; padding: 10px 14px; margin-bottom: 12px;
@@ -203,7 +205,21 @@
                     {{-- ✅ NULL SAFE CHECKS --}}
                     <span><i class="fas fa-spa"></i> {{ Str::limit($appt->service->name ?? 'Service not available', 24) }}</span>
                     <span><i class="fas fa-user"></i> {{ $appt->stylist->name ?? 'Stylist not available' }}</span>
-                    <span><i class="fas fa-clock"></i> {{ \Carbon\Carbon::parse($appt->start_time)->format('h:i A') }}</span>
+
+                    @php
+                        // Waitlist bookings are saved with a '00:00:00' placeholder time
+                        // (no real slot assigned yet) — flagged via the notes field set
+                        // in BookingController@postPayment. Show a clear waitlist label
+                        // instead of a misleading "12:00 AM".
+                        $isWaitlistPlaceholder = $appt->start_time === '00:00:00'
+                            && str_contains((string) $appt->notes, 'Waitlist');
+                    @endphp
+
+                    @if($isWaitlistPlaceholder)
+                        <span class="waitlist-time"><i class="fas fa-hourglass-half"></i> Priority Waitlist — time to be assigned</span>
+                    @else
+                        <span><i class="fas fa-clock"></i> {{ \Carbon\Carbon::parse($appt->start_time)->format('h:i A') }}</span>
+                    @endif
                 </div>
 
                 <div class="price-row">
