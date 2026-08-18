@@ -1,31 +1,36 @@
 <?php
-
+ 
 namespace App\Http\Controllers\Owner;
-
+ 
 use App\Http\Controllers\Controller;
 use App\Models\Waitlist;
 use App\Models\Service;
 use App\Models\Stylist;
 use App\Models\Salon;
 use App\Models\User;
+use App\Notifications\WaitlistSlotAvailable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-
+ 
 class OwnerWaitlistController extends Controller
 {
-   
+    private function getOwnerSalon()
+    {
+        return Salon::where('owner_id', auth()->id())->first();
+    }
+ 
     public function index(Request $request)
     {
         try {
-            $user = auth()->user();
-
-            if (!$user->salon_id) {
+            $salon = $this->getOwnerSalon();
+ 
+            if (!$salon) {
                 return redirect()->route('owner.salons.create')
                     ->with('error', 'Please create your salon first.');
             }
-
-            $waitlistEntries = Waitlist::where('salon_id', $user->salon_id)
+ 
+            $waitlistEntries = Waitlist::where('salon_id', $salon->id)
                 ->with(['client', 'service', 'stylist'])
                 ->orderBy('position', 'asc')
                 ->orderBy('created_at', 'asc')
@@ -49,64 +54,60 @@ class OwnerWaitlistController extends Controller
                         'notified_at' => $entry->notified_at ? date('M d, Y', strtotime($entry->notified_at)) : null,
                     ];
                 });
-
+ 
             $stats = [
                 'total' => $waitlistEntries->count(),
                 'high_priority' => $waitlistEntries->where('priority', 'High')->count(),
                 'this_week' => $waitlistEntries->count(),
             ];
-
+ 
             return view('owner.waitlist.index', compact('waitlistEntries', 'stats'));
-
+ 
         } catch (\Exception $e) {
             Log::error('Waitlist Index Error: ' . $e->getMessage());
             return view('owner.waitlist.index', ['waitlistEntries' => collect([]), 'stats' => ['total' => 0, 'high_priority' => 0, 'this_week' => 0]])
                 ->with('error', 'Unable to load waitlist.');
         }
     }
-
-   
+ 
     public function create()
     {
         try {
-            $user = auth()->user();
-
-          
+            $salon = $this->getOwnerSalon();
+ 
             $clients = User::where('role', 'client')
                 ->orderBy('name')
                 ->get(['id', 'name', 'email', 'phone']);
-
-        
-            $services = Service::where('salon_id', $user->salon_id ?? 0)
+ 
+            $services = Service::where('salon_id', $salon->id ?? 0)
                 ->where('is_active', true)
                 ->orderBy('name')
                 ->get(['id', 'name']);
-
-            $stylists = Stylist::where('salon_id', $user->salon_id ?? 0)
+ 
+            $stylists = Stylist::where('salon_id', $salon->id ?? 0)
                 ->where('status', 'available')
                 ->orderBy('name')
                 ->get(['id', 'name']);
-
+ 
             return view('owner.waitlist.create', compact('clients', 'services', 'stylists'));
-
+ 
         } catch (\Exception $e) {
             Log::error('Waitlist Create Error: ' . $e->getMessage());
             return redirect()->route('owner.waitlist.index')
                 ->with('error', 'Unable to load create page.');
         }
     }
-
-   
+ 
     public function store(Request $request)
     {
         try {
-            $user = auth()->user();
-
-            if (!$user->salon_id) {
+            $salon = $this->getOwnerSalon();
+ 
+            if (!$salon) {
                 return redirect()->route('owner.salons.create')
                     ->with('error', 'Please create your salon first.');
             }
-
+ 
             $validator = Validator::make($request->all(), [
                 'client_id' => 'required|exists:users,id',
                 'service_id' => 'required|exists:services,id',
@@ -114,15 +115,15 @@ class OwnerWaitlistController extends Controller
                 'preferred_date' => 'required|date',
                 'position' => 'required|integer|min:1',
             ]);
-
+ 
             if ($validator->fails()) {
                 return redirect()->back()
                     ->withErrors($validator)
                     ->withInput();
             }
-
+ 
             Waitlist::create([
-                'salon_id' => $user->salon_id,
+                'salon_id' => $salon->id,
                 'client_id' => $request->client_id,
                 'service_id' => $request->service_id,
                 'stylist_id' => $request->stylist_id ?? null,
@@ -131,10 +132,10 @@ class OwnerWaitlistController extends Controller
                 'status' => 'waiting',
                 'expires_at' => now()->addDays(7),
             ]);
-
+ 
             return redirect()->route('owner.waitlist.index')
                 ->with('success', 'Client added to waitlist successfully!');
-
+ 
         } catch (\Exception $e) {
             Log::error('Waitlist Store Error: ' . $e->getMessage());
             return redirect()->back()
@@ -142,22 +143,21 @@ class OwnerWaitlistController extends Controller
                 ->withInput();
         }
     }
-
-  
+ 
     public function show($id)
     {
         try {
-            $user = auth()->user();
-
-            $entry = Waitlist::where('salon_id', $user->salon_id ?? 0)
+            $salon = $this->getOwnerSalon();
+ 
+            $entry = Waitlist::where('salon_id', $salon->id ?? 0)
                 ->with(['client', 'service', 'stylist'])
                 ->find($id);
-
+ 
             if (!$entry) {
                 return redirect()->route('owner.waitlist.index')
                     ->with('error', 'Waitlist entry not found.');
             }
-
+ 
             $entryData = [
                 'id' => $entry->id,
                 'client_name' => $entry->client->name ?? 'N/A',
@@ -175,44 +175,43 @@ class OwnerWaitlistController extends Controller
                 'expires_at' => $entry->expires_at ? date('M d, Y', strtotime($entry->expires_at)) : null,
                 'notified_at' => $entry->notified_at ? date('M d, Y', strtotime($entry->notified_at)) : null,
             ];
-
+ 
             return view('owner.waitlist.show', ['entry' => $entryData]);
-
+ 
         } catch (\Exception $e) {
             Log::error('Waitlist Show Error: ' . $e->getMessage());
             return redirect()->route('owner.waitlist.index')
                 ->with('error', 'Waitlist entry not found.');
         }
     }
-
-    
+ 
     public function edit($id)
     {
         try {
-            $user = auth()->user();
-
-            $entry = Waitlist::where('salon_id', $user->salon_id ?? 0)
+            $salon = $this->getOwnerSalon();
+ 
+            $entry = Waitlist::where('salon_id', $salon->id ?? 0)
                 ->with(['client', 'service', 'stylist'])
                 ->find($id);
-
+ 
             if (!$entry) {
                 return redirect()->route('owner.waitlist.index')
                     ->with('error', 'Waitlist entry not found.');
             }
-
+ 
             $clients = User::where('role', 'client')
                 ->orderBy('name')
                 ->get(['id', 'name', 'email', 'phone']);
-
-            $services = Service::where('salon_id', $user->salon_id ?? 0)
+ 
+            $services = Service::where('salon_id', $salon->id ?? 0)
                 ->where('is_active', true)
                 ->orderBy('name')
                 ->get(['id', 'name']);
-
-            $stylists = Stylist::where('salon_id', $user->salon_id ?? 0)
+ 
+            $stylists = Stylist::where('salon_id', $salon->id ?? 0)
                 ->orderBy('name')
                 ->get(['id', 'name']);
-
+ 
             $entryData = [
                 'id' => $entry->id,
                 'client_id' => $entry->client_id,
@@ -223,35 +222,34 @@ class OwnerWaitlistController extends Controller
                 'position' => $entry->position ?? 1,
                 'status' => $entry->status ?? 'waiting',
             ];
-
+ 
             return view('owner.waitlist.edit', [
                 'entry' => $entryData,
                 'clients' => $clients,
                 'services' => $services,
                 'stylists' => $stylists,
             ]);
-
+ 
         } catch (\Exception $e) {
             Log::error('Waitlist Edit Error: ' . $e->getMessage());
             return redirect()->route('owner.waitlist.index')
                 ->with('error', 'Waitlist entry not found.');
         }
     }
-
-   
+ 
     public function update(Request $request, $id)
     {
         try {
-            $user = auth()->user();
-
-            $entry = Waitlist::where('salon_id', $user->salon_id ?? 0)
+            $salon = $this->getOwnerSalon();
+ 
+            $entry = Waitlist::where('salon_id', $salon->id ?? 0)
                 ->find($id);
-
+ 
             if (!$entry) {
                 return redirect()->route('owner.waitlist.index')
                     ->with('error', 'Waitlist entry not found.');
             }
-
+ 
             $validator = Validator::make($request->all(), [
                 'client_id' => 'required|exists:users,id',
                 'service_id' => 'required|exists:services,id',
@@ -259,13 +257,13 @@ class OwnerWaitlistController extends Controller
                 'preferred_date' => 'required|date',
                 'position' => 'required|integer|min:1',
             ]);
-
+ 
             if ($validator->fails()) {
                 return redirect()->back()
                     ->withErrors($validator)
                     ->withInput();
             }
-
+ 
             $entry->update([
                 'client_id' => $request->client_id,
                 'service_id' => $request->service_id,
@@ -273,10 +271,10 @@ class OwnerWaitlistController extends Controller
                 'preferred_date' => $request->preferred_date,
                 'position' => $request->position,
             ]);
-
+ 
             return redirect()->route('owner.waitlist.index')
                 ->with('success', 'Waitlist entry updated successfully!');
-
+ 
         } catch (\Exception $e) {
             Log::error('Waitlist Update Error: ' . $e->getMessage());
             return redirect()->back()
@@ -284,63 +282,73 @@ class OwnerWaitlistController extends Controller
                 ->withInput();
         }
     }
-
-  
+ 
     public function destroy($id)
     {
         try {
-            $user = auth()->user();
-
-            $entry = Waitlist::where('salon_id', $user->salon_id ?? 0)
+            $salon = $this->getOwnerSalon();
+ 
+            $entry = Waitlist::where('salon_id', $salon->id ?? 0)
                 ->find($id);
-
+ 
             if (!$entry) {
                 return redirect()->route('owner.waitlist.index')
                     ->with('error', 'Waitlist entry not found.');
             }
-
+ 
             $entry->delete();
-
+ 
             return redirect()->route('owner.waitlist.index')
                 ->with('success', 'Client removed from waitlist successfully!');
-
+ 
         } catch (\Exception $e) {
             Log::error('Waitlist Destroy Error: ' . $e->getMessage());
             return redirect()->route('owner.waitlist.index')
                 ->with('error', 'Unable to remove client from waitlist.');
         }
     }
-
-   
+ 
     public function remove($id)
     {
         return $this->destroy($id);
     }
-
-  
+ 
+    /**
+     * ✅ FIXED: Ab ye sirf timestamp update nahi karta,
+     * balke client ko asal notification (database) bhi bhejta hai.
+     */
     public function notify(Request $request, $id)
     {
         try {
-            $user = auth()->user();
-
-            $entry = Waitlist::where('salon_id', $user->salon_id ?? 0)
+            $salon = $this->getOwnerSalon();
+ 
+            $entry = Waitlist::where('salon_id', $salon->id ?? 0)
                 ->with('client')
                 ->find($id);
-
+ 
             if (!$entry) {
                 return redirect()->route('owner.waitlist.index')
                     ->with('error', 'Waitlist entry not found.');
             }
-
+ 
             $entry->update([
+                'status'      => 'notified',
                 'notified_at' => now(),
+                'expires_at'  => now()->addMinutes(10),
             ]);
-
-         
-
+ 
+            // ✅ Client ko asal notification bhejo
+            try {
+                if ($entry->client) {
+                    $entry->client->notify(new WaitlistSlotAvailable($entry));
+                }
+            } catch (\Exception $e) {
+                Log::warning('Waitlist client notify failed: ' . $e->getMessage());
+            }
+ 
             return redirect()->route('owner.waitlist.index')
                 ->with('success', 'Client "' . ($entry->client->name ?? 'N/A') . '" has been notified!');
-
+ 
         } catch (\Exception $e) {
             Log::error('Waitlist Notify Error: ' . $e->getMessage());
             return redirect()->route('owner.waitlist.index')

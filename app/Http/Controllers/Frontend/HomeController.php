@@ -16,30 +16,34 @@ class HomeController extends Controller
         // Stats
         $totalBookings = Appointment::count() + 50000;
         $totalSalons = Salon::where('status', 'approved')->count();
-        
-        // ✅ YEH LINE ADD KARO (withoutGlobalScope ke saath)
         $totalClients = User::withoutGlobalScope('softDeletes')->where('role', 'client')->count();
 
         // Categories
         $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
 
-        // Featured Salons (recommended)
+        // 1. Featured / Recommended Salons (Pehle 4 Salons)
         $featuredSalons = Salon::where('status', 'approved')
-            ->with('services')
+            ->with(['services.category'])
             ->latest()
-            ->take(12)
+            ->take(4)
             ->get();
 
-        // New Salons (new to glamora)
+        // 2. New Salons (Aglay 4 Salons - ID exclude karke taake repeat na ho)
+        $featuredIds = $featuredSalons->pluck('id');
         $newSalons = Salon::where('status', 'approved')
+            ->whereNotIn('id', $featuredIds)
+            ->with(['services.category'])
             ->latest()
-            ->take(12)
+            ->take(4)
             ->get();
 
-        // Top Rated Salons (trending)
+        // 3. Top Rated / Trending Salons (Aglay 4 Salons)
+        $usedIds = $featuredIds->merge($newSalons->pluck('id'));
         $topRatedSalons = Salon::where('status', 'approved')
+            ->whereNotIn('id', $usedIds)
+            ->with(['services.category'])
             ->orderBy('rating', 'desc')
-            ->take(12)
+            ->take(4)
             ->get();
 
         return view('frontend.home', compact(

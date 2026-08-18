@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\TimeSlot;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,12 +16,8 @@ class AppointmentManageController extends Controller
     {
         $query = Appointment::with([
             'salon',
-            'service' => function ($q) {
-                $q->withTrashed();
-            },
-            'stylist' => function ($q) {
-                $q->withTrashed();
-            },
+            'service' => fn ($q) => $q->withTrashed(),
+            'stylist' => fn ($q) => $q->withTrashed(),
             'payment'
         ])
         ->where('client_id', Auth::id())
@@ -50,18 +47,12 @@ class AppointmentManageController extends Controller
 
     public function show(Appointment $appointment)
     {
-        if ($appointment->client_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorizeAppointmentOwner($appointment);
 
         $appointment->load([
             'salon',
-            'service' => function ($q) {
-                $q->withTrashed();
-            },
-            'stylist' => function ($q) {
-                $q->withTrashed();
-            },
+            'service' => fn ($q) => $q->withTrashed(),
+            'stylist' => fn ($q) => $q->withTrashed(),
             'payment',
             'review'
         ]);
@@ -71,9 +62,7 @@ class AppointmentManageController extends Controller
 
     public function cancel(Request $request, Appointment $appointment)
     {
-        if ($appointment->client_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorizeAppointmentOwner($appointment);
 
         if (in_array($appointment->status, ['cancelled', 'completed'])) {
             return back()->with('error', 'This appointment can no longer be cancelled.');
@@ -87,29 +76,29 @@ class AppointmentManageController extends Controller
             'cancelled_at'        => now(),
         ]);
 
-        // ── Waitlist: next waiting client ko notify karo ──
+        // Waitlist offer trigger
         if (class_exists('App\Http\Controllers\Client\WaitlistJoinController')) {
             try {
                 WaitlistJoinController::offerToNext(
                     $appointment->salon_id,
                     $appointment->stylist_id,
-                    $appointment->appointment_date->format('Y-m-d')
+                    Carbon::parse($appointment->appointment_date)->format('Y-m-d')
                 );
             } catch (\Exception $e) {
-                // Silently ignore
+                \Log::warning('Waitlist offer error: ' . $e->getMessage());
             }
         }
 
-        // ✅ NOTIFICATION: Client ne appointment cancel ki
+        // Notification to Salon Owner
         try {
             $client = Auth::user();
             NotificationHelper::send(
                 $appointment->salon_id,
                 'appointment',
                 [
-                    'title' => '❌ Appointment Cancelled',
+                    'title'   => '❌ Appointment Cancelled',
                     'message' => "{$client->name} cancelled their appointment for " . Carbon::parse($appointment->appointment_date)->format('M d, Y'),
-                    'link' => route('owner.appointments.show', $appointment->id),
+                    'link'    => route('owner.appointments.show', $appointment->id),
                 ]
             );
         } catch (\Exception $e) {
@@ -120,37 +109,70 @@ class AppointmentManageController extends Controller
             ->with('success', 'Your appointment has been cancelled.');
     }
 
+    public function rescheduleForm(Appointment $appointment)
+    {
+        $this->authorizeAppointmentOwner($appointment);
+
+        if (in_array($appointment->status, ['cancelled', 'completed'])) {
+            return redirect()->route('client.appointments.index')
+                ->with('error', 'This appointment can no longer be rescheduled.');
+        }
+
+        // Relationships load kar di hain taake Blade template mein error na aaye
+        $appointment->load(['salon', 'service', 'stylist']);
+
+        return view('client.appointments.reschedule', compact('appointment'));
+    }
+
     public function reschedule(Request $request, Appointment $appointment)
     {
-        if ($appointment->client_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorizeAppointmentOwner($appointment);
 
         if (in_array($appointment->status, ['cancelled', 'completed'])) {
             return back()->with('error', 'This appointment can no longer be rescheduled.');
         }
 
+        // Flexible field names support (date/new_date & start_time/new_time)
+        $date = $request->input('new_date') ?? $request->input('date');
+        $time = $request->input('new_time') ?? $request->input('start_time');
+
+        $request->merge([
+            'new_date' => $date,
+            'new_time' => $time,
+        ]);
+
         $request->validate([
             'new_date' => 'required|date|after_or_equal:' . now()->format('Y-m-d'),
-            'new_time' => 'required|date_format:H:i',
+            'new_time' => 'required',
         ], [
             'new_date.after_or_equal' => 'Please select today or a future date.',
         ]);
 
-        $service = $appointment->service;
+        $service  = $appointment->service;
+        $newStart = Carbon::parse($time);
+        $newEnd   = $newStart->copy()->addMinutes($service->duration ?? 60);
 
-        $newStart = Carbon::parse($request->new_time)->format('H:i:s');
-        $newEnd   = Carbon::parse($request->new_time)
-                        ->addMinutes($service->duration ?? 60)
-                        ->format('H:i:s');
+        // Double Booking Check
+        $slotConflict = Appointment::where('stylist_id', $appointment->stylist_id)
+            ->where('id', '!=', $appointment->id)
+            ->where('appointment_date', $date)
+            ->whereNotIn('status', ['cancelled'])
+            ->where(function ($q) use ($newStart, $newEnd) {
+                $q->whereBetween('start_time', [$newStart->format('H:i:s'), $newEnd->format('H:i:s')])
+                  ->orWhereBetween('end_time', [$newStart->format('H:i:s'), $newEnd->format('H:i:s')]);
+            })->exists();
+
+        if ($slotConflict) {
+            return back()->with('error', 'The selected time slot is already booked. Please choose another time.')->withInput();
+        }
 
         $oldDate = Carbon::parse($appointment->appointment_date)->format('d M Y');
         $oldTime = Carbon::parse($appointment->start_time)->format('h:i A');
 
         $appointment->update([
-            'appointment_date' => $request->new_date,
-            'start_time'       => $newStart,
-            'end_time'         => $newEnd,
+            'appointment_date' => $date,
+            'start_time'       => $newStart->format('H:i:s'),
+            'end_time'         => $newEnd->format('H:i:s'),
             'notes'            => trim(
                 ($appointment->notes ? $appointment->notes . ' | ' : '') .
                 "Rescheduled from {$oldDate} {$oldTime}" .
@@ -158,16 +180,16 @@ class AppointmentManageController extends Controller
             ),
         ]);
 
-        // ✅ NOTIFICATION: Client ne appointment reschedule ki
+        // Notification to Salon Owner
         try {
             $client = Auth::user();
             NotificationHelper::send(
                 $appointment->salon_id,
                 'appointment',
                 [
-                    'title' => '🔄 Appointment Rescheduled',
-                    'message' => "{$client->name} rescheduled appointment from {$oldDate} {$oldTime} to " . Carbon::parse($request->new_date)->format('M d, Y') . ' at ' . Carbon::parse($request->new_time)->format('h:i A'),
-                    'link' => route('owner.appointments.show', $appointment->id),
+                    'title'   => '🔄 Appointment Rescheduled',
+                    'message' => "{$client->name} rescheduled appointment from {$oldDate} {$oldTime} to " . Carbon::parse($date)->format('M d, Y') . ' at ' . $newStart->format('h:i A'),
+                    'link'    => route('owner.appointments.show', $appointment->id),
                 ]
             );
         } catch (\Exception $e) {
@@ -178,40 +200,18 @@ class AppointmentManageController extends Controller
             ->with('success', 'Your appointment has been rescheduled successfully!');
     }
 
-    public function rescheduleForm(Appointment $appointment)
-    {
-        if ($appointment->client_id !== Auth::id()) {
-            abort(403);
-        }
-
-        if (in_array($appointment->status, ['cancelled', 'completed'])) {
-            return redirect()->route('client.appointments.index')
-                ->with('error', 'This appointment can no longer be rescheduled.');
-        }
-
-        $timeSlots = \App\Models\TimeSlot::where('stylist_id', $appointment->stylist_id)
-            ->where('slot_date', $appointment->appointment_date)
-            ->where('status', 'available')
-            ->get();
-
-        return view('client.appointments.reschedule', compact('appointment', 'timeSlots'));
-    }
-
     public function getAvailableSlots(Request $request)
     {
         $request->validate([
-            'stylist_id' => 'required|exists:stylists,id',
-            'date' => 'required|date',
+            'stylist_id'     => 'required|exists:stylists,id',
+            'date'           => 'required|date|after_or_equal:today',
             'appointment_id' => 'required|exists:appointments,id',
         ]);
 
-        $appointment = Appointment::find($request->appointment_id);
-        
-        if ($appointment->client_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $appointment = Appointment::findOrFail($request->appointment_id);
+        $this->authorizeAppointmentOwner($appointment);
 
-        $slots = \App\Models\TimeSlot::where('stylist_id', $request->stylist_id)
+        $slots = TimeSlot::where('stylist_id', $request->stylist_id)
             ->where('slot_date', $request->date)
             ->where('status', 'available')
             ->whereDoesntHave('appointment', function ($q) use ($request) {
@@ -219,15 +219,20 @@ class AppointmentManageController extends Controller
                   ->where('status', '!=', 'cancelled');
             })
             ->get()
-            ->map(function ($slot) {
-                return [
-                    'id' => $slot->id,
-                    'start_time' => $slot->start_time,
-                    'end_time' => $slot->end_time,
-                    'display' => Carbon::parse($slot->start_time)->format('h:i A') . ' - ' . Carbon::parse($slot->end_time)->format('h:i A'),
-                ];
-            });
+            ->map(fn ($slot) => [
+                'id'         => $slot->id,
+                'start_time' => $slot->start_time,
+                'end_time'   => $slot->end_time,
+                'display'    => Carbon::parse($slot->start_time)->format('h:i A') . ' - ' . Carbon::parse($slot->end_time)->format('h:i A'),
+            ]);
 
         return response()->json(['slots' => $slots]);
+    }
+
+    private function authorizeAppointmentOwner(Appointment $appointment): void
+    {
+        if ($appointment->client_id !== Auth::id()) {
+            abort(403, 'Unauthorized access.');
+        }
     }
 }

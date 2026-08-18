@@ -211,6 +211,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/confirm-password', [ConfirmPasswordController::class, 'showForm'])->name('password.confirm');
     Route::post('/confirm-password', [ConfirmPasswordController::class, 'confirm']);
 
+});
+
     // ========================================================
     // ADMIN ROUTES
     // ========================================================
@@ -418,70 +420,76 @@ Route::middleware('auth')->group(function () {
         Route::get('/analytics/revenue', [OwnerAnalyticsController::class, 'revenue'])->name('analytics.revenue');
     }); // ✅ OWNER ROUTES CLOSED
 
-    // ========================================================
-    // CLIENT ROUTES
-    // ========================================================
-    Route::prefix('client')->name('client.')->middleware(['auth'])->group(function () {
-        Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+   // ========================================================
+// CLIENT ROUTES
+// ========================================================
+Route::prefix('client')->name('client.')->middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/search', [SalonSearchController::class, 'index'])->name('search');
-        Route::get('/salons/{slug}', [SalonDetailController::class, 'show'])->name('salons.show');
+    Route::get('/search', [SalonSearchController::class, 'index'])->name('search');
+    Route::get('/salons/{slug}', [SalonDetailController::class, 'show'])->name('salons.show');
 
-        Route::get('/booking/{salon}/slots', [BookingStepController::class, 'getSlots'])->name('booking.slots');
-        Route::get('/booking/{salon}/dates', [BookingStepController::class, 'getAvailableDates'])->name('booking.dates');
+    Route::get('/booking/{salon}/slots', [BookingStepController::class, 'getSlots'])->name('booking.slots');
+    Route::get('/booking/{salon}/dates', [BookingStepController::class, 'getAvailableDates'])->name('booking.dates');
 
-        Route::get('/payments', [ClientPaymentController::class, 'index'])->name('payments.index');
-        Route::get('/payments/{payment}', [ClientPaymentController::class, 'show'])->name('payments.show');
-        Route::get('/payments/{payment}/receipt', [ClientPaymentController::class, 'downloadReceipt'])->name('payments.receipt');
+    // Payment Routes
+    Route::get('/payments', [ClientPaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments', [ClientPaymentController::class, 'store'])->name('payments.store');
+    Route::get('/payments/{payment}', [ClientPaymentController::class, 'show'])->name('payments.show');
+    Route::get('/payments/{payment}/receipt', [ClientPaymentController::class, 'downloadReceipt'])->name('payments.receipt');
 
-        Route::get('/appointments', [AppointmentManageController::class, 'index'])->name('appointments.index');
-        Route::get('/appointments/{appointment}', [AppointmentManageController::class, 'show'])->name('appointments.show');
-        Route::post('/appointments/{appointment}/cancel', [AppointmentManageController::class, 'cancel'])->name('appointments.cancel');
-        Route::get('/appointments/{appointment}/reschedule', [RescheduleController::class, 'create'])->name('appointments.reschedule');
+    // Appointment Management & Reschedule Routes
+    Route::get('/appointments', [AppointmentManageController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/{appointment}', [AppointmentManageController::class, 'show'])->name('appointments.show');
+    Route::post('/appointments/{appointment}/cancel', [AppointmentManageController::class, 'cancel'])->name('appointments.cancel');
+    Route::get('/appointments/{appointment}/reschedule', [AppointmentManageController::class, 'rescheduleForm'])->name('appointments.reschedule.form');
+    Route::post('/appointments/{appointment}/reschedule', [AppointmentManageController::class, 'reschedule'])->name('appointments.reschedule');
+    Route::get('/appointments/available-slots', [AppointmentManageController::class, 'getAvailableSlots'])->name('appointments.available-slots');
 
-        Route::get('/appointments/{appointment}/reschedule', [RescheduleController::class, 'create'])->name('appointments.reschedule.create');
-        Route::post('/appointments/{appointment}/reschedule', [RescheduleController::class, 'store'])->name('appointments.reschedule');
+    // Waitlist Routes
+    Route::prefix('waitlist')->name('waitlist.')->group(function () {
+        Route::get('/', [WaitlistJoinController::class, 'index'])->name('index');
+        Route::post('/join', [WaitlistJoinController::class, 'join'])->name('join');
+        Route::post('/{waitlist}/accept', [WaitlistJoinController::class, 'accept'])->name('accept');
+        Route::post('/{waitlist}/reject', [WaitlistJoinController::class, 'reject'])->name('reject');
+    });
 
-        Route::prefix('waitlist')->name('waitlist.')->group(function () {
-            Route::get('/', [WaitlistJoinController::class, 'index'])->name('index');
-            Route::post('/join', [WaitlistJoinController::class, 'join'])->name('join');
-            Route::post('/{waitlist}/accept', [WaitlistJoinController::class, 'accept'])->name('accept');
-            Route::post('/{waitlist}/reject', [WaitlistJoinController::class, 'reject'])->name('reject');
-        });
+    // Favorites Routes
+    Route::get('/favorites', [FavoriteSalonController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites/{salon}/toggle', [FavoriteSalonController::class, 'toggle'])->name('favorites.toggle');
 
-        Route::get('/favorites', [FavoriteSalonController::class, 'index'])->name('favorites.index');
-        Route::post('/favorites/{salon}/toggle', [FavoriteSalonController::class, 'toggle'])->name('favorites.toggle');
+    // Review Routes
+    Route::get('/reviews', [ReviewSubmitController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/create/{appointment}', [ReviewSubmitController::class, 'create'])->name('reviews.create');
+    Route::post('/reviews/{appointment}', [ReviewSubmitController::class, 'store'])->name('reviews.store');
+    Route::get('/reviews/{review}', [ReviewSubmitController::class, 'show'])->name('reviews.show');
+    Route::get('/reviews/{review}/edit', [ReviewSubmitController::class, 'edit'])->name('reviews.edit');
+    Route::put('/reviews/{review}', [ReviewSubmitController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{review}', [ReviewSubmitController::class, 'destroy'])->name('reviews.destroy');
 
-        Route::get('/reviews', [ReviewSubmitController::class, 'index'])->name('reviews.index');
-        Route::get('/reviews/create/{appointment}', [ReviewSubmitController::class, 'create'])->name('reviews.create');
-        Route::post('/reviews/{appointment}', [ReviewSubmitController::class, 'store'])->name('reviews.store');
-        Route::get('/reviews/{review}', [ReviewSubmitController::class, 'show'])->name('reviews.show');
-        Route::get('/reviews/{review}/edit', [ReviewSubmitController::class, 'edit'])->name('reviews.edit');
-        Route::put('/reviews/{review}', [ReviewSubmitController::class, 'update'])->name('reviews.update');
-        Route::delete('/reviews/{review}', [ReviewSubmitController::class, 'destroy'])->name('reviews.destroy');
+    // Complaint Routes
+    Route::get('/complaints', [ComplaintSubmitController::class, 'index'])->name('complaints.index');
+    Route::get('/complaints/create/{appointment?}', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
+    Route::post('/complaints', [ComplaintSubmitController::class, 'store'])->name('complaints.store');
+    Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show'])->name('complaints.show');
+    Route::get('/complaints/{complaint}/edit', [ComplaintSubmitController::class, 'edit'])->name('complaints.edit');
+    Route::put('/complaints/{complaint}', [ComplaintSubmitController::class, 'update'])->name('complaints.update');
+    Route::delete('/complaints/{complaint}', [ComplaintSubmitController::class, 'destroy'])->name('complaints.destroy');
+    Route::post('/complaints/{complaint}/accept', [ComplaintSubmitController::class, 'acceptResolution'])->name('complaints.accept');
+    Route::post('/complaints/{complaint}/escalate', [ComplaintSubmitController::class, 'escalate'])->name('complaints.escalate');
 
-        Route::get('/complaints', [ComplaintSubmitController::class, 'index'])->name('complaints.index');
-        Route::get('/complaints/create/{appointment?}', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
-        Route::post('/complaints', [ComplaintSubmitController::class, 'store'])->name('complaints.store');
-        Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show'])->name('complaints.show');
-        Route::get('/complaints/{complaint}/edit', [ComplaintSubmitController::class, 'edit'])->name('complaints.edit');
-        Route::put('/complaints/{complaint}', [ComplaintSubmitController::class, 'update'])->name('complaints.update');
-        Route::delete('/complaints/{complaint}', [ComplaintSubmitController::class, 'destroy'])->name('complaints.destroy');
+    // Notification Routes
+    Route::get('/notifications', [ClientNotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [ClientNotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [ClientNotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::delete('/notifications/{id}', [ClientNotificationController::class, 'destroy'])->name('notifications.destroy');
 
-        Route::post('/complaints/{complaint}/accept', [ComplaintSubmitController::class, 'acceptResolution'])->name('complaints.accept');
-        Route::post('/complaints/{complaint}/escalate', [ComplaintSubmitController::class, 'escalate'])->name('complaints.escalate');
-
-        Route::get('/notifications', [ClientNotificationController::class, 'index'])->name('notifications.index');
-        Route::post('/notifications/{id}/read', [ClientNotificationController::class, 'markAsRead'])->name('notifications.read');
-        Route::post('/notifications/read-all', [ClientNotificationController::class, 'markAllRead'])->name('notifications.read-all');
-        Route::delete('/notifications/{id}', [ClientNotificationController::class, 'destroy'])->name('notifications.destroy');
-
-        Route::get('/profile', [ClientProfileController::class, 'index'])->name('profile.index');
-        Route::post('/profile', [ClientProfileController::class, 'update'])->name('profile.update');
-    }); 
-
-}); 
+    // Profile Routes
+    Route::get('/profile', [ClientProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile', [ClientProfileController::class, 'update'])->name('profile.update');
+});
 
 Route::get('/test-complaint', function () {
     return 'Test route is working!';
 });
+

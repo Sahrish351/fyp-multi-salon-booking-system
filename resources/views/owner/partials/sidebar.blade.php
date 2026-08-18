@@ -1,3 +1,7 @@
+@php
+    $ownerSalon = \App\Models\Salon::where('owner_id', auth()->id())->first();
+@endphp
+ 
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
  
 <aside class="sidebar" id="ownerSidebar">
@@ -7,8 +11,8 @@
             <i class="bi bi-stars"></i>
         </div>
         <div class="brand-text">
-            <h1>GlowAura</h1>
-            <span>Luxury Salon</span>
+            <h1>{{ $ownerSalon->name ?? 'My Salon' }}</h1>
+            <span>{{ $ownerSalon->tagline ?? 'Salon Dashboard' }}</span>
         </div>
     </div>
  
@@ -109,7 +113,7 @@
                 <span>Reviews</span>
             </a>
         </li>
-
+ 
         <li>
             <a href="{{ route('owner.complaints.index') }}"
                class="nav-link-item {{ request()->routeIs('owner.complaints.*') ? 'active' : '' }}">
@@ -143,7 +147,7 @@
         </li>
  
         <div class="nav-divider"></div>
-
+ 
         {{-- 🌐 Visit Website --}}
         <li>
             <a href="{{ url('/') }}" target="_blank" class="nav-link-item">
@@ -173,3 +177,4 @@
  
     </ul>
 </aside>
+ 

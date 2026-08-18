@@ -5,15 +5,13 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Review;
 use App\Models\Appointment;
-use App\Models\User;
-use App\Notifications\CustomNotification;
+use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ReviewSubmitController extends Controller
 {
     // ── GET /client/reviews ─────────────────────────────────────
-    // Shows completed appointments with their review status
     public function index(Request $request)
     {
         $query = Appointment::with(['salon', 'service', 'review'])
@@ -21,7 +19,6 @@ class ReviewSubmitController extends Controller
             ->where('status', 'completed')
             ->latest();
 
-        // Filter: reviewed / not_reviewed
         if ($request->filled('status') && $request->status !== 'all') {
             if ($request->status === 'reviewed') {
                 $query->whereHas('review');
@@ -76,26 +73,26 @@ class ReviewSubmitController extends Controller
             'appointment_id' => $appointment->id,
             'rating'         => $request->rating,
             'comment'        => $request->comment,
-            'is_approved'    => false,
+            'is_approved'    => true, // Owner approval needed nahi toh isko 'true' rakhein taake direct show ho
         ]);
 
-        // Notify salon owner
-        $salon = $appointment->salon;
-        $owner = User::find($salon->owner_id);
-        if ($owner) {
-            try {
-                $owner->notify(new CustomNotification(
-                    'New Review Received',
-                    'A new review has been submitted for "' . $salon->name . '" by ' . Auth::user()->name . '.',
-                    route('owner.reviews.index')
-                ));
-            } catch (\Exception $e) {
-                \Log::warning('Review notification failed: ' . $e->getMessage());
-            }
+        // ✅ NOTIFICATION: Standard NotificationHelper ke zaraye Owner ko notification
+        try {
+            NotificationHelper::send(
+                $appointment->salon_id,
+                'review',
+                [
+                    'title'   => '⭐ New Review Received',
+                    'message' => "{$review->client->name} submitted a {$request->rating}-star review.",
+                    'link'    => route('owner.reviews.index'),
+                ]
+            );
+        } catch (\Exception $e) {
+            \Log::error('Review Notification Error: ' . $e->getMessage());
         }
 
-        // Update salon rating
-        $this->updateSalonRating($salon);
+        // Recalculate Salon Rating
+        $this->updateSalonRating($appointment->salon);
 
         return redirect()->route('client.reviews.show', $review->id)
             ->with('success', 'Thank you! Your review has been submitted.');
@@ -114,7 +111,6 @@ class ReviewSubmitController extends Controller
     {
         if ($review->client_id !== Auth::id()) abort(403);
 
-        // Cannot edit if owner has replied
         if ($review->reply) {
             return redirect()->route('client.reviews.show', $review->id)
                 ->with('error', 'You cannot edit a review that has been replied to.');
@@ -143,7 +139,6 @@ class ReviewSubmitController extends Controller
             'comment' => $request->comment,
         ]);
 
-        // Recalculate salon rating
         $this->updateSalonRating($review->salon);
 
         return redirect()->route('client.reviews.show', $review->id)
@@ -162,18 +157,23 @@ class ReviewSubmitController extends Controller
         $salon = $review->salon;
         $review->delete();
 
-        // Recalculate salon rating
         $this->updateSalonRating($salon);
 
         return redirect()->route('client.reviews.index')
             ->with('success', 'Review deleted successfully.');
     }
 
-    // ── Helper: update salon avg rating ──────────────────────────
+    // ── Helper: Update Salon Average Rating ───────────────────────
     private function updateSalonRating($salon): void
     {
+        if (!$salon) return;
+
         $avg   = Review::where('salon_id', $salon->id)->where('is_approved', true)->avg('rating');
         $total = Review::where('salon_id', $salon->id)->where('is_approved', true)->count();
-        $salon->update(['rating' => round($avg ?? 0, 2), 'total_reviews' => $total]);
+        
+        $salon->update([
+            'rating'        => round($avg ?? 0, 2),
+            'total_reviews' => $total
+        ]);
     }
 }

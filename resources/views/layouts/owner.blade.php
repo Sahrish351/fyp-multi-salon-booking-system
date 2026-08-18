@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard') - GlowAura Salon</title>
+    <title>@yield('title', 'Dashboard') - {{ $salon->name ?? 'Salon' }}</title>
  
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -33,7 +33,7 @@
                 <button class="sidebar-toggle-btn" id="sidebarToggleBtn">
                     <i class="bi bi-list"></i>
                 </button>
-                <span style="font-weight:700; color:#5C2142;">GlowAura</span>
+                <span style="font-weight:700; color:#5C2142;">{{ $salon->name ?? 'Salon' }}</span>
                 <span></span>
             </div>
  

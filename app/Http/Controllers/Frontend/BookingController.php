@@ -10,6 +10,7 @@ use App\Models\Appointment;
 use App\Models\Payment;
 use App\Models\StylistHoliday;
 use App\Models\Waitlist;
+use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -107,14 +108,6 @@ class BookingController extends Controller
     }
  
  
-    /**
-     * UPDATED: waitlist branch no longer creates the Waitlist record here and
-     * no longer redirects to client.waitlist.index. It now only stores the
-     * chosen date + a `booking_is_waitlist` flag in session and sends the
-     * client to Step 4 (Payment) — exactly like the regular flow — because
-     * waitlist bookings also require the Rs.100 advance and must show up as
-     * a pending_payment appointment for the salon owner to approve.
-     */
     public function postStep3DateTime(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
@@ -151,10 +144,6 @@ class BookingController extends Controller
     }
  
  
-    /**
-     * UPDATED: reads the `booking_is_waitlist` flag. When true, no time slot
-     * exists yet, so validation and the $slot object skip start/end time.
-     */
     public function step4Payment($salon_id)
     {
         $salon       = Salon::findOrFail($salon_id);
@@ -204,17 +193,6 @@ class BookingController extends Controller
     }
  
  
-    /**
-     * UPDATED: handles both regular and waitlist bookings.
-     *
-     * `payments.appointment_id` is NOT NULL in the DB, so every payment —
-     * waitlist included — must be linked to a real Appointment row. Since
-     * `appointments.start_time` / `end_time` are also NOT NULL, waitlist
-     * appointments are created with a '00:00:00' placeholder time and a
-     * note flagging them as unassigned. A matching Waitlist row is also
-     * created so the salon can track queue position. When a real slot is
-     * assigned later, update this Appointment's start_time/end_time then.
-     */
     public function postPayment(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
@@ -247,6 +225,7 @@ class BookingController extends Controller
         ]);
  
         $service        = Service::findOrFail($serviceId);
+        $client         = Auth::user();
         $screenshotPath = $request->file('screenshot')->store('payment-screenshots', 'public');
         $bookingRef     = 'GLM-' . strtoupper(substr(uniqid(), -6));
  
@@ -268,6 +247,9 @@ class BookingController extends Controller
                 'notes'            => 'Waitlist — awaiting slot assignment',
             ]);
  
+            $waitlistPosition = Waitlist::where('salon_id', $salon->id)
+                                    ->where('status', 'waiting')->count() + 1;
+ 
             Waitlist::create([
                 'client_id'      => Auth::id(),
                 'salon_id'       => $salon->id,
@@ -277,9 +259,24 @@ class BookingController extends Controller
                 'preferred_date' => $bookingDate,
                 'preferred_time' => null,
                 'status'         => 'waiting',
-                'position'       => Waitlist::where('salon_id', $salon->id)
-                                        ->where('status', 'waiting')->count() + 1,
+                'position'       => $waitlistPosition,
             ]);
+ 
+            // ✅ NOTIFICATION: Owner ko batao naya client waitlist mein aaya
+            try {
+                NotificationHelper::send(
+                    $salon->id,
+                    'waitlist',
+                    [
+                        'title'   => '⏳ New Waitlist Join',
+                        'message' => "{$client->name} joined the waitlist for {$service->name} on " . \Carbon\Carbon::parse($bookingDate)->format('M d, Y') . " (position #{$waitlistPosition})",
+                        'link'    => route('owner.waitlist.index'),
+                    ]
+                );
+            } catch (\Exception $e) {
+                Log::error('Waitlist join notification error: ' . $e->getMessage());
+            }
+ 
         } else {
             $startTime = \Carbon\Carbon::parse($bookingTime)->format('H:i:s');
             $endTime   = \Carbon\Carbon::parse($bookingTime)
@@ -299,6 +296,21 @@ class BookingController extends Controller
                 'advance_amount'   => 100,
                 'status'           => 'pending_payment',
             ]);
+ 
+            // ✅ NOTIFICATION: Owner ko batao naya appointment book hua
+            try {
+                NotificationHelper::send(
+                    $salon->id,
+                    'appointment',
+                    [
+                        'title'   => '📅 New Appointment Booked',
+                        'message' => "{$client->name} booked {$service->name} on " . \Carbon\Carbon::parse($bookingDate)->format('M d, Y') . ' at ' . \Carbon\Carbon::parse($bookingTime)->format('h:i A'),
+                        'link'    => route('owner.appointments.show', $appointment->id),
+                    ]
+                );
+            } catch (\Exception $e) {
+                Log::error('Appointment booking notification error: ' . $e->getMessage());
+            }
         }
  
         Payment::create([
@@ -312,6 +324,21 @@ class BookingController extends Controller
             'screenshot'      => $screenshotPath,
             'status'          => 'pending',
         ]);
+ 
+        // ✅ NOTIFICATION: Owner ko batao payment aayi hai
+        try {
+            NotificationHelper::send(
+                $salon->id,
+                'payment',
+                [
+                    'title'   => '💰 New Payment Received',
+                    'message' => "{$client->name} made a payment of PKR 100 via " . ucfirst($request->payment_method),
+                    'link'    => route('owner.payments.index'),
+                ]
+            );
+        } catch (\Exception $e) {
+            Log::error('Payment notification error: ' . $e->getMessage());
+        }
  
         Session::forget([
             'booking_service_id', 'booking_service_ids', 'booking_stylist_id',
@@ -386,4 +413,3 @@ class BookingController extends Controller
         return view('frontend.booking.confirmation', compact('booking'));
     }
 }
- 

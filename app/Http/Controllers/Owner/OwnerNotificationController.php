@@ -50,41 +50,43 @@ class OwnerNotificationController extends Controller
                 ->whereNull('deleted_at')
                 ->count();
 
-            // ✅ YAHAN SAB NOTIFICATION TYPES ADD KARO
             $typeConfig = [
-                'appointment' => ['icon' => 'bi-calendar-check-fill', 'color' => '#4A7FE0', 'bg' => '#E8F0FD'],
-                'payment'     => ['icon' => 'bi-credit-card-fill',    'color' => '#2EAE7D', 'bg' => '#E3F7EF'],
-                'payment_approved' => ['icon' => 'bi-check-circle-fill', 'color' => '#2EAE7D', 'bg' => '#E3F7EF'],
-                'payment_rejected' => ['icon' => 'bi-x-circle-fill',     'color' => '#E85588', 'bg' => '#FDE0EC'],
-                'payment_view' => ['icon' => 'bi-eye-fill',              'color' => '#4A7FE0', 'bg' => '#E8F0FD'],
-                'receipt_download' => ['icon' => 'bi-file-pdf-fill',     'color' => '#E85588', 'bg' => '#FDE0EC'],
-                'review'      => ['icon' => 'bi-star-fill',          'color' => '#D9A441', 'bg' => '#FEF3DC'],
-                'waitlist'    => ['icon' => 'bi-list-task',          'color' => '#9B6FD1', 'bg' => '#F3EDFB'],
-                'client'      => ['icon' => 'bi-person-fill',        'color' => '#E85588', 'bg' => '#FDE0EC'],
-                'system'      => ['icon' => 'bi-gear-fill',          'color' => '#6B7280', 'bg' => '#F3F4F6'],
+                'appointment'     => ['icon' => 'bi-calendar-check-fill', 'color' => '#4A7FE0', 'bg' => '#E8F0FD'],
+                'payment'         => ['icon' => 'bi-credit-card-fill',    'color' => '#2EAE7D', 'bg' => '#E3F7EF'],
+                'payment_approved'=> ['icon' => 'bi-check-circle-fill', 'color' => '#2EAE7D', 'bg' => '#E3F7EF'],
+                'payment_rejected'=> ['icon' => 'bi-x-circle-fill',     'color' => '#E85588', 'bg' => '#FDE0EC'],
+                'payment_view'    => ['icon' => 'bi-eye-fill',            'color' => '#4A7FE0', 'bg' => '#E8F0FD'],
+                'receipt_download'=> ['icon' => 'bi-file-pdf-fill',     'color' => '#E85588', 'bg' => '#FDE0EC'],
+                'review'          => ['icon' => 'bi-star-fill',          'color' => '#D9A441', 'bg' => '#FEF3DC'],
+                'waitlist'        => ['icon' => 'bi-list-task',          'color' => '#9B6FD1', 'bg' => '#F3EDFB'],
+                'client'          => ['icon' => 'bi-person-fill',        'color' => '#E85588', 'bg' => '#FDE0EC'],
+                'system'          => ['icon' => 'bi-gear-fill',          'color' => '#6B7280', 'bg' => '#F3F4F6'],
             ];
 
             $notifications = $notificationsRaw->map(function ($n) use ($typeConfig) {
-                $data = json_decode($n->data, true) ?? [];
+                // Decode JSON Data Column safely
+                $data = [];
+                if (!empty($n->data)) {
+                    $data = is_string($n->data) ? json_decode($n->data, true) : (array)$n->data;
+                }
 
                 $type   = $n->type ?? 'system';
                 $config = $typeConfig[$type] ?? $typeConfig['system'];
 
                 $createdAt = Carbon::parse($n->created_at);
-                $timeAgo   = $createdAt->diffForHumans();
 
                 return [
-                    'id'        => $n->id,
-                    'type'      => $type,
-                    'title'     => $data['title'] ?? $n->title ?? 'Notification',
-                    'message'   => $data['message'] ?? '',
-                    'link'      => $data['link'] ?? null,
-                    'is_read'   => !is_null($n->read_at),
-                    'time_ago'  => $timeAgo,
-                    'date'      => $createdAt->format('M d, Y h:i A'),
-                    'icon'      => $config['icon'],
-                    'icon_color'=> $config['color'],
-                    'icon_bg'   => $config['bg'],
+                    'id'         => $n->id,
+                    'type'       => $type,
+                    'title'      => $data['title'] ?? $n->title ?? 'Notification',
+                    'message'    => $data['message'] ?? $n->message ?? '',
+                    'link'       => $data['link'] ?? null,
+                    'is_read'    => !is_null($n->read_at),
+                    'time_ago'   => $createdAt->diffForHumans(),
+                    'date'       => $createdAt->format('M d, Y h:i A'),
+                    'icon'       => $config['icon'],
+                    'icon_color' => $config['color'],
+                    'icon_bg'    => $config['bg'],
                 ];
             })->toArray();
 

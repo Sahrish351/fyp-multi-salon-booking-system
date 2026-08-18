@@ -117,6 +117,33 @@
         border-radius: 24px; border: 2px dashed var(--pink-light);
     }
 
+    /* Pagination Giant Arrows Fix */
+    .pagination svg, 
+    nav[aria-label="Pagination Navigation"] svg,
+    .flex.justify-between svg { 
+        width: 16px !important; 
+        height: 16px !important; 
+        max-width: 16px !important;
+        max-height: 16px !important;
+        display: inline-block !important;
+    }
+
+    .pagination { display: flex; justify-content: center; gap: 6px; margin-top: 20px; list-style: none; padding: 0; }
+    .pagination .page-item .page-link {
+        border-radius: 10px !important;
+        color: var(--pink-dark);
+        border: 1px solid var(--pink-light);
+        padding: 8px 14px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--pink), var(--pink-dark)) !important;
+        border-color: transparent !important;
+        color: #fff !important;
+        box-shadow: 0 4px 10px rgba(233,30,140,0.2);
+    }
+
     #cancelModal { display: none; position: fixed; inset: 0; background: rgba(30,10,25,0.45); z-index: 999; align-items: center; justify-content: center; padding: 16px; }
     #cancelModal.show { display: flex; }
     .modal-box { background: #fff; border-radius: 20px; padding: 0; max-width: 400px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
@@ -202,15 +229,10 @@
             <div class="card-body">
                 <div class="salon-name">{{ $appt->salon->name ?? 'Salon not available' }}</div>
                 <div class="meta-list">
-                    {{-- ✅ NULL SAFE CHECKS --}}
                     <span><i class="fas fa-spa"></i> {{ Str::limit($appt->service->name ?? 'Service not available', 24) }}</span>
                     <span><i class="fas fa-user"></i> {{ $appt->stylist->name ?? 'Stylist not available' }}</span>
 
                     @php
-                        // Waitlist bookings are saved with a '00:00:00' placeholder time
-                        // (no real slot assigned yet) — flagged via the notes field set
-                        // in BookingController@postPayment. Show a clear waitlist label
-                        // instead of a misleading "12:00 AM".
                         $isWaitlistPlaceholder = $appt->start_time === '00:00:00'
                             && str_contains((string) $appt->notes, 'Waitlist');
                     @endphp
@@ -246,7 +268,7 @@
                     <button type="button" class="btn-bold cancel" onclick="cancelModal({{ $appt->id }})">
                         <i class="fas fa-times"></i> Cancel
                     </button>
-                    <a href="{{ route('client.appointments.reschedule.create', $appt->id) }}" class="btn-soft reschedule">
+                    <a href="{{ route('client.appointments.reschedule.form', $appt->id) }}" class="btn-soft reschedule">
                         <i class="fas fa-calendar-alt"></i> Reschedule
                     </a>
                 @endif
@@ -280,8 +302,11 @@
     @endforelse
 </div>
 
+{{-- Fixed Pagination rendering --}}
 @if($appointments->hasPages())
-<div class="mt-4">{{ $appointments->links() }}</div>
+<div class="d-flex justify-content-center mt-4">
+    {{ $appointments->links('pagination::bootstrap-4') }}
+</div>
 @endif
 
 <div id="cancelModal">

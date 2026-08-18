@@ -18,7 +18,7 @@ class NotificationHelper
                 'salon_id' => $salonId,
                 'title' => $data['title'] ?? 'Notification', 
                 'data' => json_encode([
-                    'title' => $data['title'] ?? '',
+                    'title' => $data['title'] ?? 'Notification',
                     'message' => $data['message'] ?? '',
                     'link' => $data['link'] ?? null,
                 ]),
@@ -35,7 +35,6 @@ class NotificationHelper
         }
     }
 
-   
     public static function sendToUser(int $userId, int $salonId, string $type, array $data): void
     {
         try {
@@ -47,7 +46,7 @@ class NotificationHelper
                 'salon_id' => $salonId,
                 'title' => $data['title'] ?? 'Notification',
                 'data' => json_encode([
-                    'title' => $data['title'] ?? '',
+                    'title' => $data['title'] ?? 'Notification',
                     'message' => $data['message'] ?? '',
                     'link' => $data['link'] ?? null,
                 ]),

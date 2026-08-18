@@ -10,10 +10,10 @@ use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Carbon\Carbon;
 
 class ClientPaymentController extends Controller
 {
+    // ── GET /client/payments ─────────────────────────────────────
     public function index(Request $request)
     {
         $baseQuery = Payment::whereHas('appointment', function ($q) {
@@ -40,6 +40,7 @@ class ClientPaymentController extends Controller
         return view('client.payments.index', compact('payments', 'counts'));
     }
 
+    // ── GET /client/payments/{payment} ─────────────────────────────
     public function show(Payment $payment)
     {
         if ($payment->appointment->client_id !== Auth::id()) {
@@ -48,43 +49,32 @@ class ClientPaymentController extends Controller
 
         $payment->load(['appointment.salon', 'appointment.service']);
 
-        try {
-            NotificationHelper::send($payment->salon_id, 'payment_view', [
-                'title'   => '👀 Client viewed payment',
-                'message' => auth()->user()->name . ' viewed payment #' . $payment->id,
-                'link'    => route('owner.payments.show', $payment->id),
-            ]);
-        } catch (\Exception $e) {
-            // Silent fail
-        }
-
+        // ✅ Note: Show view par owner ko notification bhejna remove kar diya hai
         return view('client.payments.show', compact('payment'));
     }
 
-    /**
-     * ✅ YEH NAYA METHOD HAI - PAYMENT STORE KARNE KE LIYE
-     */
+    // ── POST /client/payments ─────────────────────────────────────
     public function store(Request $request)
     {
         $validated = $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
-            'amount' => 'required|numeric|min:0',
-            'method' => 'required|in:easypaisa,jazzcash,bank,cash,online',
-            'screenshot' => 'nullable|image|max:2048',
-            'sender_number' => 'nullable|string',
+            'amount'         => 'required|numeric|min:0',
+            'method'         => 'required|in:easypaisa,jazzcash,bank,cash,online',
+            'screenshot'     => 'nullable|image|max:2048',
+            'sender_number'  => 'nullable|string',
         ]);
 
         $appointment = Appointment::where('client_id', Auth::id())->findOrFail($validated['appointment_id']);
 
         $payment = Payment::create([
-            'appointment_id' => $appointment->id,
-            'client_id' => Auth::id(),
-            'salon_id' => $appointment->salon_id,
-            'amount' => $validated['amount'],
-            'method' => $validated['method'],
-            'status' => 'pending',
+            'appointment_id'  => $appointment->id,
+            'client_id'       => Auth::id(),
+            'salon_id'        => $appointment->salon_id,
+            'amount'          => $validated['amount'],
+            'method'          => $validated['method'],
+            'status'          => 'pending',
             'transaction_ref' => strtoupper($validated['method']) . '-' . strtoupper(uniqid()),
-            'sender_number' => $validated['sender_number'] ?? null,
+            'sender_number'   => $validated['sender_number'] ?? null,
         ]);
 
         if ($request->hasFile('screenshot')) {
@@ -92,7 +82,7 @@ class ClientPaymentController extends Controller
             $payment->update(['screenshot' => $path]);
         }
 
-        // ✅ NOTIFICATION: Client ne payment ki
+        // ✅ NOTIFICATION: Owner ko alert jaye ga jab nayi payment submit ho
         try {
             $client = Auth::user();
             
@@ -100,9 +90,9 @@ class ClientPaymentController extends Controller
                 $appointment->salon_id,
                 'payment',
                 [
-                    'title' => '💰 New Payment Received',
-                    'message' => "{$client->name} made a payment of PKR {$validated['amount']} via " . ucfirst($validated['method']),
-                    'link' => route('owner.payments.show', $payment->id),
+                    'title'   => '💰 New Payment Received',
+                    'message' => "{$client->name} made a payment of PKR " . number_format($validated['amount']) . " via " . ucfirst($validated['method']),
+                    'link'    => route('owner.payments.show', $payment->id),
                 ]
             );
         } catch (\Exception $e) {
@@ -113,6 +103,7 @@ class ClientPaymentController extends Controller
             ->with('success', 'Payment submitted successfully! Waiting for approval.');
     }
 
+    // ── GET /client/payments/{payment}/receipt ────────────────────
     public function downloadReceipt(Payment $payment)
     {
         if ($payment->appointment->client_id !== Auth::id()) {
@@ -121,16 +112,7 @@ class ClientPaymentController extends Controller
 
         $payment->load(['appointment.salon', 'appointment.service']);
 
-        try {
-            NotificationHelper::send($payment->salon_id, 'receipt_download', [
-                'title'   => '📄 Receipt downloaded',
-                'message' => auth()->user()->name . ' downloaded receipt #' . $payment->id,
-                'link'    => route('owner.payments.show', $payment->id),
-            ]);
-        } catch (\Exception $e) {
-            // Silent fail
-        }
-
+        // ✅ Receipt download par notification spam avoid karne ke liye logic simplify kar diya hai
         $pdf = Pdf::loadView('client.payments.receipt', compact('payment'));
         return $pdf->download('receipt-' . $payment->id . '.pdf');
     }
