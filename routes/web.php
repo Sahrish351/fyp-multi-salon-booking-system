@@ -1,8 +1,8 @@
 <?php
-// FILE: routes/web.php — COMPLETE FIXED VERSION
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -28,7 +28,7 @@ use App\Http\Controllers\Admin\ClientManagementController;
 use App\Http\Controllers\Admin\AppointmentMonitorController;
 use App\Http\Controllers\Admin\PaymentMonitorController;
 use App\Http\Controllers\Admin\ReviewManagementController;
-use App\Http\Controllers\Admin\ComplaintController;
+use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AuditLogController;
@@ -69,7 +69,7 @@ use App\Http\Controllers\Client\RescheduleController;
 use App\Http\Controllers\Client\WaitlistJoinController;
 use App\Http\Controllers\Client\FavoriteSalonController;
 use App\Http\Controllers\Client\ReviewSubmitController;
-use App\Http\Controllers\Client\ComplaintSubmitController;
+use App\Http\Controllers\Client\ComplaintController as ClientComplaintController;
 use App\Http\Controllers\Client\ClientNotificationController;
 use App\Http\Controllers\Client\ClientProfileController;
 
@@ -264,10 +264,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/reviews/{review}/publish', [ReviewManagementController::class, 'publish'])->name('reviews.publish');
         Route::delete('/reviews/{review}', [ReviewManagementController::class, 'destroy'])->name('reviews.destroy');
 
-        Route::get('/complaints', [App\Http\Controllers\Admin\AdminComplaintController::class, 'index'])->name('complaints.index');
-        Route::get('/complaints/{complaint}', [App\Http\Controllers\Admin\AdminComplaintController::class, 'show'])->name('complaints.show');
-        Route::post('/complaints/{complaint}/respond', [App\Http\Controllers\Admin\AdminComplaintController::class, 'respond'])->name('complaints.respond');
-        Route::post('/complaints/{complaint}/close', [App\Http\Controllers\Admin\AdminComplaintController::class, 'close'])->name('complaints.close');
+       Route::get('/complaints', [AdminComplaintController::class, 'index'])->name('complaints.index');
+Route::get('/complaints/{complaint}', [AdminComplaintController::class, 'show'])->name('complaints.show');
+Route::post('/complaints/{complaint}/respond', [AdminComplaintController::class, 'respond'])->name('complaints.respond');
+Route::post('/complaints/{complaint}/close', [AdminComplaintController::class, 'close'])->name('complaints.close');
 
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
@@ -467,16 +467,15 @@ Route::prefix('client')->name('client.')->middleware(['auth'])->group(function (
     Route::put('/reviews/{review}', [ReviewSubmitController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{review}', [ReviewSubmitController::class, 'destroy'])->name('reviews.destroy');
 
-    // Complaint Routes
-    Route::get('/complaints', [ComplaintSubmitController::class, 'index'])->name('complaints.index');
-    Route::get('/complaints/create/{appointment?}', [ComplaintSubmitController::class, 'create'])->name('complaints.create');
-    Route::post('/complaints', [ComplaintSubmitController::class, 'store'])->name('complaints.store');
-    Route::get('/complaints/{complaint}', [ComplaintSubmitController::class, 'show'])->name('complaints.show');
-    Route::get('/complaints/{complaint}/edit', [ComplaintSubmitController::class, 'edit'])->name('complaints.edit');
-    Route::put('/complaints/{complaint}', [ComplaintSubmitController::class, 'update'])->name('complaints.update');
-    Route::delete('/complaints/{complaint}', [ComplaintSubmitController::class, 'destroy'])->name('complaints.destroy');
-    Route::post('/complaints/{complaint}/accept', [ComplaintSubmitController::class, 'acceptResolution'])->name('complaints.accept');
-    Route::post('/complaints/{complaint}/escalate', [ComplaintSubmitController::class, 'escalate'])->name('complaints.escalate');
+   // Client Complaint Routes
+Route::get('/complaints', [ClientComplaintController::class, 'index'])->name('complaints.index');
+Route::get('/complaints/create/{appointment?}', [ClientComplaintController::class, 'create'])->name('complaints.create');
+Route::post('/complaints', [ClientComplaintController::class, 'store'])->name('complaints.store');
+Route::get('/complaints/{complaint}', [ClientComplaintController::class, 'show'])->name('complaints.show');
+Route::get('/complaints/{complaint}/edit', [ClientComplaintController::class, 'edit'])->name('complaints.edit');
+Route::put('/complaints/{complaint}', [ClientComplaintController::class, 'update'])->name('complaints.update');
+Route::post('/complaints/{complaint}/accept', [ClientComplaintController::class, 'acceptResolution'])->name('complaints.accept');
+Route::post('/complaints/{complaint}/escalate', [ClientComplaintController::class, 'escalate'])->name('complaints.escalate');
 
     // Notification Routes
     Route::get('/notifications', [ClientNotificationController::class, 'index'])->name('notifications.index');

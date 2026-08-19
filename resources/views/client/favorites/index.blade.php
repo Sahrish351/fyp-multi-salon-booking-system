@@ -50,9 +50,9 @@
                     <a href="{{ route('salons.show',$salon->slug) }}" class="btn btn-sm flex-grow-1" style="background:#fff0f7;color:#E91E8C;border:1px solid #fce4ec;border-radius:10px;font-weight:600;">
                         <i class="fas fa-eye me-1"></i>View Salon
                     </a>
-                    <a href="{{ route('client.booking.step1',$salon->id) }}" class="btn btn-sm flex-grow-1" style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;border-radius:10px;font-weight:600;">
-                        <i class="fas fa-calendar-plus me-1"></i>Book Now
-                    </a>
+                    <a href="{{ route('booking.step1',$salon->id) }}" class="btn btn-sm flex-grow-1" style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;border-radius:10px;font-weight:600;">
+    <i class="fas fa-calendar-plus me-1"></i>Book Now
+</a>
                 </div>
             </div>
         </div>

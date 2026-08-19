@@ -267,7 +267,7 @@
                     You accepted this slot on {{ $wl->responded_at?->format('d M Y, h:i A') ?? 'Recently' }}.
                     Complete your booking to confirm.
                 </p>
-                <a href="{{ route('client.booking.step4', $wl->salon_id) }}" class="btn btn-sm mt-2 rounded-3 fw-semibold"
+                <a href="{{ route('booking.step4', $wl->salon_id) }}" class="btn btn-sm mt-2 rounded-3 fw-semibold"
                    style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;font-size:0.8rem;">
                     <i class="fas fa-calendar-plus me-1"></i>Complete Booking
                 </a>
