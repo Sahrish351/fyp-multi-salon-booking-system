@@ -13,67 +13,89 @@ use Illuminate\Support\Facades\Validator;
 
 class OwnerStylistController extends Controller
 {
-    
-    public function index(Request $request)
-{
-    try {
+    // Common Helper Function: Logged-in Owner ka Salon ID nikalne ke liye
+    private function getSalonId()
+    {
         $user = auth()->user();
+        
+        // Pehle check karein agar user par direct salon_id hai
+        if (!empty($user->salon_id)) {
+            return $user->salon_id;
+        }
 
-       
-        $stylists = Stylist::where('salon_id', $user->salon_id ?? 0)
-            ->orderBy('name')
-            ->get()
-            ->map(function ($stylist) {
-                $clientsCount = Appointment::where('stylist_id', $stylist->id)
-                    ->distinct('client_id')
-                    ->count('client_id');
+        // Agar user relationship se salon juda hai
+        if (method_exists($user, 'salon') && $user->salon) {
+            return $user->salon->id;
+        }
 
-                $revenue = Appointment::where('stylist_id', $stylist->id)
-                    ->where('status', 'completed')
-                    ->sum('total_amount');
+        // Dropdown/Fallback: Owner ID se Salon table me search karein
+        $salon = Salon::where('owner_id', $user->id)->first();
+        if ($salon) {
+            return $salon->id;
+        }
 
-                return [
-                    'id' => $stylist->id,
-                    'name' => $stylist->name,
-                    'role' => $stylist->role ?? 'Stylist',
-                    'rating' => $stylist->rating ?? 4.5,
-                    'clients' => $clientsCount,
-                    'revenue' => $revenue,
-                    'photo_url' => $stylist->photo ? asset('storage/' . $stylist->photo) : null,
-                    'status' => $stylist->status ?? 'Active',
-                ];
-            });
-
-        return view('owner.stylists.index', compact('stylists'));
-
-    } catch (\Exception $e) {
-        Log::error('Stylist Index Error: ' . $e->getMessage());
-        return view('owner.stylists.index', ['stylists' => collect([])])
-            ->with('error', 'Unable to load team members.');
+        // Fallback to Salon 1 if nothing found
+        return 1;
     }
-}
-   
+
+    public function index(Request $request)
+    {
+        try {
+            $salonId = $this->getSalonId();
+
+            $stylists = Stylist::where('salon_id', $salonId)
+                ->orderBy('name')
+                ->get()
+                ->map(function ($stylist) {
+                    $clientsCount = Appointment::where('stylist_id', $stylist->id)
+                        ->distinct('client_id')
+                        ->count('client_id');
+
+                    $revenue = Appointment::where('stylist_id', $stylist->id)
+                        ->where('status', 'completed')
+                        ->sum('total_amount');
+
+                    return [
+                        'id' => $stylist->id,
+                        'name' => $stylist->name,
+                        'role' => $stylist->role ?? 'Stylist',
+                        'rating' => $stylist->rating ?? 4.5,
+                        'clients' => $clientsCount,
+                        'revenue' => $revenue,
+                        'photo_url' => $stylist->photo ? asset('storage/' . $stylist->photo) : null,
+                        'status' => $stylist->status ?? 'Active',
+                    ];
+                });
+
+            return view('owner.stylists.index', compact('stylists'));
+
+        } catch (\Exception $e) {
+            Log::error('Stylist Index Error: ' . $e->getMessage());
+            return view('owner.stylists.index', ['stylists' => collect([])])
+                ->with('error', 'Unable to load team members.');
+        }
+    }
+
     public function create()
     {
         return view('owner.stylists.create');
     }
 
-  
     public function store(Request $request)
     {
         try {
-            $user = auth()->user();
+            $salonId = $this->getSalonId();
 
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'role' => 'required|string|max:255',
+                'role' => 'nullable|string|max:255',
                 'email' => 'nullable|email|unique:stylists,email',
-                'phone' => 'required|string|max:20',
+                'phone' => 'nullable|string|max:20',
                 'specialization' => 'nullable|string',
                 'experience_years' => 'nullable|integer|min:0',
                 'bio' => 'nullable|string',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-                'status' => 'required|in:Active,Inactive',
+                'status' => 'nullable|in:Active,Inactive,active,inactive',
             ]);
 
             if ($validator->fails()) {
@@ -82,25 +104,24 @@ class OwnerStylistController extends Controller
                     ->withInput();
             }
 
-           
             $photoPath = null;
             if ($request->hasFile('photo')) {
                 $photoPath = $request->file('photo')->store('stylists', 'public');
             }
 
-            
             Stylist::create([
-                'salon_id' => $user->salon_id ?? 1,
+                'salon_id' => $salonId,
                 'name' => $request->name,
-                'role' => $request->role,
+                'role' => $request->role ?? 'Stylist',
                 'email' => $request->email ?? null,
-                'phone' => $request->phone,
-                'specialization' => $request->specialization,
+                'phone' => $request->phone ?? '',
+                'specializations' => $request->specialization ?? $request->role ?? 'Hair & Beauty',
+                'specialization' => $request->specialization ?? $request->role ?? 'Hair & Beauty',
                 'experience_years' => $request->experience_years ?? 0,
                 'bio' => $request->bio,
                 'photo' => $photoPath,
-                'status' => $request->status,
-                'rating' => 4.5,
+                'status' => $request->status ?? 'active',
+                'rating' => 5.0,
             ]);
 
             return redirect()->route('owner.stylists.index')
@@ -117,17 +138,15 @@ class OwnerStylistController extends Controller
     public function show($id)
     {
         try {
-            $user = auth()->user();
+            $salonId = $this->getSalonId();
 
-            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
-                ->find($id);
+            $stylist = Stylist::where('salon_id', $salonId)->find($id);
 
             if (!$stylist) {
                 return redirect()->route('owner.stylists.index')
                     ->with('error', 'Team member not found.');
             }
 
-          
             $clientsCount = Appointment::where('stylist_id', $stylist->id)
                 ->distinct('client_id')
                 ->count('client_id');
@@ -138,7 +157,6 @@ class OwnerStylistController extends Controller
 
             $appointmentsCount = Appointment::where('stylist_id', $stylist->id)->count();
 
-       
             $recentAppointments = Appointment::where('stylist_id', $stylist->id)
                 ->with(['client', 'service'])
                 ->orderBy('appointment_date', 'desc')
@@ -185,10 +203,9 @@ class OwnerStylistController extends Controller
     public function edit($id)
     {
         try {
-            $user = auth()->user();
+            $salonId = $this->getSalonId();
 
-            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
-                ->find($id);
+            $stylist = Stylist::where('salon_id', $salonId)->find($id);
 
             if (!$stylist) {
                 return redirect()->route('owner.stylists.index')
@@ -217,14 +234,12 @@ class OwnerStylistController extends Controller
         }
     }
 
-  
     public function update(Request $request, $id)
     {
         try {
-            $user = auth()->user();
+            $salonId = $this->getSalonId();
 
-            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
-                ->find($id);
+            $stylist = Stylist::where('salon_id', $salonId)->find($id);
 
             if (!$stylist) {
                 return redirect()->route('owner.stylists.index')
@@ -233,14 +248,14 @@ class OwnerStylistController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'role' => 'required|string|max:255',
+                'role' => 'nullable|string|max:255',
                 'email' => 'nullable|email|unique:stylists,email,' . $id,
-                'phone' => 'required|string|max:20',
+                'phone' => 'nullable|string|max:20',
                 'specialization' => 'nullable|string',
                 'experience_years' => 'nullable|integer|min:0',
                 'bio' => 'nullable|string',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-                'status' => 'required|in:Active,Inactive',
+                'status' => 'nullable|in:Active,Inactive,active,inactive',
             ]);
 
             if ($validator->fails()) {
@@ -257,15 +272,14 @@ class OwnerStylistController extends Controller
                 $stylist->photo = $photoPath;
             }
 
-           
             $stylist->name = $request->name;
-            $stylist->role = $request->role;
+            $stylist->role = $request->role ?? $stylist->role;
             $stylist->email = $request->email ?? null;
             $stylist->phone = $request->phone;
             $stylist->specialization = $request->specialization;
             $stylist->experience_years = $request->experience_years ?? 0;
             $stylist->bio = $request->bio;
-            $stylist->status = $request->status;
+            $stylist->status = $request->status ?? $stylist->status;
             $stylist->save();
 
             return redirect()->route('owner.stylists.index')
@@ -279,21 +293,18 @@ class OwnerStylistController extends Controller
         }
     }
 
-  
     public function destroy($id)
     {
         try {
-            $user = auth()->user();
+            $salonId = $this->getSalonId();
 
-            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
-                ->find($id);
+            $stylist = Stylist::where('salon_id', $salonId)->find($id);
 
             if (!$stylist) {
                 return redirect()->route('owner.stylists.index')
                     ->with('error', 'Team member not found.');
             }
 
-           
             if ($stylist->photo && Storage::disk('public')->exists($stylist->photo)) {
                 Storage::disk('public')->delete($stylist->photo);
             }
@@ -311,30 +322,24 @@ class OwnerStylistController extends Controller
         }
     }
 
- 
     public function storeAvailability(Request $request, $id)
     {
-        
         return redirect()->route('owner.stylists.availability.index', ['stylist' => $id])
             ->with('success', 'Availability updated!');
     }
 
-   
     public function storeHoliday(Request $request, $id)
     {
-        // TODO: Implement holiday logic
         return redirect()->route('owner.stylists.holidays.index', ['stylist' => $id])
             ->with('success', 'Holiday added!');
     }
 
-   
     public function availability($id)
     {
         try {
-            $user = auth()->user();
+            $salonId = $this->getSalonId();
 
-            $stylist = Stylist::where('salon_id', $user->salon_id ?? 0)
-                ->find($id);
+            $stylist = Stylist::where('salon_id', $salonId)->find($id);
 
             if (!$stylist) {
                 return redirect()->route('owner.stylists.index')
@@ -350,7 +355,6 @@ class OwnerStylistController extends Controller
         }
     }
 
-   
     public function destroyAvailability(Request $request, $stylist, $day)
     {
         return back()->with('success', 'Availability slot removed!');
