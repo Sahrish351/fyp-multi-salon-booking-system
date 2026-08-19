@@ -9,6 +9,7 @@ use App\Models\Salon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Schema;
 
 class OwnerCategoryController extends Controller
 {
@@ -16,7 +17,6 @@ class OwnerCategoryController extends Controller
     {
         return Salon::where('owner_id', auth()->id())->first();
     }
-
 
     private function getCategoryStyle(string $name, int $id): array
     {
@@ -43,7 +43,6 @@ class OwnerCategoryController extends Controller
 
         $lowerName = strtolower(trim($name));
 
-       
         foreach ($nameMap as $key => $style) {
             if (str_contains($lowerName, $key)) {
                 return $style;
@@ -72,29 +71,48 @@ class OwnerCategoryController extends Controller
                     ->with('error', 'Please create your salon first.');
             }
 
-            $categories = Category::withCount('services')
-                ->where('salon_id', $salon->id)
+            // Database column safety check
+            $hasCategoryCol = Schema::hasColumn('services', 'category');
+            $hasCategoryIdCol = Schema::hasColumn('services', 'category_id');
+
+            $categoriesRaw = Category::where('salon_id', $salon->id)
                 ->orderBy('name')
-                ->get()
-                ->map(function ($category) {
-                    $style = $this->getCategoryStyle($category->name, $category->id);
-                    return [
-                        'id'          => $category->id,
-                        'name'        => $category->name,
-                        'count'       => $category->services_count,
-                        'icon'        => $style['icon'],   // ✅ alag icon
-                        'icon_bg'     => $style['color'],  // ✅ alag color
-                        'status'      => $category->is_active ? 'Active' : 'Inactive',
-                        'description' => $category->description ?? '',
-                    ];
+                ->get();
+
+            $categories = $categoriesRaw->map(function ($category) use ($salon, $hasCategoryCol, $hasCategoryIdCol) {
+                $style = $this->getCategoryStyle($category->name, $category->id);
+
+                // Service count calculate karne ka safe tareeqa
+                $serviceQuery = Service::where('salon_id', $salon->id);
+
+                $serviceQuery->where(function($q) use ($category, $hasCategoryCol, $hasCategoryIdCol) {
+                    if ($hasCategoryIdCol) {
+                        $q->orWhere('category_id', $category->id);
+                    }
+                    if ($hasCategoryCol) {
+                        $q->orWhere('category', $category->name);
+                    }
                 });
+
+                $count = $serviceQuery->count();
+
+                return [
+                    'id'          => $category->id,
+                    'name'        => $category->name,
+                    'count'       => $count,
+                    'icon'        => $style['icon'],
+                    'icon_bg'     => $style['color'],
+                    'status'      => $category->is_active ? 'Active' : 'Inactive',
+                    'description' => $category->description ?? '',
+                ];
+            });
 
             return view('owner.categories.index', compact('categories'));
 
         } catch (\Exception $e) {
             Log::error('Category Index Error: ' . $e->getMessage());
             return view('owner.categories.index', ['categories' => collect([])])
-                ->with('error', 'Unable to load categories.');
+                ->with('error', 'Unable to load categories: ' . $e->getMessage());
         }
     }
 
@@ -119,7 +137,6 @@ class OwnerCategoryController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // Auto style assign
             $style = $this->getCategoryStyle($request->name, rand(0, 6));
 
             Category::create([
@@ -143,9 +160,7 @@ class OwnerCategoryController extends Controller
     {
         try {
             $salon    = $this->getOwnerSalon();
-            $category = Category::withCount('services')
-                ->where('salon_id', $salon->id)
-                ->find($id);
+            $category = Category::where('salon_id', $salon->id)->find($id);
 
             if (!$category) {
                 return redirect()->route('owner.categories.index')->with('error', 'Category not found.');
@@ -153,23 +168,32 @@ class OwnerCategoryController extends Controller
 
             $style = $this->getCategoryStyle($category->name, $category->id);
 
-            $servicesInCategory = Service::where('category_id', $category->id)
-                ->where('salon_id', $salon->id)
-                ->select('id', 'name', 'duration', 'price', 'is_active')
-                ->get()
-                ->map(fn($s) => [
-                    'id'       => $s->id,
-                    'name'     => $s->name,
-                    'duration' => $s->duration,
-                    'price'    => $s->price,
-                    'status'   => $s->is_active ? 'Active' : 'Inactive',
-                ]);
+            $hasCategoryCol = Schema::hasColumn('services', 'category');
+            $hasCategoryIdCol = Schema::hasColumn('services', 'category_id');
+
+            $servicesQuery = Service::where('salon_id', $salon->id);
+            $servicesQuery->where(function($q) use ($category, $hasCategoryCol, $hasCategoryIdCol) {
+                if ($hasCategoryIdCol) {
+                    $q->orWhere('category_id', $category->id);
+                }
+                if ($hasCategoryCol) {
+                    $q->orWhere('category', $category->name);
+                }
+            });
+
+            $servicesInCategory = $servicesQuery->get()->map(fn($s) => [
+                'id'       => $s->id,
+                'name'     => $s->name,
+                'duration' => $s->duration,
+                'price'    => $s->price,
+                'status'   => $s->is_active ? 'Active' : 'Inactive',
+            ]);
 
             $categoryData = [
                 'id'             => $category->id,
                 'name'           => $category->name,
                 'description'    => $category->description ?? 'No description provided.',
-                'count'          => $category->services_count,
+                'count'          => $servicesInCategory->count(),
                 'icon'           => $style['icon'],
                 'icon_bg'        => $style['color'],
                 'status'         => $category->is_active ? 'Active' : 'Inactive',
@@ -263,7 +287,21 @@ class OwnerCategoryController extends Controller
             }
 
             $categoryName = $category->name;
-            $serviceCount = Service::where('category_id', $category->id)->count();
+
+            $hasCategoryCol = Schema::hasColumn('services', 'category');
+            $hasCategoryIdCol = Schema::hasColumn('services', 'category_id');
+
+            $serviceQuery = Service::where('salon_id', $salon->id);
+            $serviceQuery->where(function($q) use ($category, $hasCategoryCol, $hasCategoryIdCol) {
+                if ($hasCategoryIdCol) {
+                    $q->orWhere('category_id', $category->id);
+                }
+                if ($hasCategoryCol) {
+                    $q->orWhere('category', $category->name);
+                }
+            });
+
+            $serviceCount = $serviceQuery->count();
 
             if ($serviceCount > 0) {
                 return redirect()->route('owner.categories.index')

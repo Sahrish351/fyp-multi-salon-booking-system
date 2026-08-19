@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Waitlist;
+use App\Http\Controllers\Owner\OwnerWaitlistController;
+use Illuminate\Support\Facades\Log;
 
 class ExpireWaitlistSlots extends Command
 {
@@ -12,30 +14,26 @@ class ExpireWaitlistSlots extends Command
 
     public function handle()
     {
-        $expired = Waitlist::where('status', 'notified')
-            ->where('expires_at', '<', now())
-            ->get();
+        try {
+            
+            $expired = Waitlist::where('status', 'notified')
+                ->where('expires_at', '<', now())
+                ->get();
 
-        foreach ($expired as $wl) {
-            $wl->update(['status' => 'expired']);
+            foreach ($expired as $wl) {
+               
+                $wl->update(['status' => 'expired']);
 
-            // Next waiting person ko offer karo
-            $next = Waitlist::where('time_slot_id', $wl->time_slot_id)
-                ->where('status', 'waiting')
-                ->orderBy('position')
-                ->first();
+                Log::info("Waitlist ID {$wl->id} expired. Auto-notifying next client...");
 
-            if ($next) {
-                $next->update([
-                    'status'     => 'notified',
-                    'expires_at' => now()->addMinutes(10),
-                ]);
-                $next->client->notify(
-                    new \App\Notifications\WaitlistSlotAvailable($next)
-                );
+                
+                OwnerWaitlistController::notifyNextWaitingClient($wl->salon_id, $wl->preferred_date);
             }
-        }
 
-        $this->info('Expired waitlist slots processed.');
+            $this->info('Expired waitlist slots processed successfully.');
+
+        } catch (\Exception $e) {
+            Log::error('ExpireWaitlistSlots Command Error: ' . $e->getMessage());
+        }
     }
 }

@@ -256,7 +256,7 @@
                 </div>
             </div>
 
-            {{-- Accepted Status --}}
+            {{-- Accepted Status (FIXED FORM ROUTE HERE) --}}
             @elseif($wl->status === 'accepted')
             <div class="p-3 rounded-3" style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);">
                 <div class="d-flex align-items-center gap-2 mb-1">
@@ -265,12 +265,15 @@
                 </div>
                 <p style="color:#555;font-size:0.78rem;margin:0;">
                     You accepted this slot on {{ $wl->responded_at?->format('d M Y, h:i A') ?? 'Recently' }}.
-                    Complete your booking to confirm.
+                    Click below to complete your booking.
                 </p>
-                <a href="{{ route('booking.step4', $wl->salon_id) }}" class="btn btn-sm mt-2 rounded-3 fw-semibold"
-                   style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;font-size:0.8rem;">
-                    <i class="fas fa-calendar-plus me-1"></i>Complete Booking
-                </a>
+                <form action="{{ route('client.waitlist.accept', $wl->id) }}" method="POST" class="mt-2">
+                    @csrf
+                    <button type="submit" class="btn btn-sm rounded-3 fw-semibold text-white"
+                            style="background:linear-gradient(135deg,#22c55e,#16a34a);border:none;font-size:0.8rem;">
+                        <i class="fas fa-calendar-plus me-1"></i>Complete Booking
+                    </button>
+                </form>
             </div>
 
             {{-- Expired/Declined --}}

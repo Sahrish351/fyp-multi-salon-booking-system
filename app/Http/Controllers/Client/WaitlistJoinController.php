@@ -1,7 +1,7 @@
 <?php
- 
+
 namespace App\Http\Controllers\Client;
- 
+
 use App\Http\Controllers\Controller;
 use App\Models\Waitlist;
 use App\Models\Appointment;
@@ -9,7 +9,7 @@ use App\Notifications\WaitlistSlotAvailable;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
- 
+
 class WaitlistJoinController extends Controller
 {
     public function index(Request $request)
@@ -17,25 +17,25 @@ class WaitlistJoinController extends Controller
         $query = Waitlist::with(['salon', 'stylist', 'service'])
             ->where('client_id', Auth::id())
             ->latest();
- 
+
         if ($request->status && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
- 
+
         $waitlists = $query->paginate(15);
- 
+
         return view('client.waitlist.index', compact('waitlists'));
     }
- 
+
     public function join(Request $request)
     {
         $request->validate([
-            'salon_id'    => 'required|exists:salons,id',
-            'service_id'  => 'required|exists:services,id',
-            'stylist_id'  => 'required|exists:stylists,id',
+            'salon_id'       => 'required|exists:salons,id',
+            'service_id'     => 'required|exists:services,id',
+            'stylist_id'     => 'required|exists:stylists,id',
             'preferred_date' => 'required|date',
         ]);
- 
+
         // Already on waitlist check
         $exists = Waitlist::where('client_id', Auth::id())
             ->where('salon_id', $request->salon_id)
@@ -43,17 +43,17 @@ class WaitlistJoinController extends Controller
             ->where('preferred_date', $request->preferred_date)
             ->whereIn('status', ['waiting', 'notified'])
             ->exists();
- 
+
         if ($exists) {
             return back()->with('error', 'You are already on the waitlist for this date.');
         }
- 
+
         $position = Waitlist::where('salon_id', $request->salon_id)
             ->where('stylist_id', $request->stylist_id)
             ->where('preferred_date', $request->preferred_date)
             ->where('status', 'waiting')
             ->count() + 1;
- 
+
         $waitlistEntry = Waitlist::create([
             'client_id'      => Auth::id(),
             'salon_id'       => $request->salon_id,
@@ -63,12 +63,12 @@ class WaitlistJoinController extends Controller
             'position'       => $position,
             'status'         => 'waiting',
         ]);
- 
+
         // ✅ NOTIFICATION: Owner ko batao naya client waitlist mein aaya hai
         try {
             $client  = Auth::user();
             $service = $waitlistEntry->service;
- 
+
             NotificationHelper::send(
                 $request->salon_id,
                 'waitlist',
@@ -81,49 +81,80 @@ class WaitlistJoinController extends Controller
         } catch (\Exception $e) {
             \Log::error('Waitlist join notification error: ' . $e->getMessage());
         }
- 
+
         return back()->with('success', 'You joined the waitlist at position #' . $position . '!');
     }
- 
+
     // Client accepts the offered slot
     public function accept(Waitlist $waitlist)
     {
         if ($waitlist->client_id !== Auth::id()) abort(403);
- 
+
+        // ✅ 1. CHECK: 20 mins expiration check
+        if ($waitlist->expires_at && now()->greaterThan($waitlist->expires_at)) {
+            $waitlist->update(['status' => 'expired']);
+
+            // Next waiting client ko offer bhej do
+            static::offerToNext(
+                $waitlist->salon_id,
+                $waitlist->stylist_id,
+                $waitlist->preferred_date
+            );
+
+            return back()->with('error', 'Sorry, your 20-minute window to accept this slot has expired.');
+        }
+
+        // ✅ 2. Waitlist entry mark as accepted
         $waitlist->update([
             'status'       => 'accepted',
             'responded_at' => now(),
         ]);
- 
-        // Redirect to booking so client can complete payment
+
+        // ✅ 3. Automatic Appointment Record Create Karein
+        try {
+            $servicePrice = $waitlist->service ? $waitlist->service->price : 0;
+
+            Appointment::create([
+                'client_id'      => Auth::id(),
+                'salon_id'       => $waitlist->salon_id,
+                'stylist_id'     => $waitlist->stylist_id,
+                'service_id'     => $waitlist->service_id,
+                'booking_date'   => $waitlist->preferred_date,
+                'price'          => $servicePrice,
+                'status'         => 'confirmed',
+                'payment_status' => 'pending',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Appointment creation error on waitlist accept: ' . $e->getMessage());
+        }
+
+        // ✅ 4. My Appointments Page Par Redirect Karein
         return redirect()
-            ->route('booking.step3', $waitlist->salon_id)
-            ->with('success', 'Great! Please complete your booking for ' .
-                $waitlist->preferred_date . '.');
+            ->route('client.appointments.index')
+            ->with('success', '🎉 Slot accepted! Your appointment has been successfully booked for ' . $waitlist->preferred_date . '.');
     }
- 
+
     // Client rejects the offered slot
     public function reject(Waitlist $waitlist)
     {
         if ($waitlist->client_id !== Auth::id()) abort(403);
- 
+
         $waitlist->update([
             'status'       => 'rejected',
             'responded_at' => now(),
         ]);
- 
+
         // Offer to next person in queue
         static::offerToNext(
             $waitlist->salon_id,
             $waitlist->stylist_id,
             $waitlist->preferred_date
         );
- 
+
         return back()->with('info', 'You declined the slot.');
     }
- 
+
     // When an appointment is cancelled, notify next waiting client
-    // Call this from AppointmentManageController::cancel()
     public static function offerToNext(
         int    $salonId,
         int    $stylistId,
@@ -135,19 +166,20 @@ class WaitlistJoinController extends Controller
             ->where('status', 'waiting')
             ->orderBy('position')
             ->first();
- 
+
         if ($next) {
             $next->update([
                 'status'     => 'notified',
-                'expires_at' => now()->addMinutes(10),
+                'expires_at' => now()->addMinutes(20),
             ]);
- 
+
             try {
-                $next->client->notify(new WaitlistSlotAvailable($next));
+                if ($next->client) {
+                    $next->client->notify(new WaitlistSlotAvailable($next));
+                }
             } catch (\Exception $e) {
                 \Log::warning('Waitlist notification failed: ' . $e->getMessage());
             }
         }
     }
 }
- 
