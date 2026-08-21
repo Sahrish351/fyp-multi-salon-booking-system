@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Review;
 use App\Models\Appointment;
+use App\Models\Salon;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OwnerNotificationEmail;
 
 class ReviewSubmitController extends Controller
 {
-    // ── GET /client/reviews ─────────────────────────────────────
     public function index(Request $request)
     {
         $query = Appointment::with(['salon', 'service', 'review'])
@@ -32,7 +34,6 @@ class ReviewSubmitController extends Controller
         return view('client.reviews.index', compact('appointments'));
     }
 
-    // ── GET /client/reviews/create/{appointment} ─────────────────
     public function create(Appointment $appointment)
     {
         if ($appointment->client_id !== Auth::id()) abort(403);
@@ -50,7 +51,6 @@ class ReviewSubmitController extends Controller
         return view('client.reviews.create', compact('appointment'));
     }
 
-    // ── POST /client/reviews/{appointment} ───────────────────────
     public function store(Request $request, Appointment $appointment)
     {
         $request->validate([
@@ -73,32 +73,53 @@ class ReviewSubmitController extends Controller
             'appointment_id' => $appointment->id,
             'rating'         => $request->rating,
             'comment'        => $request->comment,
-            'is_approved'    => true, // Owner approval needed nahi toh isko 'true' rakhein taake direct show ho
+            'is_approved'    => true, 
         ]);
 
-        // ✅ NOTIFICATION: Standard NotificationHelper ke zaraye Owner ko notification
+        // Notification & Email to Salon Owner
         try {
-            NotificationHelper::send(
-                $appointment->salon_id,
-                'review',
-                [
-                    'title'   => '⭐ New Review Received',
-                    'message' => "{$review->client->name} submitted a {$request->rating}-star review.",
-                    'link'    => route('owner.reviews.index'),
-                ]
-            );
+            $client = Auth::user();
+            $salon  = Salon::with('owner')->find($appointment->salon_id);
+
+            if ($salon) {
+                // 1. Dashboard Notification to Salon Owner
+                $ownerId = $salon->owner_id ?? null;
+                if ($ownerId) {
+                    NotificationHelper::send(
+                        $ownerId,
+                        'review',
+                        [
+                            'title'   => '⭐ New Review Received',
+                            'message' => "{$client->name} submitted a {$request->rating}-star review.",
+                            'link'    => route('owner.reviews.index'),
+                        ]
+                    );
+                }
+
+                // 2. Email Notification to Salon Owner
+                $ownerEmail = $salon->owner->email ?? config('mail.from.address');
+
+                if ($ownerEmail) {
+                    $emailSubject = "⭐ New Review Posted: " . $request->rating . " Stars";
+                    $emailBody    = "Client <strong>{$client->name}</strong> ne aap ke salon par new review post kiya hai.<br><br>" .
+                                    "<strong>Rating:</strong> {$request->rating} / 5 Stars<br>" .
+                                    "<strong>Comment:</strong> {$request->comment}<br>" .
+                                    "<strong>Booking Ref:</strong> {$appointment->booking_ref}";
+
+                    Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+                }
+            }
+
         } catch (\Exception $e) {
-            \Log::error('Review Notification Error: ' . $e->getMessage());
+            \Log::error('Review Notification/Email Error: ' . $e->getMessage());
         }
 
-        // Recalculate Salon Rating
         $this->updateSalonRating($appointment->salon);
 
         return redirect()->route('client.reviews.show', $review->id)
             ->with('success', 'Thank you! Your review has been submitted.');
     }
 
-    // ── GET /client/reviews/{review} ─────────────────────────────
     public function show(Review $review)
     {
         if ($review->client_id !== Auth::id()) abort(403);
@@ -106,7 +127,6 @@ class ReviewSubmitController extends Controller
         return view('client.reviews.show', compact('review'));
     }
 
-    // ── GET /client/reviews/{review}/edit ────────────────────────
     public function edit(Review $review)
     {
         if ($review->client_id !== Auth::id()) abort(403);
@@ -120,7 +140,6 @@ class ReviewSubmitController extends Controller
         return view('client.reviews.edit', compact('review'));
     }
 
-    // ── PUT /client/reviews/{review} ─────────────────────────────
     public function update(Request $request, Review $review)
     {
         if ($review->client_id !== Auth::id()) abort(403);
@@ -145,7 +164,6 @@ class ReviewSubmitController extends Controller
             ->with('success', 'Your review has been updated successfully.');
     }
 
-    // ── DELETE /client/reviews/{review} ──────────────────────────
     public function destroy(Review $review)
     {
         if ($review->client_id !== Auth::id()) abort(403);
@@ -163,7 +181,6 @@ class ReviewSubmitController extends Controller
             ->with('success', 'Review deleted successfully.');
     }
 
-    // ── Helper: Update Salon Average Rating ───────────────────────
     private function updateSalonRating($salon): void
     {
         if (!$salon) return;

@@ -8,7 +8,12 @@ use App\Models\Salon;
 use App\Models\Appointment;
 use App\Helpers\NotificationHelper; 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+
+// Mail classes import kiye gaye hain
+use App\Mail\PaymentVerifiedMail;
+use App\Mail\AppointmentStatusMail;
 
 class OwnerPaymentController extends Controller
 {
@@ -122,14 +127,21 @@ class OwnerPaymentController extends Controller
 
         if ($validated['status'] === 'approved') {
             $appointment->update(['status' => 'confirmed']);
+
+            // 📧 Send Payment Verification Email to Client
+            $appointment->load(['client', 'service', 'stylist', 'payment']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new PaymentVerifiedMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Payment Store): ' . $e->getMessage());
+                }
+            }
         }
 
         return redirect()->route('owner.payments.index')->with('success', 'Payment recorded successfully!');
     }
 
-    /**
-     * ✅ FIXED: YEH SHOW METHOD SAB FIELDS BHAREGA
-     */
     public function show($payment)
     {
         $user = auth()->user();
@@ -152,23 +164,16 @@ class OwnerPaymentController extends Controller
             return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
         }
 
-        // ✅ COMPLETE DATA ARRAY - SAB FIELDS YAHAN SE AAYENGI
         $paymentData = [
             'id' => $paymentModel->id,
             'payment_id' => 'PAY-' . str_pad($paymentModel->id, 3, '0', STR_PAD_LEFT),
             'invoice_no' => $paymentModel->invoice_no ?? 'INV-' . str_pad($paymentModel->id, 4, '0', STR_PAD_LEFT),
-            
-            // Client Info
             'client_name' => $paymentModel->appointment->client->name ?? 'N/A',
             'client_email' => $paymentModel->appointment->client->email ?? 'N/A',
             'client_phone' => $paymentModel->appointment->client->phone ?? 'N/A',
-            
-            // Service Info
             'service' => $paymentModel->appointment->service->name ?? 'N/A',
             'service_price' => $paymentModel->appointment->service->price ?? 0,
             'stylist_name' => $paymentModel->appointment->stylist->name ?? 'N/A',
-            
-            // Payment Info
             'amount' => number_format($paymentModel->amount, 2),
             'method' => ucfirst(str_replace('_', ' ', $paymentModel->method ?? 'N/A')),
             'status' => ucfirst($paymentModel->status ?? 'pending'),
@@ -176,8 +181,6 @@ class OwnerPaymentController extends Controller
             'sender_number' => $paymentModel->sender_number ?? 'N/A',
             'screenshot' => $paymentModel->screenshot ?? null,
             'rejection_reason' => $paymentModel->rejection_reason ?? null,
-            
-            // Dates
             'date' => Carbon::parse($paymentModel->created_at)->format('M d, Y'),
             'time' => Carbon::parse($paymentModel->created_at)->format('h:i A'),
             'verified_at' => $paymentModel->verified_at ? Carbon::parse($paymentModel->verified_at)->format('M d, Y h:i A') : null,
@@ -186,7 +189,7 @@ class OwnerPaymentController extends Controller
         ];
 
         return view('owner.payments.show', [
-            'payment' => $paymentData,  // ✅ ARRAY PASS KARO
+            'payment' => $paymentData,
             'paymentModel' => $paymentModel,
             'salon' => $salon
         ]);
@@ -247,8 +250,28 @@ class OwnerPaymentController extends Controller
 
         if ($validated['status'] === 'approved' && $paymentModel->appointment) {
             $paymentModel->appointment->update(['status' => 'confirmed']);
+
+            // 📧 Send Email on Payment Approved
+            $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist', 'payment']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new PaymentVerifiedMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Payment Update Approved): ' . $e->getMessage());
+                }
+            }
         } elseif ($validated['status'] === 'rejected' && $paymentModel->appointment) {
             $paymentModel->appointment->update(['status' => 'pending_payment']);
+
+            // 📧 Send Status Update Email on Rejection
+            $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new AppointmentStatusMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Payment Update Rejected): ' . $e->getMessage());
+                }
+            }
         }
 
         return redirect()->route('owner.payments.index')->with('success', 'Payment updated successfully!');
@@ -305,12 +328,28 @@ class OwnerPaymentController extends Controller
             $paymentModel->appointment->update(['status' => 'confirmed']);
         }
 
+        // 📧 Send Payment Verification Email
+        if ($paymentModel->appointment) {
+            $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist', 'payment']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new PaymentVerifiedMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Approve Payment): ' . $e->getMessage());
+                }
+            }
+        }
+
+        // 🔔 Notification logic fixed for CLIENT
         try {
-            NotificationHelper::send($salon->id, 'payment_approved', [
-                'title'   => '✅ Payment Approved',
-                'message' => 'Your payment of PKR ' . $paymentModel->amount . ' has been approved!',
-                'link'    => route('client.payments.show', $paymentModel->id),
-            ]);
+            $clientId = $paymentModel->client_id ?? ($paymentModel->appointment->client_id ?? null);
+            if ($clientId) {
+                NotificationHelper::send($clientId, 'payment_approved', [
+                    'title'   => '✅ Payment Approved',
+                    'message' => 'Your payment of PKR ' . $paymentModel->amount . ' has been approved!',
+                    'link'    => route('client.payments.show', $paymentModel->id),
+                ]);
+            }
         } catch (\Exception $e) {
             \Log::warning('Payment approved notification failed: ' . $e->getMessage());
         }
@@ -345,12 +384,28 @@ class OwnerPaymentController extends Controller
             $paymentModel->appointment->update(['status' => 'pending_payment']);
         }
 
+        // 📧 Send Rejection Email
+        if ($paymentModel->appointment) {
+            $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new AppointmentStatusMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Reject Payment): ' . $e->getMessage());
+                }
+            }
+        }
+
+        // 🔔 Notification logic fixed for CLIENT
         try {
-            NotificationHelper::send($salon->id, 'payment_rejected', [
-                'title'   => '❌ Payment Rejected',
-                'message' => 'Your payment of PKR ' . $paymentModel->amount . ' was rejected. Please submit again.',
-                'link'    => route('client.payments.show', $paymentModel->id),
-            ]);
+            $clientId = $paymentModel->client_id ?? ($paymentModel->appointment->client_id ?? null);
+            if ($clientId) {
+                NotificationHelper::send($clientId, 'payment_rejected', [
+                    'title'   => '❌ Payment Rejected',
+                    'message' => 'Your payment of PKR ' . $paymentModel->amount . ' was rejected. Please submit again.',
+                    'link'    => route('client.payments.show', $paymentModel->id),
+                ]);
+            }
         } catch (\Exception $e) {
             \Log::warning('Payment rejected notification failed: ' . $e->getMessage());
         }

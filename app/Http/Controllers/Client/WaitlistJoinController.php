@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Waitlist;
 use App\Models\Appointment;
+use App\Models\Salon;
 use App\Notifications\WaitlistSlotAvailable;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OwnerNotificationEmail;
 
 class WaitlistJoinController extends Controller
 {
@@ -64,22 +67,39 @@ class WaitlistJoinController extends Controller
             'status'         => 'waiting',
         ]);
 
-        // ✅ NOTIFICATION: Owner ko batao naya client waitlist mein aaya hai
+        // NOTIFICATION & EMAIL: Owner ko batao naya client waitlist mein aaya hai
         try {
             $client  = Auth::user();
             $service = $waitlistEntry->service;
+            $formattedDate = \Carbon\Carbon::parse($request->preferred_date)->format('M d, Y');
 
+            // Dashboard Alert
             NotificationHelper::send(
                 $request->salon_id,
                 'waitlist',
                 [
                     'title'   => '⏳ New Waitlist Join',
-                    'message' => "{$client->name} joined the waitlist for " . ($service->name ?? 'a service') . ' on ' . \Carbon\Carbon::parse($request->preferred_date)->format('M d, Y') . " (position #{$position})",
+                    'message' => "{$client->name} joined the waitlist for " . ($service->name ?? 'a service') . " on {$formattedDate} (position #{$position})",
                     'link'    => route('owner.waitlist.show', $waitlistEntry->id),
                 ]
             );
+
+            // Email Notification
+            $salon = Salon::find($request->salon_id);
+            $ownerEmail = $salon->owner->email ?? config('mail.from.address');
+
+            if ($ownerEmail) {
+                $emailSubject = "⏳ New Client Joined Waitlist";
+                $emailBody = "Client <strong>{$client->name}</strong> ne waitlist join ki hai.<br><br>" .
+                             "<strong>Service:</strong> " . ($service->name ?? 'N/A') . "<br>" .
+                             "<strong>Date:</strong> {$formattedDate}<br>" .
+                             "<strong>Position:</strong> #{$position}";
+
+                Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            }
+
         } catch (\Exception $e) {
-            \Log::error('Waitlist join notification error: ' . $e->getMessage());
+            \Log::error('Waitlist join notification/email error: ' . $e->getMessage());
         }
 
         return back()->with('success', 'You joined the waitlist at position #' . $position . '!');
@@ -90,7 +110,7 @@ class WaitlistJoinController extends Controller
     {
         if ($waitlist->client_id !== Auth::id()) abort(403);
 
-        // ✅ 1. CHECK: 20 mins expiration check
+        // CHECK: 20 mins expiration check
         if ($waitlist->expires_at && now()->greaterThan($waitlist->expires_at)) {
             $waitlist->update(['status' => 'expired']);
 
@@ -104,13 +124,13 @@ class WaitlistJoinController extends Controller
             return back()->with('error', 'Sorry, your 20-minute window to accept this slot has expired.');
         }
 
-        // ✅ 2. Waitlist entry mark as accepted
+        // Waitlist entry mark as accepted
         $waitlist->update([
             'status'       => 'accepted',
             'responded_at' => now(),
         ]);
 
-        // ✅ 3. Automatic Appointment Record Create Karein
+        // Automatic Appointment Record Create Karein
         try {
             $servicePrice = $waitlist->service ? $waitlist->service->price : 0;
 
@@ -128,7 +148,7 @@ class WaitlistJoinController extends Controller
             \Log::error('Appointment creation error on waitlist accept: ' . $e->getMessage());
         }
 
-        // ✅ 4. My Appointments Page Par Redirect Karein
+        // My Appointments Page Par Redirect Karein
         return redirect()
             ->route('client.appointments.index')
             ->with('success', '🎉 Slot accepted! Your appointment has been successfully booked for ' . $waitlist->preferred_date . '.');

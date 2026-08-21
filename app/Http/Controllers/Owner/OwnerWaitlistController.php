@@ -301,7 +301,7 @@ class OwnerWaitlistController extends Controller
 
             $entry->delete();
 
-            // Agar koi entry delete ho jaye toh next client ko check kar sakein
+            // Next client ko auto-notify karein
             self::notifyNextWaitingClient($salonId, $preferredDate);
 
             return redirect()->route('owner.waitlist.index')
@@ -319,16 +319,14 @@ class OwnerWaitlistController extends Controller
         return $this->destroy($id);
     }
 
-    /**
-     * ✅ NOTIFY CLIENT (Sets 20-minute expiration & Sends Real Notification)
-     */
+   
     public function notify(Request $request, $id)
     {
         try {
             $salon = $this->getOwnerSalon();
 
             $entry = Waitlist::where('salon_id', $salon->id ?? 0)
-                ->with(['client', 'salon'])
+                ->with(['client', 'salon', 'service'])
                 ->find($id);
 
             if (!$entry) {
@@ -336,14 +334,14 @@ class OwnerWaitlistController extends Controller
                     ->with('error', 'Waitlist entry not found.');
             }
 
-            // 20 Minutes Expiration Set Karein
+           
             $entry->update([
                 'status'      => 'notified',
                 'notified_at' => now(),
                 'expires_at'  => now()->addMinutes(20),
             ]);
 
-            // Real Database Notification
+            // Database & Email Notification Dispatch
             try {
                 if ($entry->client) {
                     $entry->client->notify(new WaitlistSlotAvailable($entry));
@@ -362,14 +360,12 @@ class OwnerWaitlistController extends Controller
         }
     }
 
-    /**
-     * ✅ AUTOMATED HELPER: Next Waiting Client Ko Auto-Notify Karega
-     */
     public static function notifyNextWaitingClient($salonId, $preferredDate = null)
     {
         try {
             $query = Waitlist::where('salon_id', $salonId)
                 ->where('status', 'waiting')
+                ->with(['client', 'salon', 'service'])
                 ->orderBy('position', 'asc')
                 ->orderBy('created_at', 'asc');
 

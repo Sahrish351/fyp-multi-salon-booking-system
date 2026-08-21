@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
 use App\Models\Appointment;
@@ -13,6 +14,11 @@ use App\Models\User;
 use App\Models\Service;
 use App\Models\Stylist;
 use App\Models\Payment;
+
+// Mail classes import kiye gaye hain
+use App\Mail\AppointmentBookedMail;
+use App\Mail\AppointmentStatusMail;
+use App\Mail\PaymentVerifiedMail;
 
 class OwnerAppointmentController extends Controller
 {
@@ -121,7 +127,6 @@ class OwnerAppointmentController extends Controller
                 ->pluck('name', 'id')
                 ->toArray();
 
-            // ✅ FIXED: 'salons' (plural) - User model ke hisaab se
             $clients = User::where('role', 'client')
                 ->whereHas('salons', function ($query) use ($salonId) {
                     $query->where('id', $salonId);
@@ -214,6 +219,16 @@ class OwnerAppointmentController extends Controller
                     'payment_date' => now(),
                     'transaction_ref' => 'CASH-' . strtoupper(uniqid()),
                 ]);
+            }
+
+            // 📧 Send Email to Client on New Appointment Creation
+            $appointment->load(['client', 'service', 'stylist']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new AppointmentBookedMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Store): ' . $e->getMessage());
+                }
             }
 
             return redirect()->route('owner.appointments.index')
@@ -339,7 +354,6 @@ class OwnerAppointmentController extends Controller
                 ->pluck('name', 'id')
                 ->toArray();
 
-            // ✅ FIXED: 'salons' (plural) - User model ke hisaab se
             $clients = User::where('role', 'client')
                 ->whereHas('salons', function ($query) use ($salonId) {
                     $query->where('id', $salonId);
@@ -433,6 +447,7 @@ class OwnerAppointmentController extends Controller
                     ->withInput();
             }
 
+            $oldStatus = $appointment->status;
             $status = $request->status;
             if ($request->payment_status === 'approved' && $request->total_amount > 0) {
                 $status = 'confirmed';
@@ -470,6 +485,18 @@ class OwnerAppointmentController extends Controller
                         'payment_date' => now(),
                         'transaction_ref' => 'CASH-' . strtoupper(uniqid()),
                     ]);
+                }
+            }
+
+            // 📧 Send Email if Status Changed during update
+            if ($oldStatus !== $status) {
+                $appointment->load(['client', 'service', 'stylist']);
+                if ($appointment->client && $appointment->client->email) {
+                    try {
+                        Mail::to($appointment->client->email)->send(new AppointmentStatusMail($appointment));
+                    } catch (\Exception $e) {
+                        \Log::error('Mail Error (Update): ' . $e->getMessage());
+                    }
                 }
             }
 
@@ -555,6 +582,16 @@ class OwnerAppointmentController extends Controller
             $appointment->status = 'confirmed';
             $appointment->save();
 
+            // 📧 Send Confirmation Email to Client
+            $appointment->load(['client', 'service', 'stylist']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new AppointmentStatusMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Approve): ' . $e->getMessage());
+                }
+            }
+
             return redirect()->route('owner.appointments.show', ['appointment' => $id])
                 ->with('success', 'Appointment confirmed successfully!');
 
@@ -592,6 +629,16 @@ class OwnerAppointmentController extends Controller
 
             $appointment->status = 'completed';
             $appointment->save();
+
+            // 📧 Send Completion Email to Client
+            $appointment->load(['client', 'service', 'stylist']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new AppointmentStatusMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Complete): ' . $e->getMessage());
+                }
+            }
 
             return redirect()->route('owner.appointments.show', ['appointment' => $id])
                 ->with('success', 'Appointment marked as completed!');
@@ -631,6 +678,16 @@ class OwnerAppointmentController extends Controller
             $appointment->status = 'cancelled';
             $appointment->cancelled_at = now();
             $appointment->save();
+
+            // 📧 Send Cancellation Email to Client
+            $appointment->load(['client', 'service', 'stylist']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new AppointmentStatusMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Cancel): ' . $e->getMessage());
+                }
+            }
 
             return redirect()->route('owner.appointments.show', ['appointment' => $id])
                 ->with('success', 'Appointment cancelled successfully.');
@@ -680,6 +737,16 @@ class OwnerAppointmentController extends Controller
             $appointment->status = 'confirmed';
             $appointment->save();
 
+            // 📧 Send Payment Verification Email to Client
+            $appointment->load(['client', 'service', 'stylist', 'payment']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new PaymentVerifiedMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Verify Payment): ' . $e->getMessage());
+                }
+            }
+
             return redirect()->route('owner.appointments.show', ['appointment' => $id])
                 ->with('success', 'Payment verified and appointment confirmed!');
 
@@ -727,6 +794,16 @@ class OwnerAppointmentController extends Controller
 
             $appointment->status = 'pending_payment';
             $appointment->save();
+
+            // 📧 Send Status Update Email on Payment Rejection
+            $appointment->load(['client', 'service', 'stylist']);
+            if ($appointment->client && $appointment->client->email) {
+                try {
+                    Mail::to($appointment->client->email)->send(new AppointmentStatusMail($appointment));
+                } catch (\Exception $e) {
+                    \Log::error('Mail Error (Reject Payment): ' . $e->getMessage());
+                }
+            }
 
             return redirect()->route('owner.appointments.show', ['appointment' => $id])
                 ->with('success', 'Payment rejected.');

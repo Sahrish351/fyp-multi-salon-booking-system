@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
 use App\Models\Appointment;
+use App\Models\Salon;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OwnerNotificationEmail;
 
 class ComplaintController extends Controller
 {
@@ -105,18 +108,38 @@ class ComplaintController extends Controller
                 'status'         => 'pending',
             ]);
 
+            // Notification & Email to Salon Owner
             try {
+                $client = Auth::user();
+
+                // Dashboard Alert
                 NotificationHelper::send(
                     $appointment->salon_id,
                     'complaint',
                     [
                         'title'   => '⚠️ New Complaint Received',
-                        'message' => Auth::user()->name . ' submitted a complaint: ' . $subject,
+                        'message' => $client->name . ' submitted a complaint: ' . $subject,
                         'link'    => route('owner.complaints.show', $complaint->id),
                     ]
                 );
+
+                // Email Notification
+                $salon = Salon::find($appointment->salon_id);
+                $ownerEmail = $salon->owner->email ?? config('mail.from.address');
+
+                if ($ownerEmail) {
+                    $emailSubject = "⚠️ Urgent Complaint Alert: #" . $complaint->id;
+                    $emailBody = "Client <strong>{$client->name}</strong> ne complaint lodge ki hai.<br><br>" .
+                                 "<strong>Subject:</strong> {$subject}<br>" .
+                                 "<strong>Type:</strong> " . ucfirst($request->type) . "<br>" .
+                                 "<strong>Description:</strong> {$request->description}<br>" .
+                                 "<strong>Booking Ref:</strong> {$appointment->booking_ref}";
+
+                    Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+                }
+
             } catch (\Exception $e) {
-                Log::warning('Complaint notification failed: ' . $e->getMessage());
+                Log::warning('Complaint notification/email failed: ' . $e->getMessage());
             }
 
             return redirect()->route('client.complaints.index')
@@ -152,7 +175,7 @@ class ComplaintController extends Controller
                 ->with('error', 'This complaint is already under review and can no longer be edited.');
         }
 
-        return view('client.complaints.edit', compact('complaint'));
+        return view('client.complaints.create', compact('complaint'));
     }
 
     public function update(Request $request, Complaint $complaint)
@@ -206,17 +229,33 @@ class ComplaintController extends Controller
         ]);
 
         try {
+            $client = Auth::user();
+
+            // Dashboard Alert
             NotificationHelper::send(
                 $complaint->salon_id,
                 'complaint',
                 [
                     'title'   => '✅ Complaint Resolved',
-                    'message' => Auth::user()->name . ' accepted the resolution for complaint #' . $complaint->id,
+                    'message' => $client->name . ' accepted the resolution for complaint #' . $complaint->id,
                     'link'    => route('owner.complaints.show', $complaint->id),
                 ]
             );
+
+            // Email Notification
+            $salon = Salon::find($complaint->salon_id);
+            $ownerEmail = $salon->owner->email ?? config('mail.from.address');
+
+            if ($ownerEmail) {
+                $emailSubject = "✅ Complaint Resolved: #" . $complaint->id;
+                $emailBody = "Client <strong>{$client->name}</strong> ne complaint resolution accept kar liya hai.<br><br>" .
+                             "Complaint status ab officially <strong>Closed</strong> ho chuka hai.";
+
+                Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            }
+
         } catch (\Exception $e) {
-            Log::warning('Complaint accept notification failed: ' . $e->getMessage());
+            Log::warning('Complaint accept notification/email failed: ' . $e->getMessage());
         }
 
         return redirect()->route('client.complaints.show', $complaint->id)

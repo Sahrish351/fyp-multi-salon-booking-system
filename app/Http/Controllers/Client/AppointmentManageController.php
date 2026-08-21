@@ -8,6 +8,7 @@ use App\Models\TimeSlot;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
 class AppointmentManageController extends Controller
@@ -76,10 +77,9 @@ class AppointmentManageController extends Controller
             'cancelled_at'        => now(),
         ]);
 
-        // Waitlist offer trigger
         if (class_exists('App\Http\Controllers\Client\WaitlistJoinController')) {
             try {
-                WaitlistJoinController::offerToNext(
+                \App\Http\Controllers\Client\WaitlistJoinController::offerToNext(
                     $appointment->salon_id,
                     $appointment->stylist_id,
                     Carbon::parse($appointment->appointment_date)->format('Y-m-d')
@@ -89,9 +89,9 @@ class AppointmentManageController extends Controller
             }
         }
 
-        // Notification to Salon Owner
         try {
             $client = Auth::user();
+            
             NotificationHelper::send(
                 $appointment->salon_id,
                 'appointment',
@@ -101,8 +101,22 @@ class AppointmentManageController extends Controller
                     'link'    => route('owner.appointments.show', $appointment->id),
                 ]
             );
+
+            $appointment->load('salon.owner');
+            $ownerEmail = $appointment->salon->owner->email ?? $appointment->salon->email ?? config('mail.from.address');
+
+            if ($ownerEmail && class_exists('\App\Mail\OwnerNotificationEmail')) {
+                $emailSubject = "❌ Appointment Cancelled Alert: " . $appointment->booking_ref;
+                $emailBody = "Client <strong>{$client->name}</strong> ne apni appointment cancel kar di hai.<br><br>" .
+                             "<strong>Date:</strong> " . Carbon::parse($appointment->appointment_date)->format('M d, Y') . "<br>" .
+                             "<strong>Reason:</strong> {$request->cancellation_reason}<br>" .
+                             "<strong>Booking Ref:</strong> {$appointment->booking_ref}";
+
+                Mail::to($ownerEmail)->send(new \App\Mail\OwnerNotificationEmail($emailSubject, $emailBody));
+            }
+
         } catch (\Exception $e) {
-            \Log::error('Cancel notification error: ' . $e->getMessage());
+            \Log::error('Cancel notification/email error: ' . $e->getMessage());
         }
 
         return redirect()->route('client.appointments.show', $appointment->id)
@@ -118,7 +132,6 @@ class AppointmentManageController extends Controller
                 ->with('error', 'This appointment can no longer be rescheduled.');
         }
 
-        // Relationships load kar di hain taake Blade template mein error na aaye
         $appointment->load(['salon', 'service', 'stylist']);
 
         return view('client.appointments.reschedule', compact('appointment'));
@@ -132,7 +145,6 @@ class AppointmentManageController extends Controller
             return back()->with('error', 'This appointment can no longer be rescheduled.');
         }
 
-        // Flexible field names support (date/new_date & start_time/new_time)
         $date = $request->input('new_date') ?? $request->input('date');
         $time = $request->input('new_time') ?? $request->input('start_time');
 
@@ -152,7 +164,6 @@ class AppointmentManageController extends Controller
         $newStart = Carbon::parse($time);
         $newEnd   = $newStart->copy()->addMinutes($service->duration ?? 60);
 
-        // Double Booking Check
         $slotConflict = Appointment::where('stylist_id', $appointment->stylist_id)
             ->where('id', '!=', $appointment->id)
             ->where('appointment_date', $date)
@@ -180,9 +191,9 @@ class AppointmentManageController extends Controller
             ),
         ]);
 
-        // Notification to Salon Owner
         try {
             $client = Auth::user();
+
             NotificationHelper::send(
                 $appointment->salon_id,
                 'appointment',
@@ -192,8 +203,22 @@ class AppointmentManageController extends Controller
                     'link'    => route('owner.appointments.show', $appointment->id),
                 ]
             );
+
+            $appointment->load('salon.owner');
+            $ownerEmail = $appointment->salon->owner->email ?? $appointment->salon->email ?? config('mail.from.address');
+
+            if ($ownerEmail && class_exists('\App\Mail\OwnerNotificationEmail')) {
+                $emailSubject = "🔄 Appointment Rescheduled Alert: " . $appointment->booking_ref;
+                $emailBody = "Client <strong>{$client->name}</strong> ne apni appointment reschedule ki hai.<br><br>" .
+                             "<strong>Old Timing:</strong> {$oldDate} at {$oldTime}<br>" .
+                             "<strong>New Timing:</strong> " . Carbon::parse($date)->format('M d, Y') . " at " . $newStart->format('h:i A') . "<br>" .
+                             "<strong>Booking Ref:</strong> {$appointment->booking_ref}";
+
+                Mail::to($ownerEmail)->send(new \App\Mail\OwnerNotificationEmail($emailSubject, $emailBody));
+            }
+
         } catch (\Exception $e) {
-            \Log::error('Reschedule notification error: ' . $e->getMessage());
+            \Log::error('Reschedule notification/email error: ' . $e->getMessage());
         }
 
         return redirect()->route('client.appointments.show', $appointment->id)

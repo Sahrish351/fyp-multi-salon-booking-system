@@ -9,11 +9,12 @@ use App\Models\Salon;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OwnerNotificationEmail;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ClientPaymentController extends Controller
 {
-    // ── GET /client/payments ─────────────────────────────────────
     public function index(Request $request)
     {
         $baseQuery = Payment::whereHas('appointment', function ($q) {
@@ -40,7 +41,6 @@ class ClientPaymentController extends Controller
         return view('client.payments.index', compact('payments', 'counts'));
     }
 
-    // ── GET /client/payments/{payment} ─────────────────────────────
     public function show(Payment $payment)
     {
         if ($payment->appointment->client_id !== Auth::id()) {
@@ -49,11 +49,9 @@ class ClientPaymentController extends Controller
 
         $payment->load(['appointment.salon', 'appointment.service']);
 
-        // ✅ Note: Show view par owner ko notification bhejna remove kar diya hai
         return view('client.payments.show', compact('payment'));
     }
 
-    // ── POST /client/payments ─────────────────────────────────────
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -82,10 +80,10 @@ class ClientPaymentController extends Controller
             $payment->update(['screenshot' => $path]);
         }
 
-        // ✅ NOTIFICATION: Owner ko alert jaye ga jab nayi payment submit ho
         try {
             $client = Auth::user();
             
+            // Dashboard Notification
             NotificationHelper::send(
                 $appointment->salon_id,
                 'payment',
@@ -95,15 +93,32 @@ class ClientPaymentController extends Controller
                     'link'    => route('owner.payments.show', $payment->id),
                 ]
             );
+
+            // Fetch Salon with Owner Relationship explicitly
+            $salon = Salon::with('owner')->find($appointment->salon_id);
+            
+            // Fallback sequence: Owner Email -> Salon Direct Email -> Mail Config
+            $ownerEmail = $salon->owner->email ?? $salon->email ?? config('mail.from.address');
+
+            if ($ownerEmail) {
+                $emailSubject = "💰 New Payment Submitted: " . $payment->transaction_ref;
+                $emailBody = "Client <strong>{$client->name}</strong> ne payment submit ki hai.<br><br>" .
+                             "<strong>Amount:</strong> PKR " . number_format($validated['amount']) . "<br>" .
+                             "<strong>Payment Method:</strong> " . ucfirst($validated['method']) . "<br>" .
+                             "<strong>Transaction Ref:</strong> {$payment->transaction_ref}<br>" .
+                             "<strong>Booking Ref:</strong> {$appointment->booking_ref}";
+
+                Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            }
+
         } catch (\Exception $e) {
-            \Log::error('Payment notification error: ' . $e->getMessage());
+            \Log::error('Payment notification/email error: ' . $e->getMessage());
         }
 
         return redirect()->route('client.payments.index')
             ->with('success', 'Payment submitted successfully! Waiting for approval.');
     }
 
-    // ── GET /client/payments/{payment}/receipt ────────────────────
     public function downloadReceipt(Payment $payment)
     {
         if ($payment->appointment->client_id !== Auth::id()) {
@@ -112,7 +127,6 @@ class ClientPaymentController extends Controller
 
         $payment->load(['appointment.salon', 'appointment.service']);
 
-        // ✅ Receipt download par notification spam avoid karne ke liye logic simplify kar diya hai
         $pdf = Pdf::loadView('client.payments.receipt', compact('payment'));
         return $pdf->download('receipt-' . $payment->id . '.pdf');
     }

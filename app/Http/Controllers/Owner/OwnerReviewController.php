@@ -12,7 +12,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+
+// Review Reply Email class
+use App\Mail\ReviewReplyMail;
 
 class OwnerReviewController extends Controller
 {
@@ -21,7 +25,6 @@ class OwnerReviewController extends Controller
         return Salon::where('owner_id', auth()->id())->first();
     }
 
-    
     public function index(Request $request)
     {
         try {
@@ -38,7 +41,6 @@ class OwnerReviewController extends Controller
             $query = Review::where('salon_id', $salon->id)
                 ->with(['appointment.service', 'appointment.stylist']);
 
-           
             if ($statusFilter === 'pending') {
                 $query->where('is_approved', 0);
                 if ($hasFlagColumn) {
@@ -56,7 +58,6 @@ class OwnerReviewController extends Controller
                     $isApproved = (bool) $review->is_approved;
                     $isFlagged  = $hasFlagColumn ? (bool) $review->is_flagged : false;
 
-                    
                     $clientName = 'N/A';
                     $clientId = $review->client_id ?? $review->user_id;
                     if ($clientId) {
@@ -64,7 +65,6 @@ class OwnerReviewController extends Controller
                         $clientName = $user ? $user->name : 'N/A';
                     }
 
-                    //  Service name — direct service_id ya appointment se
                     $serviceName = 'N/A';
                     if ($review->service_id) {
                         $service = Service::find($review->service_id);
@@ -141,7 +141,8 @@ class OwnerReviewController extends Controller
             $appointment = Appointment::where('salon_id', $salon->id)
                 ->findOrFail($request->appointment_id);
 
-            Review::create([
+            // Auto-Approve band kar ke explicitly Pending (0) rakha gaya hai
+            $review = Review::create([
                 'salon_id'       => $salon->id,
                 'appointment_id' => $appointment->id,
                 'client_id'      => $appointment->client_id,
@@ -149,11 +150,24 @@ class OwnerReviewController extends Controller
                 'service_id'     => $appointment->service_id,
                 'rating'         => $request->rating,
                 'comment'        => $request->comment,
-                'is_approved'    => $request->status === 'approved' ? 1 : 0,
+                'is_approved'    => 0, // Pending Status
             ]);
 
+            // 📧 Send Email Notification to Salon Owner
+            $owner = User::find($salon->owner_id);
+            if ($owner && $owner->email) {
+                try {
+                    Mail::raw("New Review Received!\n\nRating: {$review->rating}/5\nComment: {$review->comment}\n\nPlease review and approve it from your dashboard.", function ($message) use ($owner) {
+                        $message->to($owner->email)
+                                ->subject('New Client Review Received');
+                    });
+                } catch (\Exception $e) {
+                    Log::error('Mail Error (New Review Alert for Owner): ' . $e->getMessage());
+                }
+            }
+
             return redirect()->route('owner.reviews.index')
-                ->with('success', 'Review added successfully!');
+                ->with('success', 'Review submitted successfully and sent for approval!');
 
         } catch (\Exception $e) {
             return redirect()->back()
@@ -259,6 +273,19 @@ class OwnerReviewController extends Controller
 
             $review->update($updateData);
 
+            if ($request->filled('reply')) {
+                $clientId = $review->client_id ?? $review->user_id;
+                $client = $clientId ? User::find($clientId) : null;
+
+                if ($client && $client->email) {
+                    try {
+                        Mail::to($client->email)->send(new ReviewReplyMail($review));
+                    } catch (\Exception $e) {
+                        Log::error('Mail Error (Review Reply Update): ' . $e->getMessage());
+                    }
+                }
+            }
+
             return redirect()->route('owner.reviews.index')
                 ->with('success', 'Review updated successfully!');
 
@@ -283,7 +310,6 @@ class OwnerReviewController extends Controller
         }
     }
 
-   
     public function approve(Request $request, $id)
     {
         try {
@@ -319,6 +345,17 @@ class OwnerReviewController extends Controller
             $request->validate(['reply' => 'required|string|max:1000']);
             $review->update(['owner_reply' => $request->reply]);
 
+            $clientId = $review->client_id ?? $review->user_id;
+            $client = $clientId ? User::find($clientId) : null;
+
+            if ($client && $client->email) {
+                try {
+                    Mail::to($client->email)->send(new ReviewReplyMail($review));
+                } catch (\Exception $e) {
+                    Log::error('Mail Error (Owner Review Reply): ' . $e->getMessage());
+                }
+            }
+
             return redirect()->route('owner.reviews.index')
                 ->with('success', 'Reply posted successfully!');
 
@@ -328,7 +365,6 @@ class OwnerReviewController extends Controller
         }
     }
 
-   
     public function toggleFlag(Request $request, $id)
     {
         try {
