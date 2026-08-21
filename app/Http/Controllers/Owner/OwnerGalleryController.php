@@ -16,9 +16,6 @@ class OwnerGalleryController extends Controller
         return Salon::where('owner_id', auth()->id())->first();
     }
 
-    /**
-     * ✅ Table: 'galleries' | Column: 'image_path'
-     */
     public function index(Request $request)
     {
         try {
@@ -36,13 +33,11 @@ class OwnerGalleryController extends Controller
                 ->get();
 
             $photos = $photosRaw->map(function ($p) {
-                // ✅ image_path se storage URL banana
                 $url = null;
                 if (!empty($p->image_path)) {
                     $url = asset('storage/' . $p->image_path);
                 }
 
-                // Category naam category_id se
                 $categoryName = 'hair';
                 if (!empty($p->category_id)) {
                     $cat = DB::table('categories')->find($p->category_id);
@@ -59,9 +54,15 @@ class OwnerGalleryController extends Controller
                 ];
             })->toArray();
 
-            $totalPhotos      = count($photos);
-            $totalViews       = array_sum(array_column($photos, 'views'));
-            $uniqueCategories = count(array_unique(array_column($photos, 'category')));
+            $totalPhotos = count($photos);
+            $totalViews  = array_sum(array_column($photos, 'views'));
+            
+            // Gallery page ke fixed tabs (Hair, Nails, Facial, Spa, Makeup)
+            $defaultCategories = ['hair', 'nails', 'facial', 'spa', 'makeup'];
+            
+            // Photo categories aur default tabs ko combine karke unique count nikalna
+            $photoCategories = array_column($photos, 'category');
+            $uniqueCategories = count(array_unique(array_merge($defaultCategories, $photoCategories)));
 
             return view('owner.gallery.index', compact(
                 'photos',
@@ -76,7 +77,7 @@ class OwnerGalleryController extends Controller
                 'photos'           => [],
                 'totalPhotos'      => 0,
                 'totalViews'       => 0,
-                'uniqueCategories' => 0,
+                'uniqueCategories' => 5,
             ])->with('error', 'Unable to load gallery: ' . $e->getMessage());
         }
     }
@@ -86,9 +87,6 @@ class OwnerGalleryController extends Controller
         return redirect()->route('owner.gallery.index');
     }
 
-    /**
-     * ✅ 'galleries' table mein insert | 'image_path' column
-     */
     public function store(Request $request)
     {
         try {
@@ -104,10 +102,8 @@ class OwnerGalleryController extends Controller
                 'category' => 'nullable|string',
             ]);
 
-            // ✅ Image storage/gallery/ mein save
             $path = $request->file('image')->store('gallery', 'public');
 
-            // Category ID dhoondhna
             $categoryId = null;
             if ($request->filled('category')) {
                 $cat = DB::table('categories')
@@ -124,7 +120,7 @@ class OwnerGalleryController extends Controller
             DB::table('galleries')->insert([
                 'salon_id'    => $salon->id,
                 'category_id' => $categoryId,
-                'image_path'  => $path,       // ✅ image_path
+                'image_path'  => $path,
                 'caption'     => $request->caption ?? null,
                 'sort_order'  => $maxOrder + 1,
                 'views'       => 0,
@@ -154,9 +150,6 @@ class OwnerGalleryController extends Controller
         return redirect()->route('owner.gallery.index');
     }
 
-    /**
-     * ✅ 'galleries' table update | caption + category
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -201,9 +194,6 @@ class OwnerGalleryController extends Controller
         }
     }
 
-    /**
-     * ✅ Soft delete + storage file delete | image_path column
-     */
     public function destroy($id)
     {
         try {
@@ -220,12 +210,10 @@ class OwnerGalleryController extends Controller
                     ->with('error', 'Photo not found.');
             }
 
-            // ✅ Storage se file delete karo (image_path column)
             if (!empty($photo->image_path) && Storage::disk('public')->exists($photo->image_path)) {
                 Storage::disk('public')->delete($photo->image_path);
             }
 
-            // Soft delete
             DB::table('galleries')
                 ->where('id', $id)
                 ->where('salon_id', $salon->id)
@@ -241,9 +229,6 @@ class OwnerGalleryController extends Controller
         }
     }
 
-    /**
-     * ✅ Reorder — 'galleries' table
-     */
     public function reorder(Request $request)
     {
         try {
