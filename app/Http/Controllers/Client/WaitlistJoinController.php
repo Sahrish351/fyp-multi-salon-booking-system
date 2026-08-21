@@ -128,7 +128,6 @@ class WaitlistJoinController extends Controller
             \Log::error('Appointment creation error on waitlist accept: ' . $e->getMessage());
         }
 
-        // ✅ 4. My Appointments Page Par Redirect Karein
         return redirect()
             ->route('client.appointments.index')
             ->with('success', '🎉 Slot accepted! Your appointment has been successfully booked for ' . $waitlist->preferred_date . '.');

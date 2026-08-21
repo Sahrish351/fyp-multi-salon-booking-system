@@ -98,18 +98,18 @@
             </div>
             @endif
 
-            <div class="d-flex gap-3 mt-4 no-print">
+            <div class="d-flex flex-wrap gap-3 mt-4 no-print">
                 @if($payment->status === 'approved')
                 <button onclick="window.print()" class="btn rounded-pill px-4 fw-semibold"
                         style="background:#fff0f7;color:#E91E8C;border:1px solid #fce4ec;font-size:0.88rem;">
                     <i class="fas fa-print me-2"></i>Print
                 </button>
+                @endif
                 <a href="{{ route('client.payments.receipt', $payment->id) }}"
                    class="btn rounded-pill px-4 fw-semibold"
                    style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-size:0.88rem;">
-                    <i class="fas fa-file-pdf me-2"></i>Download PDF
+                    <i class="fas fa-file-pdf me-2"></i>Download Receipt
                 </a>
-                @endif
                 <a href="{{ route('client.appointments.show', $payment->appointment->id) }}"
                    class="btn btn-outline-secondary rounded-pill px-4">
                     View Appointment

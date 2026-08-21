@@ -11,6 +11,7 @@ class OwnerManagementController extends Controller
     public function index(Request $request)
     {
         $owners = User::where('role', 'owner')
+            ->whereHas('salons') // ✅ only owners who actually have at least 1 salon
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {

@@ -680,10 +680,10 @@
                 <span class="live-badge"><i class="fas fa-circle" style="font-size: 6px;"></i> LIVE</span>
                 <div class="notif-icon" id="notifIcon">
                     <i class="far fa-bell"></i>
-                    <span class="notif-badge">{{ auth()->user()->unreadNotifications->count() ?? 0 }}</span>
+                    <span class="notif-badge">{{ auth()->user()?->unreadNotifications?->count() ?? 0 }}</span>
                 </div>
                 <div class="profile-area" id="profileBtn">
-                    <div class="profile-avatar">{{ substr(auth()->user()->name ?? 'A', 0, 1) }}</div>
+                    <div class="profile-avatar">{{ substr(auth()->user()?->name ?? 'A', 0, 1) }}</div>
                     <div class="profile-dropdown" id="profileDropdown">
                         <a href="{{ route('admin.settings.index') }}"><i class="fas fa-user"></i> My Profile</a>
                         <a href="{{ route('admin.settings.index') }}"><i class="fas fa-cog"></i> Account Settings</a>

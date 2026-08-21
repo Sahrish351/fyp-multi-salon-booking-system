@@ -20,18 +20,27 @@
     .btn-outline:hover { background: var(--gl-pink-light); }
 
     .stats-grid { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 28px; }
-    .stat-card { position: relative; overflow: hidden; width: 132px; height: 132px; border-radius: 26px 26px 26px 10px; padding: 14px; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-    .stat-card::after { content: ''; position: absolute; width: 70px; height: 70px; background: rgba(255, 255, 255, 0.15); border-radius: 50%; top: -25px; right: -20px; }
-    .stat-icon { position: relative; z-index: 1; width: 32px; height: 32px; background: rgba(255, 255, 255, 0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 6px; }
-    .stat-label { position: relative; z-index: 1; font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; color: rgba(255, 255, 255, 0.85); }
-    .stat-value { position: relative; z-index: 1; font-size: 1.5rem; font-weight: 800; margin-top: 4px; color: #fff; }
+    .stat-card { position: relative; overflow: hidden; width: 132px; height: 132px; border-radius: 26px 26px 26px 10px; padding: 14px; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .stat-card::after { content: ''; position: absolute; width: 70px; height: 70px; background: rgba(255, 255, 255, 0.35); border-radius: 50%; top: -25px; right: -20px; }
+    .stat-icon { position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 6px; }
+    .stat-label { position: relative; z-index: 1; font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; opacity: 0.85; }
+    .stat-value { position: relative; z-index: 1; font-size: 1.5rem; font-weight: 800; margin-top: 4px; }
 
-    .stat-card.pending { background: linear-gradient(135deg, #FBBC05, #F29900); }
-    .stat-card.pending .stat-label, .stat-card.pending .stat-value { color: #3C2800; }
-    .stat-card.pending .stat-icon { background: rgba(60, 40, 0, 0.15); }
+    /* Muted / light stat card colors */
+    .stat-card.pending { background: linear-gradient(135deg, #FFF6E0, #FFEDC2); }
+    .stat-card.pending .stat-icon { background: rgba(138, 90, 0, 0.12); }
+    .stat-card.pending .stat-label,
+    .stat-card.pending .stat-value { color: #8A5A00; }
 
-    .stat-card.approved { background: linear-gradient(135deg, #34A853, #188038); }
-    .stat-card.rejected { background: linear-gradient(135deg, #EA4335, #C5221F); }
+    .stat-card.approved { background: linear-gradient(135deg, #E9F8EE, #D3F0DD); }
+    .stat-card.approved .stat-icon { background: rgba(30, 142, 62, 0.12); }
+    .stat-card.approved .stat-label,
+    .stat-card.approved .stat-value { color: #1E8E3E; }
+
+    .stat-card.rejected { background: linear-gradient(135deg, #FDECEA, #F9D6D2); }
+    .stat-card.rejected .stat-icon { background: rgba(197, 34, 31, 0.12); }
+    .stat-card.rejected .stat-label,
+    .stat-card.rejected .stat-value { color: #C5221F; }
 
     .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(224, 23, 125, 0.05); margin-bottom: 24px; overflow: hidden; }
     .card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); }
@@ -86,27 +95,21 @@
     <a href="{{ route('admin.salon-requests.index') }}" class="btn-outline"><i class="fas fa-sync-alt"></i> Refresh</a>
 </div>
 
-@php
-    $pendingCount = \App\Models\Salon::where('status', 'pending')->count();
-    $approvedCount = \App\Models\Salon::where('status', 'approved')->count();
-    $rejectedCount = \App\Models\Salon::where('status', 'rejected')->count();
-@endphp
-
 <div class="stats-grid">
     <div class="stat-card pending">
         <div class="stat-icon">⏳</div>
         <div class="stat-label">Pending</div>
-        <div class="stat-value">{{ $pendingCount }}</div>
+        <div class="stat-value">{{ $stats['pending'] }}</div>
     </div>
     <div class="stat-card approved">
         <div class="stat-icon">✅</div>
         <div class="stat-label">Approved</div>
-        <div class="stat-value">{{ $approvedCount }}</div>
+        <div class="stat-value">{{ $stats['approved'] }}</div>
     </div>
     <div class="stat-card rejected">
         <div class="stat-icon">❌</div>
         <div class="stat-label">Rejected</div>
-        <div class="stat-value">{{ $rejectedCount }}</div>
+        <div class="stat-value">{{ $stats['rejected'] }}</div>
     </div>
 </div>
 

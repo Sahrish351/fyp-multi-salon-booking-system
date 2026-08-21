@@ -9,20 +9,31 @@
     .pay-stat-card {
         background: #fff;
         border: 1px solid #fce4ec;
-        border-radius: 16px;
-        padding: 1.25rem;
+        border-radius: 12px;
+        padding: 0.6rem 0.4rem;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 14px;
+        justify-content: center;
+        text-align: center;
+        gap: 4px;
         height: 100%;
+        width: 100%;
     }
     .pay-stat-card .icon-box {
-        width: 46px; height: 46px; border-radius: 12px;
+        width: 28px; height: 28px; border-radius: 8px;
         display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; font-size: 1.05rem;
+        flex-shrink: 0; font-size: 0.72rem;
     }
-    .pay-stat-card .val { font-size: 1.4rem; font-weight: 800; color: #333; line-height: 1; }
-    .pay-stat-card .lbl { color: #aaa; font-size: 0.78rem; margin-top: 4px; }
+    .pay-stat-card .val { font-size: 0.92rem; font-weight: 800; color: #333; line-height: 1; }
+    .pay-stat-card .lbl { color: #aaa; font-size: 0.58rem; margin-top: 1px; }
+
+    @media (max-width: 480px) {
+        .pay-stat-card { padding: 0.5rem 0.35rem; gap: 3px; border-radius: 10px; }
+        .pay-stat-card .icon-box { width: 24px; height: 24px; font-size: 0.65rem; }
+        .pay-stat-card .val { font-size: 0.82rem; }
+        .pay-stat-card .lbl { font-size: 0.52rem; }
+    }
 
     .pay-status-chip {
         display: inline-flex; align-items: center; gap: 5px;
@@ -85,8 +96,8 @@
 </div>
 
 {{-- Top Summary Cards --}}
-<div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
+<div class="row g-2 mb-4">
+    <div class="col-6 col-sm-4 col-md-2">
         <div class="pay-stat-card" style="background:#f3e8ff;border-color:#e9d5ff;">
             <div class="icon-box" style="background:#e9d5ff;color:#7c3aed;">
                 <i class="fas fa-receipt"></i>
@@ -97,7 +108,7 @@
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
+    <div class="col-6 col-sm-4 col-md-2">
         <div class="pay-stat-card" style="background:#dcfce7;border-color:#bbf7d0;">
             <div class="icon-box" style="background:#bbf7d0;color:#16a34a;">
                 <i class="fas fa-check-circle"></i>
@@ -108,7 +119,7 @@
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
+    <div class="col-6 col-sm-4 col-md-2">
         <div class="pay-stat-card" style="background:#fef9c3;border-color:#fef08a;">
             <div class="icon-box" style="background:#fef08a;color:#b45309;">
                 <i class="fas fa-hourglass-half"></i>
@@ -119,7 +130,7 @@
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
+    <div class="col-6 col-sm-4 col-md-2">
         <div class="pay-stat-card" style="background:#fee2e2;border-color:#fecaca;">
             <div class="icon-box" style="background:#fecaca;color:#dc2626;">
                 <i class="fas fa-times-circle"></i>
