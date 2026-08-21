@@ -2,7 +2,7 @@
 {{-- FILE: resources/views/client/waitlist/index.blade.php --}}
 {{-- ============================================================ --}}
 @extends('layouts.client')
-@section('title', 'My Waitlist — Glamora')
+@section('title', 'My Waitlist — Beauty Blush Salons')
 
 @push('styles')
 <style>
@@ -220,7 +220,7 @@
                     @if($wl->expires_at)
                     <strong style="color:#ef4444;">{{ \Carbon\Carbon::now()->diffInMinutes($wl->expires_at) }} minutes</strong>
                     @else
-                    <strong style="color:#ef4444;">10 minutes</strong>
+                    <strong style="color:#ef4444;">20 minutes</strong>
                     @endif
                     to secure your booking.
                 </p>

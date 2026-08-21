@@ -34,10 +34,10 @@
     }
     .btn-pink-outline:hover { background: #E91E8C; color: #fff; }
 
-    /* ── Stat Cards — ORIGINAL colors restored ── */
+    /* ── Stat Cards — square-ish, cute candy pastel palette ── */
     .stat-mini {
         border-radius: 14px;
-        padding: 14px 12px;
+        padding: 14px 10px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -48,59 +48,82 @@
         cursor: default;
         min-height: 90px;
     }
-    .stat-mini:hover { transform: translateY(-3px); }
+    .stat-mini:hover { transform: translateY(-4px) scale(1.02); z-index: 2; position: relative; }
     .stat-mini .s-icon {
-        width: 32px; height: 32px;
-        border-radius: 9px;
+        width: 38px; height: 38px;
+        border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.9rem; margin-bottom: 8px;
-        background: rgba(255,255,255,0.28);
+        font-size: 1.05rem; margin-bottom: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .stat-mini .s-val {
-        font-size: 1.45rem; font-weight: 800; color: #fff;
-        line-height: 1; text-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        font-size: 1.5rem; font-weight: 900;
+        line-height: 1;
     }
     .stat-mini .s-lbl {
-        font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 0.8px; color: rgba(255,255,255,0.82); margin-top: 4px;
+        font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
+        letter-spacing: 0.6px; margin-top: 6px;
     }
 
-    .sm-pink   { background: #E0177D; box-shadow: 0 4px 14px rgba(224,23,125,0.28); }
-    .sm-chrome { background: #607D8B; box-shadow: 0 4px 14px rgba(96,125,139,0.28); }
-    .sm-purple { background: #7B5EA7; box-shadow: 0 4px 14px rgba(123,94,167,0.28); }
-    .sm-xampp  { background: #F26522; box-shadow: 0 4px 14px rgba(242,101,34,0.28); }
-    .sm-teal   { background: #0097A7; box-shadow: 0 4px 14px rgba(0,151,167,0.28); }
-    .sm-amber  { background: #C9A800; box-shadow: 0 4px 14px rgba(201,168,0,0.28); }
-    .sm-amber .s-val,
-    .sm-amber .s-lbl { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-    .sm-amber .s-lbl { color: rgba(255,255,255,0.82); }
+    /* 6 fresh candy pastel colors — Mint / Peach / Periwinkle / Pink / Lime / Butter Yellow — each fully distinct, no repeats */
+    .sm-pink   { background: #C8F0DF; box-shadow: 0 4px 14px rgba(58,180,140,0.25); } /* Mint */
+    .sm-pink   .s-icon { background: #4FBE99; }
+    .sm-pink   .s-val, .sm-pink .s-lbl { color: #1F7A5C; }
 
-    /* ---- Bar Chart (UPDATED: Bigger & Beautiful) ---- */
+    .sm-chrome { background: #FFDCC2; box-shadow: 0 4px 14px rgba(255,148,79,0.28); } /* Peach */
+    .sm-chrome .s-icon { background: #FF9A54; }
+    .sm-chrome .s-val, .sm-chrome .s-lbl { color: #B5561A; }
+
+    .sm-purple { background: #D9DEF7; box-shadow: 0 4px 14px rgba(112,124,214,0.28); } /* Periwinkle */
+    .sm-purple .s-icon { background: #8A97E0; }
+    .sm-purple .s-val, .sm-purple .s-lbl { color: #4A54A8; }
+
+    .sm-xampp  { background: #F9D4EE; box-shadow: 0 4px 14px rgba(224,110,190,0.28); } /* Pink */
+    .sm-xampp  .s-icon { background: #EA8FCB; }
+    .sm-xampp  .s-val, .sm-xampp .s-lbl { color: #B23E8C; }
+
+    .sm-teal   { background: #E3F5C4; box-shadow: 0 4px 14px rgba(150,196,80,0.28); } /* Lime */
+    .sm-teal   .s-icon { background: #A9D468; }
+    .sm-teal   .s-val, .sm-teal .s-lbl { color: #5E8A22; }
+
+    .sm-amber  { background: #FFF2B8; box-shadow: 0 4px 14px rgba(230,182,50,0.3); } /* Butter Yellow */
+    .sm-amber  .s-icon { background: #FFD24D; }
+    .sm-amber  .s-val, .sm-amber .s-lbl { color: #A67A00; }
+
+    .stat-mini .s-icon i { color: #fff !important; }
+
+    /* ---- Bar Chart — flat multi-color bars with axis lines (like the reference bar graph) ---- */
+    .chart-axis-wrap {
+        position: relative;
+        padding: 10px 16px 28px 16px;
+    }
     .chart-container {
-        height: 290px; /* Increased for bigger look */
+        position: relative;
         display: flex;
         align-items: flex-end;
         justify-content: space-around;
         padding: 0 10px;
-        gap: 12px; /* Slightly more spacing */
+        gap: 14px;
+        height: 200px;
     }
-    .chart-bar-wrapper { display: flex; flex-direction: column; align-items: center; flex: 1; cursor: pointer; }
+    .chart-bar-wrapper { display: flex; flex-direction: column; align-items: center; flex: 1; cursor: pointer; max-width: 60px; position: relative; }
     .chart-bar {
         width: 100%;
-        max-width: 52px; /* Increased width */
-        border-radius: 12px 12px 0 0; /* Softer corners for beauty */
+        max-width: 34px;
+        border-radius: 14px 14px 5px 5px;
         min-height: 4px;
-        box-shadow: 0 2px 6px rgba(233, 30, 140, 0.08); /* Subtle shadow for elegance */
-        transition: height 0.8s ease, background 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 6px 14px rgba(194,70,126,0.22);
+        transition: height 0.8s cubic-bezier(.34,1.56,.64,1), transform 0.2s ease, box-shadow 0.2s ease;
     }
     .chart-bar-wrapper:hover .chart-bar {
-        opacity: .9;
-        transform: scaleY(1.02) translateY(-2px); /* Slight lift on hover */
-        box-shadow: 0 6px 16px rgba(233, 30, 140, 0.2); /* Deep shadow on hover */
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(194,70,126,0.32);
     }
     .chart-bar-label {
-        font-size: 0.6rem; color: #aaa; margin-top: 6px;
-        text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px;
+        font-size: 0.62rem; color: #b98; margin-top: 8px;
+        text-transform: uppercase; font-weight: 700; letter-spacing: 0.3px;
     }
     .chart-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
     .chart-empty i { font-size: 2.5rem; color: rgba(233,30,140,0.12); margin-bottom: 8px; }
@@ -114,23 +137,41 @@
     .donut-toggle .btn:first-child { border-radius: 50px 0 0 50px; }
     .donut-toggle .btn:last-child  { border-radius: 0 50px 50px 0; }
 
-    /* ---- Donut wrap: responsive, grows/shrinks with its container ---- */
+    /* ---- Donut + legend side-by-side layout (bigger donut, names on the right) ---- */
+    .donut-flex {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        flex-wrap: wrap;
+        width: 100%;
+    }
     .donut-wrap {
         position: relative;
         width: 100%;
-        max-width: 230px;
+        max-width: 320px;
         aspect-ratio: 1 / 1;
-        margin: 0 auto;
+        flex-shrink: 0;
     }
     .donut-svg circle { cursor: pointer; transition: opacity .15s; }
     .donut-svg circle:hover { opacity: .8; }
 
-    /* ---- Simple legend rows: dot + label + COUNT (not percentage) ---- */
-    .breakdown-row { margin-bottom: 8px; cursor: default; }
-    .breakdown-row .br-top { display: flex; justify-content: space-between; align-items: center; font-size: .74rem; padding-bottom: 6px; border-bottom: 1px solid #f5eaf0; }
-    .breakdown-row .br-top .lbl { display: flex; align-items: center; gap: 6px; color: #555; font-weight: 600; }
-    .breakdown-row .br-top .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .breakdown-row .br-top .cnt { font-weight: 800; }
+    /* ---- Right-side compact legend: just a colored dot + name ---- */
+    .donut-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        text-align: left;
+        min-width: 130px;
+    }
+    .leg-item { display: flex; align-items: center; gap: 9px; cursor: default; }
+    .leg-item .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+    .leg-item .leg-name { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.2px; }
+
+    @media (max-width: 480px) {
+        .donut-flex { justify-content: center; }
+        .donut-legend { align-items: center; text-align: center; }
+    }
 
     /* ---- Floating tooltip ---- */
     #chartTooltip {
@@ -192,42 +233,42 @@
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-4 col-lg-2">
         <div class="stat-mini sm-pink">
-            <div class="s-icon"><i class="fas fa-calendar-check" style="color:#fff;"></i></div>
+            <div class="s-icon"><i class="fas fa-calendar-check"></i></div>
             <div class="s-val">{{ $stats['upcoming'] ?? 0 }}</div>
             <div class="s-lbl">Upcoming</div>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="stat-mini sm-chrome">
-            <div class="s-icon"><i class="fas fa-clock" style="color:#fff;"></i></div>
+            <div class="s-icon"><i class="fas fa-clock"></i></div>
             <div class="s-val">{{ $stats['pending'] ?? 0 }}</div>
             <div class="s-lbl">Pending</div>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="stat-mini sm-purple">
-            <div class="s-icon"><i class="fas fa-hourglass-half" style="color:#fff;"></i></div>
+            <div class="s-icon"><i class="fas fa-hourglass-half"></i></div>
             <div class="s-val">{{ $stats['waitlist'] ?? 0 }}</div>
             <div class="s-lbl">Waitlist</div>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="stat-mini sm-xampp">
-            <div class="s-icon"><i class="fas fa-comment" style="color:#fff;"></i></div>
+            <div class="s-icon"><i class="fas fa-comment"></i></div>
             <div class="s-val">{{ $stats['complaints'] ?? 0 }}</div>
             <div class="s-lbl">Complaints</div>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="stat-mini sm-teal">
-            <div class="s-icon"><i class="fas fa-credit-card" style="color:#fff;"></i></div>
+            <div class="s-icon"><i class="fas fa-credit-card"></i></div>
             <div class="s-val">{{ $stats['payments'] ?? 0 }}</div>
             <div class="s-lbl">Payments</div>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="stat-mini sm-amber">
-            <div class="s-icon"><i class="fas fa-bell" style="color:#fff;"></i></div>
+            <div class="s-icon"><i class="fas fa-bell"></i></div>
             <div class="s-val">{{ $stats['alerts'] ?? 0 }}</div>
             <div class="s-lbl">Alerts</div>
         </div>
@@ -294,7 +335,7 @@
     </div>
 </div>
 
-{{-- ===== APPOINTMENT OVERVIEW (real multi-color donut) + PAYMENT ACTIVITY — equal height ===== --}}
+{{-- ===== APPOINTMENT OVERVIEW (bigger donut + right-side name legend) + PAYMENT ACTIVITY — equal height ===== --}}
 <div class="row g-4 mb-4 align-items-stretch">
     <div class="col-lg-6 d-flex">
         <div class="card-dashboard p-4 w-100 d-flex flex-column">
@@ -306,20 +347,22 @@
                     <button type="button" class="btn" id="donut-yearly"  data-range="yearly">Yearly</button>
                 </div>
             </div>
-            <div class="text-center py-3 flex-grow-1 d-flex flex-column">
-                <div class="donut-wrap">
-                    <svg class="donut-svg" viewBox="0 0 100 100" style="width:100%;height:100%;transform:rotate(-90deg);">
-                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f1f1f1" stroke-width="12" />
-                        <g id="donutSegments"></g>
-                    </svg>
-                    <div class="position-absolute top-50 start-50 translate-middle text-center">
-                        <div class="fw-bold" style="color:#E91E8C;font-size:2rem;" id="donutTotal">0</div>
-                        <div class="text-uppercase small text-muted" style="letter-spacing:1px;font-size:0.62rem;">Bookings</div>
+            <div class="text-center py-3 flex-grow-1 d-flex flex-column justify-content-center">
+                <div class="donut-flex">
+                    <div class="donut-wrap">
+                        <svg class="donut-svg" viewBox="0 0 100 100" style="width:100%;height:100%;transform:rotate(-90deg);">
+                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f1f1f1" stroke-width="12" />
+                            <g id="donutSegments"></g>
+                        </svg>
+                        <div class="position-absolute top-50 start-50 translate-middle text-center">
+                            <div class="fw-bold" style="color:#E91E8C;font-size:2rem;" id="donutTotal">0</div>
+                            <div class="text-uppercase small text-muted" style="letter-spacing:1px;font-size:0.62rem;">Bookings</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="mt-4 text-start flex-grow-1" id="donutBreakdownList">
-                    {{-- filled by JS --}}
+                    <div class="donut-legend" id="donutBreakdownList">
+                        {{-- filled by JS: colored dot + name only --}}
+                    </div>
                 </div>
             </div>
         </div>
@@ -339,7 +382,7 @@
                 <div class="psr-body">
                     <div class="psr-top"><span>Paid Total</span><span>{{ $paidPercent ?? 0 }}%</span></div>
                     <div class="psr-amt">Rs. {{ number_format($paidAmount ?? 0, 0) }}</div>
-                    <div class="progress"><div class="progress-bar" style="width:{{ $paidPercent ?? 0 }}%;background:linear-gradient(135deg,#E91E8C,#c2185b);border-radius:10px;"></div></div>
+                    <div class="progress"><div class="progress-bar" style="width:{{ $paidPercent ?? 0 }}%;background:linear-gradient(135deg,#C98AA6,#A8617D);border-radius:10px;"></div></div>
                 </div>
             </div>
 
@@ -396,7 +439,7 @@
     </div>
 </div>
 
-{{-- ===== BOOKING ACTIVITY HISTORY (UPDATED: Bigger & Beautiful) ===== --}}
+{{-- ===== BOOKING ACTIVITY HISTORY ===== --}}
 <div class="card-dashboard p-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
         <h5 class="fw-bold mb-0" style="font-family:'Playfair Display',serif;color:#333;">
@@ -408,7 +451,9 @@
             <button type="button" class="btn btn-sm btn-outline-secondary"      id="filter-yearly"  data-range="yearly"  style="border-radius:0 50px 50px 0;padding:6px 18px;font-weight:600;font-size:0.7rem;border-color:#ddd;color:#888;">Yearly</button>
         </div>
     </div>
-    <div class="chart-container" id="chart-container"></div>
+    <div class="chart-axis-wrap">
+        <div class="chart-container" id="chart-container"></div>
+    </div>
     <div class="chart-empty" id="chart-empty" style="display:none;">
         <i class="fas fa-chart-simple"></i>
         <p>No activity recorded for this period</p>
@@ -472,15 +517,23 @@
     }
     function hideTooltip() { tooltipEl.classList.remove('show'); }
 
-    // ================= BOOKING ACTIVITY BAR CHART =================
+    // ================= BOOKING ACTIVITY BAR CHART (muted, single-tone gradient) =================
     const bookingChartData = @json($chartDataForJs);
 
+    // Pretty muted pink heatmap: darkest rose = most bookings, lightest blush = fewest bookings.
+    // Same pink family throughout — just a nicer, richer dusty-rose tone.
+    function mutedShade(ratio) {
+        const light = { r: 252, g: 228, b: 241 }; // #FCE4F1 soft blush pink
+        const dark  = { r: 194, g: 70,  b: 126 }; // #C2467E rich dusty rose
+        const r = Math.round(light.r + (dark.r - light.r) * ratio);
+        const g = Math.round(light.g + (dark.g - light.g) * ratio);
+        const b = Math.round(light.b + (dark.b - light.b) * ratio);
+        return `rgb(${r}, ${g}, ${b})`;
+    }
     function barColor(val, maxVal) {
-        if (!val || val <= 0) return '#f3d9e5';
-        const ratio = val / maxVal;
-        if (ratio >= 0.7) return '#ad1457';
-        if (ratio >= 0.35) return '#E91E8C';
-        return '#f48fb1';
+        if (!val || val <= 0) return '#FBE7F0';
+        const ratio = maxVal > 0 ? val / maxVal : 0; // tallest bar => ratio 1 => darkest dusty rose
+        return mutedShade(ratio);
     }
 
     function renderChart(range) {
@@ -496,13 +549,13 @@
         container.innerHTML = '';
         labels.forEach((label, i) => {
             const val = values[i] || 0;
-            const height = (val / maxVal) * 110 + 4;
-            const color = barColor(val, maxVal);
+            const height = val > 0 ? (val / maxVal) * 150 + 10 : 0;
+            const bg = barColor(val, maxVal);
 
             const wrapper = document.createElement('div');
             wrapper.className = 'chart-bar-wrapper';
             wrapper.innerHTML = `
-                <div class="chart-bar" style="height:${height}px;background:${color};"></div>
+                <div class="chart-bar" style="height:${height}px;background:${bg};"></div>
                 <div class="chart-bar-label">${label}</div>
             `;
             wrapper.addEventListener('mousemove', (e) => {
@@ -533,18 +586,19 @@
 
     renderChart('weekly');
 
-    // ================= APPOINTMENT OVERVIEW — REAL MULTI-COLOR DONUT (FIXED) =================
+    // ================= APPOINTMENT OVERVIEW — bigger donut, lighter pastel colors, right-side name legend =================
     const donutData = @json($donutDataForJs);
     const RC = {{ $ringCircumference ?? 251.2 }}; // ring circumference, matches r=40
 
-    // Thematic colors — matched to each status (no blue unless Confirmed exists)
+    // Lighter pastel donut colors — each slice's arc length is proportional to that
+    // status's share of bookings, so the busiest status automatically gets the biggest area.
     const donutColors = {
-        'Completed': '#10b981',
-        'Confirmed': '#3b82f6',
-        'Pending':   '#f59e0b',
-        'Cancelled': '#ef4444',
-        'Upcoming':  '#E91E8C',
-        'Waitlist':  '#06b6d4',
+        'Completed': '#8FE3B0',
+        'Confirmed': '#9DC5FB',
+        'Pending':   '#FDE08A',
+        'Cancelled': '#FCB0B0',
+        'Upcoming':  '#F5A8D6',
+        'Waitlist':  '#8CE9F5',
     };
     const SVGNS = 'http://www.w3.org/2000/svg';
 
@@ -592,8 +646,9 @@
             const color = donutColors[label];
             const count = counts[label] ?? 0;
 
-            // Arc length in circumference units
-            const rawArcLen = (pct / totalPct) * RC; // use totalPct to ensure proper proportions
+            // Arc length in circumference units — proportional to this status's share of bookings,
+            // so a status with more bookings automatically gets a bigger slice of the ring.
+            const rawArcLen = (pct / totalPct) * RC;
             const arcLen = Math.max(rawArcLen - GAP, rawArcLen > 0 ? 1 : 0);
             const dashArray = `${arcLen} ${RC - arcLen}`;
             const dashOffset = -(cumulative / totalPct) * RC;
@@ -618,7 +673,7 @@
             cumulative += pct;
         });
 
-        // Legend: show label + count (no percentage)
+        // Right-side legend: just a colored dot + name (details still on hover)
         const list = document.getElementById('donutBreakdownList');
         list.innerHTML = '';
         activeLabels.forEach(label => {
@@ -626,12 +681,10 @@
             const color = donutColors[label];
             const count = counts[label] ?? 0;
             const row = document.createElement('div');
-            row.className = 'breakdown-row';
+            row.className = 'leg-item';
             row.innerHTML = `
-                <div class="br-top">
-                    <span class="lbl"><span class="dot" style="background:${color};"></span>${label}</span>
-                    <span class="cnt" style="color:${color};">${count}</span>
-                </div>
+                <span class="dot" style="background:${color};"></span>
+                <span class="leg-name" style="color:${color};">${label}</span>
             `;
             row.addEventListener('mousemove', (e) => {
                 showTooltip(e.clientX, e.clientY, `${label}: ${pct}%`, `${count} of ${total} bookings`);

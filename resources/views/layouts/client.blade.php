@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'My Account') — Glamora</title>
+    <title>@yield('title', 'My Account') — Beauty Blush Salons</title>
  
     <!-- Bootstrap 5.3.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -139,7 +139,7 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a class="navbar-brand fw-bold" href="{{ route('client.dashboard') }}" style="font-family: 'Playfair Display', serif;">
-                        <span style="color:#E91E8C;">Glam</span><span style="color:#C9A96E;">ora</span>
+                        <span style="color:#E91E8C;">Beauty Blush</span><span style="color:#C9A96E;"> Salons</span>
                     </a>
                 </div>
  

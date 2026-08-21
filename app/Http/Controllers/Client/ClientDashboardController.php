@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use App\Models\Waitlist;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class ClientDashboardController extends Controller
@@ -37,6 +38,11 @@ class ClientDashboardController extends Controller
             ->get();
 
         $pendingStatusCandidates = ['pending', 'pending_payment', 'payment_submitted', 'awaiting_payment'];
+
+        // ✅ Payment "approved/successful" status can be named differently depending on how
+        // payments were seeded/entered (approved, success, paid, completed, confirmed, etc).
+        // Matching only 'approved' was why Payment Activity wasn't updating for some clients.
+        $approvedStatusCandidates = ['approved', 'approve', 'success', 'successful', 'paid', 'completed', 'confirmed', 'verified'];
 
         $totalBookings   = Appointment::where('client_id', $clientId)->count();
         $completedCount  = Appointment::where('client_id', $clientId)->where('status', 'completed')->count();
@@ -148,21 +154,29 @@ class ClientDashboardController extends Controller
 
         $paidAmount = 0.0;
 
+        // ✅ FIXED: match approved-style statuses case-insensitively, not just the literal
+        // string 'approved' — this is why Payment Activity wasn't reflecting real payments.
         if (Schema::hasTable('payments') && Schema::hasColumn('payments', 'amount')) {
             $paidAmount = (float) \App\Models\Payment::whereHas(
                 'appointment',
                 fn ($q) => $q->where('client_id', $clientId)
-            )->where('status', 'approved')->sum('amount');
+            )->whereIn(DB::raw('LOWER(status)'), $approvedStatusCandidates)
+             ->sum('amount');
         }
 
         if ($paidAmount <= 0) {
             $fallback = (float) Appointment::where('client_id', $clientId)
-                ->whereHas('payment', fn ($q) => $q->where('status', 'approved'))
+                ->whereHas('payment', fn ($q) => $q->whereIn(DB::raw('LOWER(status)'), $approvedStatusCandidates))
                 ->sum('advance_amount');
 
             if ($fallback > 0) {
                 $paidAmount = $fallback;
             }
+        }
+
+        // Safety: paid amount should never exceed total revenue (guards against duplicate/partial rows)
+        if ($totalRevenue > 0 && $paidAmount > $totalRevenue) {
+            $paidAmount = $totalRevenue;
         }
 
         $paidPercent = $totalRevenue > 0 ? round(($paidAmount / $totalRevenue) * 100) : 0;

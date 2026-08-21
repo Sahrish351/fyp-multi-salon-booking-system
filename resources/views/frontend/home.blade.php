@@ -685,7 +685,7 @@
         @forelse(($featuredSalons ?? collect())->take(4) as $index => $salon)
         <a href="{{ route('salons.show', $salon->slug) }}" class="salon-card">
           <div class="sc-img">
-            <img src="{{ asset('storage/images/salon'.($index+1).'.jpg') }}" alt="{{ $salon->name }}" loading="lazy">
+            <img src="{{ $salon->cover_image ?? asset('storage/images/salon1.jpg') }}" alt="{{ $salon->name }}" loading="lazy">
             <span class="sc-badge">Featured</span>
           </div>
           <div class="sc-body">
@@ -721,7 +721,7 @@
       <div class="slider-track">
         @forelse(($newSalons ?? collect())->take(4) as $index => $salon)
         <a href="{{ route('salons.show', $salon->slug) }}" class="salon-card">
-          <div class="sc-img"><img src="{{ asset('storage/images/salon'.($index+11).'.jpg') }}" alt="{{ $salon->name }}" loading="lazy"></div>
+          <div class="sc-img"><img src="{{ $salon->cover_image ?? asset('storage/images/salon1.jpg') }}" alt="{{ $salon->name }}" loading="lazy"></div>
           <div class="sc-body">
             <div class="sc-name-row"><div class="sc-name">{{ $salon->name ?? 'New Style Studio' }} <i class="fas fa-check-circle vc"></i></div></div>
             <div class="sc-addr">{{ $salon->address ?? 'Johar Town, Lahore' }}</div>
@@ -752,7 +752,7 @@
       <div class="slider-track">
         @forelse(($topRatedSalons ?? collect())->take(4) as $index => $salon)
         <a href="{{ route('salons.show', $salon->slug) }}" class="salon-card">
-          <div class="sc-img"><img src="{{ asset('storage/images/salon'.($index+13).'.jpg') }}" alt="{{ $salon->name }}" loading="lazy"></div>
+          <div class="sc-img"><img src="{{ $salon->cover_image ?? asset('storage/images/salon1.jpg') }}" alt="{{ $salon->name }}" loading="lazy"></div>
           <div class="sc-body">
             <div class="sc-name-row">
               <div class="sc-name">{{ $salon->name ?? 'Trending Now' }} <i class="fas fa-check-circle vc"></i></div>

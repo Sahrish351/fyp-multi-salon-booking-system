@@ -45,7 +45,7 @@ class StylistController extends Controller
             ->whereIn('status', ['confirmed', 'completed'])
             ->count();
 
-        // ✅ FIX: YEH LINE CHANGE KARI (stylist->services() se salon->services())
+        // ✅ FIX: Yeh line sahi hai (salon->services)
         $services = $salon->services()->where('is_active', true)->take(10)->get();
 
         // Similar stylists

@@ -18,24 +18,24 @@ class SalonRequestController extends Controller
             ->where('status', 'pending')
             ->latest()
             ->paginate(20);
-            
+
         $approvedSalons = Salon::with('owner')
             ->where('status', 'approved')
             ->latest()
             ->paginate(20);
-            
+
         $rejectedSalons = Salon::with('owner')
             ->where('status', 'rejected')
             ->latest()
             ->paginate(20);
-            
+
         $stats = [
             'pending' => Salon::where('status', 'pending')->count(),
             'approved' => Salon::where('status', 'approved')->count(),
             'rejected' => Salon::where('status', 'rejected')->count(),
             'total' => Salon::count(),
         ];
-            
+
         return view('admin.salon-requests.index', compact('pendingSalons', 'approvedSalons', 'rejectedSalons', 'stats'));
     }
 
@@ -48,10 +48,10 @@ class SalonRequestController extends Controller
     public function approve($id)
     {
         DB::beginTransaction();
-        
+
         try {
             $salon = Salon::findOrFail($id);
-            
+
             $salon->update([
                 'status' => 'approved',
                 'approved_by' => auth()->id(),
@@ -79,10 +79,10 @@ class SalonRequestController extends Controller
         ]);
 
         DB::beginTransaction();
-        
+
         try {
             $salon = Salon::findOrFail($id);
-            
+
             $salon->update([
                 'status' => 'rejected',
                 'rejection_reason' => $request->reason,
@@ -110,17 +110,17 @@ class SalonRequestController extends Controller
         ]);
 
         DB::beginTransaction();
-        
+
         try {
             $salons = Salon::whereIn('id', $request->salon_ids)->get();
-            
+
             foreach ($salons as $salon) {
                 $salon->update([
                     'status' => 'approved',
                     'approved_by' => auth()->id(),
                     'approved_at' => now(),
                 ]);
-                
+
                 $salon->owner->notify(new SalonApproved($salon));
             }
 

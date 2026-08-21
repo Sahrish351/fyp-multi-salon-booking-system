@@ -1,26 +1,26 @@
 {{-- ============================================================ --}}
 {{-- FILE: resources/views/components/sidebar-client.blade.php --}}
 {{-- ============================================================ --}}
-<div class="sidebar d-flex flex-column" style="background: linear-gradient(180deg, #E91E8C 0%, #c2185b 100%); border-right: 1px solid rgba(255,255,255,0.1);">
+<div class="sidebar d-flex flex-column" style="background: linear-gradient(180deg, #1A0A1E 0%, #7B1450 100%); border-right: 1px solid rgba(255,255,255,0.08);">
     
     {{-- Logo Section --}}
-    <div class="p-4 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+    <div class="p-4 border-bottom" style="border-color: rgba(255,255,255,0.08) !important;">
         <a href="{{ route('home') }}" class="text-decoration-none">
             <h4 class="fw-bold mb-0" style="font-family:'Playfair Display',serif;">
-                <span style="color:#fff;">Glam</span><span style="color:#f8bbd0;">ora</span>
+                <span style="color:#fff;">Beauty Blush</span><span style="color:#FF6B9D;"> Salons</span>
             </h4>
         </a>
-        <small style="color: rgba(255,255,255,0.6); font-size:0.7rem;">My Beauty Account</small>
+        <small style="color: rgba(255,255,255,0.55); font-size:0.7rem;">My Beauty Account</small>
     </div>
 
     {{-- User Info --}}
-    <div class="p-3 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+    <div class="p-3 border-bottom" style="border-color: rgba(255,255,255,0.08) !important;">
         <div class="d-flex align-items-center gap-2">
             <img src="{{ Auth::user()->avatar_url }}" class="rounded-circle" width="40" height="40" alt="avatar" style="border:2px solid #fff; object-fit:cover;">
             <div>
                 <div style="color:#fff; font-size:0.85rem; font-weight:500;">{{ Auth::user()->name }}</div>
-                <div style="color: rgba(255,255,255,0.6); font-size:0.7rem;">
-                    <i class="fas fa-map-marker-alt me-1" style="color:#f8bbd0;"></i>{{ Auth::user()->city ?? 'Pakistan' }}
+                <div style="color: rgba(255,255,255,0.55); font-size:0.7rem;">
+                    <i class="fas fa-map-marker-alt me-1" style="color:#FF6B9D;"></i>{{ Auth::user()->city ?? 'Pakistan' }}
                 </div>
             </div>
         </div>
@@ -47,20 +47,20 @@
            class="d-flex align-items-center gap-3 px-4 py-2 text-decoration-none mb-1 mx-2 rounded-3
                   {{ request()->routeIs($link['route'].'*') ? 'fw-semibold' : '' }}"
            style="{{ request()->routeIs($link['route'].'*') 
-               ? 'background: rgba(255,255,255,0.15); color: #fff; border-left: 3px solid #f8bbd0;' 
-               : 'color: rgba(255,255,255,0.8);' }}
+               ? 'background: linear-gradient(135deg, #FF6B9D, #E85588); color: #fff; box-shadow: 0 4px 15px rgba(232,85,136,0.35);' 
+               : 'color: rgba(255,255,255,0.72);' }}
                   font-size:0.85rem;
                   transition: all 0.2s ease;"
-           onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#fff';"
-           onmouseout="this.style.background='{{ request()->routeIs($link['route'].'*') ? 'rgba(255,255,255,0.15)' : 'transparent' }}'; this.style.color='{{ request()->routeIs($link['route'].'*') ? '#fff' : 'rgba(255,255,255,0.8)' }}';">
-            <i class="fas {{ $link['icon'] }}" style="width:18px; color: {{ request()->routeIs($link['route'].'*') ? '#f8bbd0' : 'rgba(255,255,255,0.6)' }};"></i>
+           onmouseover="this.style.background='rgba(255,107,157,0.15)'; this.style.color='#fff';"
+           onmouseout="this.style.background='{{ request()->routeIs($link['route'].'*') ? 'linear-gradient(135deg, #FF6B9D, #E85588)' : 'transparent' }}'; this.style.color='{{ request()->routeIs($link['route'].'*') ? '#fff' : 'rgba(255,255,255,0.72)' }}';">
+            <i class="fas {{ $link['icon'] }}" style="width:18px; color: {{ request()->routeIs($link['route'].'*') ? '#ffffff' : 'rgba(255,255,255,0.72)' }};"></i>
             <span>{{ $link['label'] }}</span>
         </a>
         @endforeach
     </nav>
 
     {{-- Logout Button --}}
-    <div class="p-3 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+    <div class="p-3 border-top" style="border-color: rgba(255,255,255,0.08) !important;">
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit" class="btn btn-sm w-100 text-start" style="color: #fff; background: rgba(255,255,255,0.1); border: none; border-radius: 10px; padding: 10px 16px; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
