@@ -7,8 +7,8 @@
 @push('styles')
 <style>
     :root {
-        --pink: #E91E8C;
-        --pink-dark: #c2185b;
+        --pink: #FF6B9D;
+        --pink-dark: #E85588;
         --pink-light: #fce4ec;
         --pink-bg: #fdf2f8;
         --cancel-a: #ef4444; --cancel-b: #dc2626;
@@ -22,7 +22,7 @@
         text-decoration: none; transition: background .18s, color .18s, border-color .18s; display: inline-flex; align-items: center; gap: 7px;
         border: none;
     }
-    .timeframe-tab.active { background: linear-gradient(135deg, var(--pink), var(--pink-dark)); color: #fff; box-shadow: 0 6px 16px rgba(233,30,140,0.22); }
+    .timeframe-tab.active { background: var(--pink); color: #fff; box-shadow: 0 6px 16px rgba(255,107,157,0.22); }
     .timeframe-tab:not(.active) { background: #fff; color: #999; border: 1.5px solid var(--pink-light); }
     .timeframe-tab:not(.active):hover { border-color: var(--pink); color: var(--pink); }
 
@@ -39,7 +39,7 @@
         background: #fff;
         border-radius: 22px;
         overflow: hidden;
-        box-shadow: 0 3px 14px rgba(233,30,140,0.05);
+        box-shadow: 0 3px 14px rgba(255, 107, 157,0.05);
         border: 1px solid var(--pink-light);
         height: 100%;
     }
@@ -138,10 +138,10 @@
         text-decoration: none;
     }
     .pagination .page-item.active .page-link {
-        background: linear-gradient(135deg, var(--pink), var(--pink-dark)) !important;
+        background: var(--pink) !important;
         border-color: transparent !important;
         color: #fff !important;
-        box-shadow: 0 4px 10px rgba(233,30,140,0.2);
+        box-shadow: 0 4px 10px rgba(255, 107, 157,0.2);
     }
 
     #cancelModal { display: none; position: fixed; inset: 0; background: rgba(30,10,25,0.45); z-index: 999; align-items: center; justify-content: center; padding: 16px; }
@@ -169,7 +169,7 @@
         <p style="color:#aaa;font-size:0.85rem;margin:0;">All your salon bookings in one place</p>
     </div>
     <a href="{{ route('salons.index') }}" class="btn btn-sm rounded-pill px-4"
-       style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-weight:600;">
+       style="background:#FF6B9D;color:#fff;border:none;font-weight:600;">
         <i class="fas fa-plus me-1"></i>New Booking
     </a>
 </div>
@@ -286,15 +286,15 @@
     <div class="col-12">
         <div class="empty-state">
             <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
-                 style="width:100px;height:100px;background:rgba(233,30,140,0.08);">
-                <i class="fas fa-calendar-times fa-3x" style="color:rgba(233,30,140,0.3);"></i>
+                 style="width:100px;height:100px;background:rgba(255, 107, 157,0.08);">
+                <i class="fas fa-calendar-times fa-3x" style="color:rgba(255, 107, 157,0.3);"></i>
             </div>
             <h5 class="fw-bold mb-2" style="color:#333;">No appointments found</h5>
             <p style="color:#aaa;max-width:350px;margin:0 auto 1.5rem;">
                 Try a different filter, or start your beauty journey with a new booking.
             </p>
             <a href="{{ route('salons.index') }}" class="btn rounded-pill px-5 py-2 fw-semibold"
-               style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-size:0.95rem;">
+               style="background:#FF6B9D;color:#fff;border:none;font-size:0.95rem;">
                 <i class="fas fa-search me-2"></i>Find a Salon
             </a>
         </div>
@@ -345,7 +345,7 @@
     });
     document.addEventListener('DOMContentLoaded', function () {
         @if(session('success'))
-        Swal.fire({ icon: 'success', title: 'Yay! 💖', text: @json(session('success')), confirmButtonColor: '#E91E8C', confirmButtonText: 'Great!', background: '#fff7fb' });
+        Swal.fire({ icon: 'success', title: 'Yay! 💖', text: @json(session('success')), confirmButtonColor: '#FF6B9D', confirmButtonText: 'Great!', background: '#fff7fb' });
         @endif
         @if(session('error'))
         Swal.fire({ icon: 'error', title: 'Oops!', text: @json(session('error')), confirmButtonColor: '#ef4444', background: '#fff7fb' });

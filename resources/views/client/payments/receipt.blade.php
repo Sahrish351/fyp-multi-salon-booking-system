@@ -9,7 +9,7 @@
     <style>
         body { font-family: sans-serif; color: #333; padding: 30px; }
         .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #E91E8C; font-size: 24px; margin: 0; }
+        .header h1 { color: #FF6B9D; font-size: 24px; margin: 0; }
         .header p { color: #aaa; font-size: 12px; margin-top: 4px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         table td { padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 13px; }

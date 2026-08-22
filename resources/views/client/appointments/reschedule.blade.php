@@ -4,8 +4,8 @@
 @push('styles')
 <style>
     :root {
-        --pink: #E91E8C;
-        --pink-dark: #c2185b;
+        --pink: #FF6B9D;
+        --pink-dark: #E85588;
         --pink-light: #fce4ec;
         --pink-bg: #fdf2f8;
         --purple-soft: #f3f0ff;
@@ -15,28 +15,30 @@
     .reschedule-card {
         background: #ffffff;
         border-radius: 28px;
-        box-shadow: 0 15px 35px rgba(233, 30, 140, 0.08);
+        box-shadow: 0 15px 35px rgba(255, 107, 157, 0.08);
         border: 1px solid var(--pink-light);
         overflow: hidden;
     }
 
     .reschedule-header {
-        background: linear-gradient(135deg, var(--pink), var(--pink-dark));
-        color: #ffffff;
+        background: #fff5f9;
+        color: #333333;
         padding: 28px 32px;
         position: relative;
+        border-bottom: 2px solid var(--pink-light);
     }
 
-    .reschedule-header::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        right: 20px;
-        width: 100px;
-        height: 100px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 50%;
-        pointer-events: none;
+    .reschedule-header h4 {
+        color: #333333;
+    }
+
+    .reschedule-header h4 i {
+        color: var(--pink);
+    }
+
+    .reschedule-header p.opacity-75 {
+        color: #888888;
+        opacity: 1 !important;
     }
 
     .info-card {
@@ -88,7 +90,7 @@
     .form-control-custom:focus {
         border-color: var(--pink);
         background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(233, 30, 140, 0.12);
+        box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.12);
         outline: none;
     }
 
@@ -100,7 +102,7 @@
         padding: 12px 30px;
         font-size: 0.88rem;
         font-weight: 800;
-        box-shadow: 0 8px 20px rgba(233, 30, 140, 0.25);
+        box-shadow: 0 8px 20px rgba(255, 107, 157, 0.25);
         transition: all 0.2s ease;
         display: inline-flex;
         align-items: center;
@@ -110,7 +112,7 @@
     .btn-submit-reschedule:hover {
         color: #ffffff;
         transform: translateY(-2px);
-        box-shadow: 0 12px 24px rgba(233, 30, 140, 0.35);
+        box-shadow: 0 12px 24px rgba(255, 107, 157, 0.35);
     }
 
     .btn-back {

@@ -4,9 +4,9 @@
 @section('content')
 
 <style>
-:root { --pink:#E91E8C; --pink-lt:#fce4ec; --pink-bg:#fff5f9; }
+:root { --pink:#FF6B9D; --pink-lt:#fce4ec; --pink-bg:#fff5f9; }
 .rev-card { background:#fff; border-radius:18px; border:1px solid var(--pink-lt); padding:1.4rem; transition:all .25s; }
-.rev-card:hover { border-color:var(--pink); box-shadow:0 8px 24px rgba(233,30,140,.08); transform:translateY(-2px); }
+.rev-card:hover { border-color:var(--pink); box-shadow:0 8px 24px rgba(255, 107, 157,.08); transform:translateY(-2px); }
 .status-badge { display:inline-flex; align-items:center; gap:.35rem; padding:.28rem .85rem; border-radius:20px; font-size:.71rem; font-weight:700; }
 .badge-reviewed    { background:#f0fdf4; color:#16a34a; }
 .badge-notreviewed { background:#fff8e1; color:#b45309; }
@@ -17,7 +17,7 @@
     font-weight:700; text-decoration:none; border:1.5px solid;
     transition:all .15s; cursor:pointer; background:none; font-family:inherit;
 }
-.btn-view   { background:var(--pink-bg); color:var(--pink); border-color:rgba(233,30,140,.2); }
+.btn-view   { background:var(--pink-bg); color:var(--pink); border-color:rgba(255, 107, 157,.2); }
 .btn-view:hover { background:var(--pink); color:#fff; }
 .btn-edit   { background:#f0f4ff; color:#3b5bdb; border-color:#d0daff; }
 .btn-edit:hover { background:#3b5bdb; color:#fff; border-color:#3b5bdb; }
@@ -37,7 +37,7 @@
         <p style="color:#aaa;font-size:.85rem;margin:0;">Your completed appointments and reviews</p>
     </div>
     <a href="{{ route('client.appointments.index') }}" class="btn btn-sm rounded-pill px-4"
-       style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-weight:600;">
+       style="background:#FF6B9D;color:#fff;border:none;font-weight:600;">
         <i class="fas fa-calendar-check me-1"></i>My Appointments
     </a>
 </div>
@@ -73,7 +73,7 @@
             <div class="d-flex align-items-start gap-3 mb-3">
                 <img src="{{ $appt->salon->logo_url ?? '' }}"
                      class="rounded-2 flex-shrink-0" width="48" height="48" style="object-fit:cover;"
-                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($appt->salon->name ?? 'S') }}&background=E91E8C&color=fff'">
+                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($appt->salon->name ?? 'S') }}&background=FF6B9D&color=fff'">
                 <div class="flex-grow-1">
                     <h6 class="fw-bold mb-1" style="color:#1a1a1a;font-size:.95rem;">{{ $appt->salon->name }}</h6>
                     <div style="color:#888;font-size:.78rem;">
@@ -104,7 +104,7 @@
 
             {{-- Owner replied badge --}}
             @if($review->reply)
-            <div class="d-flex align-items-center gap-2 p-2 rounded-3 mb-3" style="background:rgba(233,30,140,.05);border-left:3px solid var(--pink);">
+            <div class="d-flex align-items-center gap-2 p-2 rounded-3 mb-3" style="background:rgba(255, 107, 157,.05);border-left:3px solid var(--pink);">
                 <i class="fas fa-reply" style="color:var(--pink);font-size:.75rem;"></i>
                 <span style="color:var(--pink);font-size:.75rem;font-weight:700;">Salon owner has replied</span>
             </div>

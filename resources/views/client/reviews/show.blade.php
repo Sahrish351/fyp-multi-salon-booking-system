@@ -4,7 +4,7 @@
 @section('content')
 
 <style>
-:root { --pink:#E91E8C; --pink-lt:#fce4ec; --pink-bg:#fff5f9; }
+:root { --pink:#FF6B9D; --pink-lt:#fce4ec; --pink-bg:#fff5f9; }
 .action-btn { display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1.1rem;border-radius:9px;font-size:.82rem;font-weight:700;text-decoration:none;border:1.5px solid;transition:all .15s;cursor:pointer;background:none;font-family:inherit; }
 .btn-edit   { background:#f0f4ff;color:#3b5bdb;border-color:#d0daff; }
 .btn-edit:hover { background:#3b5bdb;color:#fff;border-color:#3b5bdb; }
@@ -39,7 +39,7 @@
             <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style="background:var(--pink-bg);border:1px solid var(--pink-lt);">
                 <img src="{{ $review->salon->logo_url ?? '' }}"
                      class="rounded-2 flex-shrink-0" width="56" height="56" style="object-fit:cover;"
-                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($review->salon->name ?? 'S') }}&background=E91E8C&color=fff'">
+                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($review->salon->name ?? 'S') }}&background=FF6B9D&color=fff'">
                 <div>
                     <h5 class="fw-bold mb-0" style="color:#1a1a1a;">{{ $review->salon->name }}</h5>
                     @if($review->appointment)
@@ -68,7 +68,7 @@
 
             {{-- Owner reply --}}
             @if($review->reply)
-            <div class="p-3 rounded-3 mb-4" style="background:rgba(233,30,140,.04);border-left:3px solid var(--pink);">
+            <div class="p-3 rounded-3 mb-4" style="background:rgba(255, 107, 157,.04);border-left:3px solid var(--pink);">
                 <div style="color:var(--pink);font-size:.73rem;font-weight:700;margin-bottom:.5rem;">
                     <i class="fas fa-reply me-1"></i>SALON OWNER REPLIED
                 </div>

@@ -5,9 +5,9 @@
 
 <style>
 :root {
-    --dpink:       #c2185b;
+    --dpink:       #FF6B9D;
     --dpink-lt:    #fce4ec;
-    --dpink-hover: #ad1457;
+    --dpink-hover: #E85588;
     --frozy:       #00838f;
     --frozy-lt:    #e0f7fa;
     --red-shock:   #b71c1c;
@@ -139,7 +139,7 @@
 }
 .search-input:focus {
     border-color: var(--dpink);
-    box-shadow: 0 0 0 3px rgba(194,24,91,.1);
+    box-shadow: 0 0 0 3px rgba(255,107,157,.1);
     background: #fff;
 }
 .filter-select {
@@ -250,7 +250,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 2px solid rgba(194,24,91,.15);
+    border: 2px solid rgba(255,107,157,.15);
 }
 .client-name  { font-weight: 600; color: #111827; margin-bottom: .1rem; }
 .client-email { font-size: .77rem; color: #9ca3af; }

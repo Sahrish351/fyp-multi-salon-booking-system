@@ -16,8 +16,8 @@
     overflow: hidden;
 }
 .waitlist-card:hover {
-    border-color: #E91E8C;
-    box-shadow: 0 10px 30px rgba(233,30,140,0.12);
+    border-color: #FF6B9D;
+    box-shadow: 0 10px 30px rgba(255, 107, 157,0.12);
     transform: translateY(-4px);
 }
 .waitlist-card::before {
@@ -27,14 +27,14 @@
     left: 0;
     width: 4px;
     height: 100%;
-    background: linear-gradient(180deg, #E91E8C, #c2185b);
+    background: #FF6B9D;
     border-radius: 20px 0 0 20px;
 }
 .position-badge {
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #E91E8C, #c2185b);
+    background: #FF6B9D;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,7 +42,7 @@
     font-weight: 800;
     color: #fff;
     flex-shrink: 0;
-    box-shadow: 0 4px 15px rgba(233,30,140,0.3);
+    box-shadow: 0 4px 15px rgba(255, 107, 157,0.3);
 }
 .info-pill {
     background: #fff5f9;
@@ -53,8 +53,8 @@
 .info-pill .pill-label { color: #aaa; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
 .info-pill .pill-value { color: #333; font-size: 0.82rem; font-weight: 600; }
 .notified-banner {
-    background: linear-gradient(135deg, rgba(233,30,140,0.08), rgba(192,132,252,0.08));
-    border: 1px solid rgba(233,30,140,0.2);
+    background: linear-gradient(135deg, rgba(255, 107, 157,0.08), rgba(192,132,252,0.08));
+    border: 1px solid rgba(255, 107, 157,0.2);
     border-radius: 12px;
     padding: 1rem 1.25rem;
 }
@@ -90,14 +90,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
         <h4 class="fw-bold mb-1" style="color:#333;font-family:'Playfair Display',serif;">
-            <i class="fas fa-list-ol me-2" style="color:#E91E8C;"></i>My Waitlist
+            <i class="fas fa-list-ol me-2" style="color:#FF6B9D;"></i>My Waitlist
         </h4>
         <p style="color:#aaa;font-size:0.85rem;margin:0;">
             You'll be notified when your preferred slot becomes available
         </p>
     </div>
     <a href="{{ route('salons.index') }}" class="btn btn-sm rounded-pill px-4"
-       style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-weight:600;">
+       style="background:#FF6B9D;color:#fff;border:none;font-weight:600;">
         <i class="fas fa-search me-1"></i>Find More Salons
     </a>
 </div>
@@ -107,7 +107,7 @@
     @foreach(['all'=>'All','waiting'=>'Waiting','notified'=>'Notified','accepted'=>'Accepted','expired'=>'Expired'] as $val=>$lbl)
     <a href="{{ route('client.waitlist.index',['status'=>$val]) }}"
        class="btn btn-sm rounded-pill"
-       style="{{ request('status')===$val || (!request('status') && $val==='all') ? 'background:#E91E8C;color:#fff;border:none;font-weight:600;' : 'background:#fff;color:#888;border:1px solid #fce4ec;' }}font-size:0.82rem;padding:6px 16px;">
+       style="{{ request('status')===$val || (!request('status') && $val==='all') ? 'background:#FF6B9D;color:#fff;border:none;font-weight:600;' : 'background:#fff;color:#888;border:1px solid #fce4ec;' }}font-size:0.82rem;padding:6px 16px;">
         {{ $lbl }}
         @if($val === 'notified')
         @php $notifiedCount = $waitlists->where('status','notified')->count(); @endphp
@@ -122,10 +122,10 @@
 {{-- Notified Alert --}}
 @php $notifiedItems = $waitlists->where('status','notified'); @endphp
 @if($notifiedItems->count() > 0)
-<div class="p-3 rounded-3 mb-4" style="background:linear-gradient(135deg,rgba(233,30,140,0.08),rgba(192,132,252,0.08));border:1px solid rgba(233,30,140,0.2);">
+<div class="p-3 rounded-3 mb-4" style="background:linear-gradient(135deg,rgba(255,107,157,0.08),rgba(192,132,252,0.08));border:1px solid rgba(255, 107, 157,0.2);">
     <div class="d-flex align-items-center gap-3">
-        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;background:rgba(233,30,140,0.15);">
-            <i class="fas fa-bell" style="color:#E91E8C;font-size:1rem;"></i>
+        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;background:rgba(255, 107, 157,0.15);">
+            <i class="fas fa-bell" style="color:#FF6B9D;font-size:1rem;"></i>
         </div>
         <div>
             <div class="fw-bold" style="color:#333;font-size:0.9rem;">
@@ -149,14 +149,14 @@
                 <div class="flex-grow-1">
                     <h6 class="fw-bold mb-1" style="color:#333;font-size:0.95rem;">{{ $wl->salon->name }}</h6>
                     <div style="color:#888;font-size:0.8rem;">
-                        <i class="fas fa-map-marker-alt me-1" style="color:#E91E8C;font-size:0.72rem;"></i>
+                        <i class="fas fa-map-marker-alt me-1" style="color:#FF6B9D;font-size:0.72rem;"></i>
                         {{ $wl->salon->area ? $wl->salon->area.', ' : '' }}{{ $wl->salon->city }}
                     </div>
                 </div>
                 {{-- Status Badge --}}
                 @php
                     $wsc = [
-                        'waiting'  => ['#E91E8C', 'Waiting'],
+                        'waiting'  => ['#FF6B9D', 'Waiting'],
                         'notified' => ['#3b82f6', 'Slot Available!'],
                         'accepted' => ['#22c55e', 'Accepted'],
                         'rejected' => ['#ef4444', 'Declined'],
@@ -172,7 +172,7 @@
             <div class="row g-2 mb-3">
                 <div class="col-6">
                     <div class="info-pill">
-                        <div class="pill-label"><i class="fas fa-spa me-1" style="color:#E91E8C;"></i>Service</div>
+                        <div class="pill-label"><i class="fas fa-spa me-1" style="color:#FF6B9D;"></i>Service</div>
                         <div class="pill-value">{{ Str::limit($wl->service->name, 20) }}</div>
                     </div>
                 </div>
@@ -206,13 +206,13 @@
             {{-- Price Info --}}
             <div class="d-flex align-items-center justify-content-between mb-3 p-2 rounded-3" style="background:#fff5f9;">
                 <div style="color:#888;font-size:0.8rem;">Service Price</div>
-                <div style="color:#E91E8C;font-weight:700;font-size:0.95rem;">Rs. {{ number_format($wl->service->price) }}</div>
+                <div style="color:#FF6B9D;font-weight:700;font-size:0.95rem;">Rs. {{ number_format($wl->service->price) }}</div>
             </div>
 
             {{-- Notified Action Buttons --}}
             @if($wl->status === 'notified')
             <div class="notified-banner mb-3">
-                <div class="fw-semibold mb-1" style="color:#E91E8C;font-size:0.85rem;">
+                <div class="fw-semibold mb-1" style="color:#FF6B9D;font-size:0.85rem;">
                     <i class="fas fa-bell me-1"></i>Your slot is ready!
                 </div>
                 <p style="color:#555;font-size:0.78rem;margin:0;line-height:1.6;">
@@ -251,7 +251,7 @@
                 <div style="color:#aaa;font-size:0.78rem;">
                     <i class="fas fa-clock me-1"></i>Joined {{ $wl->created_at->diffForHumans() }}
                 </div>
-                <div style="color:#E91E8C;font-size:0.78rem;font-weight:600;">
+                <div style="color:#FF6B9D;font-size:0.78rem;font-weight:600;">
                     <i class="fas fa-users me-1"></i>Position #{{ $wl->position }} in queue
                 </div>
             </div>
@@ -293,15 +293,15 @@
     <div class="col-12">
         <div class="empty-state">
             <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
-                 style="width:100px;height:100px;background:rgba(233,30,140,0.08);">
-                <i class="fas fa-list-ol fa-3x" style="color:rgba(233,30,140,0.3);"></i>
+                 style="width:100px;height:100px;background:rgba(255, 107, 157,0.08);">
+                <i class="fas fa-list-ol fa-3x" style="color:rgba(255, 107, 157,0.3);"></i>
             </div>
             <h5 class="fw-bold mb-2" style="color:#333;">You're not on any waitlist</h5>
             <p style="color:#aaa;max-width:350px;margin:0 auto 1.5rem;">
                 When your preferred salon slot is fully booked, you can join the waitlist and get notified when a slot opens up!
             </p>
             <a href="{{ route('salons.index') }}" class="btn rounded-pill px-5 py-2 fw-semibold"
-               style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-size:0.95rem;">
+               style="background:#FF6B9D;color:#fff;border:none;font-size:0.95rem;">
                 <i class="fas fa-search me-2"></i>Browse Salons
             </a>
         </div>

@@ -9,7 +9,7 @@
         <i class="fas fa-arrow-left me-2"></i>Back to Complaints
     </a>
     <h4 class="fw-bold mt-2 mb-0" style="color:#333;font-family:'Playfair Display',serif;">
-        <i class="fas fa-exclamation-circle me-2" style="color:#E91E8C;"></i>Complaint Details
+        <i class="fas fa-exclamation-circle me-2" style="color:#FF6B9D;"></i>Complaint Details
     </h4>
 </div>
 
@@ -47,7 +47,7 @@
                 ] as [$l, $v, $icon])
                 <div class="col-md-6">
                     <div class="p-3 rounded-3" style="background:#fff5f9;border:1px solid #fce4ec;">
-                        <div style="color:#aaa;font-size:0.72rem;"><i class="fas {{ $icon }} me-1" style="color:#E91E8C;font-size:0.7rem;"></i>{{ $l }}</div>
+                        <div style="color:#aaa;font-size:0.72rem;"><i class="fas {{ $icon }} me-1" style="color:#FF6B9D;font-size:0.7rem;"></i>{{ $l }}</div>
                         <div style="color:#333;font-weight:600;font-size:0.88rem;text-transform:capitalize;">{{ $v }}</div>
                     </div>
                 </div>
@@ -69,17 +69,17 @@
         </div>
 
         <div class="bg-white rounded-4 p-4" style="border:1px solid #fce4ec;">
-            <h6 class="fw-bold mb-4" style="color:#333;"><i class="fas fa-comments me-2" style="color:#E91E8C;"></i>Conversation</h6>
+            <h6 class="fw-bold mb-4" style="color:#333;"><i class="fas fa-comments me-2" style="color:#FF6B9D;"></i>Conversation</h6>
 
             {{-- Client Message --}}
             <div class="d-flex gap-3 mb-4">
-                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width:40px;height:40px;background:linear-gradient(135deg,#E91E8C,#c2185b);font-size:0.8rem;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width:40px;height:40px;background:#FF6B9D;font-size:0.8rem;">
                     {{ substr(Auth::user()->name,0,1) }}
                 </div>
                 <div class="flex-grow-1">
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <span class="fw-semibold" style="color:#333;font-size:0.85rem;">{{ Auth::user()->name }}</span>
-                        <span style="background:#fff0f7;color:#E91E8C;padding:2px 8px;border-radius:10px;font-size:0.7rem;font-weight:600;">You</span>
+                        <span style="background:#fff0f7;color:#FF6B9D;padding:2px 8px;border-radius:10px;font-size:0.7rem;font-weight:600;">You</span>
                         <span style="color:#aaa;font-size:0.75rem;">{{ $complaint->created_at->diffForHumans() }}</span>
                     </div>
                     <div class="p-3 rounded-3" style="background:#fff0f7;border:1px solid #fce4ec;">
@@ -93,7 +93,7 @@
             {{-- ============================================ --}}
             @if($complaint->owner_reply)
                 <div class="d-flex gap-3 mb-4">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width:40px;height:40px;background:linear-gradient(135deg,#E85588,#c2185b);font-size:0.8rem;">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width:40px;height:40px;background:linear-gradient(135deg,#E85588,#E85588);font-size:0.8rem;">
                         <i class="fas fa-store"></i>
                     </div>
                     <div class="flex-grow-1">
@@ -112,7 +112,7 @@
             {{-- Admin Replies --}}
             @foreach($complaint->replies as $reply)
             <div class="d-flex gap-3 mb-4 {{ $reply->sender_type === 'admin' ? 'flex-row-reverse' : '' }}">
-                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width:40px;height:40px;background:{{ $reply->sender_type === 'admin' ? 'linear-gradient(135deg,#1a1a2e,#0f3460)' : 'linear-gradient(135deg,#E91E8C,#c2185b)' }};font-size:0.8rem;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width:40px;height:40px;background:{{ $reply->sender_type === 'admin' ? 'linear-gradient(135deg,#1a1a2e,#0f3460)' : '#FF6B9D' }};font-size:0.8rem;">
                     {{ substr($reply->user->name ?? 'A',0,1) }}
                 </div>
                 <div class="flex-grow-1 {{ $reply->sender_type === 'admin' ? 'text-end' : '' }}">
@@ -178,7 +178,7 @@
 
     <div class="col-lg-4">
         <div class="bg-white rounded-4 p-4" style="border:1px solid #fce4ec;">
-            <h6 class="fw-bold mb-3" style="color:#333;font-size:0.95rem;"><i class="fas fa-info-circle me-2" style="color:#E91E8C;"></i>Complaint Info</h6>
+            <h6 class="fw-bold mb-3" style="color:#333;font-size:0.95rem;"><i class="fas fa-info-circle me-2" style="color:#FF6B9D;"></i>Complaint Info</h6>
             @foreach([
                 ['ID', '#'.$complaint->id],
                 ['Status', ucwords(str_replace('_',' ',$complaint->status))],

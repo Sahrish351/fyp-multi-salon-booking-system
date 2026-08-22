@@ -15,11 +15,11 @@
         justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 16px;
-        border-bottom: 2px solid #c2185b;
+        border-bottom: 2px solid #FF6B9D;
         padding-bottom: 12px;
     }
     h2 {
-        color: #c2185b;
+        color: #FF6B9D;
         margin: 0 0 4px;
         font-size: 18px;
     }
@@ -30,7 +30,7 @@
     }
     .total-badge {
         background: #fce4ec;
-        color: #c2185b;
+        color: #FF6B9D;
         padding: 4px 12px;
         border-radius: 12px;
         font-weight: 700;
@@ -42,7 +42,7 @@
         margin-top: 4px;
     }
     thead tr {
-        background: #c2185b;
+        background: #FF6B9D;
         color: #fff;
     }
     th {

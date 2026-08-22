@@ -4,7 +4,7 @@
 @push('styles')
 <style>
     :root {
-        --gl-pink: #E0177D;
+        --gl-pink: #FF6B9D;
         --gl-pink-light: #FDEAF3;
         --gl-pink-pale: #F1DCE9;
         --gl-text: #2B2230;
@@ -16,7 +16,7 @@
     .btn-outline { color: var(--gl-pink); border: 1px solid var(--gl-pink-pale); background: #fff; padding: 9px 18px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
     .btn-outline:hover { background: var(--gl-pink-light); }
 
-    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(224, 23, 125, 0.05); margin-bottom: 24px; overflow: hidden; }
+    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05); margin-bottom: 24px; overflow: hidden; }
     .card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); }
     .card-title { font-size: 0.95rem; font-weight: 700; color: var(--gl-text); display: flex; align-items: center; gap: 8px; }
     .card-title i { color: var(--gl-pink); }
@@ -56,7 +56,7 @@
     .mini-stat.reviews { background: linear-gradient(135deg, #FDEAF3, #FBD3E6); }
     .mini-stat.reviews .mini-stat-icon { background: rgba(181, 18, 95, 0.12); }
     .mini-stat.reviews .stat-value,
-    .mini-stat.reviews .stat-label { color: #B5125F; }
+    .mini-stat.reviews .stat-label { color: #E85588; }
 
     .actions-row { display: flex; flex-wrap: wrap; gap: 16px; padding: 22px 24px; }
     .btn-primary { border: none; padding: 11px 22px; border-radius: 12px; font-size: 0.88rem; font-weight: 700; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s ease; }

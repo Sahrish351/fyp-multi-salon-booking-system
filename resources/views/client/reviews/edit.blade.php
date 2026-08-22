@@ -4,7 +4,7 @@
 @section('content')
 
 <style>
-:root { --pink:#E91E8C; --pink-lt:#fce4ec; --pink-bg:#fff5f9; }
+:root { --pink:#FF6B9D; --pink-lt:#fce4ec; --pink-bg:#fff5f9; }
 .btn-back { display:inline-flex;align-items:center;gap:.5rem;padding:.45rem 1rem;border:1.5px solid #e5e5e5;border-radius:9px;font-size:.85rem;font-weight:600;color:#888;text-decoration:none;background:#fff;transition:all .15s; }
 .btn-back:hover { border-color:var(--pink);color:var(--pink); }
 </style>
@@ -25,7 +25,7 @@
             <div class="d-flex align-items-center gap-3 p-3 rounded-3 mb-4" style="background:var(--pink-bg);border:1px solid var(--pink-lt);">
                 <img src="{{ $review->salon->logo_url ?? '' }}"
                      class="rounded-2" width="48" height="48" style="object-fit:cover;flex-shrink:0;"
-                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($review->salon->name ?? 'S') }}&background=E91E8C&color=fff'">
+                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($review->salon->name ?? 'S') }}&background=FF6B9D&color=fff'">
                 <div>
                     <h6 class="fw-bold mb-0" style="color:#1a1a1a;">{{ $review->salon->name }}</h6>
                     <div style="color:#888;font-size:.8rem;">

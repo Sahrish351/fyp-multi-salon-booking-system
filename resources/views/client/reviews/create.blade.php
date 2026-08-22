@@ -20,11 +20,11 @@
 
             {{-- Salon Info --}}
             <div class="d-flex align-items-center gap-3 p-3 rounded-3 mb-4" style="background:#fff5f9;border:1px solid #fce4ec;">
-                <img src="{{ $appointment->salon->logo_url }}" class="rounded-2" width="52" height="52" style="object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($appointment->salon->name) }}&background=E91E8C&color=fff'">
+                <img src="{{ $appointment->salon->logo_url }}" class="rounded-2" width="52" height="52" style="object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($appointment->salon->name) }}&background=FF6B9D&color=fff'">
                 <div>
                     <h6 class="fw-bold mb-0" style="color:#333;">{{ $appointment->salon->name }}</h6>
                     <div style="color:#888;font-size:0.82rem;">
-                        <i class="fas fa-spa me-1" style="color:#E91E8C;"></i>{{ $appointment->service->name }}
+                        <i class="fas fa-spa me-1" style="color:#FF6B9D;"></i>{{ $appointment->service->name }}
                         &nbsp;·&nbsp;
                         <i class="fas fa-calendar me-1" style="color:#C9A96E;"></i>{{ $appointment->appointment_date->format('d M Y') }}
                     </div>
@@ -94,4 +94,3 @@ function selectStar(n) {
 }
 </script>
 @endpush
-

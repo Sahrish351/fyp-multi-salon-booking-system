@@ -5,8 +5,8 @@
 @push('styles')
 <style>
     :root {
-        --pk: #E91E8C;
-        --pk-dark: #c2185b;
+        --pk: #FF6B9D;
+        --pk-dark: #E85588;
         --pk-light: #fce4ec;
         --pk-bg: #fdf2f8;
         --pk-edit: #3b82f6;
@@ -46,7 +46,7 @@
     /* New Complaint Button - Dark Pink */
     /* ============================================ */
     .btn-new {
-        background: linear-gradient(135deg, var(--pk), var(--pk-dark));
+        background: var(--pk);
         color: #fff;
         border: none;
         border-radius: 50px;
@@ -61,7 +61,7 @@
     }
     .btn-new:hover {
         transform: scale(1.02);
-        box-shadow: 0 6px 20px rgba(233,30,140,0.3);
+        box-shadow: 0 6px 20px rgba(255, 107, 157,0.3);
         color: #fff;
     }
 
@@ -110,7 +110,7 @@
     }
     .complaint-card:hover {
         border-color: var(--pk);
-        box-shadow: 0 8px 25px rgba(233,30,140,0.08);
+        box-shadow: 0 8px 25px rgba(255, 107, 157,0.08);
         transform: translateY(-3px);
     }
     .complaint-card .card-left {
@@ -134,7 +134,7 @@
         flex-shrink: 0;
         font-size: 1.1rem;
         background: #fff5f9;
-        color: #E91E8C;
+        color: #FF6B9D;
         border: 2px solid #fce4ec;
     }
     .complaint-card .icon-box.high {
@@ -278,7 +278,7 @@
     }
     .empty-state .empty-icon {
         font-size: 4rem;
-        color: #E91E8C;
+        color: #FF6B9D;
         display: block;
         margin-bottom: 16px;
         opacity: 0.6;
@@ -300,7 +300,7 @@
     /* Complaint Icon - Dark Pink */
     /* ============================================ */
     .complaint-icon {
-        color: #E91E8C;
+        color: #FF6B9D;
     }
 
     /* ============================================ */

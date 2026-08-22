@@ -4,8 +4,8 @@
 @push('styles')
 <style>
     :root {
-        --gl-pink: #E0177D;
-        --gl-pink-dark: #B5125F;
+        --gl-pink: #FF6B9D;
+        --gl-pink-dark: #E85588;
         --gl-pink-light: #FDEAF3;
         --gl-pink-pale: #F1DCE9;
         --gl-text: #2B2230;
@@ -36,11 +36,11 @@
         background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark));
         color: #fff; font-size: 0.88rem; font-weight: 700;
         cursor: pointer; text-decoration: none;
-        box-shadow: 0 6px 16px rgba(224,23,125,0.3);
+        box-shadow: 0 6px 16px rgba(255,107,157,0.3);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
         white-space: nowrap;
     }
-    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(224,23,125,0.4); color: #fff; }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(255,107,157,0.4); color: #fff; }
 
     .btn-cancel {
         display: inline-flex; align-items: center; gap: 8px;
@@ -54,7 +54,7 @@
     .btn-cancel:hover { background: #A93226; color: #fff; }
 
     /* ── Card ── */
-    .gl-card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 12px rgba(224,23,125,0.06); overflow: hidden; margin-bottom: 24px; }
+    .gl-card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 12px rgba(255,107,157,0.06); overflow: hidden; margin-bottom: 24px; }
     .gl-card-header { display: flex; align-items: center; gap: 10px; padding: 18px 26px; border-bottom: 1px solid var(--gl-border); background: var(--gl-pink-light); }
     .gl-card-header i { color: var(--gl-pink); font-size: 1rem; }
     .gl-card-header span { font-size: 0.95rem; font-weight: 800; color: var(--gl-text); }
@@ -83,7 +83,7 @@
     .form-control::placeholder { color: var(--gl-text-lt); }
     .form-control:focus, .form-select:focus {
         border-color: var(--gl-pink);
-        box-shadow: 0 0 0 3px rgba(224,23,125,0.1);
+        box-shadow: 0 0 0 3px rgba(255,107,157,0.1);
     }
     .form-control.is-invalid, .form-select.is-invalid { border-color: #D93025; }
     .invalid-feedback { font-size: 0.78rem; color: #D93025; font-weight: 600; margin-top: 2px; }

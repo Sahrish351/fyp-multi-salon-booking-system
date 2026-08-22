@@ -16,12 +16,12 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
     .card-dashboard:hover {
-        border-color: #E91E8C;
-        box-shadow: 0 8px 25px rgba(233,30,140,0.08);
+        border-color: #FF6B9D;
+        box-shadow: 0 8px 25px rgba(255,107,157,0.08);
         transform: translateY(-2px);
     }
     .btn-pink-gradient {
-        background: linear-gradient(135deg, #E91E8C, #c2185b);
+        background: linear-gradient(135deg, #FF6B9D, #E85588);
         color: #fff; border: none; font-weight: 600; transition: all 0.3s;
     }
     .btn-pink-gradient:hover {
@@ -29,10 +29,10 @@
         color: #fff; transform: scale(1.02);
     }
     .btn-pink-outline {
-        border: 1px solid #E91E8C; color: #E91E8C;
+        border: 1px solid #FF6B9D; color: #FF6B9D;
         background: transparent; font-weight: 600; transition: all 0.3s;
     }
-    .btn-pink-outline:hover { background: #E91E8C; color: #fff; }
+    .btn-pink-outline:hover { background: #FF6B9D; color: #fff; }
 
     /* ── Stat Cards — square-ish, cute candy pastel palette ── */
     .stat-mini {
@@ -126,14 +126,14 @@
         text-transform: uppercase; font-weight: 700; letter-spacing: 0.3px;
     }
     .chart-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
-    .chart-empty i { font-size: 2.5rem; color: rgba(233,30,140,0.12); margin-bottom: 8px; }
+    .chart-empty i { font-size: 2.5rem; color: rgba(255,107,157,0.12); margin-bottom: 8px; }
     .chart-empty p { color: #bbb; font-size: 0.85rem; margin: 0; }
 
     /* ---- Donut period toggle ---- */
     .donut-toggle .btn {
         padding: 5px 16px; font-weight: 700; font-size: 0.68rem; border: 1px solid #ddd; color: #888;
     }
-    .donut-toggle .btn.active { background: #E91E8C !important; color: #fff !important; border-color: #E91E8C !important; }
+    .donut-toggle .btn.active { background: #FF6B9D !important; color: #fff !important; border-color: #FF6B9D !important; }
     .donut-toggle .btn:first-child { border-radius: 50px 0 0 50px; }
     .donut-toggle .btn:last-child  { border-radius: 0 50px 50px 0; }
 
@@ -194,12 +194,12 @@
         width: 40px; height: 40px; border-radius: 12px;
         display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; color: #fff;
     }
-    .pay-summary-row.paid .psr-ic { background: linear-gradient(135deg,#E91E8C,#c2185b); }
+    .pay-summary-row.paid .psr-ic { background: linear-gradient(135deg,#FF6B9D,#E85588); }
     .pay-summary-row.due .psr-ic  { background: linear-gradient(135deg,#f59e0b,#d97706); }
     .pay-summary-row .psr-body { flex: 1; }
     .pay-summary-row .psr-top { display: flex; justify-content: space-between; font-size: .74rem; color: #888; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 4px; }
     .pay-summary-row .psr-amt { font-size: 1.05rem; font-weight: 900; }
-    .pay-summary-row.paid .psr-amt { color: #E91E8C; }
+    .pay-summary-row.paid .psr-amt { color: #FF6B9D; }
     .pay-summary-row.due .psr-amt  { color: #b45309; }
     .pay-summary-row .progress { height: 7px; border-radius: 10px; background: #f0e3ec; margin-top: 6px; }
 
@@ -212,7 +212,7 @@
     .txn-ic.rejected { background: #fef2f2; color: #dc2626; }
     .txn-salon { font-size: .82rem; font-weight: 700; color: #333; }
     .txn-date  { font-size: .68rem; color: #aaa; }
-    .txn-amt   { font-size: .85rem; font-weight: 800; color: #E91E8C; }
+    .txn-amt   { font-size: .85rem; font-weight: 800; color: #FF6B9D; }
 </style>
 
 {{-- Floating tooltip element (shared) --}}
@@ -222,7 +222,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
         <h4 class="fw-bold mb-1" style="color:#333;font-family:'Playfair Display',serif;">
-            <i class="fas fa-home me-2" style="color:#E91E8C;"></i>
+            <i class="fas fa-home me-2" style="color:#FF6B9D;"></i>
             Welcome back, {{ auth()->user()->first_name ?? explode(' ', auth()->user()->name)[0] }}
         </h4>
         <p style="color:#aaa;font-size:0.85rem;margin:0;">Here's everything happening with your bookings</p>
@@ -294,39 +294,39 @@
             <h5 class="fw-bold mb-3" style="font-family:'Playfair Display',serif;color:#333;font-size:1.1rem;">Quick Actions</h5>
             <div class="row g-2">
                 <div class="col-4">
-                    <a href="{{ route('salons.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#E91E8C'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
-                        <i class="fas fa-store" style="color:#E91E8C;font-size:1.3rem;"></i>
+                    <a href="{{ route('salons.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#FF6B9D'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
+                        <i class="fas fa-store" style="color:#FF6B9D;font-size:1.3rem;"></i>
                         <div style="color:#666;font-size:0.6rem;text-transform:uppercase;font-weight:600;letter-spacing:0.3px;margin-top:4px;">Book</div>
                     </a>
                 </div>
                 <div class="col-4">
-                    <a href="{{ route('client.complaints.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#E91E8C'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
-                        <i class="fas fa-exclamation-circle" style="color:#E91E8C;font-size:1.3rem;"></i>
+                    <a href="{{ route('client.complaints.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#FF6B9D'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
+                        <i class="fas fa-exclamation-circle" style="color:#FF6B9D;font-size:1.3rem;"></i>
                         <div style="color:#666;font-size:0.6rem;text-transform:uppercase;font-weight:600;letter-spacing:0.3px;margin-top:4px;">Complaints</div>
                     </a>
                 </div>
                 {{-- "Schedule" replaced with "Notifications" as requested --}}
                 <div class="col-4">
-                    <a href="{{ route('client.notifications.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#E91E8C'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
-                        <i class="fas fa-bell" style="color:#E91E8C;font-size:1.3rem;"></i>
+                    <a href="{{ route('client.notifications.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#FF6B9D'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
+                        <i class="fas fa-bell" style="color:#FF6B9D;font-size:1.3rem;"></i>
                         <div style="color:#666;font-size:0.6rem;text-transform:uppercase;font-weight:600;letter-spacing:0.3px;margin-top:4px;">Notifications</div>
                     </a>
                 </div>
                 <div class="col-4">
-                    <a href="{{ route('client.favorites.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#E91E8C'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
-                        <i class="fas fa-bookmark" style="color:#E91E8C;font-size:1.3rem;"></i>
+                    <a href="{{ route('client.favorites.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#FF6B9D'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
+                        <i class="fas fa-bookmark" style="color:#FF6B9D;font-size:1.3rem;"></i>
                         <div style="color:#666;font-size:0.6rem;text-transform:uppercase;font-weight:600;letter-spacing:0.3px;margin-top:4px;">Salons</div>
                     </a>
                 </div>
                 <div class="col-4">
-                    <a href="{{ route('client.notifications.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#E91E8C'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
-                        <i class="fas fa-bell" style="color:#E91E8C;font-size:1.3rem;"></i>
+                    <a href="{{ route('client.notifications.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#FF6B9D'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
+                        <i class="fas fa-bell" style="color:#FF6B9D;font-size:1.3rem;"></i>
                         <div style="color:#666;font-size:0.6rem;text-transform:uppercase;font-weight:600;letter-spacing:0.3px;margin-top:4px;">Alerts</div>
                     </a>
                 </div>
                 <div class="col-4">
-                    <a href="{{ route('client.waitlist.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#E91E8C'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
-                        <i class="fas fa-hourglass-half" style="color:#E91E8C;font-size:1.3rem;"></i>
+                    <a href="{{ route('client.waitlist.index') }}" class="d-block text-center p-3 rounded-3 text-decoration-none" style="background:#fafafa;border:1px solid #fce4ec;transition:all .2s;" onmouseover="this.style.background='#fce4ec';this.style.borderColor='#FF6B9D'" onmouseout="this.style.background='#fafafa';this.style.borderColor='#fce4ec'">
+                        <i class="fas fa-hourglass-half" style="color:#FF6B9D;font-size:1.3rem;"></i>
                         <div style="color:#666;font-size:0.6rem;text-transform:uppercase;font-weight:600;letter-spacing:0.3px;margin-top:4px;">Waitlist</div>
                     </a>
                 </div>
@@ -355,7 +355,7 @@
                             <g id="donutSegments"></g>
                         </svg>
                         <div class="position-absolute top-50 start-50 translate-middle text-center">
-                            <div class="fw-bold" style="color:#E91E8C;font-size:2rem;" id="donutTotal">0</div>
+                            <div class="fw-bold" style="color:#FF6B9D;font-size:2rem;" id="donutTotal">0</div>
                             <div class="text-uppercase small text-muted" style="letter-spacing:1px;font-size:0.62rem;">Bookings</div>
                         </div>
                     </div>
@@ -372,7 +372,7 @@
         <div class="card-dashboard p-4 w-100 d-flex flex-column">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="fw-bold mb-0" style="font-family:'Playfair Display',serif;color:#333;font-size:1.1rem;">Payment Activity</h5>
-                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;color:#E91E8C;">
+                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;color:#FF6B9D;">
                     <i class="fas fa-wallet"></i>
                 </div>
             </div>
@@ -397,7 +397,7 @@
 
             @if(($recentPayments ?? collect())->isEmpty())
             <div class="text-center py-3 rounded-4 flex-grow-1 d-flex flex-column justify-content-center" style="border:2px dashed #fce4ec;background:#fafafa;">
-                <i class="fas fa-receipt fa-3x mb-2" style="color:rgba(233,30,140,0.15);"></i>
+                <i class="fas fa-receipt fa-3x mb-2" style="color:rgba(255,107,157,0.15);"></i>
                 <h6 class="fw-bold" style="color:#333;font-size:0.9rem;">No transaction history yet</h6>
                 <p class="small text-muted" style="font-size:0.8rem;">Your premium payment summaries will appear here.</p>
             </div>
@@ -443,10 +443,10 @@
 <div class="card-dashboard p-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
         <h5 class="fw-bold mb-0" style="font-family:'Playfair Display',serif;color:#333;">
-            <i class="fas fa-chart-line me-2" style="color:#E91E8C;"></i> Booking Activity History
+            <i class="fas fa-chart-line me-2" style="color:#FF6B9D;"></i> Booking Activity History
         </h5>
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-sm active" id="filter-weekly"  data-range="weekly"  style="background:#E91E8C;color:#fff;border-radius:50px 0 0 50px;padding:6px 18px;font-weight:600;font-size:0.7rem;border:none;">Weekly</button>
+            <button type="button" class="btn btn-sm active" id="filter-weekly"  data-range="weekly"  style="background:#FF6B9D;color:#fff;border-radius:50px 0 0 50px;padding:6px 18px;font-weight:600;font-size:0.7rem;border:none;">Weekly</button>
             <button type="button" class="btn btn-sm btn-outline-secondary"      id="filter-monthly" data-range="monthly" style="border-radius:0;padding:6px 18px;font-weight:600;font-size:0.7rem;border-color:#ddd;color:#888;">Monthly</button>
             <button type="button" class="btn btn-sm btn-outline-secondary"      id="filter-yearly"  data-range="yearly"  style="border-radius:0 50px 50px 0;padding:6px 18px;font-weight:600;font-size:0.7rem;border-color:#ddd;color:#888;">Yearly</button>
         </div>
@@ -477,7 +477,7 @@
                     <p style="color:#888;font-size:0.88rem;">Are you sure you want to cancel this appointment? This action cannot be undone.</p>
                     <label style="color:#555;font-size:0.85rem;font-weight:600;" class="mb-2">Reason for Cancellation *</label>
                     <textarea name="cancellation_reason" rows="3" class="form-control" required placeholder="Please tell us why you're cancelling..."
-                              style="border:2px solid #fce4ec;border-radius:10px;" onfocus="this.style.borderColor='#E91E8C'" onblur="this.style.borderColor='#fce4ec'"></textarea>
+                              style="border:2px solid #fce4ec;border-radius:10px;" onfocus="this.style.borderColor='#FF6B9D'" onblur="this.style.borderColor='#fce4ec'"></textarea>
                 </div>
                 <div class="modal-footer" style="border-color:#fce4ec;">
                     <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Keep Appointment</button>
@@ -578,7 +578,7 @@
             });
             this.classList.remove('btn-outline-secondary');
             this.classList.add('active');
-            this.style.background = '#E91E8C';
+            this.style.background = '#FF6B9D';
             this.style.color = '#fff';
             renderChart(this.dataset.range);
         });

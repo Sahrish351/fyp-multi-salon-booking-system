@@ -43,7 +43,7 @@
         <i class="fas fa-arrow-left me-2"></i>Back to Payments
     </a>
     <h4 class="fw-bold mt-2 mb-0" style="color:#333;font-family:'Playfair Display',serif;">
-        <i class="fas fa-credit-card me-2" style="color:#E91E8C;"></i>Payment Details
+        <i class="fas fa-credit-card me-2" style="color:#FF6B9D;"></i>Payment Details
     </h4>
 </div>
 
@@ -71,7 +71,7 @@
             </div>
             <div class="pay-detail-row">
                 <span class="k">Amount</span>
-                <span class="v" style="color:#E91E8C;">Rs. {{ number_format($payment->appointment->advance_amount) }}</span>
+                <span class="v" style="color:#FF6B9D;">Rs. {{ number_format($payment->appointment->advance_amount) }}</span>
             </div>
             <div class="pay-detail-row">
                 <span class="k">Payment Method</span>
@@ -101,13 +101,13 @@
             <div class="d-flex flex-wrap gap-3 mt-4 no-print">
                 @if($payment->status === 'approved')
                 <button onclick="window.print()" class="btn rounded-pill px-4 fw-semibold"
-                        style="background:#fff0f7;color:#E91E8C;border:1px solid #fce4ec;font-size:0.88rem;">
+                        style="background:#fff0f7;color:#FF6B9D;border:1px solid #fce4ec;font-size:0.88rem;">
                     <i class="fas fa-print me-2"></i>Print
                 </button>
                 @endif
                 <a href="{{ route('client.payments.receipt', $payment->id) }}"
                    class="btn rounded-pill px-4 fw-semibold"
-                   style="background:linear-gradient(135deg,#E91E8C,#c2185b);color:#fff;border:none;font-size:0.88rem;">
+                   style="background:#FF6B9D;color:#fff;border:none;font-size:0.88rem;">
                     <i class="fas fa-file-pdf me-2"></i>Download Receipt
                 </a>
                 <a href="{{ route('client.appointments.show', $payment->appointment->id) }}"

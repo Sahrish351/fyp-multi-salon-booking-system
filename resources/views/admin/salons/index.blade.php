@@ -4,8 +4,8 @@
 @push('styles')
 <style>
     :root {
-        --gl-pink: #E0177D;
-        --gl-pink-dark: #B5125F;
+        --gl-pink: #FF6B9D;
+        --gl-pink-dark: #E85588;
         --gl-pink-light: #FDEAF3;
         --gl-pink-pale: #F1DCE9;
         --gl-text: #2B2230;
@@ -18,11 +18,11 @@
     .page-header-row h1 { font-size: 1.6rem; font-weight: 800; color: var(--gl-text); margin: 0; }
     .page-header-row p { font-size: 0.88rem; color: var(--gl-text-lt); margin: 6px 0 0; }
 
-    .btn-add { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)); color: #fff !important; border: none; padding: 12px 22px; border-radius: 14px; font-weight: 700; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; box-shadow: 0 8px 18px rgba(224,23,125,0.3); transition: transform 0.15s ease, box-shadow 0.15s ease; white-space: nowrap; }
-    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(224,23,125,0.4); color: #fff !important; }
+    .btn-add { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)); color: #fff !important; border: none; padding: 12px 22px; border-radius: 14px; font-weight: 700; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; box-shadow: 0 8px 18px rgba(255,107,157,0.3); transition: transform 0.15s ease, box-shadow 0.15s ease; white-space: nowrap; }
+    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(255,107,157,0.4); color: #fff !important; }
 
     /* ── Card ── */
-    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(224,23,125,0.05); overflow: hidden; }
+    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255,107,157,0.05); overflow: hidden; }
     .card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); }
     .card-title { font-size: 0.95rem; font-weight: 700; color: var(--gl-text); display: flex; align-items: center; gap: 8px; }
     .card-title i { color: var(--gl-pink); }
@@ -48,7 +48,7 @@
         outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
         box-sizing: border-box;
     }
-    .search-input:focus { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(224,23,125,0.1); }
+    .search-input:focus { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.1); }
     .search-input::placeholder { color: var(--gl-text-lt); }
 
     .filter-select {
@@ -61,18 +61,18 @@
         background-repeat: no-repeat; background-position: right 10px center;
         padding-right: 30px;
     }
-    .filter-select:focus { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(224,23,125,0.1); }
+    .filter-select:focus { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.1); }
 
     .btn-search {
         display: inline-flex; align-items: center; gap: 7px;
         padding: 9px 18px; border-radius: 12px; border: none;
         background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark));
         color: #fff; font-size: 0.84rem; font-weight: 700; cursor: pointer;
-        box-shadow: 0 4px 12px rgba(224,23,125,0.3);
+        box-shadow: 0 4px 12px rgba(255,107,157,0.3);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
         white-space: nowrap; text-decoration: none;
     }
-    .btn-search:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(224,23,125,0.4); color: #fff; }
+    .btn-search:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255,107,157,0.4); color: #fff; }
 
     .btn-reset {
         display: inline-flex; align-items: center; gap: 7px;
@@ -170,7 +170,7 @@
         color: var(--gl-text-lt) !important; background: #fff !important; line-height: 1 !important;
     }
     .gl-pagination li a:hover { background: var(--gl-pink-light) !important; border-color: var(--gl-pink) !important; color: var(--gl-pink) !important; }
-    .gl-pagination li.active span { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(224,23,125,0.4) !important; }
+    .gl-pagination li.active span { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(255,107,157,0.4) !important; }
     .gl-pagination li.disabled span { opacity: 0.35 !important; cursor: not-allowed !important; background: #f8f8f8 !important; }
     .gl-pagination li.disabled a { opacity: 0.35 !important; cursor: not-allowed !important; pointer-events: none !important; }
 

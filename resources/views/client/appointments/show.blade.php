@@ -8,8 +8,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.min.css">
 <style>
     :root {
-        --pink: #E91E8C;
-        --pink-dark: #c2185b;
+        --pink: #FF6B9D;
+        --pink-dark: #E85588;
         --pink-light: #fce4ec;
         --pink-bg: #fdf2f8;
 
@@ -253,7 +253,7 @@
             @else
             <div class="note-box mb-4">
                 <i class="fas fa-info-circle"></i>
-                <div>Your payment screenshot has been submitted and is awaiting admin approval. You'll be notified here and by email once it's confirmed.</div>
+                <div>Your payment screenshot has been submitted and is awaiting salon owner approval. You'll be notified here and by email once it's confirmed.</div>
             </div>
             @endif
         @endif
@@ -494,7 +494,7 @@ window.addEventListener('click', function (e) {
 
 document.addEventListener('DOMContentLoaded', function () {
     @if(session('success'))
-    Swal.fire({ icon: 'success', title: 'Yay! 💖', text: @json(session('success')), confirmButtonColor: '#E91E8C', confirmButtonText: 'Great!', background: '#fff7fb' });
+    Swal.fire({ icon: 'success', title: 'Yay! 💖', text: @json(session('success')), confirmButtonColor: '#FF6B9D', confirmButtonText: 'Great!', background: '#fff7fb' });
     @endif
 
     @if(session('error'))
@@ -502,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
     @endif
 
     @if($errors->any())
-    Swal.fire({ icon: 'warning', title: 'Please check', text: @json($errors->first()), confirmButtonColor: '#c2185b', background: '#fff7fb' });
+    Swal.fire({ icon: 'warning', title: 'Please check', text: @json($errors->first()), confirmButtonColor: '#E85588', background: '#fff7fb' });
     @endif
 });
 </script>

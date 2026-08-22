@@ -4,7 +4,7 @@
 @push('styles')
 <style>
     :root {
-        --gl-pink: #E0177D;
+        --gl-pink: #FF6B9D;
         --gl-pink-light: #FDEAF3;
         --gl-pink-pale: #F1DCE9;
         --gl-text: #2B2230;
@@ -19,7 +19,7 @@
 
     .back-link { margin-bottom: 20px; }
 
-    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(224, 23, 125, 0.05); margin-bottom: 24px; overflow: hidden; }
+    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05); margin-bottom: 24px; overflow: hidden; }
     .card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); }
     .card-title { font-size: 0.95rem; font-weight: 700; color: var(--gl-text); display: flex; align-items: center; gap: 8px; }
     .card-title i { color: var(--gl-pink); }
@@ -47,7 +47,7 @@
     .btn-outline:hover { background: var(--gl-pink-light); }
 
     .form-control { width: 100%; border: 1px solid var(--gl-border); border-radius: 12px; padding: 10px 14px; font-size: 0.85rem; font-family: inherit; resize: vertical; color: var(--gl-text); }
-    .form-control:focus { outline: none; border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(224, 23, 125, 0.1); }
+    .form-control:focus { outline: none; border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1); }
 
     @media (max-width: 640px) {
         .info-grid { grid-template-columns: 1fr; }

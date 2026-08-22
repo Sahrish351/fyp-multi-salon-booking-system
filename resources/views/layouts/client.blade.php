@@ -20,10 +20,10 @@
  
     <style>
         :root { 
-            --client-pink: #E91E8C; 
+            --client-pink: #FF6B9D; 
             --client-light: #fff5f9; 
             --client-border: #fce4ec;
-            --client-dark: #c2185b;
+            --client-dark: #E85588;
         }
         
         * {
@@ -71,7 +71,7 @@
         
         .card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(233,30,140,0.08);
+            box-shadow: 0 8px 25px rgba(255,107,157,0.08);
         }
         
         /* Navbar Styles */
@@ -135,11 +135,11 @@
             <!-- Navbar -->
             <nav class="navbar px-4 py-3 shadow-sm">
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-sm me-2 d-md-none" id="sidebarToggle" style="background: rgba(233,30,140,0.1); color: #E91E8C; border-radius: 10px;">
+                    <button class="btn btn-sm me-2 d-md-none" id="sidebarToggle" style="background: rgba(255,107,157,0.1); color: #FF6B9D; border-radius: 10px;">
                         <i class="fas fa-bars"></i>
                     </button>
                     <a class="navbar-brand fw-bold" href="{{ route('client.dashboard') }}" style="font-family: 'Playfair Display', serif;">
-                        <span style="color:#E91E8C;">Beauty Blush</span><span style="color:#C9A96E;"> Salons</span>
+                        <span style="color:#FF6B9D;">Beauty Blush</span><span style="color:#C9A96E;"> Salons</span>
                     </a>
                 </div>
  
@@ -155,13 +155,13 @@
                     </div>
 
                     <!-- My Waitlist -->
-                    <a href="{{ route('client.waitlist.index') }}" class="btn btn-sm position-relative d-flex align-items-center justify-content-center" style="background: rgba(233,30,140,0.1); border-radius: 50%; width: 38px; height: 38px;" title="My Waitlist">
+                    <a href="{{ route('client.waitlist.index') }}" class="btn btn-sm position-relative d-flex align-items-center justify-content-center" style="background: rgba(255,107,157,0.1); border-radius: 50%; width: 38px; height: 38px;" title="My Waitlist">
                         <i class="fas fa-hourglass-half" style="color: var(--client-pink);"></i>
                     </a>
 
                     <!-- Notifications -->
                     <div class="dropdown">
-                        <button class="btn btn-sm position-relative" id="notifBellBtn" style="background: rgba(233,30,140,0.1); border-radius: 50%; width: 38px; height: 38px;" data-bs-toggle="dropdown">
+                        <button class="btn btn-sm position-relative" id="notifBellBtn" style="background: rgba(255,107,157,0.1); border-radius: 50%; width: 38px; height: 38px;" data-bs-toggle="dropdown">
                             <i class="fas fa-bell" style="color: var(--client-pink);"></i>
                             @php $unreadCount = Auth::user()->unreadNotifications->count(); @endphp
                             <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; {{ $unreadCount > 0 ? '' : 'display:none;' }}">
@@ -191,7 +191,7 @@
                     <!-- User Menu -->
                     <div class="dropdown">
                         <button class="btn dropdown-toggle d-flex align-items-center gap-2" style="background: none; border: none;" data-bs-toggle="dropdown">
-                            <img src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=E91E8C&color=fff' }}" 
+                            <img src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=FF6B9D&color=fff' }}" 
                                  class="rounded-circle" 
                                  width="36" 
                                  height="36" 
@@ -214,7 +214,7 @@
                                 <i class="fas fa-star me-2" style="color:#f59e0b;"></i>My Reviews
                             </a></li>
                             <li><a class="dropdown-item" href="/client/favorites">
-                                <i class="fas fa-heart me-2" style="color:#E91E8C;"></i>Favorites
+                                <i class="fas fa-heart me-2" style="color:#FF6B9D;"></i>Favorites
                             </a></li>
                             <li><a class="dropdown-item" href="/client/settings">
                                 <i class="fas fa-cog me-2"></i>Settings
@@ -272,7 +272,7 @@
                 text: 'Are you sure you want to logout?',
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#E91E8C',
+                confirmButtonColor: '#FF6B9D',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Yes, logout',
                 cancelButtonText: 'Cancel'

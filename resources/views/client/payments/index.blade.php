@@ -48,7 +48,7 @@
         padding: 6px 16px; border-radius: 50px; font-size: 0.82rem; font-weight: 600;
         text-decoration: none;
     }
-    .filter-pill.active { background: linear-gradient(135deg,#E91E8C,#c2185b); color: #fff; }
+    .filter-pill.active { background: #FF6B9D; color: #fff; }
     .filter-pill:not(.active) { background: #fff; color: #888; border: 1px solid #fce4ec; }
 
     .pay-table {
@@ -79,10 +79,10 @@
         display: inline-flex; align-items: center; gap: 6px;
         padding: 6px 14px; border-radius: 8px;
         font-size: 0.78rem; font-weight: 600;
-        background: #fff0f7; color: #E91E8C; border: 1px solid #fce4ec;
+        background: #fff0f7; color: #FF6B9D; border: 1px solid #fce4ec;
         text-decoration: none;
     }
-    .pay-view-btn:hover { background: #E91E8C; color: #fff; }
+    .pay-view-btn:hover { background: #FF6B9D; color: #fff; }
 </style>
 @endpush
 
@@ -90,7 +90,7 @@
 
 <div class="mb-4">
     <h4 class="fw-bold mb-1" style="color:#333;font-family:'Playfair Display',serif;">
-        <i class="fas fa-credit-card me-2" style="color:#E91E8C;"></i>My Payments
+        <i class="fas fa-credit-card me-2" style="color:#FF6B9D;"></i>My Payments
     </h4>
     <p style="color:#aaa;font-size:0.85rem;margin:0;">Track all your appointment payments and their status</p>
 </div>
@@ -182,7 +182,7 @@
                     <td>#{{ $payment->appointment->id }}</td>
                     <td>{{ $payment->appointment->salon->name ?? '—' }}</td>
                     <td>{{ $payment->appointment->service->name ?? '—' }}</td>
-                    <td class="fw-semibold" style="color:#E91E8C;">Rs. {{ number_format($payment->appointment->advance_amount) }}</td>
+                    <td class="fw-semibold" style="color:#FF6B9D;">Rs. {{ number_format($payment->appointment->advance_amount) }}</td>
                     <td>{{ $payment->created_at->format('d M Y') }}</td>
                     <td><span class="pay-status-chip {{ $st['class'] }}">{{ $st['label'] }}</span></td>
                     <td>
@@ -195,7 +195,7 @@
                 <tr>
                     <td colspan="8">
                         <div class="text-center py-5">
-                            <i class="fas fa-receipt fa-3x mb-3" style="color:rgba(233,30,140,0.2);"></i>
+                            <i class="fas fa-receipt fa-3x mb-3" style="color:rgba(255, 107, 157,0.2);"></i>
                             <h6 style="color:#333;">No payments yet</h6>
                             <p style="color:#aaa;font-size:0.85rem;margin:0;">Your appointment payments will show up here</p>
                         </div>

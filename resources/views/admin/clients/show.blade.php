@@ -21,8 +21,8 @@
     background: #fff;
 }
 .btn-back:hover {
-    border-color: var(--brown, #8b5e3c);
-    color: var(--brown, #8b5e3c);
+    border-color: #FF6B9D;
+    color: #FF6B9D;
 }
 
 /* ── Layout Grid ── */
@@ -64,8 +64,8 @@
     width: 90px;
     height: 90px;
     border-radius: 50%;
-    background: var(--brown-lt, #f5ede6);
-    color: var(--brown, #8b5e3c);
+    background: #fce4ec;
+    color: #FF6B9D;
     font-size: 2.2rem;
     font-weight: 700;
     display: flex;
@@ -73,7 +73,7 @@
     justify-content: center;
     margin: 0 auto 1.1rem;
     border: 3px solid #fff;
-    box-shadow: 0 0 0 3px var(--brown-lt, #f0e4da);
+    box-shadow: 0 0 0 3px #fce4ec;
 }
 .profile-name {
     font-size: 1.2rem;
@@ -115,7 +115,7 @@
 .stat-value {
     font-size: 1.4rem;
     font-weight: 800;
-    color: var(--brown, #8b5e3c);
+    color: #FF6B9D;
     line-height: 1;
     margin-bottom: .2rem;
 }
@@ -182,7 +182,7 @@
     gap: 1rem;
 }
 .appt-item:last-child { border-bottom: none; }
-.appt-item:hover { background: var(--bg-hover, #faf7f5); }
+.appt-item:hover { background: #fdf0f5; }
 .appt-salon {
     font-weight: 600;
     font-size: .93rem;
@@ -200,7 +200,7 @@
 .appt-amount {
     font-weight: 700;
     font-size: .9rem;
-    color: var(--brown, #8b5e3c);
+    color: #FF6B9D;
     margin-top: .3rem;
 }
 
@@ -220,12 +220,12 @@
     padding: .85rem;
     font-size: .85rem;
     font-weight: 600;
-    color: var(--brown, #8b5e3c);
+    color: #FF6B9D;
     border-top: 1px solid var(--border, #f3f4f6);
     text-decoration: none;
     transition: background .15s;
 }
-.view-all-link:hover { background: var(--brown-lt, #fdf6f2); }
+.view-all-link:hover { background: #fdf0f5; }
 </style>
 
 {{-- ── Back ── --}}
@@ -292,7 +292,7 @@
         {{-- Client Information --}}
         <div class="detail-card">
             <div class="detail-card-header">
-                <span class="detail-card-title"><i class="fas fa-id-card" style="color:var(--brown,#8b5e3c);margin-right:.4rem;"></i>Client Information</span>
+                <span class="detail-card-title"><i class="fas fa-id-card" style="color:#FF6B9D;margin-right:.4rem;"></i>Client Information</span>
             </div>
             <div class="detail-card-body">
                 <div class="info-grid">
@@ -345,7 +345,7 @@
         {{-- Recent Appointments --}}
         <div class="detail-card" style="margin-top:1.25rem;">
             <div class="detail-card-header">
-                <span class="detail-card-title"><i class="fas fa-calendar-check" style="color:var(--brown,#8b5e3c);margin-right:.4rem;"></i>Recent Appointments</span>
+                <span class="detail-card-title"><i class="fas fa-calendar-check" style="color:#FF6B9D;margin-right:.4rem;"></i>Recent Appointments</span>
                 <span class="badge badge-info">{{ $client->appointments->count() }} total</span>
             </div>
 

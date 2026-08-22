@@ -9,8 +9,8 @@
 <style>
     .gl-owners, .gl-owners * { box-sizing: border-box; }
     .gl-owners {
-        --gl-pink: #E0177D;
-        --gl-pink-dark: #B5125F;
+        --gl-pink: #FF6B9D;
+        --gl-pink-dark: #E85588;
         --gl-pink-light: #FDEAF3;
         --gl-pink-pale: #F1DCE9;
         --gl-text: #2B2230;
@@ -22,7 +22,7 @@
     .gl-owners .gl-page-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--gl-text); margin: 0; }
     .gl-owners .gl-page-header p { font-size: 0.88rem; color: var(--gl-text-lt); margin: 6px 0 0; }
 
-    .gl-owners .gl-card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(224, 23, 125, 0.05); overflow: hidden; }
+    .gl-owners .gl-card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05); overflow: hidden; }
     .gl-owners .gl-card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); }
     .gl-owners .gl-card-title { font-size: 0.95rem; font-weight: 700; color: var(--gl-text); display: flex; align-items: center; gap: 8px; margin: 0; }
     .gl-owners .gl-card-title i { color: var(--gl-pink); }
@@ -33,7 +33,7 @@
     .gl-owners .gl-search-box i { color: var(--gl-pink); font-size: 0.95rem; flex-shrink: 0; }
     .gl-owners .gl-search-box input { border: none; outline: none; background: transparent; font-size: 0.92rem; color: var(--gl-text); width: 100%; font-family: inherit; }
     .gl-owners .gl-filter-select { border: 1.5px solid var(--gl-border); border-radius: 16px; padding: 13px 18px; font-size: 0.88rem; color: var(--gl-text); background: #fff; cursor: pointer; font-family: inherit; flex: 1 1 160px; min-width: 150px; }
-    .gl-owners .gl-btn-filter { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)); border: none; color: #fff; padding: 13px 24px; border-radius: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 700; font-family: inherit; transition: opacity 0.2s ease; flex-shrink: 0; box-shadow: 0 6px 16px rgba(224, 23, 125, 0.25); }
+    .gl-owners .gl-btn-filter { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)); border: none; color: #fff; padding: 13px 24px; border-radius: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 700; font-family: inherit; transition: opacity 0.2s ease; flex-shrink: 0; box-shadow: 0 6px 16px rgba(255, 107, 157, 0.25); }
     .gl-owners .gl-btn-filter:hover { opacity: 0.9; }
 
     .gl-owners .gl-table-responsive { overflow-x: auto; }

@@ -18,16 +18,16 @@
         :root {
             --bg: #fff5f9;
             --white: #FFFFFF;
-            --pink: #E91E8C;
-            --pink-dark: #c2185b;
+            --pink: #FF6B9D;
+            --pink-dark: #E85588;
             --pink-light: #fce4ec;
             --pink-bg: #fff0f7;
             --text: #1a1c1d;
             --text-mid: #4a4452;
             --text-lt: #9c8b7e;
             --border: #fce4ec;
-            --shadow: 0 1px 8px rgba(233,30,140,0.07);
-            --shadow-md: 0 4px 20px rgba(233,30,140,0.1);
+            --shadow: 0 1px 8px rgba(255,107,157,0.07);
+            --shadow-md: 0 4px 20px rgba(255,107,157,0.1);
             --sidebar-w: 260px;
             --red: #DC2626;
             --green: #16A34A;
@@ -55,7 +55,7 @@
                    ================================================================ */
         .admin-sidebar {
             width: var(--sidebar-w);
-            background: linear-gradient(180deg, #E91E8C 0%, #c2185b 100%);
+            background: linear-gradient(180deg, #1A0A1E 0%, #7B1450 100%);
             border-right: 1px solid rgba(255,255,255,0.1);
             position: fixed;
             top: 0;
@@ -113,7 +113,7 @@
             align-items: center;
             gap: 12px;
             padding: 10px 16px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.72);
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 500;
@@ -124,11 +124,11 @@
         .nav-item a i {
             width: 20px;
             font-size: 0.9rem;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255,255,255,0.72);
         }
         
         .nav-item:hover a {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,107,157,0.15);
             color: #fff;
         }
         
@@ -137,7 +137,8 @@
         }
         
         .nav-item.active a {
-            background: rgba(255,255,255,0.20);
+            background: linear-gradient(135deg, #FF6B9D, #E85588);
+            box-shadow: 0 4px 15px rgba(232,85,136,0.35);
             color: #fff;
             font-weight: 600;
         }
@@ -246,7 +247,7 @@
         .profile-avatar {
             width: 38px;
             height: 38px;
-            background: linear-gradient(135deg, #E91E8C, #c2185b);
+            background: linear-gradient(135deg, #FF6B9D, #E85588);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -311,7 +312,7 @@
         
         .card:hover {
             border-color: var(--pink);
-            box-shadow: 0 8px 25px rgba(233,30,140,0.08);
+            box-shadow: 0 8px 25px rgba(255,107,157,0.08);
             transform: translateY(-2px);
         }
         
@@ -334,7 +335,7 @@
                    BUTTONS – PINK THEME
                    ================================================================ */
         .btn-primary {
-            background: linear-gradient(135deg, #E91E8C, #c2185b);
+            background: linear-gradient(135deg, #FF6B9D, #E85588);
             color: #fff;
             border: none;
             padding: 8px 20px;
@@ -347,13 +348,13 @@
             align-items: center;
             gap: 6px;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(233,30,140,0.3);
+            box-shadow: 0 4px 15px rgba(255,107,157,0.3);
         }
         
         .btn-primary:hover {
             background: linear-gradient(135deg, #d81b60, #a31545);
             transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(233,30,140,0.4);
+            box-shadow: 0 8px 25px rgba(255,107,157,0.4);
         }
         
         .btn-outline {
@@ -492,7 +493,7 @@
         .form-control:focus,
         .form-select:focus {
             border-color: var(--pink);
-            box-shadow: 0 0 0 0.2rem rgba(233,30,140,0.15);
+            box-shadow: 0 0 0 0.2rem rgba(255,107,157,0.15);
         }
         
         /* ================================================================

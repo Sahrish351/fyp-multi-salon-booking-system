@@ -9,8 +9,8 @@
 <style>
     .gl-owner-profile, .gl-owner-profile * { box-sizing: border-box; }
     .gl-owner-profile {
-        --gl-pink: #E0177D;
-        --gl-pink-dark: #B5125F;
+        --gl-pink: #FF6B9D;
+        --gl-pink-dark: #E85588;
         --gl-pink-light: #FDEAF3;
         --gl-pink-pale: #F1DCE9;
         --gl-text: #2B2230;
@@ -30,11 +30,8 @@
     .gl-owner-profile .gl-btn-outline { color: var(--gl-pink); border: 1px solid var(--gl-pink-pale); background: #fff; padding: 9px 18px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
     .gl-owner-profile .gl-btn-outline:hover { background: var(--gl-pink-light); }
 
-    /* Two-column layout: main content + sidebar */
-    .gl-owner-profile .gl-layout { display: grid; grid-template-columns: 1fr 300px; gap: 28px; align-items: start; }
-
-    /* ONE unified main card: profile header + info + salons, separated by soft dividers, not hard boxes */
-    .gl-owner-profile .gl-main-card { background: #fff; border-radius: 26px; box-shadow: 0 4px 24px rgba(224, 23, 125, 0.07); overflow: hidden; }
+    /* ONE single unified section — no separate floating cards */
+    .gl-owner-profile .gl-main-card { background: #fff; border-radius: 26px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05); overflow: hidden; }
 
     .gl-owner-profile .gl-profile-head { display: flex; align-items: center; gap: 22px; padding: 34px 36px 28px; flex-wrap: wrap; }
     .gl-owner-profile .gl-avatar { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg, var(--gl-pink-light), #ffffff); border: 1px solid var(--gl-pink-pale); display: flex; align-items: center; justify-content: center; font-size: 1.7rem; font-weight: 800; color: var(--gl-pink); flex-shrink: 0; }
@@ -45,6 +42,12 @@
     .gl-owner-profile .gl-badge-pill.gl-suspended { background: var(--gl-red-light); color: var(--gl-red); }
 
     .gl-owner-profile .gl-divider { height: 1px; background: var(--gl-border); margin: 0 36px; }
+
+    /* Body row: left = info + salons, right = quick actions — same card, split by a vertical divider */
+    .gl-owner-profile .gl-body-row { display: grid; grid-template-columns: 1fr 1px 260px; align-items: start; }
+    .gl-owner-profile .gl-body-main { min-width: 0; }
+    .gl-owner-profile .gl-vdivider { background: var(--gl-border); align-self: stretch; }
+    .gl-owner-profile .gl-body-side { padding: 28px 30px; }
 
     .gl-owner-profile .gl-section { padding: 28px 36px; }
     .gl-owner-profile .gl-section-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.9px; color: var(--gl-text-lt); margin: 0 0 20px; display: flex; align-items: center; gap: 8px; }
@@ -67,8 +70,7 @@
 
     .gl-owner-profile .gl-empty-block { text-align: center; padding: 34px 20px; color: var(--gl-text-lt); font-size: 0.88rem; }
 
-    /* Sidebar Quick Actions — spaced with flex gap, not cramped */
-    .gl-owner-profile .gl-sidebar-card { background: #fff; border-radius: 24px; box-shadow: 0 4px 24px rgba(224, 23, 125, 0.07); padding: 26px 22px; position: sticky; top: 20px; }
+    /* Quick Actions — now just a column inside the same single card, not a separate box */
     .gl-owner-profile .gl-sidebar-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.9px; color: var(--gl-text-lt); margin: 0 0 18px; display: flex; align-items: center; gap: 8px; }
     .gl-owner-profile .gl-sidebar-title i { color: var(--gl-pink); }
 
@@ -83,13 +85,15 @@
     .gl-owner-profile .gl-mini-action.gl-delete:hover { background: var(--gl-red-light); transform: none; }
 
     @media (max-width: 900px) {
-        .gl-owner-profile .gl-layout { grid-template-columns: 1fr; }
-        .gl-owner-profile .gl-sidebar-card { position: static; }
+        .gl-owner-profile .gl-body-row { grid-template-columns: 1fr; }
+        .gl-owner-profile .gl-vdivider { display: none; }
+        .gl-owner-profile .gl-body-side { border-top: 1px solid var(--gl-border); padding: 24px 36px; }
     }
     @media (max-width: 640px) {
         .gl-owner-profile .gl-info-grid { grid-template-columns: 1fr; }
         .gl-owner-profile .gl-profile-head,
-        .gl-owner-profile .gl-section { padding-left: 22px; padding-right: 22px; }
+        .gl-owner-profile .gl-section,
+        .gl-owner-profile .gl-body-side { padding-left: 22px; padding-right: 22px; }
         .gl-owner-profile .gl-divider { margin-left: 22px; margin-right: 22px; }
     }
 </style>
@@ -102,87 +106,94 @@
         <a href="{{ route('admin.owners.index') }}" class="gl-btn-outline"><i class="fas fa-arrow-left"></i> Back to Owners</a>
     </div>
 
-    <div class="gl-layout">
+    <div class="gl-main-card">
 
-        {{-- MAIN CONTENT: one unified flowing card --}}
-        <div class="gl-main-card">
-
-            <div class="gl-profile-head">
-                <div class="gl-avatar">{{ strtoupper(substr($owner->name, 0, 1)) }}</div>
-                <div class="gl-profile-meta">
-                    <h2>{{ $owner->name }}</h2>
-                    <p>{{ $owner->email }} &middot; Joined {{ $owner->created_at->format('d M Y') }}</p>
-                    <span class="gl-badge-pill {{ $owner->is_active ? 'gl-active' : 'gl-suspended' }}">
-                        <i class="fas {{ $owner->is_active ? 'fa-circle-check' : 'fa-ban' }}"></i>
-                        {{ $owner->is_active ? 'Active' : 'Suspended' }}
-                    </span>
-                </div>
+        <div class="gl-profile-head">
+            <div class="gl-avatar">{{ strtoupper(substr($owner->name, 0, 1)) }}</div>
+            <div class="gl-profile-meta">
+                <h2>{{ $owner->name }}</h2>
+                <p>{{ $owner->email }} &middot; Joined {{ $owner->created_at->format('d M Y') }}</p>
+                <span class="gl-badge-pill {{ $owner->is_active ? 'gl-active' : 'gl-suspended' }}">
+                    <i class="fas {{ $owner->is_active ? 'fa-circle-check' : 'fa-ban' }}"></i>
+                    {{ $owner->is_active ? 'Active' : 'Suspended' }}
+                </span>
             </div>
-
-            <div class="gl-divider"></div>
-
-            <div class="gl-section">
-                <p class="gl-section-title"><i class="fas fa-id-card"></i> Owner Information</p>
-                <div class="gl-info-grid">
-                    <div><span class="gl-field-label">Full Name</span><p class="gl-field-value">{{ $owner->name }}</p></div>
-                    <div><span class="gl-field-label">Email</span><p class="gl-field-value">{{ $owner->email }}</p></div>
-                    <div><span class="gl-field-label">Phone</span><p class="gl-field-value">{{ $owner->phone ?? 'Not provided' }}</p></div>
-                    <div><span class="gl-field-label">Joined</span><p class="gl-field-value">{{ $owner->created_at->format('d M Y') }}</p></div>
-                </div>
-            </div>
-
-            <div class="gl-divider"></div>
-
-            <div class="gl-section" id="owned-salons">
-                <p class="gl-section-title"><i class="fas fa-store"></i> Owned Salons ({{ $owner->salons->count() }})</p>
-
-                @if($owner->salons->count())
-                    <div class="gl-salon-list">
-                        @foreach($owner->salons as $salon)
-                            <div class="gl-salon-row">
-                                <div class="gl-salon-left">
-                                    <div class="gl-salon-icon"><i class="fas fa-store"></i></div>
-                                    <div>
-                                        <strong>{{ $salon->name }} <span class="gl-salon-id">#{{ $salon->id }}</span></strong>
-                                        <small>{{ $salon->city }}</small>
-                                    </div>
-                                </div>
-                                <a href="{{ route('admin.salons.show', $salon->id) }}" class="gl-mini-link">View</a>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="gl-empty-block">No salons registered yet</div>
-                @endif
-            </div>
-
         </div>
 
-        {{-- SIDEBAR: Quick Actions, spaced buttons --}}
-        <div class="gl-sidebar-card">
-            <p class="gl-sidebar-title"><i class="fas fa-bolt"></i> Quick Actions</p>
+        <div class="gl-divider"></div>
 
-            <div class="gl-action-stack">
-                <form action="{{ route('admin.owners.toggle-status', $owner->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="gl-mini-action {{ $owner->is_active ? 'gl-suspend' : 'gl-activate' }}" onclick="return confirm('{{ $owner->is_active ? 'Suspend this owner?' : 'Activate this owner?' }}')">
-                        <i class="fas {{ $owner->is_active ? 'fa-ban' : 'fa-check' }}"></i>
-                        {{ $owner->is_active ? 'Suspend Owner' : 'Activate Owner' }}
-                    </button>
-                </form>
+        <div class="gl-body-row">
 
-                <a href="{{ route('admin.salons.index', ['owner' => $owner->id]) }}" class="gl-mini-action gl-view-salons">
-                    <i class="fas fa-store"></i> View Salons
-                </a>
+            {{-- LEFT: Owner Information + Owned Salons --}}
+            <div class="gl-body-main">
 
-                @if(\Illuminate\Support\Facades\Route::has('admin.owners.destroy'))
-                    <form action="{{ route('admin.owners.destroy', $owner->id) }}" method="POST" onsubmit="return confirm('Permanently delete this owner? This cannot be undone.')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="gl-mini-action gl-delete"><i class="fas fa-trash"></i> Delete Owner</button>
-                    </form>
-                @endif
+                <div class="gl-section">
+                    <p class="gl-section-title"><i class="fas fa-id-card"></i> Owner Information</p>
+                    <div class="gl-info-grid">
+                        <div><span class="gl-field-label">Full Name</span><p class="gl-field-value">{{ $owner->name }}</p></div>
+                        <div><span class="gl-field-label">Email</span><p class="gl-field-value">{{ $owner->email }}</p></div>
+                        <div><span class="gl-field-label">Phone</span><p class="gl-field-value">{{ $owner->phone ?? 'Not provided' }}</p></div>
+                        <div><span class="gl-field-label">Joined</span><p class="gl-field-value">{{ $owner->created_at->format('d M Y') }}</p></div>
+                    </div>
+                </div>
+
+                <div class="gl-divider"></div>
+
+                <div class="gl-section" id="owned-salons">
+                    <p class="gl-section-title"><i class="fas fa-store"></i> Owned Salons ({{ $owner->salons->count() }})</p>
+
+                    @if($owner->salons->count())
+                        <div class="gl-salon-list">
+                            @foreach($owner->salons as $salon)
+                                <div class="gl-salon-row">
+                                    <div class="gl-salon-left">
+                                        <div class="gl-salon-icon"><i class="fas fa-store"></i></div>
+                                        <div>
+                                            <strong>{{ $salon->name }} <span class="gl-salon-id">#{{ $salon->id }}</span></strong>
+                                            <small>{{ $salon->city }}</small>
+                                        </div>
+                                    </div>
+                                    <a href="{{ route('admin.salons.show', $salon->id) }}" class="gl-mini-link">View</a>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="gl-empty-block">No salons registered yet</div>
+                    @endif
+                </div>
+
             </div>
+
+            {{-- VERTICAL DIVIDER --}}
+            <div class="gl-vdivider"></div>
+
+            {{-- RIGHT: Quick Actions — same card, same section, just the right side --}}
+            <div class="gl-body-side">
+                <p class="gl-sidebar-title"><i class="fas fa-bolt"></i> Quick Actions</p>
+
+                <div class="gl-action-stack">
+                    <form action="{{ route('admin.owners.toggle-status', $owner->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="gl-mini-action {{ $owner->is_active ? 'gl-suspend' : 'gl-activate' }}" onclick="return confirm('{{ $owner->is_active ? 'Suspend this owner?' : 'Activate this owner?' }}')">
+                            <i class="fas {{ $owner->is_active ? 'fa-ban' : 'fa-check' }}"></i>
+                            {{ $owner->is_active ? 'Suspend Owner' : 'Activate Owner' }}
+                        </button>
+                    </form>
+
+                    <a href="{{ route('admin.salons.index', ['owner' => $owner->id]) }}" class="gl-mini-action gl-view-salons">
+                        <i class="fas fa-store"></i> View Salons
+                    </a>
+
+                    @if(\Illuminate\Support\Facades\Route::has('admin.owners.destroy'))
+                        <form action="{{ route('admin.owners.destroy', $owner->id) }}" method="POST" onsubmit="return confirm('Permanently delete this owner? This cannot be undone.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="gl-mini-action gl-delete"><i class="fas fa-trash"></i> Delete Owner</button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+
         </div>
 
     </div>

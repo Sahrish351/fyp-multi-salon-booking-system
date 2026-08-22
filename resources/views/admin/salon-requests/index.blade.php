@@ -4,7 +4,7 @@
 @push('styles')
 <style>
     :root {
-        --gl-pink: #E0177D;
+        --gl-pink: #FF6B9D;
         --gl-pink-light: #FDEAF3;
         --gl-pink-pale: #F1DCE9;
         --gl-text: #2B2230;
@@ -21,28 +21,27 @@
 
     .stats-grid { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 28px; }
     .stat-card { position: relative; overflow: hidden; width: 132px; height: 132px; border-radius: 26px 26px 26px 10px; padding: 14px; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-    .stat-card::after { content: ''; position: absolute; width: 70px; height: 70px; background: rgba(255, 255, 255, 0.35); border-radius: 50%; top: -25px; right: -20px; }
     .stat-icon { position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 6px; }
     .stat-label { position: relative; z-index: 1; font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; opacity: 0.85; }
     .stat-value { position: relative; z-index: 1; font-size: 1.5rem; font-weight: 800; margin-top: 4px; }
 
-    /* Muted / light stat card colors */
-    .stat-card.pending { background: linear-gradient(135deg, #FFF6E0, #FFEDC2); }
+    /* Light status colors — no decorative circle */
+    .stat-card.pending { background: #FFF9E0; }
     .stat-card.pending .stat-icon { background: rgba(138, 90, 0, 0.12); }
     .stat-card.pending .stat-label,
     .stat-card.pending .stat-value { color: #8A5A00; }
 
-    .stat-card.approved { background: linear-gradient(135deg, #E9F8EE, #D3F0DD); }
+    .stat-card.approved { background: #E6F7EA; }
     .stat-card.approved .stat-icon { background: rgba(30, 142, 62, 0.12); }
     .stat-card.approved .stat-label,
     .stat-card.approved .stat-value { color: #1E8E3E; }
 
-    .stat-card.rejected { background: linear-gradient(135deg, #FDECEA, #F9D6D2); }
+    .stat-card.rejected { background: #FDECEC; }
     .stat-card.rejected .stat-icon { background: rgba(197, 34, 31, 0.12); }
     .stat-card.rejected .stat-label,
     .stat-card.rejected .stat-value { color: #C5221F; }
 
-    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(224, 23, 125, 0.05); margin-bottom: 24px; overflow: hidden; }
+    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05); margin-bottom: 24px; overflow: hidden; }
     .card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); }
     .card-title { font-size: 0.95rem; font-weight: 700; color: var(--gl-text); display: flex; align-items: center; gap: 8px; }
     .card-title i { color: var(--gl-pink); }
@@ -70,7 +69,7 @@
     .pagination-wrapper { margin-top: 20px; }
 
     .form-control { width: 100%; border: 1px solid var(--gl-border); border-radius: 12px; padding: 10px 14px; font-size: 0.85rem; font-family: inherit; resize: vertical; color: var(--gl-text); }
-    .form-control:focus { outline: none; border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(224, 23, 125, 0.1); }
+    .form-control:focus { outline: none; border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1); }
 
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(43, 34, 48, 0.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .modal-container { background: #fff; border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; }

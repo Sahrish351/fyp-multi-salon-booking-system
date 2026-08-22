@@ -5,8 +5,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
     :root {
-        --gl-pink: #E0177D;
-        --gl-pink-dark: #B5125F;
+        --gl-pink: #FF6B9D;
+        --gl-pink-dark: #E85588;
         --gl-pink-light: #FDEAF3;
         --gl-pink-pale: #F6C9DF;
         --gl-text: #2B2230;
@@ -39,7 +39,7 @@
     .stat-card:nth-child(4):hover { box-shadow: 0 16px 32px rgba(52, 168, 83, 0.45); }
 
     .charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 32px; }
-    .chart-card { background: #fff; border-radius: 20px; padding: 22px 24px 14px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(224, 23, 125, 0.05); }
+    .chart-card { background: #fff; border-radius: 20px; padding: 22px 24px 14px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05); }
     .chart-header { margin-bottom: 18px; }
     .chart-title { font-size: 0.95rem; font-weight: 700; color: var(--gl-text); }
 
@@ -50,7 +50,7 @@
 
     .two-columns { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
 
-    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(224, 23, 125, 0.05); margin-bottom: 24px; overflow: hidden; }
+    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05); margin-bottom: 24px; overflow: hidden; }
     .card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--gl-border); }
     .card-header h3 { font-size: 0.95rem; font-weight: 700; color: var(--gl-text); display: flex; align-items: center; gap: 8px; margin: 0; }
     .card-header h3 i { color: var(--gl-pink); }
@@ -75,7 +75,7 @@
     .notif-item small { color: var(--gl-text-lt); font-size: 0.68rem; display: block; margin-top: 4px; }
 
     .notification-card { position: relative; padding-bottom: 58px; }
-    .plus-btn { position: absolute; bottom: 16px; right: 16px; width: 42px; height: 42px; background: var(--gl-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; box-shadow: 0 6px 14px rgba(224, 23, 125, 0.3); transition: background 0.2s ease; }
+    .plus-btn { position: absolute; bottom: 16px; right: 16px; width: 42px; height: 42px; background: var(--gl-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; box-shadow: 0 6px 14px rgba(255, 107, 157, 0.3); transition: background 0.2s ease; }
     .plus-btn:hover { background: var(--gl-pink-dark); }
 
     .btn-outline { color: var(--gl-pink); border: 1px solid var(--gl-pink-pale); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease; }
@@ -159,9 +159,9 @@
             <div class="chart-header">
                 <span class="chart-title">Revenue Performance</span>
                 <div class="chart-legend" style="margin-top:10px;">
-                    <div class="legend-item"><div class="legend-dot" style="background:#B5125F;"></div> This Year</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#E0177D;"></div> Last Year</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#F2A9CE; border: 1.5px dashed #B5125F; border-radius:50%;"></div> Target</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#E85588;"></div> This Year</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#FF6B9D;"></div> Last Year</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#F2A9CE; border: 1.5px dashed #E85588; border-radius:50%;"></div> Target</div>
                 </div>
             </div>
             <canvas id="revenueChart" height="180"></canvas>
@@ -246,12 +246,12 @@
 
     // Gradients
     const gradDark = revenueCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
-    gradDark.addColorStop(0, 'rgba(181, 18, 95, 0.18)');
-    gradDark.addColorStop(1, 'rgba(181, 18, 95, 0.0)');
+    gradDark.addColorStop(0, 'rgba(232, 85, 136, 0.18)');
+    gradDark.addColorStop(1, 'rgba(232, 85, 136, 0.0)');
 
     const gradMid = revenueCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
-    gradMid.addColorStop(0, 'rgba(224, 23, 125, 0.12)');
-    gradMid.addColorStop(1, 'rgba(224, 23, 125, 0.0)');
+    gradMid.addColorStop(0, 'rgba(255, 107, 157, 0.12)');
+    gradMid.addColorStop(1, 'rgba(255, 107, 157, 0.0)');
 
     const gradLight = revenueCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
     gradLight.addColorStop(0, 'rgba(242, 169, 206, 0.10)');
@@ -265,12 +265,12 @@
                 {
                     label: 'This Year',
                     data: @json($monthlyData),
-                    borderColor: '#B5125F',
+                    borderColor: '#E85588',
                     backgroundColor: gradDark,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.38,
-                    pointBackgroundColor: '#B5125F',
+                    pointBackgroundColor: '#E85588',
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
                     pointRadius: 5,
@@ -280,12 +280,12 @@
                 {
                     label: 'Last Year',
                     data: @json($lastYearData),
-                    borderColor: '#E0177D',
+                    borderColor: '#FF6B9D',
                     backgroundColor: gradMid,
                     borderWidth: 2,
                     fill: true,
                     tension: 0.38,
-                    pointBackgroundColor: '#E0177D',
+                    pointBackgroundColor: '#FF6B9D',
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
@@ -339,8 +339,8 @@
     const barColors = weeklyData.map(v => {
         if (maxVal === 0) return '#F2A9CE'; // sab zero hain toh lightest pink
         const ratio = (v - minVal) / (maxVal - minVal);
-        if (ratio >= 0.66) return '#B5125F';
-        if (ratio >= 0.33) return '#E0177D';
+        if (ratio >= 0.66) return '#E85588';
+        if (ratio >= 0.33) return '#FF6B9D';
         return '#F2A9CE';
     });
 
@@ -351,7 +351,7 @@
             datasets: [{
                 data: weeklyData,
                 backgroundColor: barColors,
-                hoverBackgroundColor: '#8C0D42',
+                hoverBackgroundColor: '#E85588',
                 borderRadius: 8,
                 maxBarThickness: 36
             }]
