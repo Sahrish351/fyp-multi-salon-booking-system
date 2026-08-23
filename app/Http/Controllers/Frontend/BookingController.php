@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -129,11 +130,20 @@ class BookingController extends Controller
         }
 
         $request->validate([
-            'time_slot_id'     => 'required|string',
+            'time_slot_id'     => 'required',
             'appointment_date' => 'required|date_format:Y-m-d',
         ]);
 
-        Session::put('booking_time', $request->time_slot_id);
+        // Fix: Agar TimeSlot ID pass hui hai toh DB se actual start_time fetch karein
+        $bookingTime = $request->time_slot_id;
+        if (is_numeric($request->time_slot_id)) {
+            $slot = TimeSlot::find($request->time_slot_id);
+            if ($slot) {
+                $bookingTime = $slot->start_time ?? $slot->time;
+            }
+        }
+
+        Session::put('booking_time', $bookingTime);
         Session::put('booking_date', $request->appointment_date);
         Session::put('booking_is_waitlist', false);
 
@@ -167,6 +177,28 @@ class BookingController extends Controller
         $service = Service::findOrFail($serviceId);
         $stylist = Stylist::findOrFail($stylistId);
 
+        // Safe Carbon Parsing
+        $startTime = null;
+        $endTime   = null;
+
+        if (!$isWaitlist) {
+            try {
+                $parsedTime = Carbon::parse($bookingTime);
+                $startTime  = $parsedTime->format('H:i:s');
+                $endTime    = (clone $parsedTime)->addMinutes($service->duration ?? 60)->format('H:i:s');
+            } catch (\Exception $e) {
+                // Agar fallback chahiye ho agar $bookingTime me ID lingering ho
+                if (is_numeric($bookingTime)) {
+                    $dbSlot = TimeSlot::find($bookingTime);
+                    if ($dbSlot) {
+                        $parsedTime = Carbon::parse($dbSlot->start_time ?? $dbSlot->time);
+                        $startTime  = $parsedTime->format('H:i:s');
+                        $endTime    = (clone $parsedTime)->addMinutes($service->duration ?? 60)->format('H:i:s');
+                    }
+                }
+            }
+        }
+
         $slot = $isWaitlist
             ? (object) [
                 'slot_date'   => $bookingDate,
@@ -176,10 +208,8 @@ class BookingController extends Controller
             ]
             : (object) [
                 'slot_date'   => $bookingDate,
-                'start_time'  => \Carbon\Carbon::parse($bookingTime)->format('H:i:s'),
-                'end_time'    => \Carbon\Carbon::parse($bookingTime)
-                                    ->addMinutes($service->duration ?? 60)
-                                    ->format('H:i:s'),
+                'start_time'  => $startTime ?? '09:00:00',
+                'end_time'    => $endTime ?? '10:00:00',
                 'is_waitlist' => false,
             ];
 
@@ -261,7 +291,7 @@ class BookingController extends Controller
                     'waitlist',
                     [
                         'title'   => '⏳ New Waitlist Join',
-                        'message' => "{$client->name} joined the waitlist for {$service->name} on " . \Carbon\Carbon::parse($bookingDate)->format('M d, Y') . " (position #{$waitlistPosition})",
+                        'message' => "{$client->name} joined the waitlist for {$service->name} on " . Carbon::parse($bookingDate)->format('M d, Y') . " (position #{$waitlistPosition})",
                         'link'    => route('owner.waitlist.index'),
                     ]
                 );
@@ -270,10 +300,20 @@ class BookingController extends Controller
             }
 
         } else {
-            $startTime = \Carbon\Carbon::parse($bookingTime)->format('H:i:s');
-            $endTime   = \Carbon\Carbon::parse($bookingTime)
-                            ->addMinutes($service->duration ?? 60)
-                            ->format('H:i:s');
+            try {
+                $parsedTime = Carbon::parse($bookingTime);
+                $startTime  = $parsedTime->format('H:i:s');
+                $endTime    = (clone $parsedTime)->addMinutes($service->duration ?? 60)->format('H:i:s');
+            } catch (\Exception $e) {
+                if (is_numeric($bookingTime)) {
+                    $dbSlot = TimeSlot::find($bookingTime);
+                    if ($dbSlot) {
+                        $parsedTime = Carbon::parse($dbSlot->start_time ?? $dbSlot->time);
+                        $startTime  = $parsedTime->format('H:i:s');
+                        $endTime    = (clone $parsedTime)->addMinutes($service->duration ?? 60)->format('H:i:s');
+                    }
+                }
+            }
 
             $appointment = Appointment::create([
                 'booking_ref'      => $bookingRef,
@@ -282,20 +322,21 @@ class BookingController extends Controller
                 'stylist_id'       => $stylistId,
                 'service_id'       => $service->id,
                 'appointment_date' => $bookingDate,
-                'start_time'       => $startTime,
-                'end_time'         => $endTime,
+                'start_time'       => $startTime ?? '09:00:00',
+                'end_time'         => $endTime ?? '10:00:00',
                 'total_amount'     => $service->price,
                 'advance_amount'   => 100,
                 'status'           => 'pending_payment',
             ]);
 
             try {
+                $formattedTime = isset($parsedTime) ? $parsedTime->format('h:i A') : $bookingTime;
                 NotificationHelper::send(
                     $salon->id,
                     'appointment',
                     [
                         'title'   => '📅 New Appointment Booked',
-                        'message' => "{$client->name} booked {$service->name} on " . \Carbon\Carbon::parse($bookingDate)->format('M d, Y') . ' at ' . \Carbon\Carbon::parse($bookingTime)->format('h:i A'),
+                        'message' => "{$client->name} booked {$service->name} on " . Carbon::parse($bookingDate)->format('M d, Y') . ' at ' . $formattedTime,
                         'link'    => route('owner.appointments.show', $appointment->id),
                     ]
                 );
@@ -338,9 +379,7 @@ class BookingController extends Controller
         return view('frontend.booking.confirmation', compact('appointment'));
     }
 
-    // ============================================================
-    // AJAX SLOT FETCHING (FIXED COLUMN MAPPING)
-    // ============================================================
+   
     public function getSlots(Request $request, $salon_id)
     {
         try {
@@ -352,7 +391,7 @@ class BookingController extends Controller
                 return response()->json(['slots' => [], 'holiday' => false]);
             }
 
-            // 1. Safe Holiday Check
+           
             $isHoliday = false;
             if (class_exists(\App\Models\StylistHoliday::class)) {
                 $holidayQuery = StylistHoliday::where('stylist_id', $stylistId);
@@ -376,16 +415,16 @@ class BookingController extends Controller
                 return response()->json(['slots' => [], 'holiday' => true]);
             }
 
-            // 2. Fetch Booked Times
+           
             $bookedTimes = Appointment::where('salon_id', $salon->id)
                 ->where('stylist_id', $stylistId)
                 ->where('appointment_date', $date)
                 ->whereNotIn('status', ['cancelled', 'rejected'])
                 ->pluck('start_time')
-                ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
+                ->map(fn($t) => Carbon::parse($t)->format('H:i'))
                 ->toArray();
 
-            // 3. Query TimeSlots
+           
             $slotsQuery = TimeSlot::where('salon_id', $salon->id);
 
             if (Schema::hasColumn('time_slots', 'stylist_id')) {
@@ -404,14 +443,15 @@ class BookingController extends Controller
             $slots = [];
 
             foreach ($dbSlots as $slot) {
-                $timeStr = \Carbon\Carbon::parse($slot->start_time ?? $slot->time)->format('H:i');
-                $label   = \Carbon\Carbon::parse($slot->start_time ?? $slot->time)->format('h:i A');
+                $slotTime = $slot->start_time ?? $slot->time;
+                $timeStr  = Carbon::parse($slotTime)->format('H:i');
+                $label    = Carbon::parse($slotTime)->format('h:i A');
 
                 $isAvailable = ($slot->status ?? 'available') === 'available' && !in_array($timeStr, $bookedTimes);
 
                 $slots[] = [
                     'id'        => $slot->id,
-                    'time'      => $timeStr,
+                    'time'      => $slotTime, 
                     'label'     => $label,
                     'time_24'   => $timeStr,
                     'available' => (bool)$isAvailable,

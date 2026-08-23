@@ -39,7 +39,7 @@ class WaitlistJoinController extends Controller
             'preferred_date' => 'required|date',
         ]);
 
-        // Already on waitlist check
+      
         $exists = Waitlist::where('client_id', Auth::id())
             ->where('salon_id', $request->salon_id)
             ->where('stylist_id', $request->stylist_id)
@@ -67,13 +67,13 @@ class WaitlistJoinController extends Controller
             'status'         => 'waiting',
         ]);
 
-        // NOTIFICATION & EMAIL: Owner ko batao naya client waitlist mein aaya hai
+       
         try {
             $client  = Auth::user();
             $service = $waitlistEntry->service;
             $formattedDate = \Carbon\Carbon::parse($request->preferred_date)->format('M d, Y');
 
-            // Dashboard Alert
+            
             NotificationHelper::send(
                 $request->salon_id,
                 'waitlist',
@@ -84,7 +84,6 @@ class WaitlistJoinController extends Controller
                 ]
             );
 
-            // Email Notification
             $salon = Salon::find($request->salon_id);
             $ownerEmail = $salon->owner->email ?? config('mail.from.address');
 
@@ -105,16 +104,16 @@ class WaitlistJoinController extends Controller
         return back()->with('success', 'You joined the waitlist at position #' . $position . '!');
     }
 
-    // Client accepts the offered slot
+    
     public function accept(Waitlist $waitlist)
     {
         if ($waitlist->client_id !== Auth::id()) abort(403);
 
-        // CHECK: 20 mins expiration check
+      
         if ($waitlist->expires_at && now()->greaterThan($waitlist->expires_at)) {
             $waitlist->update(['status' => 'expired']);
 
-            // Next waiting client ko offer bhej do
+          
             static::offerToNext(
                 $waitlist->salon_id,
                 $waitlist->stylist_id,
@@ -124,13 +123,13 @@ class WaitlistJoinController extends Controller
             return back()->with('error', 'Sorry, your 20-minute window to accept this slot has expired.');
         }
 
-        // Waitlist entry mark as accepted
+       
         $waitlist->update([
             'status'       => 'accepted',
             'responded_at' => now(),
         ]);
 
-        // Automatic Appointment Record Create Karein
+      
         try {
             $servicePrice = $waitlist->service ? $waitlist->service->price : 0;
 
@@ -153,7 +152,7 @@ class WaitlistJoinController extends Controller
             ->with('success', '🎉 Slot accepted! Your appointment has been successfully booked for ' . $waitlist->preferred_date . '.');
     }
 
-    // Client rejects the offered slot
+    
     public function reject(Waitlist $waitlist)
     {
         if ($waitlist->client_id !== Auth::id()) abort(403);
@@ -163,7 +162,7 @@ class WaitlistJoinController extends Controller
             'responded_at' => now(),
         ]);
 
-        // Offer to next person in queue
+       
         static::offerToNext(
             $waitlist->salon_id,
             $waitlist->stylist_id,
@@ -173,7 +172,7 @@ class WaitlistJoinController extends Controller
         return back()->with('info', 'You declined the slot.');
     }
 
-    // When an appointment is cancelled, notify next waiting client
+   
     public static function offerToNext(
         int    $salonId,
         int    $stylistId,

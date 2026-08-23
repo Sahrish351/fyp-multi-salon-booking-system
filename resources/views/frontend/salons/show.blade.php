@@ -1,11 +1,11 @@
 @extends('layouts.guest')
 @section('title', $salon->name . ' — Beauty Blush Salons')
 @section('description', $salon->description ?? 'Book appointments at '.$salon->name.' on Beauty Blush Salons.')
-
+ 
 {{-- CHANGE 1: this tells layouts/guest.blade.php to hide its own Home/Services/About/Contact navbar
      (requires the small @unless edit in guest.blade.php — see chat instructions) --}}
 @section('hideMainNav', true)
-
+ 
 @push('styles')
 <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -442,7 +442,7 @@
     }
     .address-line a { color: #E91E8C; font-weight: 600; }
     .address-line a:hover { text-decoration: underline; }
-
+ 
     /* HOURS & INFO GRID - FIXED SPACING */
     .hours-grid {
         display: grid;
@@ -462,7 +462,7 @@
             gap: 32px;
         }
     }
-
+ 
     .hours-table h4 {
         font-size: 1rem;
         font-weight: 700;
@@ -472,7 +472,7 @@
         border-bottom: 2px solid #f0e8ed;
         font-family: 'Inter', sans-serif;
     }
-
+ 
     .hour-row {
         display: flex;
         align-items: center;
@@ -512,7 +512,7 @@
         font-weight: 700;
         color: #E91E8C;
     }
-
+ 
     .add-info {
         padding-left: 0;
     }
@@ -624,9 +624,9 @@
         box-shadow: 0 4px 14px rgba(0,0,0,0.12);
     }
     .btn-book-now:hover { background: #E91E8C; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(233,30,140,0.25); }
-
+ 
     .bs-divider { height: 1px; background: #f0f0f0; margin: 4px 0 18px; }
-
+ 
     .bs-info-row {
         display: flex;
         align-items: flex-start;
@@ -684,7 +684,7 @@
     .photo-modal-inner { max-width: 90vw; max-height: 90vh; position: relative; }
     .photo-modal-inner img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 12px; }
     .photo-modal-close { position: absolute; top: -40px; right: 0; color: #fff; font-size: 1.4rem; cursor: pointer; background: none; border: none; }
-
+ 
     @media (max-width: 768px) {
         .g-nav { padding: 0 16px; height: 56px; }
         .g-nav .brand { font-size: 1.1rem; }
@@ -724,9 +724,9 @@
     }
 </style>
 @endpush
-
+ 
 @section('content')
-
+ 
 <nav class="g-nav">
     <a href="{{ route('home') }}" class="brand" style="flex-shrink:0;">Beauty Blush Salons</a>
  
@@ -854,20 +854,42 @@
         </div>
     </div>
  
+    @php
+        // Local storage path ho ya poora URL (Unsplash waghera), dono ke liye sahi <img> src banata hai
+        function resolveShowImage($path, $fallback) {
+            if (!$path) return $fallback;
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+                return $path;
+            }
+            return asset('storage/' . ltrim($path, '/'));
+        }
+    @endphp
+ 
     {{-- PHOTO GRID --}}
     <div class="photo-grid" id="photoGrid">
         <div class="main-photo" onclick="openPhoto('{{ $salon->cover_image }}')">
             <img src="{{ $salon->cover_image }}" alt="{{ $salon->name }}"
                  onerror="this.src='https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80'">
         </div>
-        @php $galleryImages = $salon->gallery->take(2); @endphp
-        <div class="side-photo" onclick="openPhoto('{{ $galleryImages->first()?->image_url ?? $salon->cover_image }}')">
-            <img src="{{ $galleryImages->first()?->image_url ?? $salon->cover_image }}"
+        @php
+            // Fixed "first 2" ki jagah RANDOM 2 images (har salon apni hi gallery se, bridal-only issue khatam)
+            $sideImages = $salon->gallery->count() >= 2
+                ? $salon->gallery->random(2)->values()
+                : $salon->gallery->values();
+ 
+            $sidePhoto1 = $sideImages->get(0);
+            $sidePhoto2 = $sideImages->get(1);
+ 
+            $sidePhoto1Url = resolveShowImage($sidePhoto1?->image_path, $salon->cover_image);
+            $sidePhoto2Url = resolveShowImage($sidePhoto2?->image_path, $salon->cover_image);
+        @endphp
+        <div class="side-photo" onclick="openPhoto('{{ $sidePhoto1Url }}')">
+            <img src="{{ $sidePhoto1Url }}"
                  alt="{{ $salon->name }}"
                  onerror="this.src='https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=70'">
         </div>
-        <div class="side-photo last" onclick="openPhoto('{{ $galleryImages->skip(1)->first()?->image_url ?? $salon->cover_image }}')">
-            <img src="{{ $galleryImages->skip(1)->first()?->image_url ?? $salon->cover_image }}"
+        <div class="side-photo last" onclick="openPhoto('{{ $sidePhoto2Url }}')">
+            <img src="{{ $sidePhoto2Url }}"
                  alt="{{ $salon->name }}"
                  onerror="this.src='https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=70'">
             <a href="{{ route('salons.gallery', $salon->slug) }}" class="see-all-photos" style="text-decoration:none; color:#1a1a1a;" onclick="event.stopPropagation()">
@@ -1000,7 +1022,7 @@
                 <div class="about-section">
                     <h3>About</h3>
                     <p>{{ $salon->description ?? 'Welcome to '.$salon->name.'. We are dedicated to providing top-quality beauty services in '.$salon->city.'. Our experienced team of stylists and beauty experts are here to give you the best experience possible. Book your appointment today!' }}</p>
-
+ 
                     {{-- MAP EMBED INTEGRATION --}}
                     <div class="map-placeholder">
                         @php
@@ -1019,7 +1041,7 @@
                             src="https://maps.google.com/maps?q={{ $mapEmbedLocation }}&t=&z=15&ie=UTF8&iwloc=&output=embed">
                         </iframe>
                     </div>
-
+ 
                     <p class="address-line">
                         {{ $salon->address }}, {{ $salon->city }}, Pakistan
                         <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="directions-link"> Get directions</a>
@@ -1053,7 +1075,7 @@
                             </div>
                             @endforeach
                         </div>
-
+ 
                         {{-- RIGHT: Additional Information --}}
                         <div class="add-info">
                             <h4>Additional information</h4>
@@ -1170,7 +1192,7 @@
                 <a href="{{ route('booking.step1', $salon->id) }}" class="btn-book-now">
                     Book now
                 </a>
-
+ 
                 <div class="bs-divider"></div>
  
                 <div class="bs-info-row" onclick="toggleHours()">
@@ -1302,5 +1324,6 @@ document.addEventListener('click', e => {
     }
 });
 </script>
-
+ 
 @endsection
+ 

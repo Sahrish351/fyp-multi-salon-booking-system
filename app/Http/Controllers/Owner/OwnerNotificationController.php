@@ -26,8 +26,10 @@ class OwnerNotificationController extends Controller
 
             $filter = $request->get('filter', 'all');
 
+            
             $query = DB::table('notifications')
                 ->where('salon_id', $salon->id)
+                ->where('notifiable_type', 'App\\Models\\Salon')
                 ->whereNull('deleted_at')
                 ->orderBy('created_at', 'desc');
 
@@ -41,30 +43,33 @@ class OwnerNotificationController extends Controller
 
             $unreadCount = DB::table('notifications')
                 ->where('salon_id', $salon->id)
+                ->where('notifiable_type', 'App\\Models\\Salon')
                 ->whereNull('read_at')
                 ->whereNull('deleted_at')
                 ->count();
 
+           
             $totalCount = DB::table('notifications')
                 ->where('salon_id', $salon->id)
+                ->where('notifiable_type', 'App\\Models\\Salon')
                 ->whereNull('deleted_at')
                 ->count();
 
             $typeConfig = [
-                'appointment'     => ['icon' => 'bi-calendar-check-fill', 'color' => '#4A7FE0', 'bg' => '#E8F0FD'],
-                'payment'         => ['icon' => 'bi-credit-card-fill',    'color' => '#2EAE7D', 'bg' => '#E3F7EF'],
-                'payment_approved'=> ['icon' => 'bi-check-circle-fill', 'color' => '#2EAE7D', 'bg' => '#E3F7EF'],
-                'payment_rejected'=> ['icon' => 'bi-x-circle-fill',     'color' => '#E85588', 'bg' => '#FDE0EC'],
-                'payment_view'    => ['icon' => 'bi-eye-fill',            'color' => '#4A7FE0', 'bg' => '#E8F0FD'],
-                'receipt_download'=> ['icon' => 'bi-file-pdf-fill',     'color' => '#E85588', 'bg' => '#FDE0EC'],
-                'review'          => ['icon' => 'bi-star-fill',          'color' => '#D9A441', 'bg' => '#FEF3DC'],
-                'waitlist'        => ['icon' => 'bi-list-task',          'color' => '#9B6FD1', 'bg' => '#F3EDFB'],
-                'client'          => ['icon' => 'bi-person-fill',        'color' => '#E85588', 'bg' => '#FDE0EC'],
-                'system'          => ['icon' => 'bi-gear-fill',          'color' => '#6B7280', 'bg' => '#F3F4F6'],
+                'appointment'      => ['icon' => 'bi-calendar-check-fill', 'color' => '#4A7FE0', 'bg' => '#E8F0FD'],
+                'payment'          => ['icon' => 'bi-credit-card-fill',    'color' => '#2EAE7D', 'bg' => '#E3F7EF'],
+                'payment_approved' => ['icon' => 'bi-check-circle-fill', 'color' => '#2EAE7D', 'bg' => '#E3F7EF'],
+                'payment_rejected' => ['icon' => 'bi-x-circle-fill',     'color' => '#E85588', 'bg' => '#FDE0EC'],
+                'payment_view'     => ['icon' => 'bi-eye-fill',            'color' => '#4A7FE0', 'bg' => '#E8F0FD'],
+                'receipt_download' => ['icon' => 'bi-file-pdf-fill',     'color' => '#E85588', 'bg' => '#FDE0EC'],
+                'review'           => ['icon' => 'bi-star-fill',          'color' => '#D9A441', 'bg' => '#FEF3DC'],
+                'waitlist'         => ['icon' => 'bi-list-task',          'color' => '#9B6FD1', 'bg' => '#F3EDFB'],
+                'client'           => ['icon' => 'bi-person-fill',        'color' => '#E85588', 'bg' => '#FDE0EC'],
+                'system'           => ['icon' => 'bi-gear-fill',          'color' => '#6B7280', 'bg' => '#F3F4F6'],
+                'complaint'        => ['icon' => 'bi-exclamation-triangle-fill', 'color' => '#E85588', 'bg' => '#FDE0EC'],
             ];
 
             $notifications = $notificationsRaw->map(function ($n) use ($typeConfig) {
-                // Decode JSON Data Column safely
                 $data = [];
                 if (!empty($n->data)) {
                     $data = is_string($n->data) ? json_decode($n->data, true) : (array)$n->data;
@@ -116,6 +121,7 @@ class OwnerNotificationController extends Controller
             DB::table('notifications')
                 ->where('id', $id)
                 ->where('salon_id', $salon->id)
+                ->where('notifiable_type', 'App\\Models\\Salon')
                 ->update(['read_at' => now()]);
 
             if ($request->wantsJson()) {
@@ -136,6 +142,7 @@ class OwnerNotificationController extends Controller
 
             DB::table('notifications')
                 ->where('salon_id', $salon->id)
+                ->where('notifiable_type', 'App\\Models\\Salon')
                 ->whereNull('read_at')
                 ->update(['read_at' => now()]);
 
@@ -158,6 +165,7 @@ class OwnerNotificationController extends Controller
             DB::table('notifications')
                 ->where('id', $id)
                 ->where('salon_id', $salon->id)
+                ->where('notifiable_type', 'App\\Models\\Salon')
                 ->update(['deleted_at' => now()]);
 
             return back()->with('success', 'Notification dismissed.');

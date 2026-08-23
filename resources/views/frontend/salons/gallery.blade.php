@@ -10,10 +10,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f8f7fa; }
-
-        /* ============================================================ */
-        /* NAVBAR */
-        /* ============================================================ */
+ 
         .g-nav {
             background: #fff;
             border-bottom: 1px solid #f0e8ed;
@@ -55,10 +52,7 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(233,30,140,0.25);
         }
-
-        /* ============================================================ */
-        /* HERO */
-        /* ============================================================ */
+ 
         .gallery-hero {
             background: linear-gradient(135deg, #fce4ec 0%, #f8f0f5 50%, #fff 100%);
             padding: 60px 0 40px;
@@ -100,10 +94,7 @@
         .gallery-hero .subtitle i {
             color: #E91E8C;
         }
-
-        /* ============================================================ */
-        /* CATEGORY FILTER */
-        /* ============================================================ */
+ 
         .category-filter {
             padding: 24px 0 16px;
             background: #fff;
@@ -149,10 +140,7 @@
             box-shadow: 0 4px 20px rgba(233,30,140,0.25);
             transform: translateY(-2px);
         }
-
-        /* ============================================================ */
-        /* GALLERY GRID */
-        /* ============================================================ */
+ 
         .gallery-section {
             padding: 30px 0 50px;
         }
@@ -217,10 +205,7 @@
                 grid-row: span 1;
             }
         }
-
-        /* ============================================================ */
-        /* EMPTY STATE */
-        /* ============================================================ */
+ 
         .empty-state {
             text-align: center;
             padding: 80px 20px;
@@ -241,10 +226,7 @@
             color: #888;
             font-size: 0.9rem;
         }
-
-        /* ============================================================ */
-        /* LIGHTBOX */
-        /* ============================================================ */
+ 
         #lightbox {
             position: fixed;
             top: 0;
@@ -334,10 +316,7 @@
             font-size: 0.78rem;
             text-align: center;
         }
-
-        /* ============================================================ */
-        /* RESPONSIVE */
-        /* ============================================================ */
+ 
         @media (max-width: 768px) {
             .g-nav { padding: 0 16px; height: 56px; }
             .g-nav .brand { font-size: 1.0rem; }
@@ -362,7 +341,37 @@
     </style>
 </head>
 <body>
-
+ 
+@php
+    // Local storage path ho ya poora URL (Unsplash waghera), dono ke liye sahi <img> src banata hai
+    function resolveGalleryImage($path) {
+        if (!$path) return '';
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+        return asset('storage/' . ltrim($path, '/'));
+    }
+ 
+    // Category name ke hisab se icon choose karta hai, warna default icon
+    function categoryIcon($name) {
+        $name = strtolower($name);
+        return match(true) {
+            str_contains($name, 'bridal')  => 'fa-rings-wedding',
+            str_contains($name, 'hair')    => 'fa-cut',
+            str_contains($name, 'makeup')  => 'fa-brush',
+            str_contains($name, 'nail')    => 'fa-hand-peace',
+            str_contains($name, 'spa')     => 'fa-spa',
+            str_contains($name, 'massage') => 'fa-hands',
+            str_contains($name, 'facial')  => 'fa-face-smile',
+            str_contains($name, 'wax')     => 'fa-feather',
+            default => 'fa-tag',
+        };
+    }
+ 
+    // Salon ki asal 8 categories (dashboard mein jo owner ne banai hain), sirf wahi buttons banenge
+    $galleryCategories = DB::table('categories')->where('salon_id', $salon->id)->orderBy('name')->get(['id', 'name']);
+@endphp
+ 
 <!-- ============================================================ -->
 <!-- NAVBAR -->
 <!-- ============================================================ -->
@@ -372,7 +381,7 @@
         <i class="fas fa-arrow-left me-2"></i> Back to {{ $salon->name }}
     </a>
 </nav>
-
+ 
 <!-- ============================================================ -->
 <!-- HERO -->
 <!-- ============================================================ -->
@@ -384,7 +393,7 @@
         </p>
     </div>
 </section>
-
+ 
 <!-- ============================================================ -->
 <!-- CATEGORY FILTER -->
 <!-- ============================================================ -->
@@ -394,31 +403,15 @@
             <button class="cat-btn active" data-category="all" onclick="filterGallery('all', this)">
                 <i class="fas fa-th-large"></i> All
             </button>
-            <button class="cat-btn" data-category="bridal" onclick="filterGallery('bridal', this)">
-                <i class="fas fa-rings-wedding"></i> Bridal
+            @foreach($galleryCategories as $cat)
+            <button class="cat-btn" data-category="{{ $cat->id }}" onclick="filterGallery('{{ $cat->id }}', this)">
+                <i class="fas {{ categoryIcon($cat->name) }}"></i> {{ $cat->name }}
             </button>
-            <button class="cat-btn" data-category="hair" onclick="filterGallery('hair', this)">
-                <i class="fas fa-cut"></i> Hair
-            </button>
-            <button class="cat-btn" data-category="makeup" onclick="filterGallery('makeup', this)">
-                <i class="fas fa-brush"></i> Makeup
-            </button>
-            <button class="cat-btn" data-category="nail" onclick="filterGallery('nail', this)">
-                <i class="fas fa-hand-peace"></i> Nails
-            </button>
-            <button class="cat-btn" data-category="spa" onclick="filterGallery('spa', this)">
-                <i class="fas fa-spa"></i> Spa & Massage
-            </button>
-            <button class="cat-btn" data-category="facial" onclick="filterGallery('facial', this)">
-                <i class="fas fa-face-smile"></i> Facial
-            </button>
-            <button class="cat-btn" data-category="waxing" onclick="filterGallery('waxing', this)">
-                <i class="fas fa-feather"></i> Waxing
-            </button>
+            @endforeach
         </div>
     </div>
 </section>
-
+ 
 <!-- ============================================================ -->
 <!-- GALLERY GRID -->
 <!-- ============================================================ -->
@@ -427,12 +420,11 @@
         <div class="gallery-grid" id="galleryGrid">
             @forelse($salon->gallery as $key => $image)
             @php
-                $categories = ['bridal', 'hair', 'makeup', 'nail', 'spa', 'facial', 'waxing'];
-                $randomCat = $categories[array_rand($categories)];
                 $isFeatured = $key == 0;
+                $imgUrl = resolveGalleryImage($image->image_path);
             @endphp
-            <div class="gallery-item {{ $isFeatured ? 'featured' : '' }}" data-category="{{ $randomCat }}" onclick="openLightbox({{ $key }})">
-                <img src="{{ $image->image_path }}" alt="{{ $salon->name }} - Photo {{ $key + 1 }}" loading="lazy">
+            <div class="gallery-item {{ $isFeatured ? 'featured' : '' }}" data-category="{{ $image->category_id }}" onclick="openLightbox({{ $key }})">
+                <img src="{{ $imgUrl }}" alt="{{ $salon->name }} - Photo {{ $key + 1 }}" loading="lazy">
                 <div class="overlay">
                     <span><i class="fas fa-expand"></i> View</span>
                 </div>
@@ -448,7 +440,7 @@
         </div>
     </div>
 </section>
-
+ 
 <!-- ============================================================ -->
 <!-- LIGHTBOX -->
 <!-- ============================================================ -->
@@ -466,21 +458,28 @@
     <div class="counter" id="counter"></div>
     <div class="lightbox-info" id="lightboxInfo"></div>
 </div>
-
+ 
+@php
+    // GALLERY DATA ko pehle ek simple PHP variable mein resolve kar lein
+    // (closure ko seedha @json() ke andar likhna Blade parser ko confuse kar deta hai)
+    $galleryImageUrls = $salon->gallery->map(function ($g) {
+        return resolveGalleryImage($g->image_path);
+    })->values();
+@endphp
 <script>
     // ============================================================
-    // GALLERY DATA
+    // GALLERY DATA (local storage paths ko poora URL bana kar bheja ja raha hai)
     // ============================================================
-    let images = @json($salon->gallery->pluck('image_path'));
+    let images = @json($galleryImageUrls);
     let currentIndex = 0;
-
+ 
     // ============================================================
     // CATEGORY FILTER
     // ============================================================
     function filterGallery(category, btn) {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
+ 
         document.querySelectorAll('.gallery-item').forEach(item => {
             if (category === 'all' || item.dataset.category === category) {
                 item.style.display = 'block';
@@ -493,7 +492,7 @@
             }
         });
     }
-
+ 
     // ============================================================
     // LIGHTBOX
     // ============================================================
@@ -503,28 +502,28 @@
         document.getElementById('lightbox').classList.add('show');
         document.body.style.overflow = 'hidden';
     }
-
+ 
     function closeLightbox() {
         document.getElementById('lightbox').classList.remove('show');
         document.body.style.overflow = '';
     }
-
+ 
     function prevImage() {
         currentIndex = (currentIndex - 1 + images.length) % images.length;
         updateLightbox();
     }
-
+ 
     function nextImage() {
         currentIndex = (currentIndex + 1) % images.length;
         updateLightbox();
     }
-
+ 
     function updateLightbox() {
         document.getElementById('lightbox-img').src = images[currentIndex];
         document.getElementById('counter').innerText = (currentIndex + 1) + ' / ' + images.length;
         document.getElementById('lightboxInfo').innerText = 'Photo ' + (currentIndex + 1) + ' of ' + images.length;
     }
-
+ 
     // ============================================================
     // KEYBOARD SHORTCUTS
     // ============================================================
@@ -535,17 +534,17 @@
             if (e.key === 'Escape') closeLightbox();
         }
     });
-
+ 
     // ============================================================
     // SWIPE SUPPORT
     // ============================================================
     let touchStartX = 0;
     let touchEndX = 0;
-
+ 
     document.getElementById('lightbox').addEventListener('touchstart', function(e) {
         touchStartX = e.changedTouches[0].screenX;
     });
-
+ 
     document.getElementById('lightbox').addEventListener('touchend', function(e) {
         touchEndX = e.changedTouches[0].screenX;
         const diff = touchStartX - touchEndX;
@@ -554,7 +553,7 @@
             else prevImage();
         }
     });
-
+ 
     // ============================================================
     // ANIMATION KEYFRAMES
     // ============================================================
@@ -567,6 +566,6 @@
     `;
     document.head.appendChild(style);
 </script>
-
+ 
 </body>
 </html>
