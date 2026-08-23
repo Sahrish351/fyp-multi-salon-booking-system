@@ -4,7 +4,7 @@
 @section('content')
 <style>
 :root {
-    --pk:#e91e8c; --pk-lt:#fde9f4; --pk-h:#c2177a;
+    --pk:#FF6B9D; --pk-lt:#fce4ec; --pk-h:#E85588;
     --sage:#5a8a62; --sage-lt:#eaf3eb;
     --amber:#c47f00; --amber-lt:#fff8e1;
     --crimson:#c0392b; --crimson-lt:#fdecea;
@@ -15,27 +15,55 @@
 .pg-hdr h1 { font-size:1.55rem; font-weight:700; margin:0 0 .2rem; color:#1a1a1a; }
 .pg-hdr p  { margin:0; color:#9a9a9a; font-size:.86rem; }
 
-/* Summary tiles */
-.sum-strip { display:flex; flex-wrap:wrap; gap:.85rem; margin-bottom:1.6rem; }
+/* ══ SUMMARY TILES — resized to match Appointments page, with strong text contrast ══ */
+.sum-strip { display:flex; flex-wrap:wrap; gap:.8rem; margin-bottom:1.6rem; }
 .sum-tile {
-    flex:1; min-width:130px; border-radius:13px; padding:.9rem 1.1rem;
-    display:flex; align-items:center; gap:.75rem;
-    border:1.5px solid transparent; text-decoration:none; cursor:pointer;
-    transition:all .2s;
+    flex:1 1 0; min-width:150px; height:112px;
+    border-radius:15px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.3rem;
+    text-decoration:none; cursor:pointer;
+    position:relative; overflow:hidden; padding:.7rem;
+    transition:border-color .18s, background .18s, transform .18s;
+    box-sizing:border-box;
+    border:2px solid transparent;
+    box-shadow:0 2px 6px rgba(0,0,0,.12);
 }
 .sum-tile:hover { transform:translateY(-2px); }
-.sum-tile-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:.95rem; flex-shrink:0; }
-.sum-tile-val  { font-size:1.4rem; font-weight:800; line-height:1; }
-.sum-tile-lbl  { font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-top:.15rem; opacity:.8; }
+@media(max-width:700px){ .sum-tile { flex:1 1 calc(50% - .4rem); min-width:calc(50% - .4rem); height:104px; } }
+@media(max-width:480px){ .sum-tile { flex:1 1 100%; min-width:100%; height:auto; padding:.9rem; flex-direction:row; justify-content:flex-start; gap:.8rem; } .sum-tile-icon { position:static; width:34px; height:34px; font-size:.9rem; } }
+.sum-tile-icon {
+    position:absolute; top:10px; left:10px;
+    width:28px; height:28px; border-radius:50%;
+    background:rgba(255,255,255,.35);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.78rem; z-index:1;
+}
+.sum-tile-lbl  { font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; position:relative; z-index:1; }
+.sum-tile-val  { font-size:1.5rem; font-weight:900; line-height:1; position:relative; z-index:1; }
 
-.st-total   { background:var(--pk-lt);      border-color:rgba(233,30,140,.2); color:var(--pk); }
-.st-total   .sum-tile-icon { background:rgba(233,30,140,.15); }
-.st-published { background:var(--sage-lt);  border-color:rgba(90,138,98,.2);  color:var(--sage); }
-.st-published .sum-tile-icon { background:rgba(90,138,98,.15); }
-.st-reported { background:var(--amber-lt);  border-color:rgba(196,127,0,.2);  color:var(--amber); }
-.st-reported .sum-tile-icon { background:rgba(196,127,0,.15); }
-.st-hidden  { background:var(--crimson-lt); border-color:rgba(192,57,43,.2);  color:var(--crimson); }
-.st-hidden  .sum-tile-icon { background:rgba(192,57,43,.15); }
+/* Total — deep purple (clearly distinct from the red "Hidden" tile — no more confusing similarity) */
+.st-total   { background:#E3DAF7; }
+.st-total .sum-tile-icon { background:rgba(94,58,163,.25); color:#4A2E85; }
+.st-total .sum-tile-lbl  { color:#4A2E85; }
+.st-total .sum-tile-val  { color:#4A2E85; }
+
+/* Published — strong green, high contrast */
+.st-published { background:#D3EDD8; }
+.st-published .sum-tile-icon { background:rgba(45,90,53,.25); color:#2D5A35; }
+.st-published .sum-tile-lbl  { color:#2D5A35; }
+.st-published .sum-tile-val  { color:#2D5A35; }
+
+/* Reported — strong amber, high contrast */
+.st-reported { background:#FCE9A8; }
+.st-reported .sum-tile-icon { background:rgba(133,97,0,.25); color:#856100; }
+.st-reported .sum-tile-lbl  { color:#856100; }
+.st-reported .sum-tile-val  { color:#856100; }
+
+/* Hidden — strong red, high contrast, clearly distinct from purple Total */
+.st-hidden  { background:#F5C6C6; }
+.st-hidden .sum-tile-icon { background:rgba(146,20,20,.25); color:#921414; }
+.st-hidden .sum-tile-lbl  { color:#921414; }
+.st-hidden .sum-tile-val  { color:#921414; }
 
 /* Filter pills */
 .pills-wrap { display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:1.4rem; }
@@ -58,7 +86,7 @@
 .fg { display:flex; flex-direction:column; gap:.32rem; flex:1; min-width:140px; }
 .fg label { font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#aaa; }
 .fi { width:100%; padding:.6rem .9rem; border:1.5px solid #e5e5e5; border-radius:9px; font-size:.87rem; color:#1a1a1a; background:#fafafa; outline:none; transition:all .2s; font-family:inherit; box-sizing:border-box; }
-.fi:focus { border-color:var(--pk); box-shadow:0 0 0 3px rgba(233,30,140,.1); background:#fff; }
+.fi:focus { border-color:var(--pk); box-shadow:0 0 0 3px rgba(255,107,157,.1); background:#fff; }
 .fi-sw { position:relative; }
 .fi-sw i.si { position:absolute; left:.85rem; top:50%; transform:translateY(-50%); color:#ccc; font-size:.8rem; pointer-events:none; }
 .fi-sw .fi { padding-left:2.2rem; }
@@ -92,8 +120,11 @@
 
 /* Action buttons */
 .ab { display:inline-flex; align-items:center; gap:.25rem; padding:.32rem .72rem; border-radius:7px; font-size:.73rem; font-weight:700; text-decoration:none; border:1.5px solid; transition:all .15s; cursor:pointer; background:none; font-family:inherit; white-space:nowrap; }
-.ab-view   { background:var(--pk-lt); color:var(--pk); border-color:rgba(233,30,140,.2); }
-.ab-view:hover { background:var(--pk); color:#fff; }
+
+/* ✅ "View" button — frosty teal color (matches Appointments page View button), not pink */
+.ab-view   { background:#e0f7fa; color:#00838f; border-color:rgba(0,131,143,.25); }
+.ab-view:hover { background:#00838f; color:#fff; }
+
 .ab-hide   { background:#fff8e1; color:#a06800; border-color:rgba(196,127,0,.25); }
 .ab-hide:hover { background:#c47f00; color:#fff; border-color:#c47f00; }
 .ab-show   { background:#eaf3eb; color:#3d7045; border-color:rgba(90,138,98,.25); }
@@ -104,6 +135,25 @@
 .empty-st { text-align:center; padding:3rem 1rem; }
 .empty-st i { font-size:2.2rem; margin-bottom:.7rem; opacity:.3; display:block; }
 .pgn-wrap { padding:.9rem 1.3rem; border-top:1px solid #f3f3f3; }
+
+/* ══ RESPONSIVE — small screens (phones) ══ */
+@media(max-width:600px){
+    .pg-hdr h1 { font-size:1.25rem; }
+    .pg-hdr p { font-size:.8rem; }
+    .pills-wrap { gap:.35rem; }
+    .sp { padding:.36rem .8rem; font-size:.72rem; }
+    .filter-card .fc-body { padding:.85rem 1rem; }
+    .f-row { gap:.7rem; }
+    .fg { min-width:100%; flex:1 1 100%; }
+    .filter-card .f-row > div[style] { width:100%; }
+    .fi { font-size:.85rem; }
+    .btn-go, .btn-clr { width:100%; justify-content:center; text-align:center; }
+    .pm-filter-actions, .filter-card .f-row > div[style*="flex-end"] { flex-direction:column; width:100%; }
+    .tc-head { padding:.75rem 1rem; }
+    .dt td, .dt thead th { padding:.6rem .65rem; font-size:.78rem; }
+    .ab { padding:.28rem .6rem; font-size:.7rem; }
+    .review-layout { grid-template-columns:1fr; }
+}
 </style>
 
 {{-- Header --}}
@@ -126,23 +176,27 @@
 </div>
 @endif
 
-{{-- Summary Tiles --}}
+{{-- Summary Tiles — same size/layout as Appointments page tiles --}}
 <div class="sum-strip">
     <a href="{{ route('admin.reviews.index') }}" class="sum-tile st-total">
         <div class="sum-tile-icon"><i class="fas fa-star"></i></div>
-        <div><div class="sum-tile-val">{{ number_format($counts['total']) }}</div><div class="sum-tile-lbl">Total</div></div>
+        <div class="sum-tile-lbl">Total</div>
+        <div class="sum-tile-val">{{ number_format($counts['total']) }}</div>
     </a>
     <a href="{{ route('admin.reviews.index', ['status'=>'published']) }}" class="sum-tile st-published">
         <div class="sum-tile-icon"><i class="fas fa-check-circle"></i></div>
-        <div><div class="sum-tile-val">{{ number_format($counts['published']) }}</div><div class="sum-tile-lbl">Published</div></div>
+        <div class="sum-tile-lbl">Published</div>
+        <div class="sum-tile-val">{{ number_format($counts['published']) }}</div>
     </a>
     <a href="{{ route('admin.reviews.index', ['status'=>'reported']) }}" class="sum-tile st-reported">
         <div class="sum-tile-icon"><i class="fas fa-flag"></i></div>
-        <div><div class="sum-tile-val">{{ number_format($counts['reported']) }}</div><div class="sum-tile-lbl">Reported</div></div>
+        <div class="sum-tile-lbl">Reported</div>
+        <div class="sum-tile-val">{{ number_format($counts['reported']) }}</div>
     </a>
     <a href="{{ route('admin.reviews.index', ['status'=>'hidden']) }}" class="sum-tile st-hidden">
         <div class="sum-tile-icon"><i class="fas fa-eye-slash"></i></div>
-        <div><div class="sum-tile-val">{{ number_format($counts['hidden']) }}</div><div class="sum-tile-lbl">Hidden</div></div>
+        <div class="sum-tile-lbl">Hidden</div>
+        <div class="sum-tile-val">{{ number_format($counts['hidden']) }}</div>
     </a>
 </div>
 

@@ -3,11 +3,11 @@
 
 @section('content')
 <style>
-:root { --pk:#E91E8C; --pk-lt:#fce4ec; --pk-bg:#fff0f7; }
+:root { --pk:#FF6B9D; --pk-lt:#fce4ec; --pk-bg:#fff0f7; }
 
 .btn-back {
     display:inline-flex; align-items:center; gap:.5rem; padding:.5rem 1.1rem; border:1.5px solid var(--pk-lt);
-    border-radius:9px; font-size:.86rem; font-weight:600; color:#c2185b; text-decoration:none; background:#fff;
+    border-radius:9px; font-size:.86rem; font-weight:600; color:#E85588; text-decoration:none; background:#fff;
     margin-bottom:1.5rem; transition:all .15s;
 }
 .btn-back:hover { background:var(--pk); color:#fff; border-color:var(--pk); }
@@ -33,7 +33,7 @@
 }
 .act-success { background:linear-gradient(135deg,#16a34a,#0d8a3e); color:#fff; }
 .act-danger  { background:linear-gradient(135deg,#dc2626,#991b1b); color:#fff; }
-.act-primary { background:linear-gradient(135deg,var(--pk),#c2185b); color:#fff; }
+.act-primary { background:linear-gradient(135deg,var(--pk),#E85588); color:#fff; }
 </style>
 
 <a href="{{ route('admin.notifications.index') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Notifications</a>

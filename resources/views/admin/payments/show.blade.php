@@ -4,7 +4,7 @@
 @section('content')
 <style>
     :root {
-        --pm-pink:   #d4637a;
+        --pm-pink:   #FF6B9D;
         --pm-green:  #6b8f71;
         --pm-green-lt:#f0f5f1;
         --pm-amber:  #b07d3a;

@@ -20,7 +20,14 @@
     .btn-outline:hover { background: var(--gl-pink-light); }
 
     .stats-grid { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 28px; }
-    .stat-card { position: relative; overflow: hidden; width: 132px; height: 132px; border-radius: 26px 26px 26px 10px; padding: 14px; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .stat-card { position: relative; overflow: hidden; flex: 1 1 0; min-width: 150px; height: 132px; border-radius: 26px 26px 26px 10px; padding: 14px; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-sizing: border-box; transition: transform 0.18s ease; }
+    .stat-card:hover { transform: translateY(-2px); }
+    @media (max-width: 700px) {
+        .stat-card { flex: 1 1 calc(50% - 9px); min-width: calc(50% - 9px); height: 116px; }
+    }
+    @media (max-width: 420px) {
+        .stat-card { flex: 1 1 100%; }
+    }
     .stat-icon { position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 6px; }
     .stat-label { position: relative; z-index: 1; font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; opacity: 0.85; }
     .stat-value { position: relative; z-index: 1; font-size: 1.5rem; font-weight: 800; margin-top: 4px; }
@@ -55,11 +62,19 @@
     .request-row strong { font-size: 0.92rem; color: var(--gl-text); }
     .request-row small { color: var(--gl-text-lt); font-size: 0.78rem; }
 
-    .row-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn-primary { border: none; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; color: #fff; cursor: pointer; background: linear-gradient(135deg, #34A853, #188038); transition: opacity 0.2s ease; }
+    .row-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    /* View — frozy teal, same size/shape as Approve/Reject for consistent alignment */
+    .btn-view-teal { border: none; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; color: #fff; cursor: pointer; background: #00838f; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s ease; line-height: 1.2; }
+    .btn-view-teal:hover { background: #006670; color: #fff; }
+
+    /* Approve — green (unchanged) */
+    .btn-primary { border: none; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; color: #fff; cursor: pointer; background: linear-gradient(135deg, #34A853, #188038); transition: opacity 0.2s ease; line-height: 1.2; }
     .btn-primary:hover { opacity: 0.9; }
-    .btn-reject-link { color: #C5221F; border: 1px solid #FAD2CF; background: #FCE8E6; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
-    .btn-reject-link:hover { background: #FAD2CF; }
+
+    /* Reject — solid red fill, same size/shape as Approve/View */
+    .btn-reject-link { color: #fff; border: none; background: #DC2626; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; line-height: 1.2; transition: background 0.2s ease; }
+    .btn-reject-link:hover { background: #B91C1C; }
 
     .empty-state { text-align: center; padding: 64px 24px; }
     .empty-state i { color: #34A853; margin-bottom: 16px; }
@@ -125,7 +140,7 @@
                     <small>{{ $salon->city }} • {{ $salon->owner->name ?? 'N/A' }}</small>
                 </div>
                 <div class="row-actions">
-                    <a href="{{ route('admin.salon-requests.show', $salon->id) }}" class="btn-outline"><i class="fas fa-eye"></i> View</a>
+                    <a href="{{ route('admin.salon-requests.show', $salon->id) }}" class="btn-view-teal"><i class="fas fa-eye"></i> View</a>
                     <form action="{{ route('admin.salon-requests.approve', $salon->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="btn-primary" onclick="return confirm('Approve this salon?')">Approve</button>

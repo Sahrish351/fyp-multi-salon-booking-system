@@ -4,7 +4,8 @@
 @push('styles')
 <style>
 :root {
-    --dpink: #c2185b;
+    --dpink: #FF6B9D;
+    --dpink-hover: #E85588;
     --dpink-lt: #fce4ec;
     --border: #e5e7eb;
 }
@@ -27,64 +28,94 @@
 .page-header h1 i { color: var(--dpink); margin-right: 0.5rem; }
 .page-header p { margin: 0; color: #6b7280; font-size: 0.85rem; }
 
-/* ── Stats Row - All Cards in One Line ── */
+/* ── Stats Row — pastel tiles matching the Appointments page reference (fixed height, centered icon/label/value) ── */
 .stats-row {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 0.8rem;
     margin-bottom: 1.5rem;
-    flex-wrap: nowrap;
-    overflow-x: auto;
 }
 .stat-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
+    flex: 1 1 0;
+    min-width: 150px;
+    height: 112px;
+    border-radius: 15px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 14px;
-    flex: 1;
-    min-width: 120px;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    justify-content: center;
+    gap: 0.28rem;
+    position: relative;
+    overflow: hidden;
+    padding: 0.7rem;
+    box-sizing: border-box;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 .stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.14);
 }
 .stat-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-size: 18px;
-    flex-shrink: 0;
+    font-size: 0.78rem;
+    z-index: 1;
 }
-.stat-icon.bg-danger { background: #ef4444; }
-.stat-icon.bg-warning { background: #f59e0b; }
-.stat-icon.bg-primary { background: #3b82f6; }
-.stat-icon.bg-success { background: #22c55e; }
-.stat-icon.bg-secondary { background: #6b7280; }
-.stat-icon.bg-dark { background: #374151; }
-
-.stat-info { flex: 1; min-width: 0; }
+.stat-info { text-align: center; position: relative; z-index: 1; }
 .stat-value {
-    font-size: 1.3rem;
+    font-size: 1.35rem;
     font-weight: 800;
-    color: #111827;
-    line-height: 1.2;
+    line-height: 1;
 }
 .stat-label {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.06em;
     font-weight: 700;
-    color: #9ca3af;
-    margin-top: 2px;
+    margin-top: 3px;
 }
+
+@media (max-width: 700px) {
+    .stat-card { flex: 1 1 calc(50% - 0.4rem); min-width: calc(50% - 0.4rem); height: 104px; }
+}
+
+/* Escalated — peachy orange */
+.stat-escalated { background: #FFDCC2; }
+.stat-escalated .stat-icon { background: rgba(255,154,84,0.35); color: #B5561A; }
+.stat-escalated .stat-value, .stat-escalated .stat-label { color: #B5561A; }
+
+/* Pending — butter yellow */
+.stat-pending { background: #FFF2B8; }
+.stat-pending .stat-icon { background: rgba(255,210,77,0.35); color: #A67A00; }
+.stat-pending .stat-value, .stat-pending .stat-label { color: #A67A00; }
+
+/* In Progress — periwinkle blue */
+.stat-progress { background: #D9DEF7; }
+.stat-progress .stat-icon { background: rgba(138,151,224,0.35); color: #4A54A8; }
+.stat-progress .stat-value, .stat-progress .stat-label { color: #4A54A8; }
+
+/* Resolved — mint green */
+.stat-resolved { background: #C8F0DF; }
+.stat-resolved .stat-icon { background: rgba(79,190,153,0.35); color: #1F7A5C; }
+.stat-resolved .stat-value, .stat-resolved .stat-label { color: #1F7A5C; }
+
+/* Closed — soft lavender purple */
+.stat-closed { background: #EDE0F7; }
+.stat-closed .stat-icon { background: rgba(155,109,209,0.35); color: #6B4FA0; }
+.stat-closed .stat-value, .stat-closed .stat-label { color: #6B4FA0; }
+
+/* Rejected — rose red, as requested */
+.stat-rejected { background: #FAD4D4; }
+.stat-rejected .stat-icon { background: rgba(200,60,60,0.3); color: #B71C1C; }
+.stat-rejected .stat-value, .stat-rejected .stat-label { color: #B71C1C; }
 
 /* ── Filter Bar ── */
 .filter-bar {
@@ -165,7 +196,7 @@
     transition: background 0.2s;
     white-space: nowrap;
 }
-.btn-search:hover { background: #ad1457; }
+.btn-search:hover { background: var(--dpink-hover); }
 .btn-clear {
     padding: 0.6rem 0.9rem;
     border-radius: 9px;
@@ -263,7 +294,7 @@
 .badge-resolved { background: #d1fae5; color: #065f46; }
 .badge-closed { background: #e5e7eb; color: #4b5563; }
 .badge-escalated { background: #fee2e2; color: #991b1b; }
-.badge-rejected { background: #f3f4f6; color: #6b7280; }
+.badge-rejected { background: #fdecea; color: #c0392b; }
 
 .btn-view {
     width: 30px; height: 30px;
@@ -285,8 +316,6 @@
 .pagination-wrapper { padding: 0.8rem 1.2rem; border-top: 1px solid var(--border); }
 
 @media (max-width: 768px) {
-    .stats-row { flex-wrap: wrap; }
-    .stat-card { min-width: 80px; flex: 1 1 calc(33% - 10px); }
     .filter-bar { flex-direction: column; }
     .search-wrapper, .filter-group { min-width: 100%; }
     .filter-actions { width: 100%; }
@@ -305,45 +334,45 @@
     </div>
 </div>
 
-{{-- ── Stats Row (All Cards in One Horizontal Line) ── --}}
+{{-- ── Stats Row (pastel tiles, same shape/height as the Appointments page) ── --}}
 <div class="stats-row">
-    <div class="stat-card">
-        <div class="stat-icon bg-danger"><i class="fas fa-exclamation-triangle"></i></div>
+    <div class="stat-card stat-escalated">
+        <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
         <div class="stat-info">
             <div class="stat-value">{{ $stats['escalated'] ?? 0 }}</div>
             <div class="stat-label">Escalated</div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon bg-warning"><i class="fas fa-clock"></i></div>
+    <div class="stat-card stat-pending">
+        <div class="stat-icon"><i class="fas fa-clock"></i></div>
         <div class="stat-info">
             <div class="stat-value">{{ $stats['pending'] ?? 0 }}</div>
             <div class="stat-label">Pending</div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon bg-primary"><i class="fas fa-spinner"></i></div>
+    <div class="stat-card stat-progress">
+        <div class="stat-icon"><i class="fas fa-spinner"></i></div>
         <div class="stat-info">
             <div class="stat-value">{{ $stats['in_progress'] ?? 0 }}</div>
             <div class="stat-label">In Progress</div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon bg-success"><i class="fas fa-check-circle"></i></div>
+    <div class="stat-card stat-resolved">
+        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
         <div class="stat-info">
             <div class="stat-value">{{ $stats['resolved'] ?? 0 }}</div>
             <div class="stat-label">Resolved</div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon bg-secondary"><i class="fas fa-check-double"></i></div>
+    <div class="stat-card stat-closed">
+        <div class="stat-icon"><i class="fas fa-check-double"></i></div>
         <div class="stat-info">
             <div class="stat-value">{{ $stats['closed'] ?? 0 }}</div>
             <div class="stat-label">Closed</div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon bg-dark"><i class="fas fa-times-circle"></i></div>
+    <div class="stat-card stat-rejected">
+        <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
         <div class="stat-info">
             <div class="stat-value">{{ $stats['rejected'] ?? 0 }}</div>
             <div class="stat-label">Rejected</div>

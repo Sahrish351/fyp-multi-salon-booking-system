@@ -5,7 +5,7 @@
 
 <style>
     :root {
-        --pk: #c2185b;
+        --pk: #FF6B9D;
         --pk-light: #fce4ec;
         --pk-bg: #fff0f7;
     }
@@ -92,7 +92,7 @@
     .badge-resolved { background: #d1fae5; color: #065f46; }
     .badge-closed { background: #e5e7eb; color: #4b5563; }
     .badge-escalated { background: #fee2e2; color: #991b1b; }
-    .badge-rejected { background: #f3f4f6; color: #6b7280; }
+    .badge-rejected { background: #fdecea; color: #c0392b; }
 
     /* ── Info Grid ── */
     .info-grid {
@@ -222,6 +222,22 @@
         box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
     }
 
+    /* ── View Attachment button — frozen cyan, matches the "view" buttons used elsewhere in admin ── */
+    .btn-attachment {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #e0f7fa;
+        color: #00838f;
+        border-radius: 8px;
+        padding: 6px 16px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+    .btn-attachment:hover { background: #00838f; color: #fff; }
+
     /* ── Timeline ── */
     .timeline {
         list-style: none;
@@ -282,7 +298,7 @@
     .form-control:focus {
         border-color: var(--pk);
         outline: none;
-        box-shadow: 0 0 0 3px rgba(194, 24, 91, 0.1);
+        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
     }
     .form-label {
         font-weight: 600;
@@ -357,15 +373,15 @@
 
             @if($complaint->image)
                 <div class="mt-3">
-                    <a href="{{ asset('storage/' . $complaint->image) }}" target="_blank" class="btn" style="background:#e8f0fe;color:#1e40af;border-radius:8px;padding:6px 16px;font-size:0.8rem;font-weight:600;text-decoration:none;">
-                        <i class="fas fa-image me-1"></i> View Attachment
+                    <a href="{{ asset('storage/' . $complaint->image) }}" target="_blank" class="btn-attachment">
+                        <i class="fas fa-image"></i> View Attachment
                     </a>
                 </div>
             @endif
 
             @if($complaint->rejection_reason)
-                <div class="mt-3" style="background:#fee2e2;border-radius:12px;padding:14px 18px;border-left:4px solid #ef4444;">
-                    <strong style="color:#991b1b;font-size:0.8rem;"><i class="fas fa-times-circle me-1"></i> Rejection Reason</strong>
+                <div class="mt-3" style="background:#fdecea;border-radius:12px;padding:14px 18px;border-left:4px solid #c0392b;">
+                    <strong style="color:#c0392b;font-size:0.8rem;"><i class="fas fa-times-circle me-1"></i> Rejection Reason</strong>
                     <p class="mb-0" style="color:#374151;font-size:0.85rem;margin-top:4px;">{{ $complaint->rejection_reason }}</p>
                 </div>
             @endif

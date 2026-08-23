@@ -4,7 +4,7 @@
 @section('content')
 <style>
 :root {
-    --rose:   #d4637a; --rose-lt:  #fdf0f3; --rose-h: #bf4f65;
+    --rose:   #FF6B9D; --rose-lt:  #fce4ec; --rose-h: #E85588;
     --sage:   #6b8f71; --sage-lt:  #f0f5f1;
     --slate:  #5c7a8a; --slate-lt: #eef3f6;
     --amber:  #b07d3a; --amber-lt: #fdf6ec;
@@ -40,9 +40,11 @@
 .detail-grid { display:grid; grid-template-columns:1fr 300px; gap:1.4rem; align-items:start; }
 @media(max-width:900px){ .detail-grid { grid-template-columns:1fr; } }
 
-/* ── Detail Card ── */
-.dcard { background:#fff; border:1px solid #ede9e4; border-radius:14px; overflow:hidden; margin-bottom:1.2rem; }
-.dcard:last-child { margin-bottom:0; }
+/* ── Unified Card (holds multiple sections stacked with dividers instead of separate boxes) ── */
+.dcard { background:#fff; border:1px solid #ede9e4; border-radius:14px; overflow:hidden; }
+
+/* Each internal section header/body pair — divided by a top border rather than being its own card */
+.dsection + .dsection { border-top:1px solid #f0ece7; }
 .dcard-head { padding:.9rem 1.4rem; border-bottom:1px solid #f5f2ee; display:flex; align-items:center; gap:.5rem; }
 .dcard-head i { color:var(--rose); font-size:.88rem; }
 .dcard-title { font-weight:700; font-size:.9rem; color:#2d2d2d; }
@@ -71,21 +73,6 @@
 .receipt-total .receipt-lbl { font-weight:700; color:#2d2d2d; font-size:.9rem; }
 .receipt-total .receipt-val { font-size:1.1rem; font-weight:800; color:var(--rose); }
 
-/* ── Action Buttons ── */
-.act-btn {
-    display:flex; align-items:center; justify-content:center; gap:.5rem;
-    width:100%; padding:.75rem 1rem; border-radius:10px; font-size:.9rem; font-weight:700;
-    cursor:pointer; border:none; transition:all .18s; margin-bottom:.65rem; text-decoration:none;
-    box-sizing:border-box;
-}
-.act-btn:last-child { margin-bottom:0; }
-.act-btn-primary { background:var(--rose); color:#fff; }
-.act-btn-primary:hover { background:var(--rose-h); transform:translateY(-1px); box-shadow:0 4px 14px rgba(212,99,122,.3); color:#fff; }
-.act-btn-sage { background:var(--sage-lt); color:var(--sage); border:1.5px solid rgba(107,143,113,.3); }
-.act-btn-sage:hover { background:var(--sage); color:#fff; }
-.act-btn-ghost { background:#f5f2ee; color:#8a8a8a; border:1.5px solid #e8e3dc; }
-.act-btn-ghost:hover { background:#ece8e3; color:#5a5a5a; }
-
 /* ── Status visual ── */
 .status-visual { text-align:center; padding:1rem 0; }
 .status-visual-icon { font-size:2.2rem; margin-bottom:.5rem; display:block; }
@@ -103,7 +90,7 @@
     background:#c0b8b0; flex-shrink:0;
 }
 .tl-dot-done { background:var(--sage); box-shadow:0 0 0 2px rgba(107,143,113,.3); }
-.tl-dot-cur  { background:var(--rose); box-shadow:0 0 0 2px rgba(212,99,122,.3); }
+.tl-dot-cur  { background:var(--rose); box-shadow:0 0 0 2px rgba(255,107,157,.3); }
 .tl-label { font-size:.83rem; font-weight:600; color:#4a4a4a; }
 .tl-sub   { font-size:.72rem; color:#9a9a9a; margin-top:.1rem; }
 </style>
@@ -112,7 +99,7 @@
 $badges = [
     'confirmed'        => ['bg'=>'#f0f5f1','color'=>'#6b8f71','icon'=>'fa-check-circle','label'=>'Confirmed',        'hero_bg'=>'#f0f5f1','hero_border'=>'rgba(107,143,113,.2)'],
     'pending_payment'  => ['bg'=>'#fdf6ec','color'=>'#b07d3a','icon'=>'fa-clock',       'label'=>'Pending Payment',  'hero_bg'=>'#fdf6ec','hero_border'=>'rgba(176,125,58,.2)'],
-    'payment_submitted'=> ['bg'=>'#fdf0f3','color'=>'#d4637a','icon'=>'fa-paper-plane',  'label'=>'Payment Submitted','hero_bg'=>'#fdf0f3','hero_border'=>'rgba(212,99,122,.2)'],
+    'payment_submitted'=> ['bg'=>'#fce4ec','color'=>'#FF6B9D','icon'=>'fa-paper-plane',  'label'=>'Payment Submitted','hero_bg'=>'#fce4ec','hero_border'=>'rgba(255,107,157,.2)'],
     'completed'        => ['bg'=>'#f4f1f7','color'=>'#7a6b8a','icon'=>'fa-star',         'label'=>'Completed',        'hero_bg'=>'#f4f1f7','hero_border'=>'rgba(122,107,138,.2)'],
     'cancelled'        => ['bg'=>'#fdf0f0','color'=>'#b84444','icon'=>'fa-ban',          'label'=>'Cancelled',        'hero_bg'=>'#fdf0f0','hero_border'=>'rgba(184,68,68,.2)'],
 ];
@@ -149,11 +136,11 @@ $pc = isset($appointment->payment) ? ($payBadges[$appointment->payment->status] 
 
 <div class="detail-grid">
 
-    {{-- ══ LEFT ══ --}}
-    <div>
+    {{-- ══ LEFT — Appointment Details + Payment Info merged into ONE card ══ --}}
+    <div class="dcard">
 
-        {{-- Appointment Details --}}
-        <div class="dcard">
+        {{-- Appointment Details section --}}
+        <div class="dsection">
             <div class="dcard-head"><i class="fas fa-calendar-check"></i><span class="dcard-title">Appointment Details</span></div>
             <div class="dcard-body">
                 <div class="info-grid">
@@ -216,9 +203,9 @@ $pc = isset($appointment->payment) ? ($payBadges[$appointment->payment->status] 
             </div>
         </div>
 
-        {{-- Payment Info --}}
-        @if($appointment->payment)
-        <div class="dcard">
+        {{-- Payment Info section (same card, divided by a top border) --}}
+        <div class="dsection">
+            @if($appointment->payment)
             <div class="dcard-head"><i class="fas fa-credit-card"></i><span class="dcard-title">Payment Information</span></div>
             <div class="dcard-body">
                 <div class="receipt-row">
@@ -253,10 +240,8 @@ $pc = isset($appointment->payment) ? ($payBadges[$appointment->payment->status] 
                     <span class="receipt-val">Rs. {{ number_format($appointment->total_amount ?? 0) }}</span>
                 </div>
             </div>
-        </div>
-        @else
-        {{-- No payment yet —  amount only --}}
-        <div class="dcard">
+            @else
+            {{-- No payment yet — amount only --}}
             <div class="dcard-head"><i class="fas fa-credit-card"></i><span class="dcard-title">Amount</span></div>
             <div class="dcard-body">
                 <div class="receipt-row receipt-total">
@@ -265,16 +250,16 @@ $pc = isset($appointment->payment) ? ($payBadges[$appointment->payment->status] 
                 </div>
                 <p style="font-size:.8rem;color:#9a9a9a;margin:.75rem 0 0;">No payment record yet.</p>
             </div>
+            @endif
         </div>
-        @endif
 
     </div>
 
-    {{-- ══ RIGHT ══ --}}
-    <div>
+    {{-- ══ RIGHT — Status + Timeline + Quick Info merged into ONE card ══ --}}
+    <div class="dcard">
 
-        {{-- Status (view-only — action buttons removed, this card now just shows what's happening) --}}
-        <div class="dcard">
+        {{-- Status section --}}
+        <div class="dsection">
             <div class="dcard-head"><i class="fas fa-bolt"></i><span class="dcard-title">Status</span></div>
             <div class="dcard-body">
 
@@ -315,8 +300,8 @@ $pc = isset($appointment->payment) ? ($payBadges[$appointment->payment->status] 
             </div>
         </div>
 
-        {{-- Status Timeline --}}
-        <div class="dcard">
+        {{-- Status Timeline section --}}
+        <div class="dsection">
             <div class="dcard-head"><i class="fas fa-stream"></i><span class="dcard-title">Status Timeline</span></div>
             <div class="dcard-body">
                 @php
@@ -366,8 +351,8 @@ $pc = isset($appointment->payment) ? ($payBadges[$appointment->payment->status] 
             </div>
         </div>
 
-        {{-- Quick Info --}}
-        <div class="dcard">
+        {{-- Quick Info section --}}
+        <div class="dsection">
             <div class="dcard-head"><i class="fas fa-info-circle"></i><span class="dcard-title">Quick Info</span></div>
             <div class="dcard-body">
                 <div class="receipt-row">

@@ -4,7 +4,7 @@
 @section('content')
 <style>
 :root {
-    --pk:      #E91E8C; --pk-lt:  #fce4ec; --pk-bg:  #fff0f7;
+    --pk:      #FF6B9D; --pk-lt:  #fce4ec; --pk-bg:  #fff0f7;
     --teal:    #0891b2;
     --green:   #16a34a;
     --amber:   #d97706;
@@ -44,7 +44,7 @@
 .rc-btn.excel { background:#16a34a; }
 .rc-btn.print { background:#0891b2; }
 
-.pk-icon      { background:linear-gradient(135deg,var(--pk),#c2185b); }
+.pk-icon      { background:linear-gradient(135deg,var(--pk),#E85588); }
 .teal-icon    { background:linear-gradient(135deg,var(--teal),#0e7490); }
 .green-icon   { background:linear-gradient(135deg,var(--green),#0d8a3e); }
 .amber-icon   { background:linear-gradient(135deg,var(--amber),#b45309); }

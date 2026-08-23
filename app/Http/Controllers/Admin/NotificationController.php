@@ -37,7 +37,10 @@ class NotificationController extends Controller
 
         $users = User::all();
         foreach ($users as $user) {
-            $user->notify(new CustomNotification($request->title, $request->message));
+            // FIX: CustomNotification expects 3 arguments (title, message, actionUrl).
+            // Calling it with only 2 caused an ArgumentCountError. Passing null
+            // explicitly for actionUrl keeps this consistent with notifyAdmins() below.
+            $user->notify(new CustomNotification($request->title, $request->message, null));
         }
 
         return back()->with('success', 'Notification sent to all users successfully.');
@@ -52,7 +55,8 @@ class NotificationController extends Controller
 
         $owners = User::where('role', 'owner')->get();
         foreach ($owners as $owner) {
-            $owner->notify(new CustomNotification($request->title, $request->message));
+            // FIX: same ArgumentCountError issue as sendToAll() above — pass null explicitly.
+            $owner->notify(new CustomNotification($request->title, $request->message, null));
         }
 
         return back()->with('success', 'Notification sent to all owners successfully.');

@@ -4,10 +4,10 @@
 @section('content')
 <style>
 :root {
-    --pk:      #E91E8C;
+    --pk:      #FF6B9D;
     --pk-lt:   #fce4ec;
     --pk-bg:   #fff0f7;
-    --pk-h:    #E91E8C;
+    --pk-h:    #E85588;
     --sage:    #5a8a62; --sage-lt:  #eaf3eb;
     --amber:   #c47f00; --amber-lt: #fff8e1;
     --purple:  #6d5cae; --purple-lt:#f0eeff;
@@ -32,33 +32,34 @@
 
 /* ---- ALL PILLS USE LIGHT PINK WHEN ACTIVE ---- */
 .sp-all.on, .sp-confirmed.on, .sp-pending.on, .sp-completed.on, .sp-cancelled.on {
-    background:#E91E8C !important;
+    background:#FF6B9D !important;
     color:#fff !important;
-    border-color:#E91E8C !important;
+    border-color:#FF6B9D !important;
 }
 
 /* ---- ALL PILLS USE LIGHT PINK ON HOVER ---- */
 .sp:hover, a.sp:hover, .sp-off:hover {
-    background:#E91E8C !important;
+    background:#E85588 !important;
     color:#fff !important;
-    border-color:#E91E8C !important;
+    border-color:#E85588 !important;
 }
 .sp:hover i { color:#fff !important; }
 
-/* ══ SUMMARY — compact muted-color tiles, clickable filters ── */
+/* ══ SUMMARY — light-pink family tiles, stretch to fill full page width ── */
 .sum-strip { display:flex; flex-wrap:wrap; gap:.8rem; margin-bottom:1.6rem; }
 .sum-tile {
-    width:112px; height:112px; flex:0 0 112px;
+    flex:1 1 0; min-width:150px; height:112px;
     border-radius:15px;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.28rem;
     text-decoration:none; cursor:pointer;
     position:relative; overflow:hidden; padding:.7rem;
-    transition:border-color .18s, background .18s;
+    transition:border-color .18s, background .18s, transform .18s;
     box-sizing:border-box;
     border:2px solid transparent;
     box-shadow:0 2px 6px rgba(0,0,0,.12);
 }
-@media(max-width:480px){ .sum-tile { width:calc(50% - .4rem); flex:0 0 calc(50% - .4rem); height:104px; } }
+.sum-tile:hover { transform:translateY(-2px); }
+@media(max-width:700px){ .sum-tile { flex:1 1 calc(50% - .4rem); min-width:calc(50% - .4rem); height:104px; } }
 .sum-tile-icon {
     position:absolute; top:10px; left:10px;
     width:28px; height:28px; border-radius:50%;
@@ -76,21 +77,33 @@
 /* ---- NO OUTLINE ON HOVER/ACTIVE ---- */
 .sum-tile:hover, .sum-tile.active { border-color:transparent !important; }
 
-/* Total / All — muted orange */
-.st-total   { background:#fd7e14; }
-.st-total .sum-tile-check { color:#c4650f; }
+/* Total / All — light orange (was solid orange) */
+.st-total   { background:#FFE0C2; }
+.st-total .sum-tile-icon { background:rgba(179,89,0,.15); color:#B35900; }
+.st-total .sum-tile-lbl  { color:#B35900; }
+.st-total .sum-tile-val  { color:#B35900; }
+.st-total .sum-tile-check { color:#B35900; }
 
-/* Today — muted purple */
-.st-today   { background:#7e57c2; }
-.st-today .sum-tile-check { color:#5e3aa3; }
+/* Today — light purple (was solid purple) */
+.st-today   { background:#E3DAF7; }
+.st-today .sum-tile-icon { background:rgba(94,58,163,.15); color:#5E3AA3; }
+.st-today .sum-tile-lbl  { color:#5E3AA3; }
+.st-today .sum-tile-val  { color:#5E3AA3; }
+.st-today .sum-tile-check { color:#5E3AA3; }
 
-/* Pending — muted golden yellow */
-.st-pending { background:#f1c232; }
-.st-pending .sum-tile-check { color:#a87b00; }
+/* Pending — light golden yellow (was solid yellow) */
+.st-pending { background:#FFF3C4; }
+.st-pending .sum-tile-icon { background:rgba(168,123,0,.15); color:#A87B00; }
+.st-pending .sum-tile-lbl  { color:#A87B00; }
+.st-pending .sum-tile-val  { color:#A87B00; }
+.st-pending .sum-tile-check { color:#A87B00; }
 
-/* Cancelled — muted red */
-.st-cancel  { background:#d32f2f; }
-.st-cancel .sum-tile-check { color:#b71c1c; }
+/* Cancelled — light red (was solid red) */
+.st-cancel  { background:#F9D6D6; }
+.st-cancel .sum-tile-icon { background:rgba(183,28,28,.15); color:#B71C1C; }
+.st-cancel .sum-tile-lbl  { color:#B71C1C; }
+.st-cancel .sum-tile-val  { color:#B71C1C; }
+.st-cancel .sum-tile-check { color:#B71C1C; }
 
 /* ── Filter Card ── */
 .filter-card { background:#fff; border:1px solid #ebebeb; border-radius:13px; overflow:hidden; margin-bottom:1.4rem; }
@@ -106,7 +119,7 @@
     border-radius:9px; font-size:.88rem; color:#1a1a1a;
     background:#fafafa; outline:none; transition:all .2s; box-sizing:border-box; font-family:inherit;
 }
-.fi:focus { border-color:var(--pk); box-shadow:0 0 0 3px rgba(233,30,140,.1); background:#fff; }
+.fi:focus { border-color:var(--pk); box-shadow:0 0 0 3px rgba(255,107,157,.1); background:#fff; }
 .fi-sw { position:relative; }
 .fi-sw i { position:absolute; left:.85rem; top:50%; transform:translateY(-50%); color:#ccc; font-size:.8rem; pointer-events:none; }
 .fi-sw .fi { padding-left:2.2rem; }
@@ -165,10 +178,10 @@
 .vbtn {
     display:inline-flex; align-items:center; gap:.28rem;
     padding:.38rem .82rem; border-radius:8px; font-size:.76rem; font-weight:700;
-    background:var(--pk-lt); color:var(--pk);
-    border:1.5px solid rgba(233,30,140,.2); text-decoration:none; transition:all .15s;
+    background:#e0f7fa; color:#00838f;
+    border:1.5px solid rgba(0,131,143,.25); text-decoration:none; transition:all .15s;
 }
-.vbtn:hover { background:var(--pk); color:#fff; }
+.vbtn:hover { background:#00838f; color:#fff; }
 
 .empty-st { text-align:center; padding:3rem 1rem; color:#ccc; }
 .empty-st i { font-size:2.2rem; margin-bottom:.7rem; opacity:.3; display:block; }
@@ -312,7 +325,7 @@ $hrefCancel  = route('admin.appointments.index', array_merge(request()->except('
             $sb = [
                 'confirmed'        =>['bg'=>'#eaf3eb','color'=>'#3d7045','dot'=>'#5a8a62','label'=>'Confirmed'],
                 'pending_payment'  =>['bg'=>'#fff8e1','color'=>'#a06800','dot'=>'#c47f00','label'=>'Pending'],
-                'payment_submitted'=>['bg'=>'#fde9f4','color'=>'#b0156a','dot'=>'#e91e8c','label'=>'Pay Submitted'],
+                'payment_submitted'=>['bg'=>'#fde9f4','color'=>'#b0156a','dot'=>'#FF6B9D','label'=>'Pay Submitted'],
                 'completed'        =>['bg'=>'#f0eeff','color'=>'#5248a0','dot'=>'#6d5cae','label'=>'Completed'],
                 'cancelled'        =>['bg'=>'#fdecea','color'=>'#a02820','dot'=>'#c0392b','label'=>'Cancelled'],
             ];

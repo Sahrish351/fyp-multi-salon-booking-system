@@ -30,44 +30,50 @@
 
     /* ── Search & Filter Bar ── */
     .search-filter-bar {
-        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-        padding: 16px 24px; border-bottom: 1px solid var(--gl-border);
-        background: var(--gl-pink-light);
+        display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap;
+        padding: 20px 24px; border-bottom: 1px solid var(--gl-border);
+        background: #fff;
     }
-    .search-wrap {
-        position: relative; flex: 1; min-width: 200px;
-    }
+    .search-wrap { position: relative; flex: 2; min-width: 240px; }
     .search-wrap i {
-        position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
-        color: var(--gl-text-lt); font-size: 0.82rem; pointer-events: none;
+        position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+        color: var(--gl-text-lt); font-size: 0.85rem; pointer-events: none;
     }
     .search-input {
-        width: 100%; padding: 9px 14px 9px 36px;
-        border: 1.5px solid var(--gl-border); border-radius: 12px;
-        font-size: 0.85rem; color: var(--gl-text); background: #fff;
+        width: 100%; padding: 11px 16px 11px 40px;
+        border: 1.5px solid var(--gl-border); border-radius: 9px;
+        font-size: 0.9rem; color: var(--gl-text); background: #f9fafb;
         outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
         box-sizing: border-box;
     }
-    .search-input:focus { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.1); }
+    .search-input:focus { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.1); background: #fff; }
     .search-input::placeholder { color: var(--gl-text-lt); }
 
-    .filter-select {
-        padding: 9px 14px; border: 1.5px solid var(--gl-border); border-radius: 12px;
-        font-size: 0.85rem; color: var(--gl-text); background: #fff;
-        outline: none; cursor: pointer; min-width: 130px;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        appearance: none; -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23B98BA6' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat; background-position: right 10px center;
-        padding-right: 30px;
+    .filter-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 150px; }
+    .filter-group label {
+        font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.06em; color: var(--gl-text-lt);
     }
-    .filter-select:focus { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.1); }
+
+    .filter-select {
+        width: 100%; padding: 11px 16px; border: 1.5px solid var(--gl-border); border-radius: 9px;
+        font-size: 0.88rem; color: var(--gl-text); background: #f9fafb;
+        outline: none; cursor: pointer;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        appearance: none; -webkit-appearance: none; box-sizing: border-box;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23B98BA6' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 12px center;
+        padding-right: 34px;
+    }
+    .filter-select:focus { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.1); background: #fff; }
+
+    .filter-actions { display: flex; gap: 10px; align-items: flex-end; }
 
     .btn-search {
         display: inline-flex; align-items: center; gap: 7px;
-        padding: 9px 18px; border-radius: 12px; border: none;
+        padding: 11px 20px; border-radius: 9px; border: none;
         background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark));
-        color: #fff; font-size: 0.84rem; font-weight: 700; cursor: pointer;
+        color: #fff; font-size: 0.88rem; font-weight: 700; cursor: pointer;
         box-shadow: 0 4px 12px rgba(255,107,157,0.3);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
         white-space: nowrap; text-decoration: none;
@@ -76,10 +82,10 @@
 
     .btn-reset {
         display: inline-flex; align-items: center; gap: 7px;
-        padding: 9px 16px; border-radius: 12px;
+        padding: 11px 18px; border-radius: 9px;
         border: 1.5px solid var(--gl-border);
         background: #fff; color: var(--gl-text-lt);
-        font-size: 0.84rem; font-weight: 600; cursor: pointer;
+        font-size: 0.88rem; font-weight: 600; cursor: pointer;
         transition: all 0.15s ease; white-space: nowrap; text-decoration: none;
     }
     .btn-reset:hover { border-color: var(--gl-pink); color: var(--gl-pink); background: var(--gl-pink-light); }
@@ -177,9 +183,10 @@
     @media (max-width: 640px) {
         .page-header-row { align-items: stretch; }
         .btn-add { justify-content: center; }
-        .search-filter-bar { flex-direction: column; }
-        .search-wrap { width: 100%; }
-        .filter-select { width: 100%; }
+        .search-filter-bar { flex-direction: column; align-items: stretch; }
+        .search-wrap, .filter-group { width: 100%; min-width: 100%; }
+        .filter-actions { width: 100%; }
+        .btn-search, .btn-reset { flex: 1; justify-content: center; }
         .pagination-wrapper { justify-content: center; }
         .pagination-info { width: 100%; text-align: center; }
     }
@@ -215,25 +222,32 @@
             >
         </div>
 
-        <select name="city" class="filter-select">
-            <option value="">All Cities</option>
-            @foreach($cities ?? [] as $city)
-                <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
-            @endforeach
-        </select>
+        <div class="filter-group">
+            <label>City</label>
+            <select name="city" class="filter-select">
+                <option value="">All Cities</option>
+                @foreach($cities ?? [] as $city)
+                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
+                @endforeach
+            </select>
+        </div>
 
-        <select name="status" class="filter-select">
-            <option value="">All Status</option>
-            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-            <option value="pending"  {{ request('status') == 'pending'  ? 'selected' : '' }}>Pending</option>
-            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-        </select>
+        <div class="filter-group">
+            <label>Status</label>
+            <select name="status" class="filter-select">
+                <option value="">All Status</option>
+                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                <option value="pending"  {{ request('status') == 'pending'  ? 'selected' : '' }}>Pending</option>
+                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+            </select>
+        </div>
 
-        <button type="submit" class="btn-search"><i class="fas fa-search"></i> Search</button>
-
-        @if(request()->hasAny(['search','city','status']))
-            <a href="{{ route('admin.salons.index') }}" class="btn-reset"><i class="fas fa-times"></i> Reset</a>
-        @endif
+        <div class="filter-actions">
+            <button type="submit" class="btn-search"><i class="fas fa-search"></i> Search</button>
+            @if(request()->hasAny(['search','city','status']))
+                <a href="{{ route('admin.salons.index') }}" class="btn-reset"><i class="fas fa-times"></i> Reset</a>
+            @endif
+        </div>
     </form>
 
     <div class="table-responsive">

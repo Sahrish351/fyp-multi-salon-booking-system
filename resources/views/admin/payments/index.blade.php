@@ -4,7 +4,7 @@
 @section('content')
 <style>
     :root {
-        --pm-pink:   #d4637a;
+        --pm-pink:   #FF6B9D;
         --pm-sage:   #6b8f71;
         --pm-sage-lt:#f0f5f1;
         --pm-amber:  #b07d3a;
@@ -68,7 +68,7 @@
     }
     .pm-filter-input:focus, .pm-filter-select:focus {
         border-color: var(--pm-pink);
-        box-shadow: 0 0 0 3px rgba(212,99,122,.1);
+        box-shadow: 0 0 0 3px rgba(255, 107, 157,.1);
         background: #fff;
     }
     .pm-filter-actions { display: flex; gap: 8px; flex: 0 0 auto; }
@@ -83,7 +83,7 @@
         cursor: pointer;
         white-space: nowrap;
     }
-    .btn-filter-go:hover { background: #bf4f65; }
+    .btn-filter-go:hover { background: #E85588; }
     .btn-filter-clear {
         padding: 9px 16px;
         border-radius: 9px;
@@ -117,6 +117,22 @@
     .badge-method  { background: var(--pm-slate-lt); color: var(--pm-slate); }
 
     .pagination-wrapper { margin-top: 18px; }
+
+    /* View button — frozy teal, stays frozy (no hover color change) */
+    .btn-view-frozy {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 9px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        background: #00838f;
+        color: #fff;
+        border: none;
+        text-decoration: none;
+        white-space: nowrap;
+    }
 </style>
 
 <div class="pm-header-row">
@@ -196,7 +212,7 @@
                     </td>
                     <td>{{ $pay->created_at->format('d M Y') }}</td>
                     <td>
-                        <a href="{{ route('admin.payments.show', $pay->id) }}" class="btn-outline">
+                        <a href="{{ route('admin.payments.show', $pay->id) }}" class="btn-view-frozy">
                             <i class="fas fa-eye"></i> View
                         </a>
                     </td>

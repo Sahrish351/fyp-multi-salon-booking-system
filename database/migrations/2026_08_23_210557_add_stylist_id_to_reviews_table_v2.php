@@ -13,8 +13,8 @@ return new class extends Migration
         }
 
         Schema::table('reviews', function (Blueprint $table) {
-            $table->foreignId('stylist_id')->nullable()->constrained('stylists')->onDelete('set null');
-            $table->index('stylist_id');
+            $table->unsignedBigInteger('stylist_id')->nullable()->after('salon_id');
+            $table->foreign('stylist_id')->references('id')->on('stylists')->onDelete('cascade');
         });
     }
 

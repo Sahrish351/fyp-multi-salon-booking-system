@@ -4,9 +4,9 @@
 @push('styles')
 <style>
     :root { 
-        --pk: #e91e8c; 
-        --pk-lt: #fde9f4; 
-        --pk-h: #c2177a; 
+        --pk: #FF6B9D; 
+        --pk-lt: #fce4ec; 
+        --pk-h: #E85588; 
     }
     .btn-back {
         display: inline-flex;
@@ -149,6 +149,15 @@
     .flag-no {
         background: #eaf3eb;
         color: #3d7045;
+    }
+
+    /* ══ RESPONSIVE — small screens (phones) ══ */
+    @media(max-width:600px){
+        .dcard-head { padding:.7rem 1rem; }
+        .dcard-body { padding:1rem; }
+        .info-grid { gap:.8rem; }
+        .btn-back { width:100%; justify-content:center; }
+        .ab { font-size:.76rem; padding:.4rem .8rem; }
     }
 </style>
 @endpush
