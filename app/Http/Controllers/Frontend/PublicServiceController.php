@@ -3,74 +3,43 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Salon;
 use App\Models\Service;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Models\Salon;
+use Illuminate\Support\Facades\Auth;
 
 class PublicServiceController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $services = Service::with(['salon', 'category'])
-            ->whereHas('salon', function($q) {
-                $q->where('status', 'approved');
+        $allowedCategories = ['hair', 'makeup', 'nails', 'spa', 'bridal', 'facial', 'waxing', 'threading'];
+
+        $categories = Category::all()
+            ->unique(function ($cat) {
+                return strtolower(trim($cat->name));
             })
-            ->where('is_active', true)
-            ->when($request->category, fn($q) => $q->where('category_id', $request->category))
-            ->when($request->city, function($q) use ($request) {
-                $q->whereHas('salon', fn($q2) => $q2->where('city', $request->city));
-            })
-            ->when($request->search, fn($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->filter(function ($cat) use ($allowedCategories) {
+                return in_array(strtolower(trim($cat->name)), $allowedCategories);
+            });
+
+        $services = Service::with(['category', 'salon'])
             ->latest()
-            ->paginate(16);
+            ->get()
+            ->unique(function ($svc) {
+                return strtolower(trim($svc->name));
+            });
 
-        $categories = Category::where('is_active', true)->get();
-        $cities = Salon::where('status', 'approved')->distinct('city')->pluck('city');
+        // Logged-in Owner ka salon sirf 'owner_id' se fetch karein
+        $userSalon = null;
+        if (Auth::check() && Auth::user()->isOwner()) {
+            $userSalon = Salon::where('owner_id', Auth::id())->first();
+        }
 
-        return view('frontend.services.index', compact('services', 'categories', 'cities'));
+        return view('frontend.services.index', compact('services', 'categories', 'userSalon'));
     }
 
     public function show($salonSlug, $serviceId)
     {
-        $salon = Salon::where('slug', $salonSlug)
-            ->where('status', 'approved')
-            ->firstOrFail();
-
-        $service = Service::where('id', $serviceId)
-            ->where('salon_id', $salon->id)
-            ->where('is_active', true)
-            ->firstOrFail();
-
-        $relatedServices = Service::where('salon_id', $salon->id)
-            ->where('category_id', $service->category_id)
-            ->where('id', '!=', $service->id)
-            ->where('is_active', true)
-            ->take(4)
-            ->get();
-
-        $stylists = $salon->stylists()
-            ->where('is_active', true)
-            ->get();
-
-        return view('frontend.services.show', compact('salon', 'service', 'relatedServices', 'stylists'));
-    }
-
-    public function byCategory($categorySlug)
-    {
-        $category = Category::where('slug', $categorySlug)
-            ->where('is_active', true)
-            ->firstOrFail();
-
-        $services = Service::with(['salon', 'category'])
-            ->whereHas('salon', function($q) {
-                $q->where('status', 'approved');
-            })
-            ->where('category_id', $category->id)
-            ->where('is_active', true)
-            ->latest()
-            ->paginate(16);
-
-        return view('frontend.services.by-category', compact('category', 'services'));
+        return redirect()->route('salons.show', $salonSlug);
     }
 }

@@ -811,14 +811,14 @@
     <p>Whatever you're in the mood for, there's a salon ready to deliver it.</p>
   </div>
   <div class="cat-grid reveal-stagger">
-    <a href="{{ route('salons.index') }}?category=hair" class="cat-tile"><div class="cat-icon"><i class="fas fa-cut"></i></div><span>Hair</span></a>
-    <a href="{{ route('salons.index') }}?category=nails" class="cat-tile"><div class="cat-icon"><i class="fas fa-hand-sparkles"></i></div><span>Nails</span></a>
-    <a href="{{ route('salons.index') }}?category=bridal" class="cat-tile"><div class="cat-icon"><i class="fas fa-ring"></i></div><span>Bridal</span></a>
-    <a href="{{ route('salons.index') }}?category=makeup" class="cat-tile"><div class="cat-icon"><i class="fas fa-brush"></i></div><span>Makeup</span></a>
-    <a href="{{ route('salons.index') }}?category=spa" class="cat-tile"><div class="cat-icon"><i class="fas fa-spa"></i></div><span>Spa &amp; Massage</span></a>
-    <a href="{{ route('salons.index') }}?category=skincare" class="cat-tile"><div class="cat-icon"><i class="fas fa-face-smile"></i></div><span>Skincare</span></a>
-    <a href="{{ route('salons.index') }}?category=mehndi" class="cat-tile"><div class="cat-icon"><i class="fas fa-palette"></i></div><span>Mehndi</span></a>
-    <a href="{{ route('salons.index') }}?category=men" class="cat-tile"><div class="cat-icon"><i class="fas fa-user-tie"></i></div><span>Men's Grooming</span></a>
+    <a href="{{ route('services.index') }}?category=Hair" class="cat-tile"><div class="cat-icon"><i class="fas fa-cut"></i></div><span>Hair</span></a>
+    <a href="{{ route('services.index') }}?category=Nails" class="cat-tile"><div class="cat-icon"><i class="fas fa-hand-sparkles"></i></div><span>Nails</span></a>
+    <a href="{{ route('services.index') }}?category=Bridal" class="cat-tile"><div class="cat-icon"><i class="fas fa-ring"></i></div><span>Bridal</span></a>
+    <a href="{{ route('services.index') }}?category=Makeup" class="cat-tile"><div class="cat-icon"><i class="fas fa-brush"></i></div><span>Makeup</span></a>
+    <a href="{{ route('services.index') }}?category=Spa" class="cat-tile"><div class="cat-icon"><i class="fas fa-spa"></i></div><span>Spa &amp; Massage</span></a>
+    <a href="{{ route('services.index') }}?category=Skincare" class="cat-tile"><div class="cat-icon"><i class="fas fa-face-smile"></i></div><span>Skincare</span></a>
+    <a href="{{ route('services.index') }}?category=Mehndi" class="cat-tile"><div class="cat-icon"><i class="fas fa-palette"></i></div><span>Mehndi</span></a>
+    <a href="{{ route('services.index') }}?category=Men" class="cat-tile"><div class="cat-icon"><i class="fas fa-user-tie"></i></div><span>Men's Grooming</span></a>
   </div>
 </section>
  
