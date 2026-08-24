@@ -29,7 +29,7 @@ class PublicServiceController extends Controller
                 return strtolower(trim($svc->name));
             });
 
-        // Logged-in Owner ka salon sirf 'owner_id' se fetch karein
+    
         $userSalon = null;
         if (Auth::check() && Auth::user()->isOwner()) {
             $userSalon = Salon::where('owner_id', Auth::id())->first();

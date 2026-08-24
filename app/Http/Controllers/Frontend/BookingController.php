@@ -1,7 +1,7 @@
 <?php
-
+ 
 namespace App\Http\Controllers\Frontend;
-
+ 
 use App\Http\Controllers\Controller;
 use App\Models\Salon;
 use App\Models\Service;
@@ -19,8 +19,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OwnerNotificationEmail;
 use Carbon\Carbon;
-
+ 
 class BookingController extends Controller
 {
     public function step1Services($salon_id)
@@ -28,14 +30,14 @@ class BookingController extends Controller
         $salon = Salon::findOrFail($salon_id);
         $services = Service::where('salon_id', $salon->id)->get();
         $categories = Category::all();
-
+ 
         return view('frontend.booking.step-1-services', compact('salon', 'services', 'categories'));
     }
-
+ 
     public function postStep1Services(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
-
+ 
         if ($request->has('service_ids') && count(array_filter($request->service_ids)) > 0) {
             $ids = array_filter($request->service_ids);
             Session::put('booking_service_id',  $ids[0]);
@@ -46,37 +48,37 @@ class BookingController extends Controller
         } else {
             return back()->with('error', 'Please select at least one service.');
         }
-
+ 
         Session::put('booking_salon_id', $salon->id);
-
+ 
         return redirect()->route('booking.step2', $salon->id);
     }
-
+ 
     public function step2Stylist($salon_id)
     {
         $salon     = Salon::findOrFail($salon_id);
         $serviceId = Session::get('booking_service_id');
-
+ 
         if (!$serviceId || Session::get('booking_salon_id') != $salon_id) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Please select a service first.');
         }
-
+ 
         $service  = Service::findOrFail($serviceId);
         $stylists = Stylist::where('salon_id', $salon->id)->get();
-
+ 
         return view('frontend.booking.step-2-stylist', compact('salon', 'service', 'stylists'));
     }
-
+ 
     public function postStep2Stylist(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
-
+ 
         if (Session::get('booking_salon_id') != $salon_id) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Your booking session doesn\'t match this salon. Please start again.');
         }
-
+ 
         if ($request->stylist_id === 'any') {
             $stylist = Stylist::where('salon_id', $salon->id)->inRandomOrder()->first();
             if (!$stylist) {
@@ -87,53 +89,53 @@ class BookingController extends Controller
             $request->validate(['stylist_id' => 'required|exists:stylists,id']);
             Session::put('booking_stylist_id', $request->stylist_id);
         }
-
+ 
         return redirect()->route('booking.step3', $salon->id);
     }
-
+ 
     public function step3DateTime($salon_id)
     {
         $salon     = Salon::findOrFail($salon_id);
         $serviceId = Session::get('booking_service_id');
         $stylistId = Session::get('booking_stylist_id');
-
+ 
         if (!$serviceId || !$stylistId || Session::get('booking_salon_id') != $salon_id) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Please complete previous steps first.');
         }
-
+ 
         $service = Service::findOrFail($serviceId);
         $stylist = Stylist::findOrFail($stylistId);
-
+ 
         return view('frontend.booking.step-3-datetime', compact('salon', 'service', 'stylist'));
     }
-
+ 
     public function postStep3DateTime(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
-
+ 
         if (Session::get('booking_salon_id') != $salon_id) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Your booking session doesn\'t match this salon. Please start again.');
         }
-
+ 
         if ($request->has('join_waitlist') && $request->join_waitlist == '1') {
             $request->validate([
                 'appointment_date' => 'required|date',
             ]);
-
+ 
             Session::put('booking_date', $request->appointment_date);
             Session::put('booking_time', null);
             Session::put('booking_is_waitlist', true);
-
+ 
             return redirect()->route('booking.step4', $salon->id);
         }
-
+ 
         $request->validate([
             'time_slot_id'     => 'required',
             'appointment_date' => 'required|date_format:Y-m-d',
         ]);
-
+ 
         // Fix: Agar TimeSlot ID pass hui hai toh DB se actual start_time fetch karein
         $bookingTime = $request->time_slot_id;
         if (is_numeric($request->time_slot_id)) {
@@ -142,14 +144,14 @@ class BookingController extends Controller
                 $bookingTime = $slot->start_time ?? $slot->time;
             }
         }
-
+ 
         Session::put('booking_time', $bookingTime);
         Session::put('booking_date', $request->appointment_date);
         Session::put('booking_is_waitlist', false);
-
+ 
         return redirect()->route('booking.step4', $salon->id);
     }
-
+ 
     public function step4Payment($salon_id)
     {
         $salon       = Salon::findOrFail($salon_id);
@@ -158,29 +160,29 @@ class BookingController extends Controller
         $bookingTime = Session::get('booking_time');
         $bookingDate = Session::get('booking_date');
         $isWaitlist  = Session::get('booking_is_waitlist', false);
-
+ 
         if (Session::get('booking_salon_id') != $salon_id) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Your booking session doesn\'t match this salon. Please start again.');
         }
-
+ 
         if (!$serviceId || !$stylistId) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Please complete all booking steps.');
         }
-
+ 
         if (!$bookingDate || (!$bookingTime && !$isWaitlist)) {
             return redirect()->route('booking.step3', $salon->id)
                 ->with('error', 'Please select a date and time first.');
         }
-
+ 
         $service = Service::findOrFail($serviceId);
         $stylist = Stylist::findOrFail($stylistId);
-
+ 
         // Safe Carbon Parsing
         $startTime = null;
         $endTime   = null;
-
+ 
         if (!$isWaitlist) {
             try {
                 $parsedTime = Carbon::parse($bookingTime);
@@ -198,7 +200,7 @@ class BookingController extends Controller
                 }
             }
         }
-
+ 
         $slot = $isWaitlist
             ? (object) [
                 'slot_date'   => $bookingDate,
@@ -212,32 +214,32 @@ class BookingController extends Controller
                 'end_time'    => $endTime ?? '10:00:00',
                 'is_waitlist' => false,
             ];
-
+ 
         return view('frontend.booking.step-4-payment', compact(
             'salon', 'service', 'stylist', 'slot'
         ));
     }
-
+ 
     public function postPayment(Request $request, $salon_id)
     {
         $salon = Salon::findOrFail($salon_id);
-
+ 
         if (Session::get('booking_salon_id') != $salon_id) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Your booking session doesn\'t match this salon. Please start again.');
         }
-
+ 
         $serviceId   = Session::get('booking_service_id');
         $stylistId   = Session::get('booking_stylist_id');
         $bookingTime = Session::get('booking_time');
         $bookingDate = Session::get('booking_date');
         $isWaitlist  = Session::get('booking_is_waitlist', false);
-
+ 
         if (!$serviceId || !$stylistId || !$bookingDate || (!$bookingTime && !$isWaitlist)) {
             return redirect()->route('booking.step1', $salon->id)
                 ->with('error', 'Session expired. Please start again.');
         }
-
+ 
         $request->validate([
             'payment_method'  => 'required|in:easypaisa,jazzcash,bank',
             'transaction_ref' => 'required|string|max:255',
@@ -248,12 +250,17 @@ class BookingController extends Controller
             'screenshot.image'    => 'The file must be an image.',
             'screenshot.max'      => 'Screenshot must be under 5MB.',
         ]);
-
+ 
         $service        = Service::findOrFail($serviceId);
         $client         = Auth::user();
         $screenshotPath = $request->file('screenshot')->store('payment-screenshots', 'public');
         $bookingRef     = 'GLM-' . strtoupper(substr(uniqid(), -6));
-
+ 
+        // Track details for the single combined owner email sent at the end
+        $emailEventLabel = null;
+        $emailEventDetails = '';
+        $formattedTime = null;
+ 
         if ($isWaitlist) {
             $appointment = Appointment::create([
                 'booking_ref'      => $bookingRef,
@@ -269,10 +276,10 @@ class BookingController extends Controller
                 'status'           => 'pending_payment',
                 'notes'            => 'Waitlist — awaiting slot assignment',
             ]);
-
+ 
             $waitlistPosition = Waitlist::where('salon_id', $salon->id)
                                     ->where('status', 'waiting')->count() + 1;
-
+ 
             Waitlist::create([
                 'client_id'      => Auth::id(),
                 'salon_id'       => $salon->id,
@@ -284,7 +291,7 @@ class BookingController extends Controller
                 'status'         => 'waiting',
                 'position'       => $waitlistPosition,
             ]);
-
+ 
             try {
                 NotificationHelper::send(
                     $salon->id,
@@ -298,7 +305,14 @@ class BookingController extends Controller
             } catch (\Exception $e) {
                 Log::error('Waitlist join notification error: ' . $e->getMessage());
             }
-
+ 
+            $emailEventLabel = "⏳ New Waitlist Signup";
+            $emailEventDetails = "Client <strong>{$client->name}</strong> has joined the waitlist for your salon.<br><br>" .
+                "<strong>Service:</strong> {$service->name}<br>" .
+                "<strong>Preferred Date:</strong> " . Carbon::parse($bookingDate)->format('M d, Y') . "<br>" .
+                "<strong>Waitlist Position:</strong> #{$waitlistPosition}<br>" .
+                "<strong>Booking Reference:</strong> {$bookingRef}";
+ 
         } else {
             try {
                 $parsedTime = Carbon::parse($bookingTime);
@@ -314,7 +328,7 @@ class BookingController extends Controller
                     }
                 }
             }
-
+ 
             $appointment = Appointment::create([
                 'booking_ref'      => $bookingRef,
                 'client_id'        => Auth::id(),
@@ -328,9 +342,10 @@ class BookingController extends Controller
                 'advance_amount'   => 100,
                 'status'           => 'pending_payment',
             ]);
-
+ 
+            $formattedTime = isset($parsedTime) ? $parsedTime->format('h:i A') : $bookingTime;
+ 
             try {
-                $formattedTime = isset($parsedTime) ? $parsedTime->format('h:i A') : $bookingTime;
                 NotificationHelper::send(
                     $salon->id,
                     'appointment',
@@ -343,9 +358,16 @@ class BookingController extends Controller
             } catch (\Exception $e) {
                 Log::error('Appointment booking notification error: ' . $e->getMessage());
             }
+ 
+            $emailEventLabel = "📅 New Appointment Booked";
+            $emailEventDetails = "Client <strong>{$client->name}</strong> has booked a new appointment at your salon.<br><br>" .
+                "<strong>Service:</strong> {$service->name}<br>" .
+                "<strong>Date:</strong> " . Carbon::parse($bookingDate)->format('M d, Y') . "<br>" .
+                "<strong>Time:</strong> {$formattedTime}<br>" .
+                "<strong>Booking Reference:</strong> {$bookingRef}";
         }
-
-        Payment::create([
+ 
+        $payment = Payment::create([
             'appointment_id'  => $appointment->id,
             'client_id'       => Auth::id(),
             'salon_id'        => $salon->id,
@@ -356,7 +378,7 @@ class BookingController extends Controller
             'screenshot'      => $screenshotPath,
             'status'          => 'pending',
         ]);
-
+ 
         try {
             NotificationHelper::send(
                 $salon->id,
@@ -370,15 +392,37 @@ class BookingController extends Controller
         } catch (\Exception $e) {
             Log::error('Payment notification error: ' . $e->getMessage());
         }
-
+ 
+        // 📧 Single combined email to Salon Owner — covers booking/waitlist + payment together
+        // (This is the block that was completely missing before, which is why no mail was going out)
+        try {
+            $salonWithOwner = Salon::with('owner')->find($salon->id);
+            $ownerEmail = $salonWithOwner->owner->email ?? $salonWithOwner->email ?? config('mail.from.address');
+ 
+            if ($ownerEmail) {
+                $emailSubject = $emailEventLabel . " & Payment Received — " . $bookingRef;
+                $emailBody = $emailEventDetails . "<br><br><hr style='border:none;border-top:1px solid #f0e8ed;'><br>" .
+                    "💰 <strong>Payment Submitted</strong><br>" .
+                    "<strong>Amount:</strong> PKR 100<br>" .
+                    "<strong>Payment Method:</strong> " . ucfirst($request->payment_method) . "<br>" .
+                    "<strong>Transaction Reference:</strong> {$request->transaction_ref}";
+ 
+                Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            } else {
+                Log::warning('BookingController: No owner email found for salon ID ' . $salon->id);
+            }
+        } catch (\Exception $e) {
+            Log::error('BookingController owner email error: ' . $e->getMessage());
+        }
+ 
         Session::forget([
             'booking_service_id', 'booking_service_ids', 'booking_stylist_id',
             'booking_time', 'booking_date', 'booking_salon_id', 'booking_is_waitlist',
         ]);
-
+ 
         return view('frontend.booking.confirmation', compact('appointment'));
     }
-
+ 
    
     public function getSlots(Request $request, $salon_id)
     {
@@ -386,16 +430,16 @@ class BookingController extends Controller
             $salon     = Salon::findOrFail($salon_id);
             $date      = $request->query('date');
             $stylistId = $request->query('stylist_id') ?? Session::get('booking_stylist_id');
-
+ 
             if (!$date || !$stylistId) {
                 return response()->json(['slots' => [], 'holiday' => false]);
             }
-
+ 
            
             $isHoliday = false;
             if (class_exists(\App\Models\StylistHoliday::class)) {
                 $holidayQuery = StylistHoliday::where('stylist_id', $stylistId);
-
+ 
                 if (Schema::hasColumn('stylist_holidays', 'date')) {
                     $holidayQuery->whereDate('date', $date);
                     $isHoliday = $holidayQuery->exists();
@@ -410,11 +454,11 @@ class BookingController extends Controller
                     $isHoliday = $holidayQuery->exists();
                 }
             }
-
+ 
             if ($isHoliday) {
                 return response()->json(['slots' => [], 'holiday' => true]);
             }
-
+ 
            
             $bookedTimes = Appointment::where('salon_id', $salon->id)
                 ->where('stylist_id', $stylistId)
@@ -423,32 +467,32 @@ class BookingController extends Controller
                 ->pluck('start_time')
                 ->map(fn($t) => Carbon::parse($t)->format('H:i'))
                 ->toArray();
-
+ 
            
             $slotsQuery = TimeSlot::where('salon_id', $salon->id);
-
+ 
             if (Schema::hasColumn('time_slots', 'stylist_id')) {
                 $slotsQuery->where(function($q) use ($stylistId) {
                     $q->where('stylist_id', $stylistId)->orWhereNull('stylist_id');
                 });
             }
-
+ 
             if (Schema::hasColumn('time_slots', 'slot_date')) {
                 $slotsQuery->where(function($q) use ($date) {
                     $q->where('slot_date', $date)->orWhereNull('slot_date');
                 });
             }
-
+ 
             $dbSlots = $slotsQuery->orderBy('start_time', 'asc')->get();
             $slots = [];
-
+ 
             foreach ($dbSlots as $slot) {
                 $slotTime = $slot->start_time ?? $slot->time;
                 $timeStr  = Carbon::parse($slotTime)->format('H:i');
                 $label    = Carbon::parse($slotTime)->format('h:i A');
-
+ 
                 $isAvailable = ($slot->status ?? 'available') === 'available' && !in_array($timeStr, $bookedTimes);
-
+ 
                 $slots[] = [
                     'id'        => $slot->id,
                     'time'      => $slotTime, 
@@ -457,21 +501,21 @@ class BookingController extends Controller
                     'available' => (bool)$isAvailable,
                 ];
             }
-
+ 
             return response()->json(['slots' => $slots, 'holiday' => false]);
-
+ 
         } catch (\Exception $e) {
             Log::error('Slot fetch error: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
+ 
     public function confirmation($booking_id)
     {
         $booking = Appointment::with(['salon', 'service', 'stylist'])
             ->where('client_id', Auth::id())
             ->findOrFail($booking_id);
-
+ 
         return view('frontend.booking.confirmation', compact('booking'));
     }
 }
