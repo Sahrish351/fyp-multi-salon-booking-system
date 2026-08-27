@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
+use App\Http\Controllers\ChatbotController; 
 
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PublicSalonController;
@@ -192,6 +193,8 @@ Route::middleware('guest')->group(function () {
     Route::get('/auth/facebook', [App\Http\Controllers\Auth\SocialLoginController::class, 'redirectToFacebook'])->name('facebook.redirect');
     Route::get('/auth/facebook/callback', [App\Http\Controllers\Auth\SocialLoginController::class, 'handleFacebookCallback'])->name('facebook.callback');
 });
+
+Route::post('/chatbot/ask', [ChatbotController::class, 'ask'])->name('chatbot.ask');
 
 // ============================================================
 // AUTHENTICATED ROUTES

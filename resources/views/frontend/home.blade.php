@@ -554,6 +554,7 @@
     @media(min-width:768px) { .trust-sec { padding: 80px 32px; } .trust-grid { grid-template-columns: repeat(4,1fr); gap: 24px; } .trust-card { padding: 34px 20px; } }
   </style>
 </head>
+
 <body>
  
 <!-- ===== NAVBAR ===== -->
@@ -1139,5 +1140,6 @@
   }
  
 </script>
+@include('partials.chatbot-widget')
 </body>
 </html>
