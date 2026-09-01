@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ClientProfileController extends Controller
 {
@@ -19,7 +20,7 @@ class ClientProfileController extends Controller
     {
         $user = Auth::user();
 
-        //  Conditional Validation 
+        // Conditional Validation 
         $rules = [];
 
         if ($request->has('name') && $request->filled('name')) {
@@ -46,7 +47,7 @@ class ClientProfileController extends Controller
             $rules['avatar'] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
         }
 
-        //  Password Validation 
+        // Password Validation 
         if ($request->filled('current_password') || $request->filled('password')) {
             $rules['current_password'] = 'required|string|min:8';
             $rules['password'] = 'required|string|min:8|confirmed';
@@ -54,13 +55,17 @@ class ClientProfileController extends Controller
 
         $request->validate($rules);
 
-        //  Handle avatar upload
+        // Handle avatar upload & delete old file
         if ($request->hasFile('avatar')) {
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $avatarPath;
         }
 
-        //  Update basic fields 
+        // Update basic fields 
         if ($request->has('name') && $request->filled('name')) {
             $user->name = $request->name;
         }
@@ -81,14 +86,12 @@ class ClientProfileController extends Controller
             $user->theme = $request->theme ?? 'light';
         }
 
-        //  Handle password change
+        // Handle password change
         if ($request->filled('current_password') && $request->filled('password')) {
-            // Verify current password
             if (!Hash::check($request->current_password, $user->password)) {
                 return back()->withErrors(['current_password' => 'Current password is incorrect.']);
             }
 
-            // Update password
             $user->password = Hash::make($request->password);
         }
 

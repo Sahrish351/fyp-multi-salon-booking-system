@@ -1,10 +1,9 @@
-
 (function () {
     'use strict';
  
     const CHAT_ENDPOINT = '/chatbot/ask';
  
-   
+ 
     const QUICK_REPLIES = [
         {
             label: 'Book Appointment', sub: 'How do I book a service?',
@@ -211,14 +210,41 @@
  
     /* ---------------------------------------------------------
        VOICE OUTPUT - free, built into the browser
+       Bella gets a female voice: we cache the browser's available
+       voices (they load asynchronously) and pick a female-sounding
+       one by name whenever we speak.
     --------------------------------------------------------- */
+    let cachedVoices = [];
+ 
+    function loadVoices() {
+        cachedVoices = window.speechSynthesis.getVoices();
+    }
+ 
+    if ('speechSynthesis' in window) {
+        loadVoices();
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+ 
+    function getFemaleVoice() {
+        if (!cachedVoices.length) return null;
+        // Known female voice names across Chrome, Edge, Safari, mobile browsers
+        const femalePattern = /female|zira|samantha|susan|karen|hazel|moira|tessa|fiona|victoria|google us english|google uk english female/i;
+        return cachedVoices.find(v => femalePattern.test(v.name)) || null;
+    }
+ 
     function speak(text) {
         if (!voiceEnabled || !('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         utter.rate = 1;
-        utter.pitch = 1.05;
+        utter.pitch = 1.1;
         utter.lang = 'en-US';
+ 
+        const femaleVoice = getFemaleVoice();
+        if (femaleVoice) {
+            utter.voice = femaleVoice;
+        }
+ 
         window.speechSynthesis.speak(utter);
     }
  

@@ -1,40 +1,103 @@
 {{-- ============================================================ --}}
-{{-- FILE: resources/views/client/payments/index.blade.php --}}
+{{-- FILE: resources/views/client/payments/index.blade.php      --}}
 {{-- ============================================================ --}}
 @extends('layouts.client')
 @section('title', 'My Payments — Glamora')
 
 @push('styles')
 <style>
-    .pay-stat-card {
-        background: #fff;
+    /* Global Font */
+    .dashboard-font {
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    }
+
+    /* ── Stat Cards (Dashboard Match) ── */
+    .stat-card-owner {
+        background: #ffffff;
         border: 1px solid #fce4ec;
-        border-radius: 12px;
-        padding: 0.6rem 0.4rem;
+        border-radius: 14px;
+        padding: 14px 18px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .stat-card-owner:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 107, 157, 0.1);
+        border-color: #FF6B9D;
+    }
+    .stat-card-owner .card-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
         align-items: center;
         justify-content: center;
-        text-align: center;
-        gap: 4px;
-        height: 100%;
-        width: 100%;
+        font-size: 1.1rem;
+        color: #fff;
+        flex-shrink: 0;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.05);
     }
-    .pay-stat-card .icon-box {
-        width: 28px; height: 28px; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; font-size: 0.72rem;
+    .stat-card-owner .card-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: right;
     }
-    .pay-stat-card .val { font-size: 0.92rem; font-weight: 800; color: #333; line-height: 1; }
-    .pay-stat-card .lbl { color: #aaa; font-size: 0.58rem; margin-top: 1px; }
+    .stat-card-owner .card-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #888888;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+    .stat-card-owner .card-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #222222;
+        line-height: 1;
+    }
 
-    @media (max-width: 480px) {
-        .pay-stat-card { padding: 0.5rem 0.35rem; gap: 3px; border-radius: 10px; }
-        .pay-stat-card .icon-box { width: 24px; height: 24px; font-size: 0.65rem; }
-        .pay-stat-card .val { font-size: 0.82rem; }
-        .pay-stat-card .lbl { font-size: 0.52rem; }
+    .bg-icon-purple { background: linear-gradient(135deg, #8A97E0, #6C7BD1); }
+    .bg-icon-teal   { background: linear-gradient(135deg, #4FBE99, #3A9B7A); }
+    .bg-icon-orange { background: linear-gradient(135deg, #FF9A54, #E67E36); }
+    .bg-icon-red    { background: linear-gradient(135deg, #FF6B6B, #E54B4B); }
+
+    /* ── Sleek Filter Tab Switcher ── */
+    .filter-tab-container {
+        background: #f8f9fa;
+        border: 1px solid #fce4ec;
+        border-radius: 50px;
+        padding: 3px;
+        display: inline-flex;
+        gap: 2px;
+    }
+    .filter-tab-btn {
+        padding: 5px 18px;
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #777;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        border: none;
+    }
+    .filter-tab-btn.active {
+        background: #FF6B9D;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+    }
+    .filter-tab-btn:hover:not(.active) {
+        color: #FF6B9D;
+        background: rgba(255, 107, 157, 0.08);
     }
 
+    /* ── Table & Badges ── */
     .pay-status-chip {
         display: inline-flex; align-items: center; gap: 5px;
         padding: 4px 12px; border-radius: 50px;
@@ -43,13 +106,6 @@
     .pay-status-chip.paid      { background: rgba(34,197,94,0.1);  color: #16a34a; }
     .pay-status-chip.pending   { background: rgba(255,193,7,0.12); color: #b45309; }
     .pay-status-chip.cancelled { background: rgba(239,68,68,0.1);  color: #dc2626; }
-
-    .filter-pill {
-        padding: 6px 16px; border-radius: 50px; font-size: 0.82rem; font-weight: 600;
-        text-decoration: none;
-    }
-    .filter-pill.active { background: #FF6B9D; color: #fff; }
-    .filter-pill:not(.active) { background: #fff; color: #888; border: 1px solid #fce4ec; }
 
     .pay-table {
         width: 100%;
@@ -80,79 +136,126 @@
         padding: 6px 14px; border-radius: 8px;
         font-size: 0.78rem; font-weight: 600;
         background: #fff0f7; color: #FF6B9D; border: 1px solid #fce4ec;
-        text-decoration: none;
+        text-decoration: none; transition: all 0.2s;
     }
     .pay-view-btn:hover { background: #FF6B9D; color: #fff; }
+
+    /* ── Custom Pink Pagination (Appointments Style) ── */
+    .custom-pink-pagination-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: 24px;
+        margin-bottom: 12px;
+    }
+    .custom-pink-pagination-wrap ul {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .custom-pink-pagination-wrap li a,
+    .custom-pink-pagination-wrap li span {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: #f4f5f7;
+        color: #555;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+    }
+    .custom-pink-pagination-wrap li.active span {
+        background: #FF6B9D !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 10px rgba(255, 107, 157, 0.35);
+    }
+    .custom-pink-pagination-wrap li a:hover {
+        background: #fce4ec;
+        color: #FF6B9D;
+    }
+    .custom-pink-pagination-wrap li.disabled span {
+        background: #f8f9fa;
+        color: #ccc;
+        cursor: not-allowed;
+    }
 </style>
 @endpush
 
 @section('content')
 
-<div class="mb-4">
-    <h4 class="fw-bold mb-1" style="color:#333;font-family:'Playfair Display',serif;">
+<div class="mb-3">
+    <h4 class="fw-bold mb-1 dashboard-font" style="color:#333;">
         <i class="fas fa-credit-card me-2" style="color:#FF6B9D;"></i>My Payments
     </h4>
     <p style="color:#aaa;font-size:0.85rem;margin:0;">Track all your appointment payments and their status</p>
 </div>
 
-{{-- Top Summary Cards --}}
-<div class="row g-2 mb-4">
-    <div class="col-6 col-sm-4 col-md-2">
-        <div class="pay-stat-card" style="background:#f3e8ff;border-color:#e9d5ff;">
-            <div class="icon-box" style="background:#e9d5ff;color:#7c3aed;">
+{{-- Top Summary Cards (Dashboard Grid Style) --}}
+<div class="row g-3 mb-3">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card-owner">
+            <div class="card-icon bg-icon-purple">
                 <i class="fas fa-receipt"></i>
             </div>
-            <div>
-                <div class="val" style="color:#6b21a8;">{{ $counts['total'] }}</div>
-                <div class="lbl" style="color:#a78bda;">Total Payments</div>
+            <div class="card-content">
+                <div class="card-label">Total Payments</div>
+                <div class="card-value">{{ $counts['total'] }}</div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-sm-4 col-md-2">
-        <div class="pay-stat-card" style="background:#dcfce7;border-color:#bbf7d0;">
-            <div class="icon-box" style="background:#bbf7d0;color:#16a34a;">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card-owner">
+            <div class="card-icon bg-icon-teal">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <div>
-                <div class="val" style="color:#15803d;">{{ $counts['paid'] }}</div>
-                <div class="lbl" style="color:#4d9d6b;">Paid</div>
+            <div class="card-content">
+                <div class="card-label">Paid</div>
+                <div class="card-value">{{ $counts['paid'] }}</div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-sm-4 col-md-2">
-        <div class="pay-stat-card" style="background:#fef9c3;border-color:#fef08a;">
-            <div class="icon-box" style="background:#fef08a;color:#b45309;">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card-owner">
+            <div class="card-icon bg-icon-orange">
                 <i class="fas fa-hourglass-half"></i>
             </div>
-            <div>
-                <div class="val" style="color:#a16207;">{{ $counts['pending'] }}</div>
-                <div class="lbl" style="color:#b58f3d;">Pending</div>
+            <div class="card-content">
+                <div class="card-label">Pending</div>
+                <div class="card-value">{{ $counts['pending'] }}</div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-sm-4 col-md-2">
-        <div class="pay-stat-card" style="background:#fee2e2;border-color:#fecaca;">
-            <div class="icon-box" style="background:#fecaca;color:#dc2626;">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card-owner">
+            <div class="card-icon bg-icon-red">
                 <i class="fas fa-times-circle"></i>
             </div>
-            <div>
-                <div class="val" style="color:#b91c1c;">{{ $counts['cancelled'] }}</div>
-                <div class="lbl" style="color:#c96b6b;">Cancelled</div>
+            <div class="card-content">
+                <div class="card-label">Cancelled</div>
+                <div class="card-value">{{ $counts['cancelled'] }}</div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- Status Filter --}}
-<div class="d-flex gap-2 mb-4 flex-wrap">
-    <a href="{{ route('client.payments.index') }}" class="filter-pill {{ !request('status') ? 'active' : '' }}">All</a>
-    <a href="{{ route('client.payments.index', ['status' => 'approved']) }}" class="filter-pill {{ request('status') === 'approved' ? 'active' : '' }}">Paid</a>
-    <a href="{{ route('client.payments.index', ['status' => 'pending']) }}" class="filter-pill {{ request('status') === 'pending' ? 'active' : '' }}">Pending</a>
-    <a href="{{ route('client.payments.index', ['status' => 'rejected']) }}" class="filter-pill {{ request('status') === 'rejected' ? 'active' : '' }}">Cancelled</a>
+{{-- Modern Segmented Filter Pills --}}
+<div class="mb-3">
+    <div class="filter-tab-container">
+        <a href="{{ route('client.payments.index') }}" class="filter-tab-btn {{ !request('status') ? 'active' : '' }}">All</a>
+        <a href="{{ route('client.payments.index', ['status' => 'approved']) }}" class="filter-tab-btn {{ request('status') === 'approved' ? 'active' : '' }}">Paid</a>
+        <a href="{{ route('client.payments.index', ['status' => 'pending']) }}" class="filter-tab-btn {{ request('status') === 'pending' ? 'active' : '' }}">Pending</a>
+        <a href="{{ route('client.payments.index', ['status' => 'rejected']) }}" class="filter-tab-btn {{ request('status') === 'rejected' ? 'active' : '' }}">Cancelled</a>
+    </div>
 </div>
 
 {{-- Payments Table --}}
-<div class="rounded-4 overflow-hidden" style="border:1px solid #fce4ec;">
+<div class="rounded-4 overflow-hidden" style="border:1px solid #fce4ec; background:#fff;">
     <div style="overflow-x:auto;">
         <table class="pay-table">
             <thead>
@@ -207,8 +310,34 @@
     </div>
 </div>
 
+{{-- Clean Pink Pagination Controls --}}
 @if($payments->hasPages())
-<div class="mt-4">{{ $payments->links() }}</div>
+<div class="custom-pink-pagination-wrap">
+    <ul>
+        {{-- Previous Page Link --}}
+        @if ($payments->onFirstPage())
+            <li class="disabled"><span>&lsaquo;</span></li>
+        @else
+            <li><a href="{{ $payments->previousPageUrl() }}" rel="prev">&lsaquo;</a></li>
+        @endif
+
+        {{-- Page Numbers --}}
+        @foreach ($payments->getUrlRange(1, $payments->lastPage()) as $page => $url)
+            @if ($page == $payments->currentPage())
+                <li class="active"><span>{{ $page }}</span></li>
+            @else
+                <li><a href="{{ $url }}">{{ $page }}</a></li>
+            @endif
+        @endforeach
+
+        {{-- Next Page Link --}}
+        @if ($payments->hasMorePages())
+            <li><a href="{{ $payments->nextPageUrl() }}" rel="next">&rsaquo;</a></li>
+        @else
+            <li class="disabled"><span>&rsaquo;</span></li>
+        @endif
+    </ul>
+</div>
 @endif
 
 @endsection

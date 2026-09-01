@@ -1,5 +1,5 @@
 {{-- ============================================================ --}}
-{{-- FILE: resources/views/layouts/client.blade.php --}}
+{{-- FILE: resources/views/layouts/client.blade.php               --}}
 {{-- ============================================================ --}}
 <!DOCTYPE html>
 <html lang="en" data-theme="{{ Auth::user()->theme ?? 'light' }}">
@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'My Account') — Beauty Blush Salons</title>
- 
+
     <!-- Bootstrap 5.3.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 6 -->
@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
     
     @stack('styles')
- 
+
     <style>
         :root { 
             --client-pink: #FF6B9D; 
@@ -38,26 +38,32 @@
             overflow-x: hidden;
         }
         
-        /* Sidebar Styles */
+        /* Sticky Professional Sidebar */
         .sidebar { 
             width: 260px; 
-            min-height: 100vh; 
-            background: linear-gradient(135deg, #ffffff 0%, #fff5f9 100%);
-            border-right: 1px solid var(--client-border); 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            z-index: 1000; 
+            position: sticky;
+            top: 0;
+            height: fit-content !important;
             transition: all 0.3s ease;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+            box-shadow: 4px 0 15px rgba(0,0,0,0.03);
+            border-bottom-right-radius: 16px;
+            z-index: 100;
         }
         
-        /* Main Content */
+        /* Main Content Area */
         .main-content { 
-            margin-left: 260px; 
             min-height: 100vh; 
             width: calc(100% - 260px);
             transition: all 0.3s ease;
+        }
+        
+        /* Balanced Top Navbar (Matching Sidebar Header Height) */
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            height: 70px; /* Fits header height cleanly */
+            border-bottom: 1px solid var(--client-border);
         }
         
         /* Card Styles */
@@ -74,26 +80,22 @@
             box-shadow: 0 8px 25px rgba(255,107,157,0.08);
         }
         
-        /* Navbar Styles */
-        .navbar {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-        
-        /* Responsive */
+        /* Mobile Screen Styles */
         @media (max-width: 768px) { 
             .sidebar { 
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1000;
+                height: 100vh !important;
                 margin-left: -260px; 
+                border-radius: 0;
             } 
             .sidebar.show { 
                 margin-left: 0; 
                 box-shadow: 2px 0 20px rgba(0,0,0,0.1);
             } 
             .main-content { 
-                margin-left: 0; 
                 width: 100%;
             } 
         }
@@ -112,63 +114,54 @@
         ::-webkit-scrollbar {
             width: 6px;
         }
-        
         ::-webkit-scrollbar-track {
             background: var(--client-border);
         }
-        
         ::-webkit-scrollbar-thumb {
             background: var(--client-pink);
             border-radius: 10px;
         }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--client-dark);
-        }
     </style>
 </head>
 <body>
-    <div class="d-flex">
+    <div class="d-flex align-items-start">
         @include('components.sidebar-client')
- 
+
         <div class="main-content flex-grow-1">
-            <!-- Navbar -->
-            <nav class="navbar px-4 py-3 shadow-sm">
+            <!-- Navbar without duplicate logo text -->
+            <nav class="navbar px-4 shadow-sm">
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-sm me-2 d-md-none" id="sidebarToggle" style="background: rgba(255,107,157,0.1); color: #FF6B9D; border-radius: 10px;">
+                    <button class="btn btn-sm me-2 d-md-none" id="sidebarToggle" style="background: rgba(255,107,157,0.1); color: #FF6B9D; border-radius: 8px;">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <a class="navbar-brand fw-bold" href="{{ route('client.dashboard') }}" style="font-family: 'Playfair Display', serif;">
-                        <span style="color:#FF6B9D;">Beauty Blush</span><span style="color:#C9A96E;"> Salons</span>
-                    </a>
                 </div>
- 
+
                 <div class="ms-auto d-flex align-items-center gap-3">
-                    <!-- Search Bar (Optional) -->
+                    <!-- Search Bar -->
                     <div class="d-none d-md-block">
-                        <div class="input-group" style="width: 250px;">
-                            <input type="text" class="form-control form-control-sm" placeholder="Search salons..." style="border-radius: 50px 0 0 50px; border-color: var(--client-border);">
-                            <button class="btn btn-sm" style="background: var(--client-pink); color: white; border-radius: 0 50px 50px 0;">
+                        <div class="input-group" style="width: 230px;">
+                            <input type="text" class="form-control form-control-sm" placeholder="Search salons..." style="border-radius: 50px 0 0 50px; border-color: var(--client-border); font-size: 0.8rem;">
+                            <button class="btn btn-sm px-3" style="background: var(--client-pink); color: white; border-radius: 0 50px 50px 0; font-size: 0.8rem;">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- My Waitlist -->
-                    <a href="{{ route('client.waitlist.index') }}" class="btn btn-sm position-relative d-flex align-items-center justify-content-center" style="background: rgba(255,107,157,0.1); border-radius: 50%; width: 38px; height: 38px;" title="My Waitlist">
-                        <i class="fas fa-hourglass-half" style="color: var(--client-pink);"></i>
+                    <!-- My Waitlist Icon Button -->
+                    <a href="{{ route('client.waitlist.index') }}" class="btn btn-sm position-relative d-flex align-items-center justify-content-center" style="background: rgba(255,107,157,0.1); border-radius: 50%; width: 35px; height: 35px;" title="My Waitlist">
+                        <i class="fas fa-hourglass-half" style="color: var(--client-pink); font-size: 0.85rem;"></i>
                     </a>
 
-                    <!-- Notifications -->
+                    <!-- Notifications Button -->
                     <div class="dropdown">
-                        <button class="btn btn-sm position-relative" id="notifBellBtn" style="background: rgba(255,107,157,0.1); border-radius: 50%; width: 38px; height: 38px;" data-bs-toggle="dropdown">
-                            <i class="fas fa-bell" style="color: var(--client-pink);"></i>
+                        <button class="btn btn-sm position-relative d-flex align-items-center justify-content-center" id="notifBellBtn" style="background: rgba(255,107,157,0.1); border-radius: 50%; width: 35px; height: 35px;" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell" style="color: var(--client-pink); font-size: 0.85rem;"></i>
                             @php $unreadCount = Auth::user()->unreadNotifications->count(); @endphp
-                            <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; {{ $unreadCount > 0 ? '' : 'display:none;' }}">
+                            <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; padding: 0.2em 0.4em; {{ $unreadCount > 0 ? '' : 'display:none;' }}">
                                 {{ $unreadCount > 9 ? '9+' : $unreadCount }}
                             </span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width: 300px; max-height: 380px; overflow-y: auto;">
                             <li><h6 class="dropdown-header">Notifications</h6></li>
                             @php $notifications = Auth::user()->notifications()->latest()->take(8)->get(); @endphp
                             @forelse($notifications as $notif)
@@ -180,50 +173,47 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                             @empty
-                                <li><span class="dropdown-item text-muted text-center">✨ No new notifications</span></li>
+                                <li><span class="dropdown-item text-muted text-center small">✨ No new notifications</span></li>
                             @endforelse
                             <li>
                                 <a href="{{ route('client.notifications.index') }}" class="dropdown-item text-center small" style="color: var(--client-pink);">View all notifications</a>
                             </li>
                         </ul>
                     </div>
- 
-                    <!-- User Menu -->
+
+                    <!-- User Profile Dropdown -->
                     <div class="dropdown">
-                        <button class="btn dropdown-toggle d-flex align-items-center gap-2" style="background: none; border: none;" data-bs-toggle="dropdown">
-                            <img src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=FF6B9D&color=fff' }}" 
+                        <button class="btn dropdown-toggle d-flex align-items-center gap-2 p-0" style="background: none; border: none;" data-bs-toggle="dropdown">
+                            <img src="{{ Auth::user()->avatar_url }}" 
                                  class="rounded-circle" 
-                                 width="36" 
-                                 height="36" 
-                                 alt="avatar"
+                                 width="34" 
+                                 height="34" 
+                                 alt="{{ Auth::user()->name }}"
+                                 onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=FF6B9D&color=fff&size=100'"
                                  style="object-fit: cover; border: 2px solid var(--client-pink);">
-                            <div class="text-start d-none d-md-block">
-                                <div class="fw-semibold small">{{ Auth::user()->name }}</div>
-                                <div class="text-muted small">Client</div>
+                            <div class="text-start d-none d-md-block" style="line-height: 1.2;">
+                                <div class="fw-semibold" style="font-size: 0.82rem;">{{ Auth::user()->name }}</div>
+                                <div class="text-muted" style="font-size: 0.68rem;">Client</div>
                             </div>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            {{-- ✅ FIXED: Hardcoded URLs (saare kaam kar rahe hain) --}}
-                            <li><a class="dropdown-item" href="/client/profile">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><a class="dropdown-item small" href="{{ route('client.profile.index') }}">
                                 <i class="fas fa-user-circle me-2"></i>My Profile
                             </a></li>
-                            <li><a class="dropdown-item" href="/client/appointments">
+                            <li><a class="dropdown-item small" href="{{ route('client.appointments.index') }}">
                                 <i class="fas fa-calendar-alt me-2"></i>My Appointments
                             </a></li>
-                            <li><a class="dropdown-item" href="/client/reviews">
+                            <li><a class="dropdown-item small" href="{{ route('client.reviews.index') }}">
                                 <i class="fas fa-star me-2" style="color:#f59e0b;"></i>My Reviews
                             </a></li>
-                            <li><a class="dropdown-item" href="/client/favorites">
+                            <li><a class="dropdown-item small" href="{{ route('client.favorites.index') }}">
                                 <i class="fas fa-heart me-2" style="color:#FF6B9D;"></i>Favorites
-                            </a></li>
-                            <li><a class="dropdown-item" href="/client/settings">
-                                <i class="fas fa-cog me-2"></i>Settings
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST" id="logout-form">
                                     @csrf
-                                    <button type="submit" class="dropdown-item text-danger">
+                                    <button type="submit" class="dropdown-item small text-danger">
                                         <i class="fas fa-sign-out-alt me-2"></i>Logout
                                     </button>
                                 </form>
@@ -232,7 +222,7 @@
                     </div>
                 </div>
             </nav>
- 
+
             <!-- Main Content Area -->
             <div class="p-4">
                 @include('partials.alerts')
@@ -240,14 +230,14 @@
             </div>
         </div>
     </div>
- 
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
-        // Sidebar Toggle
+        // Sidebar Toggle for Mobile
         document.getElementById('sidebarToggle')?.addEventListener('click', function() {
             document.querySelector('.sidebar').classList.toggle('show');
         });
@@ -264,37 +254,29 @@
             }
         });
         
-        // Confirm logout
-        document.getElementById('logout-form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Logout?',
-                text: 'Are you sure you want to logout?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#FF6B9D',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, logout',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    this.submit();
-                }
-            });
+        // Confirm logout popup
+        document.addEventListener('submit', function(e) {
+            if (e.target && (e.target.id === 'logout-form' || e.target.id === 'sidebar-logout-form')) {
+                e.preventDefault();
+                const form = e.target;
+                Swal.fire({
+                    title: 'Logout?',
+                    text: 'Are you sure you want to logout?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#FF6B9D',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, logout',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
         });
-        
-        // Auto-dismiss alerts after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                setTimeout(function() {
-                    alert.classList.add('fade');
-                    setTimeout(() => alert.remove(), 500);
-                }, 4000);
-            });
-        }, 1000);
 
-        // Notification bell: WhatsApp-style — opening the dropdown marks all as read and hides the badge
+        // Notification bell dropdown action
         document.getElementById('notifBellBtn')?.addEventListener('click', function() {
             const badge = document.getElementById('notifBadge');
             if (!badge || badge.style.display === 'none') return;
@@ -307,9 +289,7 @@
                 }
             }).then(() => {
                 badge.style.display = 'none';
-            }).catch(() => {
-                // silently ignore — badge will still update correctly on next page load
-            });
+            }).catch(() => {});
         });
     </script>
     

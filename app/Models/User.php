@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -26,6 +27,16 @@ class User extends Authenticatable
         'is_verified' => 'boolean',
         'password' => 'hashed',
     ];
+
+    // Accessor for dynamic Avatar URL
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar && Storage::disk('public')->exists($this->avatar)) {
+            return asset('storage/' . $this->avatar);
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=FF6B9D&color=fff&size=100';
+    }
 
     public function isAdmin(): bool { return $this->role === 'admin'; }
     public function isOwner(): bool { return $this->role === 'owner'; }

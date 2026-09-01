@@ -482,10 +482,10 @@ Route::post('/complaints/{complaint}/escalate', [ClientComplaintController::clas
 
     // Notification Routes
     Route::get('/notifications', [ClientNotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/{id}/read', [ClientNotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::get('/notifications/{id}/read', [ClientNotificationController::class, 'markAsRead'])->name('notifications.read'); // <-- POST ki jaga GET kar dein
     Route::post('/notifications/read-all', [ClientNotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::delete('/notifications/{id}', [ClientNotificationController::class, 'destroy'])->name('notifications.destroy');
-
+    
     // Profile Routes
     Route::get('/profile', [ClientProfileController::class, 'index'])->name('profile.index');
     Route::post('/profile', [ClientProfileController::class, 'update'])->name('profile.update');

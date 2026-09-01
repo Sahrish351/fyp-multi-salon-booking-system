@@ -1,6 +1,3 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/notifications/index.blade.php --}}
-{{-- ============================================================ --}}
 
 @extends('layouts.client')
 
@@ -85,10 +82,10 @@
         @endif
         
         {{-- ============================================================ --}}
-        {{-- View Action Button (if action_url exists) --}}
+        {{-- View Action Button (Fixed Route) --}}
         {{-- ============================================================ --}}
         @if($notif->data['action_url'] ?? false)
-        <a href="{{ $notif->data['action_url'] }}" class="btn btn-sm rounded-pill" style="background:#fff0f7;color:#FF6B9D;border:1px solid #FF6B9D;font-weight:600;padding:4px 16px;text-decoration:none;transition:all 0.3s;flex-shrink:0;">
+        <a href="{{ route('client.notifications.read', $notif->id) }}" class="btn btn-sm rounded-pill" style="background:#fff0f7;color:#FF6B9D;border:1px solid #FF6B9D;font-weight:600;padding:4px 16px;text-decoration:none;transition:all 0.3s;flex-shrink:0;">
             View
         </a>
         @endif
