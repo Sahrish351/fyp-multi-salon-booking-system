@@ -1039,6 +1039,58 @@
         </div>
     </div>
 </footer>
+
+
+<div class="whatsapp-widget-container" style="position: fixed; bottom: 95px; right: 20px; z-index: 9998; font-family: inherit;">
+    
+    <div id="whatsappTooltip" class="shadow-sm" style="position: absolute; right: 70px; bottom: 8px; background: #fff; padding: 8px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; color: #333; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="toggleWhatsAppPopup()">
+        <span style="color: #25D366; font-size: 20px;"><i class="fab fa-whatsapp"></i></span>
+        <div style="line-height: 1.2;">
+            <div style="color: #555; font-size: 0.75rem; font-weight: 500;">Need Help?</div>
+            <div style="color: #000; font-size: 0.85rem; font-weight: 700;">Chat with us</div>
+        </div>
+    </div>
+
+    <!-- Main Popup Box -->
+    <div id="whatsappPopupBox" class="shadow-lg" style="display: none; position: absolute; bottom: 75px; right: 0; width: 310px; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+        
+        <!-- Header -->
+        <div class="text-white p-3" style="background-color: #25D366;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fab fa-whatsapp fa-2x"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">Start a Conversation</h6>
+                    <small style="font-size: 0.75rem;">Hi! Click below to chat on WhatsApp</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Body -->
+        <div class="p-3 bg-white">
+            <p class="text-muted small mb-2" style="font-size: 0.8rem;">The team typically replies in a few minutes.</p>
+            
+            <!-- WhatsApp Contact Card (Icons fixed inside the box) -->
+            <a href="https://wa.me/923069734142?text=Hi,%20I%20want%20to%20know%20more%20about%20Beauty%20Blush%20Salons." 
+               target="_blank" 
+               class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none border bg-light"
+               style="overflow: hidden;">
+                <div class="d-flex align-items-center gap-2 overflow-hidden">
+                    <i class="fab fa-whatsapp text-success fa-2x flex-shrink-0"></i>
+                    <div class="text-truncate">
+                        <span class="d-block text-dark fw-semibold" style="font-size: 0.85rem;">Beauty Blush Support</span>
+                        <span class="text-muted" style="font-size: 0.7rem;">Online</span>
+                    </div>
+                </div>
+                <i class="fab fa-whatsapp text-success fa-lg flex-shrink-0 ms-2"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Floating WhatsApp Button -->
+    <button id="whatsappToggleButton" onclick="toggleWhatsAppPopup()" style="width: 55px; height: 55px; background-color: #25D366; color: white; border-radius: 50%; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; transition: transform 0.3s ease;">
+        <i id="whatsappIconClass" class="fab fa-whatsapp"></i>
+    </button>
+</div>
  
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -1123,7 +1175,7 @@
     if (!e.target.closest('.btn-nav-menu') && !e.target.closest('.menu-dropdown')) document.getElementById('menuDropdown')?.classList.remove('show');
   });
  
-  /* ── NEW: scroll-reveal animation for the new sections ── */
+  
   const revealTargets = document.querySelectorAll('.reveal-up, .reveal-stagger');
   if ('IntersectionObserver' in window) {
     const revealObserver = new IntersectionObserver((entries) => {
@@ -1138,6 +1190,26 @@
   } else {
     revealTargets.forEach(el => el.classList.add('in-view'));
   }
+
+  function toggleWhatsAppPopup() {
+    const popup = document.getElementById('whatsappPopupBox');
+    const icon = document.getElementById('whatsappIconClass');
+    const tooltip = document.getElementById('whatsappTooltip');
+    
+    if (popup.style.display === 'none' || popup.style.display === '') {
+        popup.style.display = 'block';
+        tooltip.style.display = 'none'; 
+        
+        icon.className = 'fas fa-times'; 
+        icon.style.fontSize = '22px';
+    } else {
+        popup.style.display = 'none';
+        tooltip.style.display = 'flex'; 
+        
+        icon.className = 'fab fa-whatsapp';
+        icon.style.fontSize = '26px';
+    }
+}
  
 </script>
 @include('partials.chatbot-widget')
