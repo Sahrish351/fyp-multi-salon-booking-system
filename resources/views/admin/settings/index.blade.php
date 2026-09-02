@@ -3,11 +3,15 @@
 
 @section('content')
 
+{{-- ✅ Guard: agar controller kabhi $settings pass na kare to bhi page crash
+     nahi hoga, sab fields apni default value dikha dengi. --}}
+@php $settings = $settings ?? []; @endphp
+
 <div class="mb-4">
-    <h4 class="fw-bold text-white">
-        <i class="fas fa-cog me-2" style="color:#3b82f6;"></i> System Settings
+    <h4 class="fw-bold" style="color:#1a1a1a;">
+        <i class="fas fa-cog me-2" style="color:var(--pk);"></i> System Settings
     </h4>
-    <p style="color:rgba(255,255,255,0.4);">Manage platform configuration and preferences</p>
+    <p style="color:#9a9a9a;">Manage platform configuration and preferences</p>
 </div>
 
 @if(session('success'))
@@ -28,7 +32,7 @@
 
     {{-- Sidebar Tabs --}}
     <div class="col-lg-3">
-        <div style="background:#0f172a;border:1px solid rgba(59,130,246,0.15);border-radius:16px;padding:1rem;position:sticky;top:1rem;">
+        <div class="settings-side">
             <div class="nav flex-column" role="tablist">
                 <button class="settings-tab active" data-bs-toggle="tab" data-bs-target="#general" type="button">
                     <i class="fas fa-globe me-3"></i>General
@@ -80,17 +84,17 @@
                                     <input type="text" name="site_phone" class="settings-input"
                                            value="{{ old('site_phone', $settings['site_phone'] ?? '') }}">
                                 </div>
-                                <div class="col-12 d-flex gap-2">
+                                <div class="col-12 d-flex gap-2 flex-wrap">
                                     <button type="submit" class="btn-save"><i class="fas fa-save me-2"></i>Save Changes</button>
                                 </div>
                             </div>
                         </form>
 
-                        <hr style="border-color:rgba(255,255,255,0.08);margin:2rem 0;">
+                        <hr style="border-color:#f0f0f0;margin:2rem 0;">
 
                         <form action="{{ route('admin.system-settings.clear-cache') }}" method="POST" onsubmit="return confirm('Clear application cache?')">
                             @csrf
-                            <button type="submit" class="btn-outline-blue">
+                            <button type="submit" class="btn-outline-pk">
                                 <i class="fas fa-broom me-2"></i>Clear Application Cache
                             </button>
                         </form>
@@ -152,7 +156,7 @@
                                     <label class="settings-label">SMTP Password</label>
                                     <input type="password" name="smtp_password" class="settings-input" placeholder="Leave blank to keep current">
                                 </div>
-                                <div class="col-12 d-flex gap-2">
+                                <div class="col-12 d-flex gap-2 flex-wrap">
                                     <button type="submit" class="btn-save"><i class="fas fa-save me-2"></i>Save Settings</button>
                                 </div>
                             </div>
@@ -160,7 +164,7 @@
 
                         <form action="{{ route('admin.system-settings.test-email') }}" method="POST" class="mt-3">
                             @csrf
-                            <button type="submit" class="btn-outline-blue">
+                            <button type="submit" class="btn-outline-pk">
                                 <i class="fas fa-paper-plane me-2"></i>Send Test Email
                             </button>
                         </form>
@@ -207,6 +211,25 @@
 
             {{-- My Account --}}
             <div class="tab-pane fade" id="account">
+
+                {{-- ✅ FIX: pehle "auth()->user()->name" seedha call ho raha tha.
+                     Agar kisi wajah se session pe koi logged-in user na ho
+                     (guard mismatch, session expire, ya route pe login check
+                     missing), to auth()->user() null return karta hai aur
+                     ->name access karte hi "Attempt to read property on null"
+                     fatal error deta — jaisa abhi hua. optional() isko null-safe
+                     bana deta hai: null hone par khaali field dikhega, crash
+                     nahi hoga. --}}
+                @php $__acctUser = auth()->user(); @endphp
+
+                @if(!$__acctUser)
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Aapki login session nahi mil rahi. Account details save karne se pehle please
+                    <a href="{{ route('login') }}">dobara login</a> karein.
+                </div>
+                @endif
+
                 <div class="settings-card mb-4">
                     <div class="settings-card-header"><i class="fas fa-user me-2"></i>Account Details</div>
                     <div class="settings-card-body">
@@ -215,11 +238,17 @@
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label class="settings-label">Name</label>
-                                    <input type="text" name="name" class="settings-input" value="{{ old('name', auth()->user()->name) }}">
+                                    <input type="text" name="name" class="settings-input @error('name') is-invalid @enderror" value="{{ old('name', optional($__acctUser)->name) }}">
+                                    @error('name')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label class="settings-label">Email</label>
-                                    <input type="email" name="email" class="settings-input" value="{{ old('email', auth()->user()->email) }}">
+                                    <input type="email" name="email" class="settings-input @error('email') is-invalid @enderror" value="{{ old('email', optional($__acctUser)->email) }}">
+                                    @error('email')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn-save"><i class="fas fa-save me-2"></i>Update Account</button>
@@ -244,7 +273,10 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="settings-label">New Password</label>
-                                    <input type="password" name="password" class="settings-input">
+                                    <input type="password" name="password" class="settings-input @error('password') is-invalid @enderror">
+                                    @error('password')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label class="settings-label">Confirm New Password</label>
@@ -264,12 +296,29 @@
 </div>
 
 <style>
+    :root {
+        --pk:    #FF6B9D;
+        --pk-h:  #E85588;
+        --pk-lt: #fce4ec;
+        --pk-bg: #fff0f7;
+    }
+
+    /* ── Sidebar tab card — white, light border, matches rest of admin panel ── */
+    .settings-side {
+        background:#fff;
+        border:1px solid #ebebeb;
+        border-radius:16px;
+        padding:1rem;
+        position:sticky;
+        top:1rem;
+    }
+
     .settings-tab {
         display: flex;
         align-items: center;
         width: 100%;
         background: transparent;
-        color: rgba(255,255,255,0.65);
+        color: #6b6b6b;
         border: none;
         border-radius: 10px;
         padding: 12px 14px;
@@ -279,77 +328,96 @@
         transition: all 0.2s ease;
     }
     .settings-tab:hover {
-        background: rgba(59,130,246,0.08);
-        color: #fff;
+        background: var(--pk-bg);
+        color: var(--pk-h);
     }
     .settings-tab.active {
-        background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(29,78,216,0.12));
-        color: #fff;
-        font-weight: 600;
-        border-left: 3px solid #3b82f6;
+        background: var(--pk-lt);
+        color: var(--pk-h);
+        font-weight: 700;
+        border-left: 3px solid var(--pk);
     }
 
+    /* ── Cards — white, light border like notifications/appointments cards ── */
     .settings-card {
-        background: #0f172a;
-        border: 1px solid rgba(59,130,246,0.15);
+        background: #fff;
+        border: 1px solid #ebebeb;
         border-radius: 16px;
         overflow: hidden;
     }
     .settings-card-header {
         padding: 1.1rem 1.5rem;
-        font-weight: 600;
-        color: #fff;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        background: rgba(59,130,246,0.06);
+        font-weight: 700;
+        color: #1a1a1a;
+        border-bottom: 1px solid #f5f2ee;
+        background: var(--pk-bg);
     }
+    .settings-card-header i { color: var(--pk); }
     .settings-card-body { padding: 1.8rem; }
+    @media (max-width:576px){ .settings-card-body { padding: 1.2rem; } }
 
     .settings-label {
         display: block;
-        color: rgba(255,255,255,0.75);
+        color: #555;
         font-weight: 600;
         font-size: 0.85rem;
         margin-bottom: 0.5rem;
     }
     .settings-input {
         width: 100%;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.12);
-        color: #fff;
+        background: #fafafa;
+        border: 1.5px solid #e5e5e5;
+        color: #1a1a1a;
         border-radius: 10px;
         padding: 10px 14px;
         font-size: 0.9rem;
-        transition: border-color 0.2s;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        box-sizing: border-box;
     }
     .settings-input:focus {
         outline: none;
-        border-color: #3b82f6;
-        background: rgba(255,255,255,0.09);
-        box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        border-color: var(--pk);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(255,107,157,0.12);
     }
-    .settings-input::placeholder { color: rgba(255,255,255,0.3); }
+    .settings-input::placeholder { color: #bbb; }
+    .settings-input.is-invalid { border-color:#dc2626; }
 
     .btn-save {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        background: linear-gradient(135deg, var(--pk), var(--pk-h));
         color: #fff;
         border: none;
         border-radius: 10px;
         padding: 10px 28px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 0.9rem;
+        box-shadow: 0 4px 14px rgba(255,107,157,.3);
+        transition: all .18s ease;
     }
-    .btn-save:hover { opacity: 0.9; color: #fff; }
+    .btn-save:hover { transform:translateY(-1px); box-shadow: 0 6px 18px rgba(255,107,157,.4); color: #fff; }
 
-    .btn-outline-blue {
+    .btn-outline-pk {
         background: transparent;
-        border: 1px solid rgba(59,130,246,0.4);
-        color: #3b82f6;
+        border: 1.5px solid var(--pk-lt);
+        color: var(--pk);
         border-radius: 10px;
         padding: 9px 24px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 0.9rem;
+        transition: all .18s ease;
     }
-    .btn-outline-blue:hover { background: rgba(59,130,246,0.1); }
+    .btn-outline-pk:hover { background: var(--pk-bg); border-color: var(--pk); color: var(--pk-h); }
+
+    /* ── Small responsive touches ── */
+    @media (max-width: 991px) {
+        .settings-side { position: static; margin-bottom: 1rem; }
+        .settings-side .nav.flex-column { flex-direction: row !important; flex-wrap: wrap; gap: 4px; }
+        .settings-tab { width: auto; flex: 1 1 auto; justify-content: center; text-align: center; }
+    }
+    @media (max-width: 480px) {
+        .settings-tab { font-size: 0.8rem; padding: 10px; }
+        .settings-tab i { margin-right: 6px !important; }
+    }
 </style>
 
 @endsection

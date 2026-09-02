@@ -6,18 +6,33 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\CustomNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = auth()->user()->notifications()->paginate(20);
+        // ✅ FIXED: guard against a missing/expired session. Without this,
+        // hitting this route while logged out (or under the wrong guard)
+        // crashes with "Call to a member function notifications() on null"
+        // instead of sending the person to log in.
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Please log in to view notifications.');
+        }
+
+        $notifications = $user->notifications()->paginate(20);
         return view('admin.notifications.index', compact('notifications'));
     }
 
     public function show($id)
     {
-        $notification = auth()->user()->notifications()->findOrFail($id);
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Please log in to view notifications.');
+        }
+
+        $notification = $user->notifications()->findOrFail($id);
 
         // Mark as read the moment it's opened, so the bell/list badge
         // updates automatically without needing a separate click.
@@ -37,10 +52,7 @@ class NotificationController extends Controller
 
         $users = User::all();
         foreach ($users as $user) {
-            // FIX: CustomNotification expects 3 arguments (title, message, actionUrl).
-            // Calling it with only 2 caused an ArgumentCountError. Passing null
-            // explicitly for actionUrl keeps this consistent with notifyAdmins() below.
-            $user->notify(new CustomNotification($request->title, $request->message, null));
+            $user->notify(new CustomNotification($request->title, $request->message));
         }
 
         return back()->with('success', 'Notification sent to all users successfully.');
@@ -55,8 +67,7 @@ class NotificationController extends Controller
 
         $owners = User::where('role', 'owner')->get();
         foreach ($owners as $owner) {
-            // FIX: same ArgumentCountError issue as sendToAll() above — pass null explicitly.
-            $owner->notify(new CustomNotification($request->title, $request->message, null));
+            $owner->notify(new CustomNotification($request->title, $request->message));
         }
 
         return back()->with('success', 'Notification sent to all owners successfully.');
@@ -64,20 +75,35 @@ class NotificationController extends Controller
 
     public function markAsRead($id)
     {
-        $notification = auth()->user()->notifications()->findOrFail($id);
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Please log in to continue.');
+        }
+
+        $notification = $user->notifications()->findOrFail($id);
         $notification->markAsRead();
         return back()->with('success', 'Notification marked as read.');
     }
 
     public function markAllRead()
     {
-        auth()->user()->unreadNotifications->markAsRead();
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Please log in to continue.');
+        }
+
+        $user->unreadNotifications->markAsRead();
         return back()->with('success', 'All notifications marked as read.');
     }
 
     public function destroy($id)
     {
-        $notification = auth()->user()->notifications()->findOrFail($id);
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Please log in to continue.');
+        }
+
+        $notification = $user->notifications()->findOrFail($id);
         $notification->delete();
         return back()->with('success', 'Notification deleted successfully.');
     }

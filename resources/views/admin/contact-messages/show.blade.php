@@ -5,8 +5,10 @@
 @push('styles')
 <style>
     :root {
-        --pk: #E91E8C;
-        --pk-dark: #c2185b;
+        --pk: #FF6B9D;
+        --pk-dark: #E85588;
+        --pk-lt: #fce4ec;
+        --pk-bg: #fff0f7;
         --ink: #232323;
         --ink-mid: #6b6b6b;
         --ink-lt: #a3a3a3;
@@ -96,9 +98,24 @@
         text-decoration: none;
         transition: all .15s;
     }
-    .icon-btn:hover { background: var(--paper); border-color: #d8d8d8; color: var(--ink); }
-    .icon-btn.danger:hover { background: #fdecec; border-color: #f3c5c0; color: #c0392b; }
-    .icon-btn.amber:hover { background: #fdf6e8; border-color: #eddca3; color: #a3720e; }
+    /* ✅ Sidebar jaisa light pink hover — dark grey/black nahi */
+    .icon-btn:hover {
+        background: var(--pk-lt);
+        border-color: var(--pk);
+        color: var(--pk-dark);
+    }
+    /* ✅ Delete icon hover bhi ab sidebar wala light pink */
+    .icon-btn.danger:hover {
+        background: var(--pk-lt);
+        border-color: var(--pk);
+        color: var(--pk-dark);
+    }
+    /* ✅ Mark-unread icon hover bhi ab sidebar wala light pink */
+    .icon-btn.amber:hover {
+        background: var(--pk-lt);
+        border-color: var(--pk);
+        color: var(--pk-dark);
+    }
 
     /* ============================================================ */
     /* BODY */
@@ -164,7 +181,7 @@
     }
     .reply-textarea:focus {
         border-color: var(--pk); outline: none;
-        box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.08); background: #fff;
+        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.08); background: #fff;
     }
     .reply-textarea::placeholder { color: #bbb; }
 
@@ -187,7 +204,12 @@
         display: inline-flex; align-items: center; gap: 7px;
         text-decoration: none; outline: none; width: auto;
     }
-    .btn-sm-outline:hover { background: var(--paper); border-color: #d8d8d8; color: var(--ink); }
+    /* ✅ Sidebar jaisa light pink hover — dark grey nahi */
+    .btn-sm-outline:hover {
+        background: var(--pk-lt);
+        border-color: var(--pk);
+        color: var(--pk-dark);
+    }
 
     /* ============================================================ */
     /* EXISTING REPLY */

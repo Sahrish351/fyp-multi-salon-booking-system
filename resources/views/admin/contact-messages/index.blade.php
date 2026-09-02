@@ -4,6 +4,12 @@
 
 @push('styles')
 <style>
+    :root {
+        --pk: #FF6B9D;
+        --pk-dark: #E85588;
+        --pk-lt: #fce4ec;
+        --pk-bg: #fff0f7;
+    }
     .page-header {
         display: flex;
         justify-content: space-between;
@@ -19,7 +25,7 @@
         margin: 0;
     }
     .page-header .title-section h4 i {
-        color: #E91E8C;
+        color: var(--pk);
         margin-right: 10px;
     }
     .page-header .title-section p {
@@ -73,12 +79,12 @@
         color: #2563eb;
     }
     .stat-badge.total {
-        background: #fdf2f8;
-        border-color: #fce4ec;
-        color: #E91E8C;
+        background: var(--pk-bg);
+        border-color: var(--pk-lt);
+        color: var(--pk);
     }
     .stat-badge.total .count {
-        color: #E91E8C;
+        color: var(--pk);
     }
     .filter-row {
         background: #fff;
@@ -107,18 +113,19 @@
     .filter-row .form-control,
     .filter-row .form-select {
         border-radius: 10px;
-        border: 1.5px solid #f0f0f0;
+        border: 1.5px solid var(--pk-lt);
         font-size: 0.8rem;
         padding: 7px 14px;
         min-width: 140px;
         transition: all 0.3s;
-        background: #fafafa;
+        background: #fdf7fa;
     }
     .filter-row .form-control:focus,
     .filter-row .form-select:focus {
-        border-color: #E91E8C;
+        border-color: var(--pk);
         background: #fff;
-        box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.08);
+        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.08);
+        outline: none;
     }
     .filter-actions {
         display: flex;
@@ -127,7 +134,7 @@
         margin-left: auto;
     }
     .btn-pink {
-        background: linear-gradient(135deg, #E91E8C, #c2185b);
+        background: linear-gradient(135deg, var(--pk), var(--pk-dark));
         color: #fff;
         border: none;
         border-radius: 50px;
@@ -142,7 +149,7 @@
     }
     .btn-pink:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(233, 30, 140, 0.35);
+        box-shadow: 0 6px 20px rgba(255, 107, 157, 0.35);
         color: #fff;
     }
     .btn-outline {
@@ -160,10 +167,11 @@
         gap: 6px;
         cursor: pointer;
     }
+    /* ✅ Sidebar jaisa light pink hover — koi dark fill nahi */
     .btn-outline:hover {
-        background: #f5f5f5;
-        border-color: #ccc;
-        color: #333;
+        background: var(--pk-bg);
+        border-color: var(--pk-lt);
+        color: var(--pk);
     }
     .total-count {
         color: #aaa;
@@ -175,7 +183,7 @@
         border-left: 1px solid #f0f0f0;
     }
     .total-count i {
-        color: #E91E8C;
+        color: var(--pk);
     }
     .card-table {
         background: #fff;
@@ -201,7 +209,7 @@
         gap: 8px;
     }
     .card-table .card-header .title i {
-        color: #E91E8C;
+        color: var(--pk);
     }
     .data-table {
         width: 100%;
@@ -228,18 +236,23 @@
         transition: all 0.2s;
     }
     .data-table tbody tr:hover {
-        background: #fdf2f8;
+        background: var(--pk-bg);
     }
     .data-table tbody tr.unread {
         background: #fff8fa;
-        border-left: 3px solid #E91E8C;
+        border-left: 3px solid var(--pk);
     }
     .data-table tbody tr.unread:hover {
-        background: #fdf2f8;
+        background: var(--pk-bg);
     }
     .data-table tbody tr:last-child td {
         border-bottom: none;
     }
+    /* ============================================================ */
+    /* STATUS BADGE — ab yahin blade file mein banta hai, model ke
+       accessor ($message->status_badge) pe depend nahi karta, isliye
+       ye field khali nahi rahega chahe model mein accessor missing ho */
+    /* ============================================================ */
     .badge-status {
         padding: 4px 14px;
         border-radius: 50px;
@@ -294,7 +307,7 @@
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #E91E8C, #c2185b);
+        background: linear-gradient(135deg, var(--pk), var(--pk-dark));
         color: #fff;
         display: flex;
         align-items: center;
@@ -319,6 +332,7 @@
         display: flex;
         gap: 4px;
         flex-wrap: wrap;
+        align-items: center;
     }
     .btn-action {
         padding: 4px 10px;
@@ -335,31 +349,48 @@
         background: transparent;
     }
     .btn-action.view {
-        color: #E91E8C;
-        border-color: #fce4ec;
+        color: var(--pk);
+        border-color: var(--pk-lt);
         background: #fff5f9;
     }
+    /* ✅ Sidebar jaisa light pink hover — koi dark fill nahi */
     .btn-action.view:hover {
-        background: #E91E8C;
-        color: #fff;
+        background: var(--pk-lt);
+        color: var(--pk-dark);
+        border-color: var(--pk);
     }
     .btn-action.delete {
         color: #ef4444;
         border-color: #fecaca;
         background: #fef2f2;
     }
+    /* ✅ Sidebar jaisa light pink hover — koi dark fill nahi */
     .btn-action.delete:hover {
-        background: #ef4444;
-        color: #fff;
+        background: var(--pk-lt);
+        color: var(--pk-dark);
+        border-color: var(--pk);
     }
     .btn-action.reply {
         color: #2563eb;
         border-color: #bfdbfe;
         background: #eff6ff;
     }
+    /* ✅ Sidebar jaisa light pink hover — koi dark fill nahi */
     .btn-action.reply:hover {
-        background: #2563eb;
-        color: #fff;
+        background: var(--pk-lt);
+        color: var(--pk-dark);
+        border-color: var(--pk);
+    }
+    .btn-action.unread-toggle {
+        color: #f59e0b;
+        border-color: #fde68a;
+        background: #fffbeb;
+    }
+    /* ✅ Sidebar jaisa light pink hover — koi dark fill nahi */
+    .btn-action.unread-toggle:hover {
+        background: var(--pk-lt);
+        color: var(--pk-dark);
+        border-color: var(--pk);
     }
     .date-cell {
         font-size: 0.75rem;
@@ -382,7 +413,7 @@
     }
     .empty-state .icon {
         font-size: 4rem;
-        color: rgba(233, 30, 140, 0.12);
+        color: rgba(255, 107, 157, 0.14);
         display: block;
         margin-bottom: 1rem;
     }
@@ -430,6 +461,7 @@
         }
         .action-btns {
             flex-direction: column;
+            align-items: flex-start;
         }
         .total-count {
             border-left: none;
@@ -476,12 +508,12 @@
 {{-- ============================================================ --}}
 <div class="filter-row">
     <form method="GET" style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;width:100%;">
-        
+
         <div class="form-group">
             <label><i class="fas fa-search me-1"></i>Search</label>
             <input type="text" name="search" class="form-control" placeholder="Name, email, subject..." value="{{ request('search') }}">
         </div>
-        
+
         <div class="form-group">
             <label><i class="fas fa-filter me-1"></i>Status</label>
             <select name="status" class="form-select">
@@ -493,17 +525,17 @@
                 <option value="archived" {{ request('status') == 'archived' ? 'selected' : '' }}>⚪ Archived</option>
             </select>
         </div>
-        
+
         <div class="form-group">
             <label><i class="fas fa-calendar me-1"></i>From</label>
             <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
         </div>
-        
+
         <div class="form-group">
             <label><i class="fas fa-calendar me-1"></i>To</label>
             <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
         </div>
-        
+
         <div class="filter-actions">
             <button type="submit" class="btn-pink">
                 <i class="fas fa-filter me-1"></i> Apply
@@ -532,7 +564,7 @@
         </span>
         @endif
     </div>
-    
+
     <div class="table-responsive">
         <table class="data-table">
             <thead>
@@ -547,9 +579,23 @@
             </thead>
             <tbody>
                 @forelse($messages as $message)
+                @php
+                    // ✅ Status badge ab yahin blade file mein banta hai — pehle {!! $message->status_badge !!}
+                    // use ho raha tha jo model ka accessor tha; agar accessor missing/galat
+                    // hota to ye column hamesha khali dikhta. Ab ye kisi bhi model pe depend
+                    // nahi karta, hamesha sahi label aur color dikhayega.
+                    $statusMap = [
+                        'unread'   => ['label' => 'Unread',   'class' => 'badge-unread',   'icon' => 'fa-circle'],
+                        'read'     => ['label' => 'Read',     'class' => 'badge-read',     'icon' => 'fa-check-circle'],
+                        'replied'  => ['label' => 'Replied',  'class' => 'badge-replied',  'icon' => 'fa-reply-all'],
+                        'spam'     => ['label' => 'Spam',     'class' => 'badge-spam',     'icon' => 'fa-exclamation-triangle'],
+                        'archived' => ['label' => 'Archived', 'class' => 'badge-archived', 'icon' => 'fa-box-archive'],
+                    ];
+                    $statusInfo = $statusMap[$message->status] ?? $statusMap['read'];
+                @endphp
                 <tr class="{{ $message->status === 'unread' ? 'unread' : '' }}">
                     <td style="font-weight:600;color:#aaa;font-size:0.75rem;">#{{ $message->id }}</td>
-                    
+
                     <td>
                         <div class="user-cell">
                             <div class="user-avatar {{ $message->status === 'unread' ? '' : 'green' }}">
@@ -561,35 +607,37 @@
                             </div>
                         </div>
                     </td>
-                    
+
                     <td>
                         <div style="font-weight:{{ $message->status === 'unread' ? '600' : '400' }};color:#1a1a2e;">
                             {{ Str::limit($message->subject, 40) }}
                         </div>
                         @if($message->status === 'unread')
-                        <span style="font-size:0.6rem;color:#E91E8C;font-weight:600;">
+                        <span style="font-size:0.6rem;color:var(--pk);font-weight:600;">
                             <i class="fas fa-circle" style="font-size:0.3rem;"></i> New
                         </span>
                         @endif
                     </td>
-                    
+
                     <td>
-                        {!! $message->status_badge !!}
+                        <span class="badge-status {{ $statusInfo['class'] }}">
+                            <i class="fas {{ $statusInfo['icon'] }}"></i> {{ $statusInfo['label'] }}
+                        </span>
                     </td>
-                    
+
                     <td>
                         <div class="date-cell">
                             {{ $message->created_at->format('d M Y') }}
                             <span class="time-ago">{{ $message->created_at->diffForHumans() }}</span>
                         </div>
                     </td>
-                    
+
                     <td>
                         <div class="action-btns">
                             <a href="{{ route('admin.contact-messages.show', $message->id) }}" class="btn-action view" title="View">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            
+
                             @if($message->status === 'unread')
                             <form action="{{ route('admin.contact-messages.mark-read', $message->id) }}" method="POST" style="display:inline;">
                                 @csrf
@@ -598,21 +646,21 @@
                                 </button>
                             </form>
                             @endif
-                            
+
                             @if($message->status === 'read')
                             <form action="{{ route('admin.contact-messages.mark-unread', $message->id) }}" method="POST" style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn-action" title="Mark as Unread" style="color:#f59e0b;border-color:#fde68a;background:#fffbeb;">
+                                <button type="submit" class="btn-action unread-toggle" title="Mark as Unread">
                                     <i class="fas fa-undo"></i>
                                 </button>
                             </form>
                             @endif
-                            
+
                             <a href="{{ route('admin.contact-messages.show', $message->id) }}#reply" class="btn-action reply" title="Reply">
                                 <i class="fas fa-reply"></i>
                             </a>
-                            
-                            <form action="{{ route('admin.contact-messages.destroy', $message->id) }}" method="POST" style="display:inline;" 
+
+                            <form action="{{ route('admin.contact-messages.destroy', $message->id) }}" method="POST" style="display:inline;"
                                   onsubmit="return confirm('Delete this message?')">
                                 @csrf
                                 @method('DELETE')
@@ -637,7 +685,7 @@
             </tbody>
         </table>
     </div>
-    
+
     @if($messages->hasPages())
     <div class="pagination-wrapper">
         {{ $messages->appends(request()->query())->links() }}

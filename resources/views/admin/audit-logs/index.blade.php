@@ -4,7 +4,7 @@
 
 @push('styles')
 <style>
-    :root { --pk:#E91E8C; --pk-dark:#c2185b; --pk-lt:#fce4ec; --pk-bg:#fff0f7; }
+    :root { --pk:#FF6B9D; --pk-dark:#E85588; --pk-lt:#fce4ec; --pk-bg:#fff0f7; }
 
     /* ============================================================ */
     /* HEADER */
@@ -24,7 +24,7 @@
         width: 38px; height: 38px; border-radius: 12px;
         display: inline-flex; align-items: center; justify-content: center;
         font-size: 0.95rem; margin-right: 10px;
-        box-shadow: 0 4px 12px rgba(233,30,140,.28);
+        box-shadow: 0 4px 12px rgba(255,107,157,.28);
         vertical-align: middle;
     }
     .header-left p { color: #aaa; font-size: 0.85rem; margin: 6px 0 0 48px; }
@@ -58,7 +58,7 @@
     .filter-card {
         background: #fff; border-radius: 20px; padding: 1.4rem 1.6rem;
         margin-bottom: 1.5rem; border: 1px solid var(--pk-lt);
-        box-shadow: 0 4px 18px rgba(233,30,140,.05);
+        box-shadow: 0 4px 18px rgba(255,107,157,.05);
     }
     .filter-card-title {
         font-size: .78rem; font-weight: 800; color: var(--pk-dark); text-transform: uppercase;
@@ -80,7 +80,7 @@
         background: #fdf7fa; outline: none; transition: all .18s; color: #333;
     }
     .search-box input::placeholder { color: #c9a8b8; }
-    .search-box input:focus { border-color: var(--pk); background: #fff; box-shadow: 0 0 0 4px rgba(233,30,140,.1); }
+    .search-box input:focus { border-color: var(--pk); background: #fff; box-shadow: 0 0 0 4px rgba(255,107,157,.1); }
 
     .filter-row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
     .filter-group { display: flex; flex-direction: column; flex: 1 1 130px; min-width: 0; }
@@ -95,7 +95,7 @@
         font-family: inherit; color: #333; transition: all .18s;
     }
     .filter-group select:focus, .filter-group input[type=date]:focus {
-        border-color: var(--pk); background: #fff; box-shadow: 0 0 0 4px rgba(233,30,140,.1);
+        border-color: var(--pk); background: #fff; box-shadow: 0 0 0 4px rgba(255,107,157,.1);
     }
 
     .filter-actions { display: flex; gap: 8px; flex: 0 0 auto; }
@@ -105,19 +105,19 @@
         display: inline-flex; align-items: center; gap: 8px;
         padding: 11px 26px; border-radius: 50px; font-size: .84rem; font-weight: 700;
         background: linear-gradient(135deg, var(--pk), var(--pk-dark)); color: #fff; border: none; cursor: pointer;
-        white-space: nowrap; box-shadow: 0 4px 14px rgba(233,30,140,.3);
+        white-space: nowrap; box-shadow: 0 4px 14px rgba(255,107,157,.3);
         transition: box-shadow .18s ease, opacity .18s ease;
         outline: none;
     }
     .btn-apply:hover {
-        box-shadow: 0 6px 18px rgba(233,30,140,.4);
+        box-shadow: 0 6px 18px rgba(255,107,157,.4);
         opacity: .92;
         color: #fff;
     }
     .btn-apply:focus,
     .btn-apply:active {
         outline: none;
-        box-shadow: 0 4px 14px rgba(233,30,140,.3);
+        box-shadow: 0 4px 14px rgba(255,107,157,.3);
     }
 
     .btn-clear {
@@ -154,7 +154,7 @@
     .badge-status-failed  { background: #fee2e2; color: #dc2626; padding: 4px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: 700; }
     .badge-status-pending { background: #fef3c7; color: #d97706; padding: 4px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: 700; }
     .role-badge { padding: 3px 10px; border-radius: 50px; font-size: 0.58rem; font-weight: 700; }
-    .role-admin  { background: #fce4ec; color: #c2185b; }
+    .role-admin  { background: #fce4ec; color: #E85588; }
     .role-owner  { background: #e3f2fd; color: #0d47a1; }
     .role-client { background: #e8f5e9; color: #1b5e20; }
 
@@ -177,7 +177,7 @@
 
     .pagination-wrapper { padding: 1rem 1.5rem; border-top: 1px solid #f5f5f5; display: flex; justify-content: center; }
     .table-responsive { max-height: 550px; overflow-y: auto; }
-    .card { border-radius: 20px; border: 1px solid var(--pk-lt); overflow: hidden; box-shadow: 0 4px 18px rgba(233,30,140,.05); }
+    .card { border-radius: 20px; border: 1px solid var(--pk-lt); overflow: hidden; box-shadow: 0 4px 18px rgba(255,107,157,.05); }
     .card-header { background: #fff; padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--pk-lt); }
     .card-title { font-weight: 700; color: #333; font-size: 0.95rem; }
 </style>
@@ -288,7 +288,7 @@
                     <td style="font-weight:700;color:#aaa;font-size:0.75rem;">#{{ $log->id }}</td>
                     <td>
                         <div class="user-info">
-                            <img src="{{ $log->user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($log->user->name ?? 'System').'&background=E91E8C&color=fff' }}" class="user-avatar">
+                            <img src="{{ $log->user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($log->user->name ?? 'System').'&background=FF6B9D&color=fff' }}" class="user-avatar">
                             <div class="user-details">
                                 <span class="user-name">{{ $log->user->name ?? 'System' }}</span>
                                 <span class="role-badge role-{{ $log->user->role ?? 'client' }}">

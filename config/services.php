@@ -41,23 +41,29 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
-    // ============ Facebook Login============
-    'facebook' => [
-    'client_id' => env('FACEBOOK_CLIENT_ID'),
-    'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
-    'redirect' => env('FACEBOOK_REDIRECT_URI'),
-],
 
- 'payfast' => [
-        'merchant_id'  => env('PAYFAST_MERCHANT_ID', '10000'),       // sandbox default test ID
-        'merchant_key' => env('PAYFAST_MERCHANT_KEY', 'sandboxkey'), // sandbox default test key
+    // ============ FACEBOOK LOGIN CONFIGURATION ============
+    'facebook' => [
+        'client_id' => env('FACEBOOK_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+        'redirect' => env('FACEBOOK_REDIRECT_URI'),
+    ],
+
+    'payfast' => [
+        'merchant_id'  => env('PAYFAST_MERCHANT_ID', '10000'),
+        'merchant_key' => env('PAYFAST_MERCHANT_KEY', 'sandboxkey'),
         'sandbox_url'  => env('PAYFAST_SANDBOX_URL', 'https://sandbox.payfast.pk/order/request'),
         'live_url'     => env('PAYFAST_LIVE_URL', 'https://www.payfast.pk/order/request'),
-        'mode'         => env('PAYFAST_MODE', 'sandbox'), 
+        'mode'         => env('PAYFAST_MODE', 'sandbox'),
     ],
 
     'google_maps' => [
-    'key' => env('GOOGLE_MAPS_API_KEY'),
-],
+        'key' => env('GOOGLE_MAPS_API_KEY'),
+    ],
+
+    // ============ GEMINI API CONFIGURATION ============
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+    ],
 
 ];

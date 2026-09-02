@@ -11,12 +11,12 @@
         }
         .header {
             text-align: center;
-            border-bottom: 2px solid #E91E8C;
+            border-bottom: 2px solid #FF6B9D;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
         .header h1 {
-            color: #E91E8C;
+            color: #FF6B9D;
             font-size: 20px;
             margin: 0;
         }
