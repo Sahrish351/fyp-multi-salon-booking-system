@@ -1,58 +1,78 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Beauty Blush Salons
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Beauty Blush Salons is a multi-tenant salon booking platform built as a final-year project. It works as a marketplace where clients can browse salons and book appointments, while salon owners manage their own business through an isolated dashboard — all from a single shared codebase.
 
-## About Laravel
+Tech Stack
+Backend: Laravel 13, PHP 8.5
+Database: MySQL
+Frontend: Bootstrap 5, Blade Templating
+Mail: Brevo SMTP
+PDF Generation: barryvdh/laravel-dompdf
+Roles & Permissions: Spatie Laravel Permission
+Charts: Chart.js
+Maps: Leaflet / OpenStreetMap
+Key Features
+For Clients
+Browse and search salons by service, category, and location
+Four-step booking flow: Services → Stylist → Date & Time → Payment
+Manage appointments (view, cancel, reschedule)
+Join a waitlist when preferred slots are unavailable
+Submit payments (Easypaisa, JazzCash, bank transfer, cash, online) with screenshot upload
+Leave reviews and ratings for salons and stylists
+Save favorite salons
+Raise and track complaints
+Real-time email and in-app notifications for booking and payment updates
+AI chatbot assistant ("Bella") for quick help and FAQs
+For Salon Owners
+Dedicated dashboard scoped to their own salon (multi-tenant, isolated by salon_id)
+Manage services, categories, stylists, and time slots
+Approve, reject, and track appointments and payments
+Sales analytics dashboard with revenue charts
+Manage salon gallery, holidays, and client waitlists
+Respond to reviews and complaints
+Export reports and client/payment data
+For Admins
+Platform-wide oversight: salons, owners, clients, appointments, and payments
+Approve or reject new salon registration requests
+Manage reviews, complaints, and system-wide notifications
+Site settings: general, payment, email, and social configuration
+Audit logs and reporting tools
+Manage FAQs and homepage hero sliders
+Authentication & Security
+Role-based login (Client / Owner / Admin) with separate portals
+Google and Facebook social login
+OTP-based phone verification and email verification
+Account lockout after repeated failed login attempts
+Project Structure Highlights
+app/Http/Controllers/Frontend — public-facing pages and the booking flow
+app/Http/Controllers/Client — client dashboard and account features
+app/Http/Controllers/Owner — salon owner dashboard and management tools
+app/Http/Controllers/Admin — platform administration
+app/Helpers/NotificationHelper.php — centralized in-app notification dispatch
+app/Mail — transactional email templates (booking, payment, review, etc.)
+Getting Started
+bash
+# Install dependencies
+composer install
+npm install
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Environment setup
+cp .env.example .env
+php artisan key:generate
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Configure your database and mail (Brevo SMTP) credentials in .env
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+# Run migrations
+php artisan migrate
 
-## Learning Laravel
+# (Optional) Seed demo data
+php artisan db:seed
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# Build frontend assets
+npm run dev
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Serve the application
+php artisan serve
+License
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project was developed as a final-year academic project and is not licensed for commercial use.

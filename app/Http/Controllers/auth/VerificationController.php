@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\OtpVerification;
+use App\Mail\OtpMail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class VerificationController extends Controller
 {
@@ -42,6 +44,9 @@ class VerificationController extends Controller
                 'expires_at' => Carbon::now()->addMinutes(10),
             ]
         );
+
+        // Send OTP email
+        Mail::to($user->email)->send(new OtpMail($otp));
 
         return back()->with('success', 'Verification OTP sent to your email.');
     }
@@ -175,6 +180,9 @@ class VerificationController extends Controller
                 'expires_at' => Carbon::now()->addMinutes(10),
             ]
         );
+
+        // Send new OTP email
+        Mail::to($user->email)->send(new OtpMail($otp));
 
         return back()->with('success', 'New verification OTP sent.');
     }
