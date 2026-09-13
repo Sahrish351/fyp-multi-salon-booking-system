@@ -13,9 +13,9 @@ class User extends Authenticatable
 {
     use HasFactory, SoftDeletes, HasRoles, Notifiable;  
 
-    protected $fillable = [
+        protected $fillable = [
         'name', 'email', 'phone', 'password', 'role',
-        'avatar', 'city', 'area', 'is_active', 'is_verified',
+        'avatar', 'city', 'area', 'is_active', 'is_verified', 'failed_login_attempts',
         'google_id', 'auth_provider', 'theme',
     ];
 

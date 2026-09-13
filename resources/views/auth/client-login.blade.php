@@ -682,10 +682,17 @@
             <p>Welcome back! Please login to your account</p>
         </div>
 
-        @if(session('error'))
+                @if(session('error'))
             <div class="alert-danger">
                 <i class="fas fa-exclamation-circle"></i>
                 {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ $errors->first() }}
             </div>
         @endif
 

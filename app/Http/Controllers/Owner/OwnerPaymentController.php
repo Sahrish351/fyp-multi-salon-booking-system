@@ -11,9 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
-// Mail classes import kiye gaye hain
 use App\Mail\PaymentVerifiedMail;
-use App\Mail\AppointmentStatusMail;
+use App\Mail\PaymentRejectedMail;
 
 class OwnerPaymentController extends Controller
 {
@@ -251,7 +250,7 @@ class OwnerPaymentController extends Controller
         if ($validated['status'] === 'approved' && $paymentModel->appointment) {
             $paymentModel->appointment->update(['status' => 'confirmed']);
 
-            // 📧 Send Email on Payment Approved
+           
             $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist', 'payment']);
             if ($appointment->client && $appointment->client->email) {
                 try {
@@ -263,11 +262,11 @@ class OwnerPaymentController extends Controller
         } elseif ($validated['status'] === 'rejected' && $paymentModel->appointment) {
             $paymentModel->appointment->update(['status' => 'pending_payment']);
 
-            // 📧 Send Status Update Email on Rejection
-            $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist']);
+            
+            $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist', 'payment']);
             if ($appointment->client && $appointment->client->email) {
                 try {
-                    Mail::to($appointment->client->email)->send(new AppointmentStatusMail($appointment));
+                    Mail::to($appointment->client->email)->send(new PaymentRejectedMail($appointment));
                 } catch (\Exception $e) {
                     \Log::error('Mail Error (Payment Update Rejected): ' . $e->getMessage());
                 }
@@ -328,7 +327,7 @@ class OwnerPaymentController extends Controller
             $paymentModel->appointment->update(['status' => 'confirmed']);
         }
 
-        // 📧 Send Payment Verification Email
+       
         if ($paymentModel->appointment) {
             $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist', 'payment']);
             if ($appointment->client && $appointment->client->email) {
@@ -340,7 +339,7 @@ class OwnerPaymentController extends Controller
             }
         }
 
-        // 🔔 Notification logic fixed for CLIENT
+    
         try {
             $clientId = $paymentModel->client_id ?? ($paymentModel->appointment->client_id ?? null);
             if ($clientId) {
@@ -384,19 +383,19 @@ class OwnerPaymentController extends Controller
             $paymentModel->appointment->update(['status' => 'pending_payment']);
         }
 
-        // 📧 Send Rejection Email
+        
         if ($paymentModel->appointment) {
-            $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist']);
+            $appointment = $paymentModel->appointment->load(['client', 'service', 'stylist', 'payment']);
             if ($appointment->client && $appointment->client->email) {
                 try {
-                    Mail::to($appointment->client->email)->send(new AppointmentStatusMail($appointment));
+                    Mail::to($appointment->client->email)->send(new PaymentRejectedMail($appointment));
                 } catch (\Exception $e) {
                     \Log::error('Mail Error (Reject Payment): ' . $e->getMessage());
                 }
             }
         }
 
-        // 🔔 Notification logic fixed for CLIENT
+        
         try {
             $clientId = $paymentModel->client_id ?? ($paymentModel->appointment->client_id ?? null);
             if ($clientId) {

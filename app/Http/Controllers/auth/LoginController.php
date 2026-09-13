@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    // Maximum allowed failed attempts before account is blocked
+    const MAX_ATTEMPTS = 5;
+
     // Show login form
     public function showLoginForm()
     {
@@ -28,21 +32,52 @@ class LoginController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|min:8',
         ]);
+
+        // Determine which role this login form is meant for
+        $expectedRole = null;
+        if ($request->routeIs('client.login.submit')) {
+            $expectedRole = 'client';
+        } elseif ($request->routeIs('owner.login.submit')) {
+            $expectedRole = 'owner';
+        } elseif ($request->routeIs('admin.login.submit')) {
+            $expectedRole = 'admin';
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        // Agar account already block ho chuka hai
+        if ($user && !$user->is_active) {
+            return back()->withErrors([
+                'email' => 'Your account has been blocked due to multiple failed login attempts. Please contact support.',
+            ])->onlyInput('email');
+        }
+
+        // Agar user exist karta hai lekin galat form se login kar raha hai (role mismatch)
+        if ($user && $expectedRole && $user->role !== $expectedRole) {
+            return back()->withErrors([
+                'email' => 'These credentials do not match a ' . $expectedRole . ' account.',
+            ])->onlyInput('email');
+        }
 
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            
-            $user = Auth::user();
-            
+
+            $authUser = Auth::user();
+
+            // Successful login par attempts reset kar dein
+            if ($authUser->failed_login_attempts > 0) {
+                $authUser->update(['failed_login_attempts' => 0]);
+            }
+
             // Redirect based on role
-            if ($user->role === 'admin') {
+            if ($authUser->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             } 
-            elseif ($user->role === 'owner') {
+            elseif ($authUser->role === 'owner') {
                 return redirect()->route('owner.dashboard');
             } 
             else {
@@ -50,8 +85,21 @@ class LoginController extends Controller
             }
         }
 
+        // Galat credentials — agar user exist karta hai to uski attempt count barhayein
+        if ($user) {
+            $user->increment('failed_login_attempts');
+
+            if ($user->failed_login_attempts >= self::MAX_ATTEMPTS) {
+                $user->update(['is_active' => false]);
+
+                return back()->withErrors([
+                    'email' => 'Too many failed login attempts. Your account has been blocked. Please contact support.',
+                ])->onlyInput('email');
+            }
+        }
+
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Invalid email or password',
         ])->onlyInput('email');
     }
 
