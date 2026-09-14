@@ -151,12 +151,6 @@ Route::prefix('booking')->name('booking.')->middleware('auth')->group(function (
     Route::get('/slots/{salon_id}', [BookingController::class, 'getSlots'])->name('slots');
 });
 
-Route::prefix('payfast')->name('payfast.')->group(function () {
-    Route::get('/return', [BookingController::class, 'payfastReturn'])->name('return');
-    Route::get('/cancel', [BookingController::class, 'payfastCancel'])->name('cancel');
-    Route::post('/notify', [BookingController::class, 'payfastNotify'])->name('notify');
-});
-
 // ============================================================
 // AUTH ROUTES (Guest only)
 // ============================================================

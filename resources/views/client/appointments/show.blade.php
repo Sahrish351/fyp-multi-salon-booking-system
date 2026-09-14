@@ -1,9 +1,6 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/appointments/show.blade.php --}}
-{{-- ============================================================ --}}
 @extends('layouts.client')
 @section('title', 'Appointment ' . $appointment->booking_ref . ' — Glamora')
-
+ 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.min.css">
 <style>
@@ -12,10 +9,10 @@
         --pink-dark: #E85588;
         --pink-light: #fce4ec;
         --pink-bg: #fdf2f8;
-
+ 
         --cancel-a: #ef4444; --cancel-b: #dc2626;
     }
-
+ 
     .back-pill {
         display: inline-flex; align-items: center; gap: 8px;
         padding: 7px 16px; border-radius: 50px; font-size: .8rem; font-weight: 700;
@@ -23,7 +20,7 @@
         text-decoration: none; margin-bottom: 16px; transition: background .18s, color .18s;
     }
     .back-pill:hover { background: var(--pink-bg); color: var(--pink-dark); border-color: var(--pink); }
-
+ 
     .appt-hero {
         background: linear-gradient(135deg, var(--pink-bg), #fdeef5);
         border: 1.5px solid var(--pink-light);
@@ -47,7 +44,7 @@
     .appt-hero .ref { font-size: .7rem; opacity: .85; letter-spacing: .3px; margin-bottom: 2px; color: var(--pink-dark); }
     .appt-hero h2 { font-size: 1.08rem; font-weight: 800; margin-bottom: 1px; color: #1a1a1a; }
     .appt-hero .sub { font-size: .8rem; color: #999; }
-
+ 
     .status-pill {
         padding: 7px 16px;
         border-radius: 50px;
@@ -63,7 +60,7 @@
     .status-pill.confirmed { background: #ecfdf5; color: #059669; }
     .status-pill.completed { background: #eef6ff; color: #0284c7; }
     .status-pill.cancelled { background: #fff0f0; color: #dc2626; }
-
+ 
     .glam-card {
         background: #fff;
         border: 1px solid var(--pink-light);
@@ -86,7 +83,7 @@
         background: var(--pink-light); color: var(--pink);
         display: flex; align-items: center; justify-content: center; font-size: .8rem;
     }
-
+ 
     .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
     @media (max-width: 640px) { .detail-grid { grid-template-columns: 1fr; } }
     .detail-item { display: flex; align-items: flex-start; gap: 12px; }
@@ -99,10 +96,10 @@
     .detail-item .lbl { font-size: .68rem; color: #999; text-transform: uppercase; letter-spacing: .4px; font-weight: 700; margin-bottom: 2px; }
     .detail-item .val { font-size: .92rem; font-weight: 700; color: #1a1a1a; }
     .detail-item .val-sub { font-size: .76rem; color: #888; margin-top: 1px; }
-
+ 
     .note-box { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 14px 18px; font-size: .82rem; color: #9a3412; line-height: 1.6; display: flex; gap: 10px; align-items: flex-start; }
     .note-box i { margin-top: 2px; }
-
+ 
     .amount-box {
         background: var(--pink-bg);
         border: 1.5px solid var(--pink-light);
@@ -114,23 +111,23 @@
     .amount-row .v { font-size: 1.05rem; font-weight: 900; color: var(--pink); }
     .amount-row.total { border-top: 1.5px dashed #f3c9dc; margin-top: 6px; padding-top: 12px; }
     .amount-row.total .v { font-size: 1.2rem; }
-
+ 
     .pstatus { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 50px; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 14px; }
     .pstatus-pending  { background: #fef3c7; color: #b45309; }
     .pstatus-approved { background: #dcfce7; color: #15803d; }
     .pstatus-rejected { background: #fee2e2; color: #b91c1c; }
-
+ 
     .pay-detail-list { margin-top: 4px; }
     .pay-detail-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px dashed #f3e3ec; font-size: .82rem; }
     .pay-detail-row:last-child { border-bottom: none; }
     .pay-detail-row .k { color: #999; font-weight: 600; }
     .pay-detail-row .v { color: #1a1a1a; font-weight: 700; }
-
+ 
     .rejection-note { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 10px 14px; font-size: .78rem; color: #b91c1c; margin-bottom: 14px; }
-
+ 
     .screenshot-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: .8rem; color: var(--pink-dark); font-weight: 700; text-decoration: none; padding: 8px 16px; background: var(--pink-bg); border-radius: 50px; }
     .screenshot-link:hover { background: #fce4ec; }
-
+ 
     .manage-row {
         display: flex;
         align-items: center;
@@ -151,7 +148,7 @@
     }
     .manage-row .txt .t1 { font-size: .86rem; font-weight: 800; color: #1a1a1a; }
     .manage-row .txt .t2 { font-size: .7rem; color: #999; }
-
+ 
     .mini-btn {
         flex-shrink: 0;
         padding: 8px 18px;
@@ -169,7 +166,7 @@
     .mini-btn:hover { filter: brightness(1.06); color: #fff; transform: translateY(-1px); }
     .mini-btn.cancel { background: linear-gradient(135deg, var(--cancel-a), var(--cancel-b)); }
     .mini-btn.review     { background: linear-gradient(135deg, var(--pink), var(--pink-dark)); }
-
+ 
     /* --- Modals --- */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(30,10,25,.45); z-index: 999; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.active { display: flex; }
@@ -187,7 +184,7 @@
     .modal-foot button { flex:1; padding: 11px; border-radius: 10px; font-weight: 800; font-size: .84rem; border: none; cursor: pointer; font-family:'Inter',sans-serif; }
     .btn-keep { background: #f2f2f2 !important; color: #555 !important; }
     .btn-confirm-cancel { background: linear-gradient(135deg, var(--cancel-a), var(--cancel-b)); color: #fff; }
-
+ 
     /* ✅ Complaint Button Styles */
     .mini-btn.complaint {
         background: linear-gradient(135deg, #dc2626, #b91c1c);
@@ -210,7 +207,7 @@
     }
 </style>
 @endpush
-
+ 
 @section('content')
 @php
     $statusMap = [
@@ -221,12 +218,12 @@
     ];
     $st = $statusMap[$appointment->status] ?? ['label' => ucfirst(str_replace('_',' ',$appointment->status)), 'icon' => 'fa-circle', 'cls' => 'awaiting'];
 @endphp
-
+ 
 {{-- Back link --}}
 <a href="{{ route('client.appointments.index') }}" class="back-pill">
     <i class="fas fa-arrow-left"></i> Back to My Appointments
 </a>
-
+ 
 {{-- Small, cute hero --}}
 <div class="appt-hero">
     <div class="hero-left">
@@ -239,11 +236,11 @@
     </div>
     <span class="status-pill {{ $st['cls'] }}"><i class="fas {{ $st['icon'] }}"></i> {{ $st['label'] }}</span>
 </div>
-
+ 
 <div class="row g-4">
     {{-- LEFT: Details --}}
     <div class="col-lg-8">
-
+ 
         @if($appointment->status === 'pending_payment')
             @if($appointment->payment && $appointment->payment->status === 'approved')
             <div class="note-box mb-4">
@@ -257,7 +254,7 @@
             </div>
             @endif
         @endif
-
+ 
         <div class="glam-card">
             <div class="card-title"><span class="ti-ic"><i class="fas fa-calendar-day"></i></span> Appointment Details</div>
             <div class="detail-grid">
@@ -268,11 +265,19 @@
                         <div class="val">{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('l, d F Y') }}</div>
                     </div>
                 </div>
+                @php
+                    $isWaitlistPlaceholder = $appointment->start_time === '00:00:00'
+                        && str_contains((string) $appointment->notes, 'Waitlist');
+                @endphp
                 <div class="detail-item">
                     <div class="ic"><i class="fas fa-clock"></i></div>
                     <div>
                         <div class="lbl">Time</div>
-                        <div class="val">{{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('h:i A') }}</div>
+                        @if($isWaitlistPlaceholder)
+                            <div class="val" style="color:#b45309;">Time to be assigned by salon</div>
+                        @else
+                            <div class="val">{{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('h:i A') }}</div>
+                        @endif
                     </div>
                 </div>
                 <div class="detail-item">
@@ -319,7 +324,7 @@
                 @endif
             </div>
         </div>
-
+ 
         @if($appointment->payment)
             @php
                 $pay = $appointment->payment;
@@ -328,18 +333,18 @@
             @endphp
             <div class="glam-card">
                 <div class="card-title"><span class="ti-ic"><i class="fas fa-receipt"></i></span> Payment Reference</div>
-
+ 
                 <span class="pstatus pstatus-{{ $pay->status }}">
                     <i class="fas {{ $payIconMap[$pay->status] ?? 'fa-circle' }}"></i>
                     {{ $payLabelMap[$pay->status] ?? ucfirst($pay->status) }}
                 </span>
-
+ 
                 @if($pay->status === 'rejected' && ($pay->rejection_reason ?? false))
                 <div class="rejection-note">
                     <i class="fas fa-comment-dots me-1"></i> {{ $pay->rejection_reason }}
                 </div>
                 @endif
-
+ 
                 <div class="pay-detail-list">
                     <div class="pay-detail-row">
                         <span class="k">Method</span>
@@ -366,7 +371,7 @@
                     </div>
                     @endif
                 </div>
-
+ 
                 @if($pay->screenshot)
                 <a href="{{ asset('storage/'.$pay->screenshot) }}" target="_blank" class="screenshot-link">
                     <i class="fas fa-image"></i> View uploaded screenshot
@@ -375,7 +380,7 @@
             </div>
         @endif
     </div>
-
+ 
     {{-- RIGHT: Amount + Actions --}}
     <div class="col-lg-4">
         <div class="glam-card">
@@ -391,12 +396,12 @@
                 </div>
             </div>
         </div>
-
+ 
         {{-- Cancel --}}
         @if(in_array($appointment->status, ['pending_payment', 'confirmed']))
         <div class="glam-card">
             <div class="card-title"><span class="ti-ic"><i class="fas fa-sliders-h"></i></span> Manage Booking</div>
-
+ 
             <div class="manage-row">
                 <div class="row-left">
                     <span class="ic-box-mini" style="background:#fee2e2;color:#dc2626;"><i class="fas fa-times-circle"></i></span>
@@ -411,7 +416,7 @@
             </div>
         </div>
         @endif
-
+ 
         {{-- Review --}}
         @if($appointment->status === 'completed' && !$appointment->review)
         <div class="glam-card">
@@ -429,7 +434,7 @@
             </div>
         </div>
         @endif
-
+ 
         {{-- ✅ COMPLAINT BUTTON (Added Here) --}}
         @if(in_array($appointment->status, ['confirmed', 'completed']))
         <div class="glam-card">
@@ -456,7 +461,7 @@
         @endif
     </div>
 </div>
-
+ 
 {{-- ================= Cancel Modal ================= --}}
 <div class="modal-overlay" id="cancelOverlay">
     <div class="modal-box">
@@ -478,9 +483,9 @@
         </form>
     </div>
 </div>
-
+ 
 @endsection
-
+ 
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.all.min.js"></script>
 <script>
@@ -491,16 +496,16 @@ window.addEventListener('click', function (e) {
         if (e.target === ov) ov.classList.remove('active');
     });
 });
-
+ 
 document.addEventListener('DOMContentLoaded', function () {
     @if(session('success'))
     Swal.fire({ icon: 'success', title: 'Yay! 💖', text: @json(session('success')), confirmButtonColor: '#FF6B9D', confirmButtonText: 'Great!', background: '#fff7fb' });
     @endif
-
+ 
     @if(session('error'))
     Swal.fire({ icon: 'error', title: 'Oops!', text: @json(session('error')), confirmButtonColor: '#ef4444', background: '#fff7fb' });
     @endif
-
+ 
     @if($errors->any())
     Swal.fire({ icon: 'warning', title: 'Please check', text: @json($errors->first()), confirmButtonColor: '#E85588', background: '#fff7fb' });
     @endif

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\TimeSlot;
+use App\Models\Waitlist;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -77,12 +78,19 @@ class AppointmentManageController extends Controller
             'cancelled_at'        => now(),
         ]);
  
+        // Agar ye appointment waitlist se bani thi, us waitlist entry ko bhi cancelled mark karo
+        if ($appointment->waitlist_id) {
+            Waitlist::where('id', $appointment->waitlist_id)
+                ->update(['status' => 'cancelled']);
+        }
+ 
         if (class_exists('App\Http\Controllers\Client\WaitlistJoinController')) {
             try {
                 \App\Http\Controllers\Client\WaitlistJoinController::offerToNext(
                     $appointment->salon_id,
                     $appointment->stylist_id,
-                    Carbon::parse($appointment->appointment_date)->format('Y-m-d')
+                    Carbon::parse($appointment->appointment_date)->format('Y-m-d'),
+                    $appointment->client_id
                 );
             } catch (\Exception $e) {
                 \Log::warning('Waitlist offer error: ' . $e->getMessage());
@@ -261,3 +269,4 @@ class AppointmentManageController extends Controller
         }
     }
 }
+ 
