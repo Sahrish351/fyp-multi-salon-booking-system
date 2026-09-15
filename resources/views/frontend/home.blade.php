@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
   <meta name="csrf-token" content="{{ csrf_token() }}" />
-  <title>Beauty Blush Salons — Book Premium Beauty Services in Pakistan</title>
+  <title>Beauty Blush Salon</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-icon.svg') }}">
   <style>
     /* ── reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,20 +32,12 @@
       box-shadow: 0 2px 20px rgba(233,30,140,0.06);
     }
     .g-nav .brand { display: flex; align-items: center; gap: 8px; }
-    .g-nav .brand .brand-icon {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, #E91E8C, #C9A96E);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 14px rgba(233,30,140,0.25);
+    .g-nav .brand .brand-logo-img {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
     }
-    .g-nav .brand .brand-icon i { color: #fff; font-size: 1rem; }
-    .g-nav .brand .brand-text {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem; font-weight: 800; letter-spacing: -0.3px;
-    }
-    .g-nav .brand .brand-text .pink { color: #E91E8C; }
-    .g-nav .brand .brand-text .gold { color: #C9A96E; }
     .g-nav .nav-right { display: flex; align-items: center; gap: 6px; }
     .btn-nav-ghost, .btn-nav-outline {
       font-size: 0.7rem; padding: 5px 12px; border-radius: 50px;
@@ -78,18 +71,15 @@
     .menu-dropdown .mobile-auth { display: block; }
  
     @media(min-width:769px) {
-      .g-nav { padding: 0 32px; height: 64px; }
-      .g-nav .brand .brand-text { font-size: 1.5rem; }
-      .g-nav .brand .brand-icon { width: 44px; height: 44px; }
-      .g-nav .brand .brand-icon i { font-size: 1.2rem; }
+      .g-nav { padding: 0 32px; height: 68px; }
+      .g-nav .brand .brand-logo-img { height: 56px; }
       .btn-nav-ghost, .btn-nav-outline { display: inline-block; font-size: 0.85rem; padding: 7px 18px; }
       .btn-nav-menu { font-size: 0.82rem; padding: 7px 16px; }
       .menu-dropdown .mobile-auth { display: none; }
     }
     @media(max-width:768px) {
-      .g-nav .brand .brand-text { font-size: 1rem; }
-      .g-nav .brand .brand-icon { width: 32px; height: 32px; }
-      .g-nav .brand .brand-icon i { font-size: 0.85rem; }
+      .g-nav { height: 58px; }
+      .g-nav .brand .brand-logo-img { height: 42px; }
       .btn-nav-menu { font-size: 0.7rem; padding: 4px 10px; }
     }
  
@@ -554,14 +544,13 @@
     @media(min-width:768px) { .trust-sec { padding: 80px 32px; } .trust-grid { grid-template-columns: repeat(4,1fr); gap: 24px; } .trust-card { padding: 34px 20px; } }
   </style>
 </head>
-
+ 
 <body>
  
 <!-- ===== NAVBAR ===== -->
 <nav class="g-nav">
   <a href="{{ route('home') }}" class="brand">
-    <div class="brand-icon"><i class="fas fa-spa"></i></div>
-    <span class="brand-text"><span class="pink">Beauty</span><span class="gold"> Blush</span><span class="pink"> Salons</span></span>
+    <img src="{{ asset('images/logo-full.svg') }}" alt="Beauty Blush Salons" class="brand-logo-img">
   </a>
   <div class="nav-right">
     @auth
@@ -1039,8 +1028,8 @@
         </div>
     </div>
 </footer>
-
-
+ 
+ 
 <div class="whatsapp-widget-container" style="position: fixed; bottom: 95px; right: 20px; z-index: 9998; font-family: inherit;">
     
     <div id="whatsappTooltip" class="shadow-sm" style="position: absolute; right: 70px; bottom: 8px; background: #fff; padding: 8px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; color: #333; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="toggleWhatsAppPopup()">
@@ -1050,7 +1039,7 @@
             <div style="color: #000; font-size: 0.85rem; font-weight: 700;">Chat with us</div>
         </div>
     </div>
-
+ 
     <!-- Main Popup Box -->
     <div id="whatsappPopupBox" class="shadow-lg" style="display: none; position: absolute; bottom: 75px; right: 0; width: 310px; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
         
@@ -1085,7 +1074,7 @@
             </a>
         </div>
     </div>
-
+ 
     <!-- Floating WhatsApp Button -->
     <button id="whatsappToggleButton" onclick="toggleWhatsAppPopup()" style="width: 55px; height: 55px; background-color: #25D366; color: white; border-radius: 50%; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; transition: transform 0.3s ease;">
         <i id="whatsappIconClass" class="fab fa-whatsapp"></i>
@@ -1190,7 +1179,7 @@
   } else {
     revealTargets.forEach(el => el.classList.add('in-view'));
   }
-
+ 
   function toggleWhatsAppPopup() {
     const popup = document.getElementById('whatsappPopupBox');
     const icon = document.getElementById('whatsappIconClass');
