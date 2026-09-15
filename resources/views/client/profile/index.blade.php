@@ -1,8 +1,6 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/profile/index.blade.php --}}
-{{-- ============================================================ --}}
+
 @extends('layouts.client')
-@section('title', 'My Profile — Glamora')
+@section('title', 'My Profile — Beauty Blush Salons')
 @section('content')
  
 <div class="mb-4">

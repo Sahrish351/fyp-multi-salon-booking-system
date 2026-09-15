@@ -1,8 +1,6 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/favorites/index.blade.php --}}
-{{-- ============================================================ --}}
+
 @extends('layouts.client')
-@section('title', 'Saved Salons — Glamora')
+@section('title', 'Saved Salons — Beauty Blush Salons')
 @section('content')
  
 <div class="d-flex justify-content-between align-items-center mb-4">

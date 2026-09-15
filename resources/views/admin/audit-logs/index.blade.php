@@ -1,14 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Audit Logs — Glamora')
+@section('title', 'Audit Logs — Beauty Blush Salons')
 
 @push('styles')
 <style>
     :root { --pk:#FF6B9D; --pk-dark:#E85588; --pk-lt:#fce4ec; --pk-bg:#fff0f7; }
 
-    /* ============================================================ */
-    /* HEADER */
-    /* ============================================================ */
+   
     .header-section {
         display: flex;
         justify-content: space-between;
@@ -30,9 +28,7 @@
     .header-left p { color: #aaa; font-size: 0.85rem; margin: 6px 0 0 48px; }
     .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
-    /* ============================================================ */
-    /* EXPORT BUTTONS — authentic file-type colors, solid + icon */
-    /* ============================================================ */
+   
     .btn-export {
         display: inline-flex; align-items: center; gap: 9px;
         padding: 10px 22px; border-radius: 12px; font-weight: 700; font-size: 0.85rem;
@@ -52,9 +48,7 @@
     .btn-export-pdf { background: linear-gradient(135deg, #e5352b, #c0392b); color: #fff; }
     .btn-export-pdf:hover { box-shadow: 0 8px 22px rgba(192,57,43,.38); }
 
-    /* ============================================================ */
-    /* FILTER CARD */
-    /* ============================================================ */
+   
     .filter-card {
         background: #fff; border-radius: 20px; padding: 1.4rem 1.6rem;
         margin-bottom: 1.5rem; border: 1px solid var(--pk-lt);
@@ -136,9 +130,7 @@
         border: 1px solid var(--pk-lt);
     }
 
-    /* ============================================================ */
-    /* TABLE */
-    /* ============================================================ */
+   
     .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     .data-table thead th {
         background: var(--pk-bg); padding: 12px 14px; text-align: left; font-weight: 800; color: var(--pk-dark);

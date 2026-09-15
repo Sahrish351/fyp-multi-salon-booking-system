@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Salon Registration Requests - Glamora')
+@section('title', 'Salon Registration Requests - Beauty Blush Salons')
 
 @push('styles')
 <style>

@@ -1,6 +1,6 @@
-{{-- FILE: resources/views/client/reviews/edit.blade.php --}}
+
 @extends('layouts.client')
-@section('title', 'Edit Review — Glamora')
+@section('title', 'Edit Review — Beauty Blush Salons')
 @section('content')
 
 <style>

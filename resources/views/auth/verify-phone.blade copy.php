@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Verify Phone — Glamora')
+@section('title', 'Verify Phone — Beauty Blush Salons')
 
 @push('styles')
 <style>

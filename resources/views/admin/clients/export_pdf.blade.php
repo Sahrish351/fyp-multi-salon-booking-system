@@ -91,7 +91,7 @@
 
 <div class="header">
     <div>
-        <h2>Glamora — Clients Report</h2>
+        <h2>Beauty Blush Salons — Clients Report</h2>
         <p class="meta">Generated: {{ now()->format('d M Y, h:i A') }}</p>
     </div>
     <span class="total-badge">Total: {{ $clients->count() }} clients</span>

@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Client Registration — Glamora')
+@section('title', 'Client Registration — Beauty Blush Salons')
 
 @push('styles')
 <style>
@@ -510,7 +510,7 @@
                     <i class="fas fa-user-plus"></i>
                 </div>
                 <h3>Create Client Account</h3>
-                <p>Join Glamora and discover beauty</p>
+                <p>Join Beauty Blush Salons and discover beauty</p>
             </div>
 
             @if($errors->any())

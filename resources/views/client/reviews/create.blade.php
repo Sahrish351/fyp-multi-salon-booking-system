@@ -1,8 +1,6 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/reviews/create.blade.php --}}
-{{-- ============================================================ --}}
+
 @extends('layouts.client')
-@section('title', 'Write Review — Glamora')
+@section('title', 'Write Review — Beauty Blush Salons')
 @section('content')
 
 <div class="mb-4">

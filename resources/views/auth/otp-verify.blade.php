@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Verify OTP — Glamora')
+@section('title', 'Verify OTP — Beauty Blush Salons')
 
 @push('styles')
 <style>

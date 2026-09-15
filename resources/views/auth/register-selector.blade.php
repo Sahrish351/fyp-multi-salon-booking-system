@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Join Glamora — Register')
+@section('title', 'Join Beauty Blush Salons — Register')
 
 @push('styles')
 <style>
@@ -361,12 +361,12 @@
             <div class="icon-wrapper">
                 <i class="fas fa-spa"></i>
             </div>
-            <h2>Join Glamora</h2>
+            <h2>Join Beauty Blush Salons</h2>
             <p>Choose how you want to be part of our beauty community</p>
         </div>
 
         <div class="role-grid">
-            <!-- Register as Client -->
+  
             <a href="{{ route('register.client') }}" class="role-option client">
                 <div class="role-icon">
                     <i class="fas fa-user"></i>

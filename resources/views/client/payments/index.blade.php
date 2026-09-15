@@ -1,8 +1,6 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/payments/index.blade.php      --}}
-{{-- ============================================================ --}}
+
 @extends('layouts.client')
-@section('title', 'My Payments — Glamora')
+@section('title', 'My Payments — Beauty Blush Salons')
 
 @push('styles')
 <style>

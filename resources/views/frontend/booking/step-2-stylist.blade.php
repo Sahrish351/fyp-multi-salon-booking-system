@@ -11,9 +11,7 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #f8f7fa; min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
-        /* ============================================================ */
-        /* TOP NAV - BIGGER */
-        /* ============================================================ */
+       
         .top-nav {
             position: fixed;
             top: 0;
@@ -56,9 +54,7 @@
         .breadcrumb .bc-step.active { color: #E91E8C; font-weight: 700; }
         .breadcrumb .bc-sep { color: #ccc; font-size: 0.75rem; }
 
-        /* ============================================================ */
-        /* MAIN LAYOUT */
-        /* ============================================================ */
+      
         .booking-wrapper {
             padding-top: 82px;
             max-width: 1200px;
@@ -79,9 +75,7 @@
             .booking-layout { grid-template-columns: 1fr; gap: 24px; }
         }
 
-        /* ============================================================ */
-        /* LEFT PANEL - BIGGER */
-        /* ============================================================ */
+   
         .left-panel {
             padding: 20px 0;
             overflow-x: hidden;
@@ -100,9 +94,7 @@
             margin-bottom: 20px;
         }
 
-        /* ============================================================ */
-        /* PROFESSIONAL CARDS - BIGGER */
-        /* ============================================================ */
+  
         .pro-card {
             background: #fff;
             border: 1.5px solid #e8e8e8;
@@ -202,9 +194,7 @@
             box-shadow: 0 4px 15px rgba(233,30,140,0.2);
         }
 
-        /* ============================================================ */
-        /* SIDEBAR - BIGGER */
-        /* ============================================================ */
+       
         .sidebar {
             padding: 0;
             position: sticky;
@@ -323,9 +313,7 @@
             box-shadow: 0 8px 30px rgba(233,30,140,0.25);
         }
 
-        /* ============================================================ */
-        /* MOBILE BAR - BIGGER */
-        /* ============================================================ */
+       
         .mobile-bar {
             display: none;
             position: fixed;
@@ -370,9 +358,7 @@
 </head>
 <body>
 
-{{-- ============================================================ --}}
-{{-- TOP NAV --}}
-{{-- ============================================================ --}}
+
 <div class="top-nav">
     <a href="{{ route('booking.step1', $salon->id) }}" class="nav-btn"><i class="fas fa-arrow-left"></i></a>
     <div class="breadcrumb">
@@ -387,9 +373,7 @@
     <a href="{{ route('salons.show', $salon->slug) }}" class="nav-btn"><i class="fas fa-times"></i></a>
 </div>
 
-{{-- ============================================================ --}}
-{{-- MAIN CONTENT --}}
-{{-- ============================================================ --}}
+
 <div class="booking-wrapper">
     <div class="booking-layout">
 
@@ -475,9 +459,7 @@
     </div>
 </div>
 
-{{-- ============================================================ --}}
-{{-- MOBILE BAR --}}
-{{-- ============================================================ --}}
+
 <div class="mobile-bar">
     <form action="{{ route('booking.step2.post', $salon->id) }}" method="POST">
         @csrf

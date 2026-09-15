@@ -1,6 +1,4 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/partials/alerts.blade.php --}}
-{{-- ============================================================ --}}
+
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm mx-3 mt-3" role="alert" style="background:linear-gradient(135deg,#d4edda,#c3e6cb);border-left:4px solid #28a745 !important;">
     <i class="fas fa-check-circle me-2 text-success"></i>

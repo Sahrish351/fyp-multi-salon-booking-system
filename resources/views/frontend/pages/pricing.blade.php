@@ -4,9 +4,7 @@
 @section('content')
 
 <style>
-    /* ============================================================ */
-    /* PREMIUM ANIMATIONS */
-    /* ============================================================ */
+   
     @keyframes float {
         0%, 100% { transform: translate(0, 0) scale(1); }
         50% { transform: translate(30px, -30px) scale(1.05); }
@@ -54,9 +52,7 @@
     .delay-4 { animation-delay: 0.4s; }
     .delay-5 { animation-delay: 0.5s; }
 
-    /* ============================================================ */
-    /* PRICING CARDS - FIXED ALL ISSUES */
-    /* ============================================================ */
+   
     .pricing-card {
         transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         position: relative;
@@ -137,9 +133,7 @@
         mask-composite: exclude;
     }
 
-    /* ============================================================ */
-    /* POPULAR BADGE - FULLY VISIBLE */
-    /* ============================================================ */
+  
     .popular-badge {
         position: absolute;
         top: -16px;
@@ -249,9 +243,7 @@
         color: #fff;
     }
 
-    /* ============================================================ */
-    /* TOGGLE BUTTONS - FIXED Z-INDEX */
-    /* ============================================================ */
+   
     .toggle-container {
         position: relative;
         z-index: 20;
@@ -276,9 +268,7 @@
         color: #EC4899;
     }
 
-    /* ============================================================ */
-    /* FAQ */
-    /* ============================================================ */
+
     .faq-item {
         background: #FFF9FC;
         border-radius: 16px;
@@ -313,9 +303,7 @@
         transform: rotate(180deg);
     }
 
-    /* ============================================================ */
-    /* RESPONSIVE */
-    /* ============================================================ */
+ 
     @media (max-width: 991px) {
         .pricing-card.popular {
             transform: scale(1);
@@ -376,9 +364,7 @@
     }
 </style>
 
-<!-- ============================================================ -->
-<!-- HERO SECTION -->
-<!-- ============================================================ -->
+
 <section style="background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%); padding: 100px 0 70px; position: relative; overflow: hidden;">
     
     <div class="animate-float" style="position: absolute; top: -30%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%); border-radius: 50%;"></div>
@@ -403,9 +389,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- PRICING SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 60px 0 80px; background: #FFF9FC;">
     <div class="container">
 
@@ -734,9 +718,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- FAQ SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 70px 0; background: #fff;">
     <div class="container">
         <div class="row text-center mb-5">
@@ -778,9 +760,6 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- CTA SECTION -->
-<!-- ============================================================ -->
 <section style="background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%); padding: 70px 0; text-align: center; position: relative; overflow: hidden;">
     <div class="animate-float" style="position: absolute; top: -40%; right: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(244,114,182,0.06) 0%, transparent 70%); border-radius: 50%;"></div>
     <div class="animate-float-reverse" style="position: absolute; bottom: -30%; left: -15%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(244,114,182,0.04) 0%, transparent 70%); border-radius: 50%;"></div>
@@ -801,9 +780,7 @@
 </section>
 
 <script>
-    // ============================================================
-    // PRICING TOGGLE - MONTHLY / YEARLY
-    // ============================================================
+    
     function switchPricing(type) {
         const monthlyToggle = document.getElementById('monthlyToggle');
         const yearlyToggle = document.getElementById('yearlyToggle');
@@ -823,9 +800,7 @@
         }
     }
 
-    // ============================================================
-    // FAQ TOGGLE
-    // ============================================================
+   
     function toggleFaq(element) {
         const parent = element;
         const answer = parent.querySelector('.faq-answer');
@@ -844,9 +819,7 @@
         }
     }
 
-    // ============================================================
-    // SCROLL REVEAL
-    // ============================================================
+    
     document.addEventListener('DOMContentLoaded', function() {
         const elements = document.querySelectorAll('.animate-slide-up, .animate-scale');
         const observer = new IntersectionObserver((entries) => {

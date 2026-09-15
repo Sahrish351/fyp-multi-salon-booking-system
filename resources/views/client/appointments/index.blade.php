@@ -1,8 +1,5 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/appointments/index.blade.php --}}
-{{-- ============================================================ --}}
 @extends('layouts.client')
-@section('title', 'My Appointments — Glamora')
+@section('title', 'My Appointments — Beauty Blush Salons')
 
 @push('styles')
 <style>

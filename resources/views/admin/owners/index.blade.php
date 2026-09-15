@@ -1,9 +1,6 @@
-{{-- ============================================================ --}}
-{{-- THIS FILE GOES IN: resources/views/admin/owners/index.blade.php --}}
-{{-- This is the OWNERS LIST page (uses $owners collection) --}}
-{{-- ============================================================ --}}
+
 @extends('layouts.admin')
-@section('title', 'Salon Owners - Glamora')
+@section('title', 'Salon Owners - Beauty Blush Salons')
 
 @push('styles')
 <style>

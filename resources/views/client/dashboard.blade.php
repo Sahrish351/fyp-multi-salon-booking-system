@@ -1,14 +1,12 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/dashboard.blade.php            --}}
-{{-- ============================================================ --}}
+
 @extends('layouts.client')
-@section('title', 'Dashboard — Glamora')
+@section('title', 'Dashboard — Beauty Blush Salons')
 @section('content')
 
 <div class="ps-4">
 
 <style>
-    /* Global Font Consistency */
+   
     .dashboard-font {
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
     }

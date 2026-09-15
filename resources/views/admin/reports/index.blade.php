@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Reports & Analytics — Glamora Admin')
+@section('title', 'Reports & Analytics — Beauty Blush Salons Admin')
 
 @section('content')
 <style>

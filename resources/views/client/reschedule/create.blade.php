@@ -1,8 +1,6 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/reschedule/create.blade.php --}}
-{{-- ============================================================ --}}
+
 @extends('layouts.client')
-@section('title', 'Reschedule Appointment — Glamora')
+@section('title', 'Reschedule Appointment — Beauty Blush Salons')
 
 @push('styles')
 <style>

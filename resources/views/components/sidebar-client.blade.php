@@ -1,6 +1,4 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/components/sidebar-client.blade.php    --}}
-{{-- ============================================================ --}}
+
 <div class="sidebar d-flex flex-column p-0" style="background: linear-gradient(180deg, #1A0A1E 0%, #7B1450 100%); border-right: 1px solid rgba(255,255,255,0.08); height: fit-content;">
     
     {{-- Logo Section (Single Line Clean Branding) --}}

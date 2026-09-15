@@ -1,6 +1,4 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/layouts/client.blade.php               --}}
-{{-- ============================================================ --}}
+
 <!DOCTYPE html>
 <html lang="en" data-theme="{{ Auth::user()->theme ?? 'light' }}">
 <head>

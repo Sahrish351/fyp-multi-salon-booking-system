@@ -1,9 +1,9 @@
 @extends('layouts.auth')
-@section('title', 'Admin Login — Glamora')
+@section('title', 'Admin Login — Beauty Blush Salons')
 
 @push('styles')
 <style>
-    /* ── Base ── */
+   
     .admin-login-page {
         min-height: 100vh;
         background: linear-gradient(160deg, #f8f0f5 0%, #fce4ec 30%, #f3e5f5 60%, #e8eaf6 100%);
@@ -16,7 +16,6 @@
         overflow: hidden;
     }
 
-    /* Decorative circles */
     .admin-login-page::before {
         content: '';
         position: absolute;

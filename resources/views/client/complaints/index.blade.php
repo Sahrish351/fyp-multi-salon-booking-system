@@ -1,6 +1,6 @@
 @extends('layouts.client')
 
-@section('title', 'My Complaints — Glamora')
+@section('title', 'My Complaints — Beauty Blush Salons')
 
 @push('styles')
 <style>

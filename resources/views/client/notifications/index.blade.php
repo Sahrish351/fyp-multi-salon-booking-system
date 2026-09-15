@@ -1,13 +1,10 @@
 
 @extends('layouts.client')
 
-@section('title', 'Notifications — Glamora')
+@section('title', 'Notifications — Beauty Blush Salons')
 
 @section('content')
 
-{{-- ============================================================ --}}
-{{-- Page Header with Light Pink Bell Icon --}}
-{{-- ============================================================ --}}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h4 class="fw-bold mb-1" style="color:#333;font-family:'Playfair Display',serif;">

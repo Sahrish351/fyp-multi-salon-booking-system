@@ -1,6 +1,4 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/waitlist/index.blade.php --}}
-{{-- ============================================================ --}}
+
 @extends('layouts.client')
 @section('title', 'My Waitlist — Beauty Blush Salons')
 

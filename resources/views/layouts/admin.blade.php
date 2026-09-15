@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Glamora Admin')</title>
+    <title>@yield('title', 'Beauty Blush Salons Admin')</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -12,9 +12,7 @@
     @stack('styles')
     
     <style>
-        /* ================================================================
-                   BASE VARIABLES – PINK THEME (Like Client Dashboard)
-                   ================================================================ */
+        
         :root {
             --bg: #fff5f9;
             --white: #FFFFFF;
@@ -50,9 +48,7 @@
             min-height: 100vh;
         }
         
-        /* ================================================================
-                   SIDEBAR – PINK GRADIENT
-                   ================================================================ */
+        
         .admin-sidebar {
             width: var(--sidebar-w);
             background: linear-gradient(180deg, #1A0A1E 0%, #7B1450 100%);
@@ -154,9 +150,7 @@
             padding-top: 16px;
         }
         
-        /* ================================================================
-                   MAIN CONTENT
-                   ================================================================ */
+       
         .admin-main {
             flex: 1;
             margin-left: var(--sidebar-w);
@@ -164,10 +158,7 @@
             display: flex;
             flex-direction: column;
         }
-        
-        /* ================================================================
-                   TOP NAVBAR – PINK THEME
-                   ================================================================ */
+       
         .admin-topbar {
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px);
@@ -289,17 +280,13 @@
             background: var(--pink-bg);
         }
         
-        /* ================================================================
-                   ADMIN BODY
-                   ================================================================ */
+        
         .admin-body {
             padding: 28px 32px;
             flex: 1;
         }
         
-        /* ================================================================
-                   CARDS – PINK THEME
-                   ================================================================ */
+      
         .card {
             background: #ffffff;
             border: 1px solid var(--border);
@@ -331,9 +318,7 @@
             color: var(--text);
         }
         
-        /* ================================================================
-                   BUTTONS – PINK THEME
-                   ================================================================ */
+       
         .btn-primary {
             background: linear-gradient(135deg, #FF6B9D, #E85588);
             color: #fff;
@@ -399,9 +384,7 @@
             background: #e0e0e0;
         }
         
-        /* ================================================================
-                   TABLES – PINK THEME
-                   ================================================================ */
+      
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -433,9 +416,7 @@
             transition: background 0.2s;
         }
         
-        /* ================================================================
-                   BADGES – PINK THEME
-                   ================================================================ */
+      
         .badge {
             display: inline-flex;
             padding: 3px 10px;
@@ -464,9 +445,7 @@
             color: var(--blue);
         }
         
-        /* ================================================================
-                   PAGINATION – PINK THEME
-                   ================================================================ */
+       
         .pagination-wrapper {
             padding: 1rem;
             border-top: 1px solid var(--border);
@@ -487,18 +466,14 @@
             color: var(--pink);
         }
         
-        /* ================================================================
-                   FORM INPUTS – PINK THEME
-                   ================================================================ */
+        
         .form-control:focus,
         .form-select:focus {
             border-color: var(--pink);
             box-shadow: 0 0 0 0.2rem rgba(255,107,157,0.15);
         }
         
-        /* ================================================================
-                   ALERTS – PINK THEME
-                   ================================================================ */
+       
         .alert-success {
             background: #ecfdf5;
             border-color: #bbf7d0;
@@ -520,9 +495,7 @@
             color: #1e40af;
         }
         
-        /* ================================================================
-                   MODALS – PINK THEME
-                   ================================================================ */
+       
         .modal-content {
             border: 1px solid var(--border);
             border-radius: 20px;
@@ -534,9 +507,7 @@
             border-top: 1px solid var(--border);
         }
         
-        /* ================================================================
-                   DROPDOWNS – PINK THEME
-                   ================================================================ */
+        
         .dropdown-menu {
             border: 1px solid var(--border);
         }
@@ -545,9 +516,7 @@
             color: var(--pink);
         }
         
-        /* ================================================================
-                   RESPONSIVE
-                   ================================================================ */
+     
         @media (max-width: 900px) {
             .admin-sidebar {
                 transform: translateX(-100%);
@@ -583,12 +552,10 @@
 </head>
 <body>
 <div class="admin-wrapper">
-    <!-- ============================================================
-    SIDEBAR
-    ============================================================ -->
+   
     <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-header">
-            <h1>Glamora</h1>
+            <h1>Beauty Blush Salons</h1>
             <p>ADMIN PANEL</p>
         </div>
         

@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', $typeLabel . ' — Glamora Admin')
+@section('title', $typeLabel . ' — Beauty Blush Salons Admin')
 
 @section('content')
 <style>

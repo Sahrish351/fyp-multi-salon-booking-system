@@ -20,6 +20,8 @@ class RegisterOwnerRequest extends FormRequest
             'password'              => 'required|string|min:8|confirmed',
             'city'                  => 'nullable|string|max:100',
             'cnic'                  => 'nullable|string|max:20',
+            'salon_name'            => 'required|string|max:255',
+            'address'               => 'required|string|max:500',
         ];
     }
 
@@ -35,6 +37,8 @@ class RegisterOwnerRequest extends FormRequest
             'password.required'     => 'Password is required.',
             'password.min'          => 'Password must be at least 8 characters.',
             'password.confirmed'    => 'Password confirmation does not match.',
+            'salon_name.required'   => 'Salon name is required.',
+            'address.required'      => 'Salon address is required.',
         ];
     }
 }

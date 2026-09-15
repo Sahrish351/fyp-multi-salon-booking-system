@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Confirm Password — Glamora')
+@section('title', 'Confirm Password — Beauty Blush Salons')
 
 @push('styles')
 <style>

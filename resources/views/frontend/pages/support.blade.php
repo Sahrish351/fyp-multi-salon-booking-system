@@ -4,9 +4,7 @@
 @section('content')
 
 <style>
-    /* ============================================================ */
-    /* PREMIUM ANIMATIONS */
-    /* ============================================================ */
+    
     @keyframes float {
         0%, 100% { transform: translate(0, 0) scale(1); }
         50% { transform: translate(30px, -30px) scale(1.05); }
@@ -67,9 +65,7 @@
     .delay-5 { animation-delay: 0.5s; }
     .delay-6 { animation-delay: 0.6s; }
 
-    /* ============================================================ */
-    /* SUPPORT CARDS - PROFESSIONAL DESIGN */
-    /* ============================================================ */
+  
     .support-card {
         transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         position: relative;
@@ -172,9 +168,6 @@
         animation: gradientMove 4s ease infinite;
     }
 
-    /* ============================================================ */
-    /* FORM STYLES */
-    /* ============================================================ */
     .form-input {
         transition: all 0.3s ease;
         width: 100%;
@@ -206,9 +199,7 @@
         color: #EC4899;
     }
 
-    /* ============================================================ */
-    /* RESPONSIVE */
-    /* ============================================================ */
+    
     @media (max-width: 768px) {
         .support-card {
             padding: 28px 20px;
@@ -242,9 +233,7 @@
         }
     }
 
-    /* ============================================================ */
-    /* HERO SECTION */
-    /* ============================================================ */
+    
     .hero-support {
         background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%);
         padding: 100px 0 70px;
@@ -279,9 +268,7 @@
         line-height: 1.9;
     }
 
-    /* ============================================================ */
-    /* FAQ STYLES */
-    /* ============================================================ */
+   
     .faq-item {
         background: #fff;
         border-radius: 16px;
@@ -322,9 +309,7 @@
         transform: rotate(180deg);
     }
 
-    /* ============================================================ */
-    /* STATS SECTION */
-    /* ============================================================ */
+   
     .stat-item {
         text-align: center;
         padding: 20px;
@@ -348,9 +333,7 @@
         margin-top: 4px;
     }
 
-    /* ============================================================ */
-    /* CTA SECTION */
-    /* ============================================================ */
+  
     .cta-support {
         background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%);
         padding: 60px 0;
@@ -378,9 +361,7 @@
         color: #fff;
     }
 
-    /* ============================================================ */
-    /* 6 CHANNELS - UNIQUE ICON COLORS */
-    /* ============================================================ */
+  
     .icon-email { color: #8B5CF6; }
     .icon-phone { color: #10B981; }
     .icon-whatsapp { color: #25D366; }
@@ -403,9 +384,7 @@
     .btn-247 { background: linear-gradient(135deg, #F59E0B, #D97706) !important; }
 </style>
 
-<!-- ============================================================ -->
-<!-- HERO SECTION -->
-<!-- ============================================================ -->
+
 <section class="hero-support">
     <div class="animate-float" style="position: absolute; top: -30%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%); border-radius: 50%;"></div>
     <div class="animate-float-reverse" style="position: absolute; bottom: -20%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(244,114,182,0.05) 0%, transparent 70%); border-radius: 50%;"></div>
@@ -430,9 +409,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- SUPPORT CHANNELS SECTION - 6 CHANNELS WITH REAL ICONS -->
-<!-- ============================================================ -->
+
 <section style="padding: 60px 0 70px; background: #FFF9FC;">
     <div class="container">
 
@@ -572,9 +549,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- TICKET FORM SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 70px 0; background: #fff;">
     <div class="container">
         <div class="row align-items-center g-5">
@@ -682,9 +657,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- FAQ SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 70px 0; background: #FFF9FC;">
     <div class="container">
         <div class="row text-center mb-5">
@@ -727,9 +700,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- CTA SECTION -->
-<!-- ============================================================ -->
+
 <section class="cta-support">
     <div class="animate-float" style="position: absolute; top: -40%; right: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(244,114,182,0.06) 0%, transparent 70%); border-radius: 50%;"></div>
     <div class="animate-float-reverse" style="position: absolute; bottom: -30%; left: -15%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(244,114,182,0.04) 0%, transparent 70%); border-radius: 50%;"></div>
@@ -750,9 +721,7 @@
 </section>
 
 <script>
-    // ============================================================
-    // FAQ TOGGLE
-    // ============================================================
+    
     function toggleFaq(element) {
         const isActive = element.classList.contains('active');
         
@@ -767,9 +736,7 @@
         }
     }
 
-    // ============================================================
-    // 24/7 SUPPORT INFO
-    // ============================================================
+   
     function show247Info() {
         Swal.fire({
             title: '🌟 24/7 Support',
@@ -806,9 +773,7 @@
         });
     }
 
-    // ============================================================
-    // SCROLL REVEAL
-    // ============================================================
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Load SweetAlert2
         if (typeof Swal === 'undefined') {

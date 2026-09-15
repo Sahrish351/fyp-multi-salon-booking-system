@@ -787,7 +787,7 @@
             <div>
                 <h1 class="salon-title">
                     {{ $salon->name }}
-                    <span class="verified-badge" title="Verified by Glamora">
+                    <span class="verified-badge" title="Verified by Beauty Blush Salons">
                         <i class="fas fa-check" style="font-size:0.65rem;"></i>
                     </span>
                 </h1>
@@ -1081,7 +1081,7 @@
                             <h4>Additional information</h4>
                             <div class="add-info-item">
                                 <i class="fas fa-check-circle"></i>
-                                Verified business by Glamora
+                                Verified business by Beauty Blush Salons
                             </div>
                             <div class="add-info-item">
                                 <i class="fas fa-bolt"></i>

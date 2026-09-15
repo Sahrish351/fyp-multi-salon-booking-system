@@ -1,6 +1,4 @@
-{{-- ============================================================ --}}
-{{-- FILE: resources/views/client/payments/receipt.blade.php --}}
-{{-- ============================================================ --}}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,7 +31,7 @@
     @endphp
 
     <div class="header">
-        <h1>Glamora</h1>
+        <h1>Beauty Blush Salons</h1>
         <p>Payment Receipt</p>
     </div>
 
@@ -48,7 +46,7 @@
     </table>
 
     <div class="footer">
-        Thank you for choosing Glamora. This is a system-generated receipt.
+        Thank you for choosing Beauty Blush Salons. This is a system-generated receipt.
     </div>
 </body>
 </html>

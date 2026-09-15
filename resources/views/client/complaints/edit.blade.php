@@ -1,7 +1,7 @@
-{{-- resources/views/client/complaints/edit.blade.php --}}
+
 @extends('layouts.client')
 
-@section('title', 'Edit Complaint — Glamora')
+@section('title', 'Edit Complaint — Beauty Blush Salons')
 
 @section('content')
 

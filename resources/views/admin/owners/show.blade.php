@@ -1,7 +1,4 @@
-{{-- ============================================================ --}}
-{{-- THIS FILE GOES IN: resources/views/admin/owners/show.blade.php --}}
-{{-- This is the OWNER DETAILS page (uses single $owner object) --}}
-{{-- ============================================================ --}}
+
 @extends('layouts.admin')
 @section('title', 'Owner Details - ' . $owner->name)
 

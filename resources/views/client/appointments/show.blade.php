@@ -1,5 +1,5 @@
 @extends('layouts.client')
-@section('title', 'Appointment ' . $appointment->booking_ref . ' — Glamora')
+@section('title', 'Appointment ' . $appointment->booking_ref . ' — Beauty Blush Salons')
  
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.min.css">

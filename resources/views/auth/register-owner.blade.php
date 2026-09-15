@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Salon Owner Registration — Glamora')
+@section('title', 'Salon Owner Registration — Beauty Blush Salons')
 
 @push('styles')
 <style>

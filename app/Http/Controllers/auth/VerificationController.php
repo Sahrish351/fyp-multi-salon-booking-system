@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\Mail;
 
 class VerificationController extends Controller
 {
-    /**
-     * Show email verification notice
-     */
+    
     public function showNotice()
     {
         return view('auth.verify-notice');

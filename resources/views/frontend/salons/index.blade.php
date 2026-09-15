@@ -1,5 +1,5 @@
 @extends('layouts.guest')
-@section('title', 'Find Best Salons - Glamora')
+@section('title', 'Find Best Salons - Beauty Blush Salons')
  
 @push('styles')
 <style>
@@ -259,7 +259,7 @@
         <div class="empty-state">
             <i class="fas fa-store-slash"></i>
             <h5>No salons found</h5>
-            <p>Try adjusting your search filters, or check back soon as more salons join Glamora.</p>
+            <p>Try adjusting your search filters, or check back soon as more salons join Beauty Blush Salons.</p>
         </div>
         @endforelse
     </div>

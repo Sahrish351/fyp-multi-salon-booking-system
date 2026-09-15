@@ -4,9 +4,7 @@
 @section('content')
 
 <style>
-    /* ============================================================ */
-    /* PREMIUM ANIMATIONS */
-    /* ============================================================ */
+  
     @keyframes float {
         0%, 100% { transform: translate(0, 0) scale(1); }
         50% { transform: translate(30px, -30px) scale(1.05); }
@@ -76,9 +74,7 @@
         border-bottom: 1px solid rgba(236,72,153,0.06);
     }
 
-    /* ============================================================ */
-    /* VALUE CARDS - PREMIUM */
-    /* ============================================================ */
+    
     .value-card {
         background: #fff;
         border-radius: 20px;
@@ -149,9 +145,7 @@
         line-height: 1.8;
     }
 
-    /* ============================================================ */
-    /* STORY IMAGE */
-    /* ============================================================ */
+   
     .story-image {
         border-radius: 20px;
         overflow: hidden;
@@ -175,9 +169,7 @@
         transform: scale(1.02);
     }
 
-    /* ============================================================ */
-    /* MISSION/VISION/VALUES CARDS */
-    /* ============================================================ */
+   
     .mv-card {
         background: #fff;
         border-radius: 20px;
@@ -243,9 +235,7 @@
         margin: 0;
     }
 
-    /* ============================================================ */
-    /* TEAM CARDS */
-    /* ============================================================ */
+  
     .team-card {
         background: #fff;
         border-radius: 20px;
@@ -330,9 +320,7 @@
         box-shadow: 0 4px 15px rgba(236,72,153,0.2);
     }
 
-    /* ============================================================ */
-    /* TESTIMONIAL CARDS */
-    /* ============================================================ */
+
     .testimonial-card {
         background: #fff;
         border-radius: 20px;
@@ -380,9 +368,7 @@
         color: #999;
     }
 
-    /* ============================================================ */
-    /* RESPONSIVE */
-    /* ============================================================ */
+  
     @media (max-width: 768px) {
         .value-card {
             padding: 24px 18px;
@@ -466,9 +452,6 @@
     }
 </style>
 
-<!-- ============================================================ -->
-<!-- PAGE HEADER -->
-<!-- ============================================================ -->
 <section class="page-header">
     <div class="container">
         <div class="row justify-content-center">
@@ -483,9 +466,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- OUR STORY SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 50px 0; background: #fff;">
     <div class="container">
         <div class="row align-items-center g-5">
@@ -525,9 +506,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- MISSION, VISION & VALUES SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 50px 0; background: #FAFAFA;">
     <div class="container">
         <div class="row g-4">
@@ -567,9 +546,6 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- WHY CHOOSE US SECTION -->
-<!-- ============================================================ -->
 <section style="padding: 50px 0; background: #fff;">
     <div class="container">
         <div class="text-center mb-4 animate-slide-up">
@@ -602,9 +578,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- TESTIMONIALS SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 50px 0; background: #FAFAFA;">
     <div class="container">
         <div class="text-center mb-4 animate-slide-up">
@@ -638,9 +612,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- TEAM SECTION - 3 MEMBERS -->
-<!-- ============================================================ -->
+
 <section style="padding: 50px 0; background: #fff;">
     <div class="container">
         <div class="text-center mb-4 animate-slide-up">
@@ -676,9 +648,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- CTA SECTION -->
-<!-- ============================================================ -->
+
 <section style="background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%); padding: 45px 0; text-align: center; position: relative; overflow: hidden;">
     <div class="animate-float" style="position: absolute; top: -40%; right: -20%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(244,114,182,0.06) 0%, transparent 70%); border-radius: 50%;"></div>
     <div class="animate-float-reverse" style="position: absolute; bottom: -30%; left: -15%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(244,114,182,0.04) 0%, transparent 70%); border-radius: 50%;"></div>

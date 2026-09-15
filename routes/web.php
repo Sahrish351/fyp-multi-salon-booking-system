@@ -311,12 +311,20 @@ Route::post('/complaints/{complaint}/close', [AdminComplaintController::class, '
         Route::post('/system-settings/social', [SystemSettingController::class, 'updateSocial'])->name('system-settings.social');
         Route::post('/system-settings/test-email', [SystemSettingController::class, 'testEmail'])->name('system-settings.test-email');
         Route::post('/system-settings/clear-cache', [SystemSettingController::class, 'clearCache'])->name('system-settings.clear-cache');
-    }); // ✅ ADMIN ROUTES CLOSED
+    }); 
 
     // ========================================================
     // OWNER ROUTES
     // ========================================================
-    Route::prefix('owner')->name('owner.')->group(function () {
+    Route::prefix('owner')->name('owner.')->middleware(['auth', 'owner.status'])->group(function () {
+
+    Route::get('/salon-pending', fn() => view('owner.salon.pending'))->name('salon.pending');
+    Route::get('/salon-rejected', function () {
+        $salon = \App\Models\Salon::where('owner_id', auth()->id())->first();
+        return view('owner.salon.rejected', compact('salon'));
+    })->name('salon.rejected');
+    Route::get('/salon-suspended', fn() => view('owner.salon.suspended'))->name('salon.suspended');
+
         Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/chart-data', [OwnerDashboardController::class, 'getChartData'])->name('dashboard.chart-data');
 

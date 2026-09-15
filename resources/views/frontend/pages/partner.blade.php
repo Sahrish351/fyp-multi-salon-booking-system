@@ -4,9 +4,7 @@
 @section('content')
 
 <style>
-    /* ============================================================ */
-    /* PREMIUM ANIMATIONS */
-    /* ============================================================ */
+    
     @keyframes float {
         0%, 100% { transform: translate(0, 0) scale(1); }
         50% { transform: translate(30px, -30px) scale(1.05); }
@@ -223,9 +221,7 @@
         animation: gradientMove 4s ease infinite;
     }
 
-    /* ============================================================ */
-    /* RESPONSIVE */
-    /* ============================================================ */
+   
     @media (max-width: 768px) {
         .benefit-card { padding: 24px 20px; }
         .hero-title { font-size: 2rem; }
@@ -237,9 +233,7 @@
     }
 </style>
 
-<!-- ============================================================ -->
-<!-- HERO SECTION -->
-<!-- ============================================================ -->
+
 <section style="background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%); padding: 100px 0 80px; position: relative; overflow: hidden; min-height: 500px; display: flex; align-items: center;">
     
     <!-- Animated Background Elements -->
@@ -273,9 +267,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- BENEFITS SECTION -->
-<!-- ============================================================ -->
+
 <section id="benefits" style="padding: 90px 0 70px; background: #FFF9FC;">
     <div class="container">
         <div class="row text-center mb-5">
@@ -312,9 +304,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- STATS SECTION - REAL DATA FROM DATABASE -->
-<!-- ============================================================ -->
+
 <section style="padding: 70px 0; background: #fff;">
     <div class="container">
         <div class="row g-4 text-center">
@@ -346,9 +336,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- HOW IT WORKS SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 80px 0 60px; background: #FFF9FC;">
     <div class="container">
         <div class="row text-center mb-5">
@@ -383,9 +371,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- TESTIMONIAL SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 70px 0; background: linear-gradient(135deg, #0a0508, #1a0a14, #3d1a2e);">
     <div class="container">
         <div class="row justify-content-center">
@@ -412,9 +398,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- PARTNER FORM SECTION -->
-<!-- ============================================================ -->
+
 <section id="partner-form" style="padding: 80px 0; background: #fff;">
     <div class="container">
         <div class="row align-items-center g-5">
@@ -512,9 +496,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- FAQ SECTION -->
-<!-- ============================================================ -->
+
 <section style="padding: 80px 0; background: #FFF9FC;">
     <div class="container">
         <div class="row text-center mb-5">
@@ -555,9 +537,7 @@
     </div>
 </section>
 
-<!-- ============================================================ -->
-<!-- CTA SECTION -->
-<!-- ============================================================ -->
+
 <section style="background: linear-gradient(135deg, #0a0508 0%, #1a0a14 30%, #3d1a2e 60%, #6b2147 100%); padding: 70px 0; text-align: center; position: relative; overflow: hidden;">
     <div class="animate-float" style="position: absolute; top: -50%; right: -20%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(244,114,182,0.06) 0%, transparent 70%); border-radius: 50%;"></div>
     <div class="animate-float-reverse" style="position: absolute; bottom: -40%; left: -15%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(244,114,182,0.04) 0%, transparent 70%); border-radius: 50%;"></div>
@@ -583,9 +563,7 @@
 </section>
 
 <script>
-    // ============================================================
-    // FAQ TOGGLE
-    // ============================================================
+    
     function toggleFaq(element) {
         const parent = element.closest('.faq-item');
         const answer = parent.querySelector('.faq-answer');
@@ -615,9 +593,7 @@
         }
     }
 
-    // ============================================================
-    // SCROLL REVEAL (Fallback for older browsers)
-    // ============================================================
+   
     document.addEventListener('DOMContentLoaded', function() {
         const elements = document.querySelectorAll('.animate-slide-up, .animate-slide-left, .animate-slide-right, .animate-scale');
         

@@ -1,6 +1,6 @@
 @extends('layouts.client')
 
-@section('title', 'Submit Complaint — Glamora')
+@section('title', 'Submit Complaint — Beauty Blush Salons')
 
 @section('content')
 
