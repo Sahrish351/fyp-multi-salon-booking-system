@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Models\Complaint;
 use App\Models\Appointment;
 use App\Models\Salon;
+use App\Models\User;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -98,21 +100,20 @@ class ComplaintController extends Controller
                 : null;
 
             $complaint = Complaint::create([
-                'client_id'      => $clientId,
-                'salon_id'       => $appointment->salon_id,
-                'appointment_id' => $appointment->id,
-                'type'           => $request->type,
-                'subject'        => $subject,
-                'description'    => $request->description,
-                'image'          => $imagePath,
-                'status'         => 'pending',
-            ]);
+    'client_id'      => $clientId,
+    'salon_id'       => $appointment->salon_id,
+    'appointment_id' => $appointment->id,
+    'owner_id'       => $appointment->salon->owner_id ?? null,
+    'type'           => $request->type,
+    'subject'        => $subject,
+    'description'    => $request->description,
+    'image'          => $imagePath,
+    'status'         => 'pending',
+]);
 
-            // Notification & Email to Salon Owner
             try {
                 $client = Auth::user();
 
-                // Dashboard Alert
                 NotificationHelper::send(
                     $appointment->salon_id,
                     'complaint',
@@ -123,17 +124,18 @@ class ComplaintController extends Controller
                     ]
                 );
 
-                // Email Notification
                 $salon = Salon::find($appointment->salon_id);
                 $ownerEmail = $salon->owner->email ?? config('mail.from.address');
 
                 if ($ownerEmail) {
-                    $emailSubject = "⚠️ Urgent Complaint Alert: #" . $complaint->id;
-                    $emailBody = "Client <strong>{$client->name}</strong> ne complaint lodge ki hai.<br><br>" .
+                    $emailSubject = "New Complaint Alert: #" . $complaint->id;
+                    $emailBody = "A client has filed a complaint regarding a recent appointment at your salon.<br><br>" .
+                                 "<strong>Client:</strong> {$client->name}<br>" .
                                  "<strong>Subject:</strong> {$subject}<br>" .
                                  "<strong>Type:</strong> " . ucfirst($request->type) . "<br>" .
                                  "<strong>Description:</strong> {$request->description}<br>" .
-                                 "<strong>Booking Ref:</strong> {$appointment->booking_ref}";
+                                 "<strong>Booking Reference:</strong> {$appointment->booking_ref}<br><br>" .
+                                 "Please log in to your dashboard to review and respond to this complaint.";
 
                     Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
                 }
@@ -231,7 +233,6 @@ class ComplaintController extends Controller
         try {
             $client = Auth::user();
 
-            // Dashboard Alert
             NotificationHelper::send(
                 $complaint->salon_id,
                 'complaint',
@@ -242,14 +243,15 @@ class ComplaintController extends Controller
                 ]
             );
 
-            // Email Notification
             $salon = Salon::find($complaint->salon_id);
             $ownerEmail = $salon->owner->email ?? config('mail.from.address');
 
             if ($ownerEmail) {
-                $emailSubject = "✅ Complaint Resolved: #" . $complaint->id;
-                $emailBody = "Client <strong>{$client->name}</strong> ne complaint resolution accept kar liya hai.<br><br>" .
-                             "Complaint status ab officially <strong>Closed</strong> ho chuka hai.";
+                $emailSubject = "Complaint Resolved: #" . $complaint->id;
+                $emailBody = "The client has accepted your resolution for the following complaint.<br><br>" .
+                             "<strong>Client:</strong> {$client->name}<br>" .
+                             "<strong>Complaint #:</strong> {$complaint->id}<br><br>" .
+                             "This complaint has now been officially marked as <strong>Closed</strong>.";
 
                 Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
             }
@@ -277,6 +279,39 @@ class ComplaintController extends Controller
             'client_actioned_at' => now(),
             'status'             => 'escalated',
         ]);
+
+        $client = Auth::user();
+
+        // Dashboard notification (bell icon) — visible in the admin panel
+        try {
+            app(AdminNotificationController::class)->notifyAdmins(
+                'New Escalated Complaint',
+                $client->name . ' escalated complaint #' . $complaint->id . ': ' . $complaint->subject,
+                route('admin.complaints.show', $complaint->id)
+            );
+        } catch (\Exception $e) {
+            Log::warning('Complaint escalate admin notification failed: ' . $e->getMessage());
+        }
+
+        // Email — sent to every admin
+        try {
+            $admins = User::where('role', 'admin')->get();
+
+            $emailSubject = "Complaint Escalated: #" . $complaint->id;
+            $emailBody = "A client was not satisfied with the salon owner's resolution and has escalated their complaint for admin review.<br><br>" .
+                         "<strong>Client:</strong> {$client->name}<br>" .
+                         "<strong>Subject:</strong> {$complaint->subject}<br>" .
+                         "<strong>Complaint #:</strong> {$complaint->id}<br><br>" .
+                         "Please log in to the admin panel to review and respond to this complaint.";
+
+            foreach ($admins as $admin) {
+                if ($admin->email) {
+                    Mail::to($admin->email)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Complaint escalate admin email failed: ' . $e->getMessage());
+        }
 
         return redirect()->route('client.complaints.show', $complaint->id)
             ->with('success', 'Complaint escalated to Admin. They will review it shortly.');

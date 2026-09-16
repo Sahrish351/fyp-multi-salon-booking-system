@@ -4,27 +4,37 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
-use App\Models\ComplaintReply;
+use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ComplaintController extends Controller
 {
     public function index(Request $request)
     {
         $complaints = Complaint::with(['client', 'salon'])
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->priority, fn($q) => $q->where('priority', $request->priority))
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $search = $request->search;
+                $q->where('subject', 'like', '%' . $search . '%')
+                  ->orWhereHas('client', function ($c) use ($search) {
+                      $c->where('name', 'like', '%' . $search . '%');
+                  });
+            })
+            ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
+            ->when($request->filled('type'), fn($q) => $q->where('type', $request->type))
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
-        //  Stats for summary cards
         $stats = [
-            'total' => Complaint::count(),
-            'open' => Complaint::where('status', 'open')->count(),
-            'in_review' => Complaint::where('status', 'in_review')->count(),
-            'resolved' => Complaint::where('status', 'resolved')->count(),
-            'closed' => Complaint::where('status', 'closed')->count(),
+            'total'       => Complaint::count(),
+            'pending'     => Complaint::where('status', 'pending')->count(),
+            'in_progress' => Complaint::where('status', 'in_progress')->count(),
+            'resolved'    => Complaint::where('status', 'resolved')->count(),
+            'closed'      => Complaint::where('status', 'closed')->count(),
+            'escalated'   => Complaint::where('status', 'escalated')->count(),
+            'rejected'    => Complaint::where('status', 'rejected')->count(),
         ];
 
         return view('admin.complaints.index', compact('complaints', 'stats'));
@@ -32,47 +42,66 @@ class ComplaintController extends Controller
 
     public function show(Complaint $complaint)
     {
-        $complaint->load('client', 'salon', 'appointment', 'replies.user');
+        $complaint->load(['client', 'salon', 'appointment', 'owner']);
         return view('admin.complaints.show', compact('complaint'));
     }
 
-    public function reply(Request $request, Complaint $complaint)
-    {
-        $request->validate(['message' => 'required|string']);
-        ComplaintReply::create([
-            'complaint_id' => $complaint->id,
-            'user_id'      => Auth::id(),
-            'message'      => $request->message,
-            'sender_type'  => 'admin',
-        ]);
-        $complaint->update(['status' => 'in_review']);
-        return back()->with('success', 'Reply sent.');
-    }
-
-    public function resolve(Complaint $complaint)
-    {
-        $complaint->update(['status' => 'resolved']);
-        return back()->with('success', 'Complaint resolved.');
-    }
-
-    // ADD THIS METHOD – Update Status
-    public function updateStatus(Request $request, Complaint $complaint)
+    public function respond(Request $request, Complaint $complaint)
     {
         $request->validate([
-            'status' => 'required|in:open,in_review,resolved,closed'
+            'admin_response' => 'required|string|min:5',
         ]);
 
-        $complaint->update(['status' => $request->status]);
+        $complaint->update([
+            'admin_response'    => $request->admin_response,
+            'admin_actioned_at' => now(),
+            'admin_id'          => Auth::id(),
+            'status'            => 'closed',
+        ]);
 
-        return back()->with('success', 'Complaint status updated successfully.');
+        try {
+            NotificationHelper::sendToUser(
+                $complaint->client_id,
+                $complaint->salon_id,
+                'complaint',
+                [
+                    'title'   => '🛡️ Admin Responded to Your Complaint',
+                    'message' => 'Admin has reviewed and responded to your complaint: ' . $complaint->subject,
+                    'link'    => route('client.complaints.show', $complaint->id),
+                ]
+            );
+        } catch (\Exception $e) {
+            Log::warning('Admin complaint respond notification failed: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.complaints.show', $complaint->id)
+            ->with('success', 'Response sent and complaint closed.');
     }
 
-    // ADD THIS METHOD – Delete Complaint
-    public function destroy(Complaint $complaint)
+    public function close(Complaint $complaint)
     {
-        $complaint->delete();
+        $complaint->update([
+            'admin_actioned_at' => now(),
+            'admin_id'          => Auth::id(),
+            'status'            => 'closed',
+        ]);
+
+        try {
+            NotificationHelper::sendToUser(
+                $complaint->client_id,
+                $complaint->salon_id,
+                'complaint',
+                [
+                    'title'   => '✅ Complaint Closed by Admin',
+                    'message' => 'Your escalated complaint "' . $complaint->subject . '" has been closed by admin.',
+                    'link'    => route('client.complaints.show', $complaint->id),
+                ]
+            );
+        } catch (\Exception $e) {
+            Log::warning('Admin complaint close notification failed: ' . $e->getMessage());
+        }
 
         return redirect()->route('admin.complaints.index')
-            ->with('success', 'Complaint deleted successfully.');
+            ->with('success', 'Complaint closed.');
     }
 }
