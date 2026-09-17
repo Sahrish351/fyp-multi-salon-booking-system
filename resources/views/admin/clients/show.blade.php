@@ -1,390 +1,251 @@
 @extends('layouts.admin')
 @section('title', 'Client Details - ' . $client->name)
 
-@section('content')
-
+@push('styles')
 <style>
-/* ── Back Button ── */
-.btn-back {
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-    padding: .55rem 1.1rem;
-    border: 1.5px solid var(--border, #e5e7eb);
-    border-radius: 8px;
-    font-size: .88rem;
-    font-weight: 600;
-    color: var(--muted, #6b7280);
-    text-decoration: none;
-    transition: all .15s;
-    margin-bottom: 1.75rem;
-    background: #fff;
-}
-.btn-back:hover {
-    border-color: #FF6B9D;
-    color: #FF6B9D;
-}
+    :root {
+        --gl-pink: #FF6B9D;
+        --gl-pink-dark: #E85588;
+        --gl-pink-light: #FDEAF3;
+        --gl-pink-pale: #F1DCE9;
+        --gl-text: #2B2230;
+        --gl-text-lt: #B98BA6;
+        --gl-border: #F1DCE9;
+        --gl-green: #1E8E3E;
+        --gl-green-light: #E3F6E9;
+        --gl-red: #D93025;
+        --gl-red-light: #FCE8E6;
+        --gl-blue: #1967D2;
+        --gl-blue-light: #E8F0FE;
+    }
 
-/* ── Layout Grid ── */
-.detail-grid {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 1.5rem;
-    align-items: start;
-}
-@media (max-width: 900px) {
-    .detail-grid { grid-template-columns: 1fr; }
-}
+    .gl-client-detail-page { max-width: 1180px; margin: 0 auto; box-sizing: border-box; }
+    .gl-client-detail-page * { box-sizing: border-box; }
 
-/* ── Card Base ── */
-.detail-card {
-    background: #fff;
-    border: 1px solid var(--border, #e5e7eb);
-    border-radius: 14px;
-    overflow: hidden;
-}
-.detail-card + .detail-card { margin-top: 1.25rem; }
-.detail-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border, #f3f4f6);
-}
-.detail-card-title {
-    font-weight: 700;
-    font-size: .95rem;
-    color: var(--heading, #111827);
-}
-.detail-card-body { padding: 1.5rem; }
+    /* Back Button */
+    .gl-btn-back { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1.5px solid var(--gl-border); border-radius: 12px; font-size: 0.85rem; font-weight: 700; color: var(--gl-text-lt); text-decoration: none; transition: all 0.15s ease; margin-bottom: 20px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+    .gl-btn-back:hover { border-color: var(--gl-pink); color: var(--gl-pink); background: var(--gl-pink-light); transform: translateY(-1px); }
 
-/* ── Profile Card (left column) ── */
-.profile-card { text-align: center; }
-.profile-avatar-wrap {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    background: #fce4ec;
-    color: #FF6B9D;
-    font-size: 2.2rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.1rem;
-    border: 3px solid #fff;
-    box-shadow: 0 0 0 3px #fce4ec;
-}
-.profile-name {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--heading, #111827);
-    margin-bottom: .25rem;
-}
-.profile-email {
-    font-size: .87rem;
-    color: var(--muted, #6b7280);
-    margin-bottom: .85rem;
-}
+    /* Layout Grid */
+    .gl-detail-grid { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
+    @media (max-width: 992px) { .gl-detail-grid { grid-template-columns: 1fr; } }
 
-/* ── Badge ── */
-.badge {
-    display: inline-block;
-    padding: .3rem .8rem;
-    border-radius: 20px;
-    font-size: .75rem;
-    font-weight: 700;
-    letter-spacing: .03em;
-}
-.badge-success { background: #d1fae5; color: #065f46; }
-.badge-danger  { background: #fee2e2; color: #991b1b; }
-.badge-warning { background: #fef3c7; color: #92400e; }
-.badge-info    { background: #dbeafe; color: #1e40af; }
+    /* Card Base */
+    .gl-detail-card { background: #fff; border: 1px solid var(--gl-border); border-radius: 20px; overflow: hidden; box-shadow: 0 2px 12px rgba(255, 107, 157, 0.04); }
+    .gl-detail-card + .gl-detail-card { margin-top: 20px; }
+    .gl-detail-card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); background: #fff; }
+    .gl-detail-card-title { font-weight: 800; font-size: 0.95rem; color: var(--gl-text); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.6px; }
+    .gl-detail-card-title i { color: var(--gl-pink); font-size: 1rem; }
+    .gl-detail-card-body { padding: 24px; }
 
-/* ── Stats Row ── */
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: .5rem;
-    margin: 1.25rem 0;
-    padding: 1rem 0;
-    border-top: 1px solid var(--border, #f3f4f6);
-    border-bottom: 1px solid var(--border, #f3f4f6);
-}
-.stat-item { text-align: center; }
-.stat-value {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #FF6B9D;
-    line-height: 1;
-    margin-bottom: .2rem;
-}
-.stat-label {
-    font-size: .72rem;
-    color: var(--muted, #9ca3af);
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    font-weight: 600;
-}
+    /* Profile Card */
+    .gl-profile-card { text-align: center; }
+    .gl-profile-avatar-wrap { width: 88px; height: 88px; border-radius: 26px; background: var(--gl-pink-light); color: var(--gl-pink); font-size: 2.1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; border: 2px solid var(--gl-pink-pale); box-shadow: 0 4px 12px rgba(255,107,157,0.1); }
+    .gl-profile-name { font-size: 1.25rem; font-weight: 800; color: var(--gl-text); margin-bottom: 4px; }
+    .gl-profile-email { font-size: 0.84rem; color: var(--gl-text-lt); margin-bottom: 14px; font-weight: 500; }
 
-/* ── Toggle Button ── */
-.btn-toggle-suspend {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: .45rem;
-    width: 100%;
-    padding: .7rem 1rem;
-    border-radius: 9px;
-    font-size: .9rem;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    transition: opacity .18s, transform .1s;
-    margin-top: .25rem;
-}
-.btn-toggle-suspend:hover { opacity: .88; transform: translateY(-1px); }
-.btn-suspend  { background: #fee2e2; color: #b91c1c; }
-.btn-activate { background: #d1fae5; color: #065f46; }
+    /* Badges */
+    .gl-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; }
+    .gl-badge-success { background: var(--gl-green-light); color: var(--gl-green); }
+    .gl-badge-danger { background: var(--gl-red-light); color: var(--gl-red); }
+    .gl-badge-warning { background: var(--gl-pink-light); color: var(--gl-pink-dark); }
+    .gl-badge-info { background: var(--gl-blue-light); color: var(--gl-blue); }
 
-/* ── Info Grid ── */
-.info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-}
-@media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
-.info-item label {
-    display: block;
-    font-size: .72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--muted, #9ca3af);
-    margin-bottom: .3rem;
-}
-.info-item p {
-    margin: 0;
-    font-size: .93rem;
-    color: var(--text, #374151);
-    font-weight: 500;
-}
+    /* Stats Row */
+    .gl-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0; padding: 16px 0; border-top: 1px solid var(--gl-border); border-bottom: 1px solid var(--gl-border); }
+    .gl-stat-item { text-align: center; }
+    .gl-stat-value { font-size: 1.25rem; font-weight: 800; color: var(--gl-pink); line-height: 1.1; margin-bottom: 4px; }
+    .gl-stat-label { font-size: 0.68rem; color: var(--gl-text-lt); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 800; }
 
-/* ── Appointments List ── */
-.appt-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border, #f3f4f6);
-    cursor: pointer;
-    transition: background .15s;
-    gap: 1rem;
-}
-.appt-item:last-child { border-bottom: none; }
-.appt-item:hover { background: #fdf0f5; }
-.appt-salon {
-    font-weight: 600;
-    font-size: .93rem;
-    color: var(--heading, #111827);
-    margin-bottom: .2rem;
-}
-.appt-meta {
-    font-size: .8rem;
-    color: var(--muted, #9ca3af);
-}
-.appt-right {
-    text-align: right;
-    flex-shrink: 0;
-}
-.appt-amount {
-    font-weight: 700;
-    font-size: .9rem;
-    color: #FF6B9D;
-    margin-top: .3rem;
-}
+    /* Toggle Suspend Button */
+    .gl-btn-toggle-suspend { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 11px 16px; border-radius: 12px; font-size: 0.86rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.18s ease; }
+    .gl-btn-toggle-suspend:hover { transform: translateY(-1px); opacity: 0.9; }
+    .gl-btn-suspend { background: var(--gl-red); color: #fff; box-shadow: 0 3px 10px rgba(217,48,37,0.2); }
+    .gl-btn-activate { background: var(--gl-green); color: #fff; box-shadow: 0 3px 10px rgba(30,142,62,0.2); }
 
-/* ── Empty State ── */
-.empty-mini {
-    text-align: center;
-    padding: 2.5rem 1rem;
-    color: var(--muted, #9ca3af);
-    font-size: .9rem;
-}
-.empty-mini i { font-size: 1.8rem; display: block; margin-bottom: .6rem; opacity: .35; }
+    /* Info Grid */
+    .gl-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    @media (max-width: 600px) { .gl-info-grid { grid-template-columns: 1fr; } }
+    .gl-info-item label { display: block; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gl-text-lt); margin-bottom: 4px; }
+    .gl-info-item p { margin: 0; font-size: 0.9rem; color: var(--gl-text); font-weight: 500; }
 
-/* ── View All Link ── */
-.view-all-link {
-    display: block;
-    text-align: center;
-    padding: .85rem;
-    font-size: .85rem;
-    font-weight: 600;
-    color: #FF6B9D;
-    border-top: 1px solid var(--border, #f3f4f6);
-    text-decoration: none;
-    transition: background .15s;
-}
-.view-all-link:hover { background: #fdf0f5; }
+    /* Appointments List */
+    .gl-appt-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #F8F5F7; cursor: pointer; transition: background 0.15s ease; gap: 16px; }
+    .gl-appt-item:last-child { border-bottom: none; }
+    .gl-appt-item:hover { background: #FFFBFD; }
+    .gl-appt-salon { font-weight: 700; font-size: 0.9rem; color: var(--gl-text); margin-bottom: 3px; }
+    .gl-appt-meta { font-size: 0.78rem; color: var(--gl-text-lt); font-weight: 500; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .gl-appt-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .gl-appt-amount { font-weight: 800; font-size: 0.9rem; color: var(--gl-pink); }
+
+    /* Empty Mini State */
+    .gl-empty-mini { text-align: center; padding: 36px 16px; color: var(--gl-text-lt); font-size: 0.88rem; font-weight: 500; }
+    .gl-empty-mini i { font-size: 2rem; display: block; margin-bottom: 8px; opacity: 0.4; color: var(--gl-pink); }
+
+    /* View All Link */
+    .gl-view-all-link { display: block; text-align: center; padding: 14px; font-size: 0.85rem; font-weight: 700; color: var(--gl-pink); border-top: 1px solid var(--gl-border); text-decoration: none; background: #FAFAFC; transition: background 0.15s ease; }
+    .gl-view-all-link:hover { background: var(--gl-pink-light); }
 </style>
+@endpush
 
-{{-- ── Back ── --}}
-<a href="{{ route('admin.clients.index') }}" class="btn-back">
-    <i class="fas fa-arrow-left"></i> Back to Clients
-</a>
+@section('content')
+<div class="gl-client-detail-page">
 
-<div class="detail-grid">
+    {{-- Back Action --}}
+    <a href="{{ route('admin.clients.index') }}" class="gl-btn-back">
+        <i class="fas fa-arrow-left"></i> Back to Clients Directory
+    </a>
 
-    {{-- ══ LEFT COLUMN ══ --}}
-    <div>
+    <div class="gl-detail-grid">
 
-        {{-- Profile Card --}}
-        <div class="detail-card profile-card">
-            <div class="detail-card-body" style="padding:2rem 1.5rem;">
+        {{-- ══ LEFT COLUMN: Profile Summary Card ══ --}}
+        <div>
+            <div class="gl-detail-card gl-profile-card">
+                <div class="gl-detail-card-body" style="padding: 28px 20px;">
 
-                <div class="profile-avatar-wrap">
-                    {{ strtoupper(substr($client->name, 0, 1)) }}
-                </div>
-                <div class="profile-name">{{ $client->name }}</div>
-                <div class="profile-email">{{ $client->email }}</div>
-
-                <span class="badge {{ $client->is_active ? 'badge-success' : 'badge-danger' }}">
-                    <i class="fas {{ $client->is_active ? 'fa-circle-check' : 'fa-ban' }}" style="font-size:.65rem;"></i>
-                    {{ $client->is_active ? 'Active' : 'Suspended' }}
-                </span>
-
-                {{-- Stats --}}
-                <div class="stats-row">
-                    <div class="stat-item">
-                        <div class="stat-value">{{ $client->appointments->count() }}</div>
-                        <div class="stat-label">Bookings</div>
+                    <div class="gl-profile-avatar-wrap">
+                        {{ strtoupper(substr($client->name, 0, 1)) }}
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value">{{ $client->reviews->count() }}</div>
-                        <div class="stat-label">Reviews</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">0</div>
-                        <div class="stat-label">Favourites</div>
-                    </div>
-                </div>
+                    <div class="gl-profile-name">{{ $client->name }}</div>
+                    <div class="gl-profile-email">{{ $client->email }}</div>
 
-                {{-- Toggle Suspend / Activate --}}
-                <form action="{{ route('admin.clients.toggle', $client->id) }}" method="POST">
-                    @csrf
-                    <button type="submit"
-                        class="btn-toggle-suspend {{ $client->is_active ? 'btn-suspend' : 'btn-activate' }}"
-                        onclick="return confirm('{{ $client->is_active ? 'Suspend this client?' : 'Activate this client?' }}')">
-                        <i class="fas {{ $client->is_active ? 'fa-ban' : 'fa-circle-check' }}"></i>
-                        {{ $client->is_active ? 'Suspend Client' : 'Activate Client' }}
-                    </button>
-                </form>
-
-            </div>
-        </div>
-
-    </div>
-    {{-- ══ END LEFT ══ --}}
-
-    {{-- ══ RIGHT COLUMN ══ --}}
-    <div>
-
-        {{-- Client Information --}}
-        <div class="detail-card">
-            <div class="detail-card-header">
-                <span class="detail-card-title"><i class="fas fa-id-card" style="color:#FF6B9D;margin-right:.4rem;"></i>Client Information</span>
-            </div>
-            <div class="detail-card-body">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <label>Full Name</label>
-                        <p>{{ $client->name }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Email Address</label>
-                        <p>{{ $client->email }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Phone Number</label>
-                        <p>{{ $client->phone ?? '—' }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>City</label>
-                        <p>{{ $client->city ?? '—' }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Joined Date</label>
-                        <p>{{ $client->created_at->format('d M Y') }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Auth Provider</label>
-                        <p>{{ ucfirst($client->auth_provider ?? 'email') }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Email Verified</label>
-                        <p>
-                            @if($client->email_verified_at)
-                                <span class="badge badge-success" style="font-size:.72rem;">Verified</span>
-                            @else
-                                <span class="badge badge-warning" style="font-size:.72rem;">Not Verified</span>
-                            @endif
-                        </p>
-                    </div>
-                    <div class="info-item">
-                        <label>Account Status</label>
-                        <p>
-                            <span class="badge {{ $client->is_active ? 'badge-success' : 'badge-danger' }}" style="font-size:.72rem;">
-                                {{ $client->is_active ? 'Active' : 'Suspended' }}
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Recent Appointments --}}
-        <div class="detail-card" style="margin-top:1.25rem;">
-            <div class="detail-card-header">
-                <span class="detail-card-title"><i class="fas fa-calendar-check" style="color:#FF6B9D;margin-right:.4rem;"></i>Recent Appointments</span>
-                <span class="badge badge-info">{{ $client->appointments->count() }} total</span>
-            </div>
-
-            @forelse($client->appointments->take(5) as $appt)
-            <div class="appt-item" onclick="window.location='{{ route('admin.appointments.show', $appt->id) }}'">
-                <div>
-                    <div class="appt-salon">{{ $appt->salon->name ?? 'N/A' }}</div>
-                    <div class="appt-meta">
-                        <i class="fas fa-scissors" style="font-size:.7rem;"></i>
-                        {{ $appt->service->name ?? 'Service' }}
-                        &nbsp;·&nbsp;
-                        <i class="fas fa-calendar" style="font-size:.7rem;"></i>
-                        {{ $appt->appointment_date->format('d M Y') }}
-                    </div>
-                </div>
-                <div class="appt-right">
-                    <span class="badge {{ $appt->status == 'confirmed' ? 'badge-success' : ($appt->status == 'cancelled' ? 'badge-danger' : 'badge-warning') }}">
-                        {{ ucfirst($appt->status) }}
+                    <span class="gl-badge {{ $client->is_active ? 'gl-badge-success' : 'gl-badge-danger' }}">
+                        <i class="fas {{ $client->is_active ? 'fa-circle' : 'fa-ban' }}" style="font-size: 5px;"></i>
+                        {{ $client->is_active ? 'Active Account' : 'Suspended Account' }}
                     </span>
-                    <div class="appt-amount">Rs. {{ number_format($appt->total_amount ?? 0) }}</div>
+
+                    {{-- Mini Statistics Row --}}
+                    <div class="gl-stats-row">
+                        <div class="gl-stat-item">
+                            <div class="gl-stat-value">{{ $client->appointments->count() }}</div>
+                            <div class="gl-stat-label">Bookings</div>
+                        </div>
+                        <div class="gl-stat-item">
+                            <div class="gl-stat-value">{{ $client->reviews->count() }}</div>
+                            <div class="gl-stat-label">Reviews</div>
+                        </div>
+                        <div class="gl-stat-item">
+                            <div class="gl-stat-value">0</div>
+                            <div class="gl-stat-label">Favorites</div>
+                        </div>
+                    </div>
+
+                    {{-- Toggle Status Action Form --}}
+                    <form action="{{ route('admin.clients.toggle', $client->id) }}" method="POST" style="margin:0;">
+                        @csrf
+                        <button type="submit" 
+                            class="gl-btn-toggle-suspend {{ $client->is_active ? 'gl-btn-suspend' : 'gl-btn-activate' }}"
+                            onclick="return confirm('{{ $client->is_active ? 'Are you sure you want to suspend this client?' : 'Are you sure you want to activate this client?' }}')">
+                            <i class="fas {{ $client->is_active ? 'fa-ban' : 'fa-check' }}"></i>
+                            {{ $client->is_active ? 'Suspend Client' : 'Activate Client' }}
+                        </button>
+                    </form>
+
                 </div>
             </div>
-            @empty
-            <div class="empty-mini">
-                <i class="fas fa-calendar-xmark"></i>
-                No appointments yet
-            </div>
-            @endforelse
+        </div>
 
-            @if($client->appointments->count() > 5)
-            <a href="{{ route('admin.appointments.index', ['client' => $client->id]) }}" class="view-all-link">
-                View all {{ $client->appointments->count() }} appointments <i class="fas fa-arrow-right" style="font-size:.75rem;"></i>
-            </a>
-            @endif
+        {{-- ══ RIGHT COLUMN: Info Details & Appointments ══ --}}
+        <div>
+
+            {{-- Client Information Details Card --}}
+            <div class="gl-detail-card">
+                <div class="gl-detail-card-header">
+                    <span class="gl-detail-card-title">
+                        <i class="fas fa-id-card"></i> Client Information
+                    </span>
+                </div>
+                <div class="gl-detail-card-body">
+                    <div class="gl-info-grid">
+                        <div class="gl-info-item">
+                            <label>Full Name</label>
+                            <p>{{ $client->name }}</p>
+                        </div>
+                        <div class="gl-info-item">
+                            <label>Email Address</label>
+                            <p>{{ $client->email }}</p>
+                        </div>
+                        <div class="gl-info-item">
+                            <label>Phone Number</label>
+                            <p>{{ $client->phone ?? '—' }}</p>
+                        </div>
+                        <div class="gl-info-item">
+                            <label>City Location</label>
+                            <p>{{ $client->city ?? '—' }}</p>
+                        </div>
+                        <div class="gl-info-item">
+                            <label>Joined Date</label>
+                            <p>{{ $client->created_at->format('d M Y, h:i A') }}</p>
+                        </div>
+                        <div class="gl-info-item">
+                            <label>Auth Provider</label>
+                            <p>{{ ucfirst($client->auth_provider ?? 'Email / Password') }}</p>
+                        </div>
+                        <div class="gl-info-item">
+                            <label>Email Verification</label>
+                            <p>
+                                @if($client->email_verified_at)
+                                    <span class="gl-badge gl-badge-success">Verified</span>
+                                @else
+                                    <span class="gl-badge gl-badge-warning">Unverified</span>
+                                @endif
+                            </p>
+                        </div>
+                        <div class="gl-info-item">
+                            <label>Account Status</label>
+                            <p>
+                                <span class="gl-badge {{ $client->is_active ? 'gl-badge-success' : 'gl-badge-danger' }}">
+                                    {{ $client->is_active ? 'Active' : 'Suspended' }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Recent Appointments Card --}}
+            <div class="gl-detail-card" style="margin-top: 20px;">
+                <div class="gl-detail-card-header">
+                    <span class="gl-detail-card-title">
+                        <i class="fas fa-calendar-check"></i> Recent Appointments
+                    </span>
+                    <span class="gl-badge gl-badge-info">{{ $client->appointments->count() }} Total</span>
+                </div>
+
+                @forelse($client->appointments->take(5) as $appt)
+                <div class="gl-appt-item" onclick="window.location='{{ route('admin.appointments.show', $appt->id) }}'">
+                    <div>
+                        <div class="gl-appt-salon">{{ $appt->salon->name ?? 'Beauty Salon' }}</div>
+                        <div class="gl-appt-meta">
+                            <span><i class="fas fa-scissors"></i> {{ $appt->service->name ?? 'Hair & Beauty Service' }}</span>
+                            <span>•</span>
+                            <span><i class="fas fa-calendar"></i> {{ optional($appt->appointment_date)->format('d M Y') ?? '—' }}</span>
+                        </div>
+                    </div>
+                    <div class="gl-appt-right">
+                        <span class="gl-badge {{ $appt->status == 'confirmed' ? 'gl-badge-success' : ($appt->status == 'cancelled' ? 'gl-badge-danger' : 'gl-badge-warning') }}">
+                            {{ ucfirst($appt->status) }}
+                        </span>
+                        <div class="gl-appt-amount">Rs. {{ number_format($appt->total_amount ?? 0) }}</div>
+                    </div>
+                </div>
+                @empty
+                <div class="gl-empty-mini">
+                    <i class="fas fa-calendar-times"></i>
+                    No appointment history recorded for this client yet.
+                </div>
+                @endforelse
+
+                @if($client->appointments->count() > 5)
+                <a href="{{ route('admin.appointments.index', ['client' => $client->id]) }}" class="gl-view-all-link">
+                    View all {{ $client->appointments->count() }} appointments <i class="fas fa-arrow-right" style="font-size: 0.75rem; margin-left: 4px;"></i>
+                </a>
+                @endif
+            </div>
+
         </div>
 
     </div>
-    {{-- ══ END RIGHT ══ --}}
 
 </div>
-
 @endsection

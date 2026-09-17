@@ -8,6 +8,7 @@ use App\Models\Salon;
 use App\Models\Appointment;
 use App\Models\Payment;
 use App\Models\Complaint;
+use Illuminate\Support\Facades\Auth;
 
 class AdminDashboardController extends Controller
 {
@@ -40,6 +41,12 @@ class AdminDashboardController extends Controller
             ->whereMonth('created_at', now()->month)
             ->sum('amount');
 
-        return view('admin.dashboard', compact('stats', 'recentSalonRequests', 'recentAppointments', 'monthlyRevenue'));
+        
+        $admin = Auth::user();
+        $notifications = $admin && method_exists($admin, 'notifications') 
+            ? $admin->notifications()->latest()->take(5)->get() 
+            : collect([]);
+
+        return view('admin.dashboard', compact('stats', 'recentSalonRequests', 'recentAppointments', 'monthlyRevenue', 'notifications'));
     }
 }

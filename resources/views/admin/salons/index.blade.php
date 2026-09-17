@@ -309,7 +309,7 @@
             @if($salons->onFirstPage())
                 <li class="disabled"><span><i class="fas fa-chevron-left"></i></span></li>
             @else
-                <li><a href="{{ $salons->previousPageUrl() . '&' . http_build_query(request()->except('page')) }}"><i class="fas fa-chevron-left"></i></a></li>
+                <li><a href="{{ $salons->previousPageUrl() }}{{ count(request()->except('page')) > 0 ? '&' . http_build_query(request()->except('page')) : '' }}"><i class="fas fa-chevron-left"></i></a></li>
             @endif
 
             {{-- Page Numbers --}}
@@ -317,13 +317,13 @@
                 @if($page == $salons->currentPage())
                     <li class="active"><span>{{ $page }}</span></li>
                 @else
-                    <li><a href="{{ $url . '&' . http_build_query(request()->except('page')) }}">{{ $page }}</a></li>
+                    <li><a href="{{ $url }}{{ count(request()->except('page')) > 0 ? '&' . http_build_query(request()->except('page')) : '' }}">{{ $page }}</a></li>
                 @endif
             @endforeach
 
             {{-- Next --}}
             @if($salons->hasMorePages())
-                <li><a href="{{ $salons->nextPageUrl() . '&' . http_build_query(request()->except('page')) }}"><i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="{{ $salons->nextPageUrl() }}{{ count(request()->except('page')) > 0 ? '&' . http_build_query(request()->except('page')) : '' }}"><i class="fas fa-chevron-right"></i></a></li>
             @else
                 <li class="disabled"><span><i class="fas fa-chevron-right"></i></span></li>
             @endif

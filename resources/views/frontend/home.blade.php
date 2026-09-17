@@ -9,7 +9,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-  <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-icon.svg') }}">
+  <link rel="icon" type="image/png" href="{{ asset('images/icon.png') }}">
   <style>
     /* ── reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,12 +32,13 @@
       box-shadow: 0 2px 20px rgba(233,30,140,0.06);
     }
     .g-nav .brand { display: flex; align-items: center; gap: 8px; }
-    .g-nav .brand .brand-logo-img {
-      height: 40px;
-      width: auto;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
+
+  .g-nav .brand .brand-logo-img {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
     .g-nav .nav-right { display: flex; align-items: center; gap: 6px; }
     .btn-nav-ghost, .btn-nav-outline {
       font-size: 0.7rem; padding: 5px 12px; border-radius: 50px;
@@ -71,8 +72,8 @@
     .menu-dropdown .mobile-auth { display: block; }
  
     @media(min-width:769px) {
-      .g-nav { padding: 0 32px; height: 68px; }
-      .g-nav .brand .brand-logo-img { height: 56px; }
+  .g-nav { padding: 0 32px; height: 76px; }
+  .g-nav .brand .brand-logo-img { height: 68px; }
       .btn-nav-ghost, .btn-nav-outline { display: inline-block; font-size: 0.85rem; padding: 7px 18px; }
       .btn-nav-menu { font-size: 0.82rem; padding: 7px 16px; }
       .menu-dropdown .mobile-auth { display: none; }
@@ -547,10 +548,10 @@
  
 <body>
  
-<!-- ===== NAVBAR ===== -->
+
 <nav class="g-nav">
   <a href="{{ route('home') }}" class="brand">
-    <img src="{{ asset('images/logo-full.svg') }}" alt="Beauty Blush Salons" class="brand-logo-img">
+    <img src="{{ asset('images/full-logo.png') }}" alt="Beauty Blush Salons" class="brand-logo-img">
   </a>
   <div class="nav-right">
     @auth

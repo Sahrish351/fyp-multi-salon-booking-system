@@ -1,11 +1,9 @@
-
 @extends('layouts.admin')
 @section('title', 'Salon Owners - Beauty Blush Salons')
 
 @push('styles')
 <style>
-    .gl-owners, .gl-owners * { box-sizing: border-box; }
-    .gl-owners {
+    :root {
         --gl-pink: #FF6B9D;
         --gl-pink-dark: #E85588;
         --gl-pink-light: #FDEAF3;
@@ -15,73 +13,84 @@
         --gl-border: #F1DCE9;
     }
 
-    .gl-owners .gl-page-header { margin-bottom: 24px; }
-    .gl-owners .gl-page-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--gl-text); margin: 0; }
-    .gl-owners .gl-page-header p { font-size: 0.88rem; color: var(--gl-text-lt); margin: 6px 0 0; }
+    /* ── Page Header ── */
+    .page-header-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
+    .page-header-row h1 { font-size: 1.6rem; font-weight: 800; color: var(--gl-text); margin: 0; }
+    .page-header-row p  { font-size: 0.88rem; color: var(--gl-text-lt); margin: 6px 0 0; }
 
-    .gl-owners .gl-card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05); overflow: hidden; }
-    .gl-owners .gl-card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); }
-    .gl-owners .gl-card-title { font-size: 0.95rem; font-weight: 700; color: var(--gl-text); display: flex; align-items: center; gap: 8px; margin: 0; }
-    .gl-owners .gl-card-title i { color: var(--gl-pink); }
+    /* ── Card ── */
+    .gl-card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 12px rgba(255,107,157,0.06); overflow: hidden; margin-bottom: 24px; }
+    .gl-card-header { display: flex; align-items: center; gap: 10px; padding: 18px 26px; border-bottom: 1px solid var(--gl-border); background: #FAFAFC; }
+    .gl-card-header i { color: var(--gl-pink); font-size: 0.95rem; }
+    .gl-card-header span { font-size: 0.92rem; font-weight: 800; color: var(--gl-text); text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* Toolbar: its own full-width row, separate from the title row, so it can never get squashed */
-    .gl-owners .gl-toolbar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); background: #FFFBFD; margin: 0; }
-    .gl-owners .gl-search-box { display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid var(--gl-border); border-radius: 16px; padding: 13px 18px; flex: 2 1 280px; min-width: 240px; }
-    .gl-owners .gl-search-box i { color: var(--gl-pink); font-size: 0.95rem; flex-shrink: 0; }
-    .gl-owners .gl-search-box input { border: none; outline: none; background: transparent; font-size: 0.92rem; color: var(--gl-text); width: 100%; font-family: inherit; }
-    .gl-owners .gl-filter-select { border: 1.5px solid var(--gl-border); border-radius: 16px; padding: 13px 18px; font-size: 0.88rem; color: var(--gl-text); background: #fff; cursor: pointer; font-family: inherit; flex: 1 1 160px; min-width: 150px; }
-    .gl-owners .gl-btn-filter { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)); border: none; color: #fff; padding: 13px 24px; border-radius: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 700; font-family: inherit; transition: opacity 0.2s ease; flex-shrink: 0; box-shadow: 0 6px 16px rgba(255, 107, 157, 0.25); }
-    .gl-owners .gl-btn-filter:hover { opacity: 0.9; }
+    /* ── Toolbar ── */
+    .gl-toolbar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 20px 26px; border-bottom: 1px solid var(--gl-border); background: #FFFBFD; }
+    .gl-search-box { display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid var(--gl-border); border-radius: 14px; padding: 10px 16px; flex: 2 1 260px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .gl-search-box:focus-within { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.1); }
+    .gl-search-box i { color: var(--gl-pink); font-size: 0.9rem; flex-shrink: 0; }
+    .gl-search-box input { border: none; outline: none; background: transparent; font-size: 0.88rem; color: var(--gl-text); width: 100%; font-family: inherit; }
+    .gl-search-box input::placeholder { color: var(--gl-text-lt); }
 
-    .gl-owners .gl-table-responsive { overflow-x: auto; }
-    .gl-owners .gl-table { width: 100%; border-collapse: collapse; min-width: 700px; }
-    .gl-owners .gl-table thead th { padding: 14px 24px; text-align: left; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 800; color: var(--gl-text-lt); background: var(--gl-pink-light); border-bottom: 1px solid var(--gl-border); white-space: nowrap; }
-    .gl-owners .gl-table tbody td { padding: 14px 24px; border-bottom: 1px solid var(--gl-border); font-size: 0.88rem; color: var(--gl-text); vertical-align: middle; }
-    .gl-owners .gl-table tbody tr { cursor: pointer; transition: background 0.15s ease; }
-    .gl-owners .gl-table tbody tr:hover { background: var(--gl-pink-light); }
-    .gl-owners .gl-table tbody tr:last-child td { border-bottom: none; }
-    .gl-owners .gl-owner-id { color: var(--gl-text-lt); font-weight: 600; }
-    .gl-owners .gl-owner-cell strong { font-weight: 700; color: var(--gl-text); display: block; }
-    .gl-owners .gl-owner-cell small { color: var(--gl-text-lt); font-size: 0.78rem; }
+    .gl-filter-select { border: 1.5px solid var(--gl-border); border-radius: 14px; padding: 11px 16px; font-size: 0.88rem; color: var(--gl-text); background: #fff; cursor: pointer; font-family: inherit; flex: 1 1 150px; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%23B98BA6' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+    .gl-filter-select:focus { border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.1); }
 
-    .gl-owners .gl-badge { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.3px; white-space: nowrap; line-height: 1.4; }
-    .gl-owners .gl-badge-info { background: #E3F2FD; color: #1565C0; }
-    .gl-owners .gl-badge-success { background: #E3F6E9; color: #1E8E3E; }
-    .gl-owners .gl-badge-danger { background: #FCE8E6; color: #D93025; }
+    .gl-btn-filter { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)); border: none; color: #fff; padding: 11px 22px; border-radius: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 700; font-family: inherit; transition: transform 0.15s ease, box-shadow 0.15s ease; flex-shrink: 0; box-shadow: 0 4px 12px rgba(255,107,157,0.3); }
+    .gl-btn-filter:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255,107,157,0.4); }
 
-    .gl-owners .gl-row-actions { display: flex; gap: 10px; align-items: center; }
-    .gl-owners .gl-icon-btn { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; text-decoration: none; font-size: 0.85rem; border: none; cursor: pointer; padding: 0; transition: transform 0.15s ease, opacity 0.15s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
-    .gl-owners .gl-icon-btn:hover { transform: scale(1.12); opacity: 0.92; }
-    .gl-owners .gl-icon-btn.gl-view { background: linear-gradient(135deg, #4285F4, #1967D2); }
-    .gl-owners .gl-icon-btn.gl-suspend { background: linear-gradient(135deg, #EA4335, #C5221F); }
-    .gl-owners .gl-icon-btn.gl-activate { background: linear-gradient(135deg, #34A853, #188038); }
-    .gl-owners .gl-toggle-form { display: inline-flex; margin: 0; }
+    /* ── Table ── */
+    .gl-table-responsive { overflow-x: auto; }
+    .gl-table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    .gl-table thead th { padding: 14px 26px; text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 800; color: var(--gl-text-lt); background: var(--gl-pink-light); border-bottom: 1px solid var(--gl-border); white-space: nowrap; }
+    .gl-table tbody td { padding: 16px 26px; border-bottom: 1px solid var(--gl-border); font-size: 0.88rem; color: var(--gl-text); vertical-align: middle; }
+    .gl-table tbody tr { cursor: pointer; transition: background 0.15s ease; }
+    .gl-table tbody tr:hover { background: var(--gl-pink-light); }
+    .gl-table tbody tr:last-child td { border-bottom: none; }
+    .gl-owner-id { color: var(--gl-text-lt); font-weight: 700; font-size: 0.82rem; }
+    .gl-owner-cell strong { font-weight: 700; color: var(--gl-text); display: block; margin-bottom: 2px; }
+    .gl-owner-cell small { color: var(--gl-text-lt); font-size: 0.78rem; }
 
-    .gl-owners .gl-empty-row td { text-align: center; padding: 50px 20px; color: var(--gl-text-lt); }
+    /* ── Badges ── */
+    .gl-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+    .gl-badge-info { background: #E3F2FD; color: #1565C0; }
+    .gl-badge-success { background: #E3F6E9; color: #1E8E3E; }
+    .gl-badge-danger { background: #FCE8E6; color: #D93025; }
 
-    /* ---- Pagination (Laravel default links()) fix ---- */
-    .gl-owners .gl-pagination { padding: 18px 24px; }
-    .gl-owners .gl-pagination nav > div:first-of-type { display: none; }
-    .gl-owners .gl-pagination nav > div:last-of-type { display: flex !important; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
-    .gl-owners .gl-pagination p { font-size: 0.82rem; color: var(--gl-text-lt); margin: 0; }
-    .gl-owners .gl-pagination p span { color: var(--gl-text); font-weight: 700; }
-    .gl-owners .gl-pagination svg { width: 14px; height: 14px; display: inline-block; vertical-align: middle; }
-    .gl-owners .gl-pagination a,
-    .gl-owners .gl-pagination span[aria-current] span,
-    .gl-owners .gl-pagination span[aria-disabled] span {
+    /* ── Action Buttons ── */
+    .gl-row-actions { display: flex; gap: 10px; align-items: center; }
+    .gl-icon-btn { width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: #fff; text-decoration: none; font-size: 0.8rem; border: none; cursor: pointer; padding: 0; transition: transform 0.15s ease, opacity 0.15s ease; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+    .gl-icon-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+    .gl-icon-btn.gl-view { background: linear-gradient(135deg, #4285F4, #1967D2); }
+    .gl-icon-btn.gl-suspend { background: linear-gradient(135deg, #EA4335, #C5221F); }
+    .gl-icon-btn.gl-activate { background: linear-gradient(135deg, #34A853, #188038); }
+    .gl-toggle-form { display: inline-flex; margin: 0; }
+
+    .gl-empty-row td { text-align: center; padding: 50px 20px; color: var(--gl-text-lt); font-weight: 600; }
+
+    /* ── Pagination Styling ── */
+    .gl-pagination { padding: 18px 26px; }
+    .gl-pagination nav > div:first-of-type { display: none; }
+    .gl-pagination nav > div:last-of-type { display: flex !important; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+    .gl-pagination p { font-size: 0.82rem; color: var(--gl-text-lt); margin: 0; }
+    .gl-pagination p span { color: var(--gl-text); font-weight: 700; }
+    .gl-pagination svg { width: 14px; height: 14px; display: inline-block; vertical-align: middle; }
+    .gl-pagination a,
+    .gl-pagination span[aria-current] span,
+    .gl-pagination span[aria-disabled] span {
         display: inline-flex; align-items: center; justify-content: center;
         min-width: 34px; height: 34px; padding: 0 10px; margin: 0 3px;
         border-radius: 10px; font-size: 0.82rem; font-weight: 600;
-        border: 1px solid var(--gl-border); background: #fff; color: var(--gl-text);
+        border: 1.5px solid var(--gl-border); background: #fff; color: var(--gl-text);
         text-decoration: none; transition: all 0.15s ease;
     }
-    .gl-owners .gl-pagination a:hover { background: var(--gl-pink-light); border-color: var(--gl-pink-pale); color: var(--gl-pink); }
-    .gl-owners .gl-pagination span[aria-current] span { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)); color: #fff; border-color: transparent; }
-    .gl-owners .gl-pagination span[aria-disabled] span { color: var(--gl-text-lt); opacity: 0.45; cursor: not-allowed; }
+    .gl-pagination a:hover { background: var(--gl-pink-light); border-color: var(--gl-pink-pale); color: var(--gl-pink); }
+    .gl-pagination span[aria-current] span { background: linear-gradient(135deg, var(--gl-pink), var(--gl-pink-dark)); color: #fff; border-color: transparent; }
+    .gl-pagination span[aria-disabled] span { color: var(--gl-text-lt); opacity: 0.4; cursor: not-allowed; }
 
     @media (max-width: 640px) {
-        .gl-owners .gl-toolbar { flex-direction: column; align-items: stretch; }
-        .gl-owners .gl-search-box { flex: 1 1 auto; }
+        .gl-toolbar { flex-direction: column; align-items: stretch; }
+        .gl-search-box { flex: 1 1 auto; }
+        .page-header-row { flex-direction: column; align-items: stretch; }
     }
 </style>
 @endpush
@@ -89,33 +98,46 @@
 @section('content')
 <div class="gl-owners">
 
-    <div class="gl-page-header">
-        <h1>Salon Owners</h1>
-        <p>{{ $owners->total() }} total owners</p>
+    {{-- Page Header --}}
+    <div class="page-header-row">
+        <div>
+            <h1>Salon Owners</h1>
+            <p>Manage and monitor registered salon proprietors</p>
+        </div>
     </div>
 
     <div class="gl-card">
         <div class="gl-card-header">
-            <span class="gl-card-title"><i class="fas fa-user-tie"></i> Owners List</span>
+            <i class="fas fa-user-tie"></i>
+            <span>Owners Directory ({{ $owners->total() }})</span>
         </div>
 
+        {{-- Filter and Search Toolbar --}}
         <form method="GET" action="{{ route('admin.owners.index') }}" class="gl-toolbar">
             <div class="gl-search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search name or email...">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email...">
             </div>
             <select name="status" class="gl-filter-select">
-                <option value="">All Status</option>
+                <option value="">All Statuses</option>
                 <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                 <option value="suspended" {{ request('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
             </select>
-            <button type="submit" class="gl-btn-filter"><i class="fas fa-filter"></i> Apply</button>
+            <button type="submit" class="gl-btn-filter"><i class="fas fa-filter"></i> Filter</button>
         </form>
 
+        {{-- Table Container --}}
         <div class="gl-table-responsive">
             <table class="gl-table">
                 <thead>
-                    <tr><th>#</th><th>Owner</th><th>Phone</th><th>Salons</th><th>Status</th><th>Actions</th></tr>
+                    <tr>
+                        <th># ID</th>
+                        <th>Owner Info</th>
+                        <th>Phone</th>
+                        <th>Salons Count</th>
+                        <th>Account Status</th>
+                        <th>Actions</th>
+                    </tr>
                 </thead>
                 <tbody>
                     @forelse($owners as $owner)
@@ -129,13 +151,19 @@
                             </td>
                             <td>{{ $owner->phone ?? '—' }}</td>
                             <td><span class="gl-badge gl-badge-info">{{ $owner->salons_count ?? 0 }} salons</span></td>
-                            <td><span class="gl-badge {{ $owner->is_active ? 'gl-badge-success' : 'gl-badge-danger' }}">{{ $owner->is_active ? 'Active' : 'Suspended' }}</span></td>
+                            <td>
+                                <span class="gl-badge {{ $owner->is_active ? 'gl-badge-success' : 'gl-badge-danger' }}">
+                                    <i class="fas fa-circle" style="font-size: 6px;"></i> {{ $owner->is_active ? 'Active' : 'Suspended' }}
+                                </span>
+                            </td>
                             <td>
                                 <div class="gl-row-actions">
-                                    <a href="{{ route('admin.owners.show', $owner->id) }}" class="gl-icon-btn gl-view" title="View" onclick="event.stopPropagation()"><i class="fas fa-eye"></i></a>
+                                    <a href="{{ route('admin.owners.show', $owner->id) }}" class="gl-icon-btn gl-view" title="View Details" onclick="event.stopPropagation()">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
                                     <form action="{{ route('admin.owners.toggle-status', $owner->id) }}" method="POST" class="gl-toggle-form" onclick="event.stopPropagation()">
                                         @csrf
-                                        <button type="submit" class="gl-icon-btn {{ $owner->is_active ? 'gl-suspend' : 'gl-activate' }}" title="{{ $owner->is_active ? 'Suspend' : 'Activate' }}" onclick="return confirm('{{ $owner->is_active ? 'Suspend this owner?' : 'Activate this owner?' }}')">
+                                        <button type="submit" class="gl-icon-btn {{ $owner->is_active ? 'gl-suspend' : 'gl-activate' }}" title="{{ $owner->is_active ? 'Suspend Owner' : 'Activate Owner' }}" onclick="return confirm('{{ $owner->is_active ? 'Are you sure you want to suspend this owner?' : 'Are you sure you want to activate this owner?' }}')">
                                             <i class="fas {{ $owner->is_active ? 'fa-ban' : 'fa-check' }}"></i>
                                         </button>
                                     </form>
@@ -143,13 +171,18 @@
                             </td>
                         </tr>
                     @empty
-                        <tr class="gl-empty-row"><td colspan="6">No owners found</td></tr>
+                        <tr class="gl-empty-row">
+                            <td colspan="6"><i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 8px; display: block; color: var(--gl-text-lt);"></i> No owners found matching your criteria.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="gl-pagination">{{ $owners->links() }}</div>
+        {{-- Pagination Block --}}
+        <div class="gl-pagination">
+            {{ $owners->withQueryString()->links() }}
+        </div>
     </div>
 
 </div>

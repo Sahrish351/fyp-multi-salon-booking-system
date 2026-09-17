@@ -5,6 +5,7 @@
 <style>
     :root {
         --gl-pink: #FF6B9D;
+        --gl-pink-dark: #E85588;
         --gl-pink-light: #FDEAF3;
         --gl-pink-pale: #F1DCE9;
         --gl-text: #2B2230;
@@ -12,86 +13,73 @@
         --gl-border: #F1DCE9;
     }
 
-    .page-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
-    .page-header-row h1 { font-size: 1.6rem; font-weight: 800; color: var(--gl-text); margin: 0; }
-    .page-header-row p { font-size: 0.88rem; color: var(--gl-text-lt); margin: 6px 0 0; }
+    .page-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 16px; flex-wrap: wrap; }
+    .page-header-row h1 { font-size: 1.5rem; font-weight: 800; color: var(--gl-text); margin: 0; letter-spacing: -0.3px; }
+    .page-header-row p { font-size: 0.85rem; color: var(--gl-text-lt); margin: 4px 0 0; }
 
-    .btn-outline { color: var(--gl-pink); border: 1px solid var(--gl-pink-pale); background: #fff; padding: 9px 18px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; cursor: pointer; }
-    .btn-outline:hover { background: var(--gl-pink-light); }
+    .btn-outline { color: var(--gl-pink); border: 1px solid var(--gl-pink-pale); background: #fff; padding: 7px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; cursor: pointer; }
+    .btn-outline:hover { background: var(--gl-pink-light); border-color: var(--gl-pink); }
 
-    .stats-grid { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 28px; }
-    .stat-card { position: relative; overflow: hidden; flex: 1 1 0; min-width: 150px; height: 132px; border-radius: 26px 26px 26px 10px; padding: 14px; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-sizing: border-box; transition: transform 0.18s ease; }
-    .stat-card:hover { transform: translateY(-2px); }
-    @media (max-width: 700px) {
-        .stat-card { flex: 1 1 calc(50% - 9px); min-width: calc(50% - 9px); height: 116px; }
-    }
-    @media (max-width: 420px) {
-        .stat-card { flex: 1 1 100%; }
-    }
-    .stat-icon { position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 6px; }
-    .stat-label { position: relative; z-index: 1; font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; opacity: 0.85; }
-    .stat-value { position: relative; z-index: 1; font-size: 1.5rem; font-weight: 800; margin-top: 4px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stat-card { background: #fff; position: relative; overflow: hidden; border-radius: 14px; padding: 14px 18px; border: 1px solid var(--gl-border); transition: all 0.25s ease; box-shadow: 0 2px 8px rgba(255, 107, 157, 0.04); display: flex; flex-direction: column; justify-content: center; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255, 107, 157, 0.1); border-color: var(--gl-pink-pale); }
+    .stat-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 8px; }
+    .stat-label { font-size: 0.68rem; letter-spacing: 0.6px; text-transform: uppercase; font-weight: 700; color: var(--gl-text-lt); }
+    .stat-value { font-size: 1.4rem; font-weight: 800; margin-top: 2px; }
 
-    /* Light status colors — no decorative circle */
-    .stat-card.pending { background: #FFF9E0; }
-    .stat-card.pending .stat-icon { background: rgba(138, 90, 0, 0.12); }
-    .stat-card.pending .stat-label,
-    .stat-card.pending .stat-value { color: #8A5A00; }
+    .stat-card.pending { border-left: 4px solid #F59E0B; }
+    .stat-card.pending .stat-icon { background: #FEF3C7; color: #D97706; }
+    .stat-card.pending .stat-value { color: #B45309; }
 
-    .stat-card.approved { background: #E6F7EA; }
-    .stat-card.approved .stat-icon { background: rgba(30, 142, 62, 0.12); }
-    .stat-card.approved .stat-label,
-    .stat-card.approved .stat-value { color: #1E8E3E; }
+    .stat-card.approved { border-left: 4px solid #10B981; }
+    .stat-card.approved .stat-icon { background: #D1FAE5; color: #059669; }
+    .stat-card.approved .stat-value { color: #047857; }
 
-    .stat-card.rejected { background: #FDECEC; }
-    .stat-card.rejected .stat-icon { background: rgba(197, 34, 31, 0.12); }
-    .stat-card.rejected .stat-label,
-    .stat-card.rejected .stat-value { color: #C5221F; }
+    .stat-card.rejected { border-left: 4px solid #EF4444; }
+    .stat-card.rejected .stat-icon { background: #FEE2E2; color: #DC2626; }
+    .stat-card.rejected .stat-value { color: #B91C1C; }
 
-    .card { background: #fff; border-radius: 20px; border: 1px solid var(--gl-border); box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05); margin-bottom: 24px; overflow: hidden; }
-    .card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gl-border); }
-    .card-title { font-size: 0.95rem; font-weight: 700; color: var(--gl-text); display: flex; align-items: center; gap: 8px; }
+    .card { background: #fff; border-radius: 16px; border: 1px solid var(--gl-border); box-shadow: 0 2px 8px rgba(255, 107, 157, 0.04); margin-bottom: 16px; overflow: hidden; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--gl-border); }
+    .card-title { font-size: 0.9rem; font-weight: 700; color: var(--gl-text); display: flex; align-items: center; gap: 8px; }
     .card-title i { color: var(--gl-pink); }
 
-    .badge { padding: 5px 14px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
-    .badge-warning { background: #FFF4DD; color: #8A5A00; }
+    .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.68rem; font-weight: 700; }
+    .badge-warning { background: #FEF3C7; color: #B45309; }
 
-    .request-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 24px; border-bottom: 1px solid var(--gl-border); flex-wrap: wrap; transition: background 0.15s ease; }
+    .request-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--gl-border); flex-wrap: wrap; transition: background 0.15s ease; }
     .request-row:last-child { border-bottom: none; }
     .request-row:hover { background: var(--gl-pink-light); }
-    .request-row strong { font-size: 0.92rem; color: var(--gl-text); }
-    .request-row small { color: var(--gl-text-lt); font-size: 0.78rem; }
+    .request-row strong { font-size: 0.88rem; color: var(--gl-text); }
+    .request-row small { color: var(--gl-text-lt); font-size: 0.75rem; }
 
-    .row-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
-    /* View — frozy teal, same size/shape as Approve/Reject for consistent alignment */
-    .btn-view-teal { border: none; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; color: #fff; cursor: pointer; background: #00838f; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s ease; line-height: 1.2; }
+    .btn-view-teal { border: none; padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; color: #fff; cursor: pointer; background: #00838f; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: background 0.2s ease; line-height: 1.2; }
     .btn-view-teal:hover { background: #006670; color: #fff; }
 
-    /* Approve — green (unchanged) */
-    .btn-primary { border: none; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; color: #fff; cursor: pointer; background: linear-gradient(135deg, #34A853, #188038); transition: opacity 0.2s ease; line-height: 1.2; }
-    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary-green { border: none; padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; color: #fff; cursor: pointer; background: #10B981; transition: background 0.2s ease; line-height: 1.2; }
+    .btn-primary-green:hover { background: #059669; }
 
-    /* Reject — solid red fill, same size/shape as Approve/View */
-    .btn-reject-link { color: #fff; border: none; background: #DC2626; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; line-height: 1.2; transition: background 0.2s ease; }
-    .btn-reject-link:hover { background: #B91C1C; }
+    .btn-reject-red { color: #fff; border: none; background: #EF4444; padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; line-height: 1.2; transition: background 0.2s ease; }
+    .btn-reject-red:hover { background: #DC2626; }
 
-    .empty-state { text-align: center; padding: 64px 24px; }
-    .empty-state i { color: #34A853; margin-bottom: 16px; }
-    .empty-state h3 { font-size: 1.1rem; color: var(--gl-text); margin: 0 0 6px; }
-    .empty-state p { color: var(--gl-text-lt); font-size: 0.88rem; margin: 0; }
+    .empty-state { text-align: center; padding: 48px 20px; }
+    .empty-state i { color: #10B981; margin-bottom: 12px; font-size: 2.5rem; }
+    .empty-state h3 { font-size: 1rem; color: var(--gl-text); margin: 0 0 4px; }
+    .empty-state p { color: var(--gl-text-lt); font-size: 0.8rem; margin: 0; }
 
-    .pagination-wrapper { margin-top: 20px; }
+    .pagination-wrapper { margin-top: 16px; display: flex; justify-content: center; }
 
-    .form-control { width: 100%; border: 1px solid var(--gl-border); border-radius: 12px; padding: 10px 14px; font-size: 0.85rem; font-family: inherit; resize: vertical; color: var(--gl-text); }
+    .form-control { width: 100%; border: 1px solid var(--gl-border); border-radius: 10px; padding: 9px 12px; font-size: 0.82rem; font-family: inherit; resize: vertical; color: var(--gl-text); }
     .form-control:focus { outline: none; border-color: var(--gl-pink); box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1); }
 
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(43, 34, 48, 0.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-container { background: #fff; border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--gl-border); }
-    .modal-header h3 { font-size: 1rem; margin: 0; color: var(--gl-text); }
-    .modal-body { padding: 20px 22px; }
-    .modal-footer { padding: 16px 22px; border-top: 1px solid var(--gl-border); display: flex; gap: 12px; justify-content: flex-end; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(43, 34, 48, 0.5); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-container { background: #fff; border-radius: 16px; width: 90%; max-width: 420px; overflow: hidden; border: 1px solid var(--gl-border); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--gl-border); background: #faf5f8; }
+    .modal-header h3 { font-size: 0.95rem; margin: 0; color: var(--gl-text); }
+    .modal-body { padding: 16px 18px; }
+    .modal-footer { padding: 12px 18px; border-top: 1px solid var(--gl-border); display: flex; gap: 8px; justify-content: flex-end; background: #faf5f8; }
 
     @media (max-width: 640px) {
         .request-row { flex-direction: column; align-items: flex-start; }
@@ -104,32 +92,32 @@
 <div class="page-header-row">
     <div>
         <h1>Salon Registration Requests</h1>
-        <p>Review and manage new salon registrations</p>
+        <p>Review and manage new salon registrations across the network.</p>
     </div>
     <a href="{{ route('admin.salon-requests.index') }}" class="btn-outline"><i class="fas fa-sync-alt"></i> Refresh</a>
 </div>
 
 <div class="stats-grid">
     <div class="stat-card pending">
-        <div class="stat-icon">⏳</div>
-        <div class="stat-label">Pending</div>
+        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+        <div class="stat-label">Pending Review</div>
         <div class="stat-value">{{ $stats['pending'] }}</div>
     </div>
     <div class="stat-card approved">
-        <div class="stat-icon">✅</div>
-        <div class="stat-label">Approved</div>
+        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-label">Approved Salons</div>
         <div class="stat-value">{{ $stats['approved'] }}</div>
     </div>
     <div class="stat-card rejected">
-        <div class="stat-icon">❌</div>
-        <div class="stat-label">Rejected</div>
+        <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+        <div class="stat-label">Rejected Requests</div>
         <div class="stat-value">{{ $stats['rejected'] }}</div>
     </div>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <span class="card-title"><i class="fas fa-clock"></i> Pending Requests</span>
+        <span class="card-title"><i class="fas fa-hourglass-half"></i> Pending Requests Queue</span>
         <span class="badge badge-warning">{{ $pendingSalons->total() }} pending</span>
     </div>
     <div>
@@ -137,40 +125,42 @@
             <div class="request-row">
                 <div>
                     <strong>{{ $salon->name }}</strong><br>
-                    <small>{{ $salon->city }} • {{ $salon->owner->name ?? 'N/A' }}</small>
+                    <small><i class="fas fa-map-marker-alt text-danger"></i> {{ $salon->city }} &bull; <i class="fas fa-user text-muted"></i> {{ $salon->owner->name ?? 'N/A' }}</small>
                 </div>
                 <div class="row-actions">
                     <a href="{{ route('admin.salon-requests.show', $salon->id) }}" class="btn-view-teal"><i class="fas fa-eye"></i> View</a>
-                    <form action="{{ route('admin.salon-requests.approve', $salon->id) }}" method="POST">
+                    <form action="{{ route('admin.salon-requests.approve', $salon->id) }}" method="POST" style="display:inline;">
                         @csrf
-                        <button type="submit" class="btn-primary" onclick="return confirm('Approve this salon?')">Approve</button>
+                        <button type="submit" class="btn-primary-green" onclick="return confirm('Approve this salon?')"><i class="fas fa-check"></i> Approve</button>
                     </form>
-                    <button class="btn-reject-link" onclick="document.getElementById('rejectModal{{ $salon->id }}').style.display='flex'">Reject</button>
+                    <button type="button" class="btn-reject-red" onclick="document.getElementById('rejectModal{{ $salon->id }}').style.display='flex'"><i class="fas fa-times"></i> Reject</button>
                 </div>
             </div>
+
             <div id="rejectModal{{ $salon->id }}" class="modal-overlay" style="display:none;">
                 <div class="modal-container">
                     <div class="modal-header">
                         <h3>Reject Salon: {{ $salon->name }}</h3>
-                        <span onclick="this.closest('.modal-overlay').style.display='none'" style="cursor:pointer;">&times;</span>
+                        <span onclick="this.closest('.modal-overlay').style.display='none'" style="cursor:pointer; font-size: 1.2rem; color: var(--gl-text-lt);">&times;</span>
                     </div>
                     <form action="{{ route('admin.salon-requests.reject', $salon->id) }}" method="POST">
+                        @csrf
                         <div class="modal-body">
-                            @csrf
-                            <textarea name="reason" class="form-control" rows="3" placeholder="Reason for rejection..." required></textarea>
+                            <label style="font-size:0.75rem; font-weight:700; color:var(--gl-text-lt); text-transform:uppercase; margin-bottom:6px; display:block;">Reason for rejection</label>
+                            <textarea name="reason" class="form-control" rows="3" placeholder="Provide a clear reason for rejection..." required></textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn-outline" onclick="this.closest('.modal-overlay').style.display='none'">Cancel</button>
-                            <button type="submit" class="btn-primary" style="background:linear-gradient(135deg, #EA4335, #C5221F);">Reject</button>
+                            <button type="submit" class="btn-reject-red">Confirm Rejection</button>
                         </div>
                     </form>
                 </div>
             </div>
         @empty
             <div class="empty-state">
-                <i class="fas fa-check-circle fa-3x"></i>
+                <i class="fas fa-check-circle"></i>
                 <h3>No Pending Requests</h3>
-                <p>All salon registration requests have been processed</p>
+                <p>All salon registration requests have been successfully processed.</p>
             </div>
         @endforelse
     </div>
