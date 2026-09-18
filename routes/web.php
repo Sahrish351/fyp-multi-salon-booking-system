@@ -261,10 +261,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/reviews/{review}/publish', [ReviewManagementController::class, 'publish'])->name('reviews.publish');
         Route::delete('/reviews/{review}', [ReviewManagementController::class, 'destroy'])->name('reviews.destroy');
 
-       Route::get('/complaints', [AdminComplaintController::class, 'index'])->name('complaints.index');
+Route::get('/complaints', [AdminComplaintController::class, 'index'])->name('complaints.index');
 Route::get('/complaints/{complaint}', [AdminComplaintController::class, 'show'])->name('complaints.show');
+Route::put('/complaints/{complaint}', [AdminComplaintController::class, 'update'])->name('complaints.update'); // <-- Yeh line yahan add karein
 Route::post('/complaints/{complaint}/respond', [AdminComplaintController::class, 'respond'])->name('complaints.respond');
 Route::post('/complaints/{complaint}/close', [AdminComplaintController::class, 'close'])->name('complaints.close');
+
 
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');

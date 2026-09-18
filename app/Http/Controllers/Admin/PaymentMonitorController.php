@@ -10,7 +10,7 @@ class PaymentMonitorController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Payment::with(['client', 'salon', 'appointment']);
+        $query = Payment::with(['client', 'salon', 'appointment.salon']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -38,7 +38,7 @@ class PaymentMonitorController extends Controller
 
     public function show($id)
     {
-        $payment = Payment::with(['client', 'appointment.salon', 'appointment.service'])
+        $payment = Payment::with(['client', 'salon', 'appointment.salon', 'appointment.service'])
             ->findOrFail($id);
 
         return view('admin.payments.show', compact('payment'));

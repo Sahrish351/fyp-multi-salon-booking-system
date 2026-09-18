@@ -7,7 +7,7 @@
     --dpink: #FF6B9D;
     --dpink-hover: #E85588;
     --dpink-lt: #fce4ec;
-    --border: #e5e7eb;
+    --border: #ebebeb;
 }
 
 /* ── Page Header ── */
@@ -15,133 +15,108 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.6rem;
     flex-wrap: wrap;
     gap: 1rem;
 }
 .page-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.55rem;
     font-weight: 700;
-    margin: 0;
+    margin: 0 0 .2rem;
     color: #1a1a1a;
 }
 .page-header h1 i { color: var(--dpink); margin-right: 0.5rem; }
-.page-header p { margin: 0; color: #6b7280; font-size: 0.85rem; }
+.page-header p { margin: 0; color: #9a9a9a; font-size: .86rem; }
 
-/* ── Stats Row — pastel tiles matching the Appointments page reference (fixed height, centered icon/label/value) ── */
+/* ── Dashboard-style White Summary Tiles ── */
 .stats-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.8rem;
-    margin-bottom: 1.5rem;
+    gap: 1rem;
+    margin-bottom: 1.6rem;
 }
 .stat-card {
     flex: 1 1 0;
     min-width: 150px;
-    height: 112px;
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.28rem;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
     position: relative;
     overflow: hidden;
-    padding: 0.7rem;
-    box-sizing: border-box;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+    transition: all .18s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-decoration: none;
 }
 .stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.14);
+    border-color: var(--dpink);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,107,157,.1);
+}
+.stat-top {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin-bottom: .5rem;
 }
 .stat-icon {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--dpink-lt);
+    color: var(--dpink);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.78rem;
-    z-index: 1;
-}
-.stat-info { text-align: center; position: relative; z-index: 1; }
-.stat-value {
-    font-size: 1.35rem;
-    font-weight: 800;
-    line-height: 1;
+    font-size: .85rem;
 }
 .stat-label {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: .72rem;
     font-weight: 700;
-    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #9a9a9a;
+}
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    line-height: 1;
 }
 
 @media (max-width: 700px) {
-    .stat-card { flex: 1 1 calc(50% - 0.4rem); min-width: calc(50% - 0.4rem); height: 104px; }
+    .stat-card { flex: 1 1 calc(50% - .5rem); min-width: calc(50% - .5rem); }
 }
-
-/* Escalated — peachy orange */
-.stat-escalated { background: #FFDCC2; }
-.stat-escalated .stat-icon { background: rgba(255,154,84,0.35); color: #B5561A; }
-.stat-escalated .stat-value, .stat-escalated .stat-label { color: #B5561A; }
-
-/* Pending — butter yellow */
-.stat-pending { background: #FFF2B8; }
-.stat-pending .stat-icon { background: rgba(255,210,77,0.35); color: #A67A00; }
-.stat-pending .stat-value, .stat-pending .stat-label { color: #A67A00; }
-
-/* In Progress — periwinkle blue */
-.stat-progress { background: #D9DEF7; }
-.stat-progress .stat-icon { background: rgba(138,151,224,0.35); color: #4A54A8; }
-.stat-progress .stat-value, .stat-progress .stat-label { color: #4A54A8; }
-
-/* Resolved — mint green */
-.stat-resolved { background: #C8F0DF; }
-.stat-resolved .stat-icon { background: rgba(79,190,153,0.35); color: #1F7A5C; }
-.stat-resolved .stat-value, .stat-resolved .stat-label { color: #1F7A5C; }
-
-/* Closed — soft lavender purple */
-.stat-closed { background: #EDE0F7; }
-.stat-closed .stat-icon { background: rgba(155,109,209,0.35); color: #6B4FA0; }
-.stat-closed .stat-value, .stat-closed .stat-label { color: #6B4FA0; }
-
-/* Rejected — rose red, as requested */
-.stat-rejected { background: #FAD4D4; }
-.stat-rejected .stat-icon { background: rgba(200,60,60,0.3); color: #B71C1C; }
-.stat-rejected .stat-value, .stat-rejected .stat-label { color: #B71C1C; }
 
 /* ── Filter Bar ── */
 .filter-bar {
     background: #fff;
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.5rem;
+    border-radius: 14px;
+    padding: 1.1rem 1.3rem;
+    margin-bottom: 1.4rem;
     display: flex;
-    gap: 0.8rem;
+    gap: .85rem;
     flex-wrap: wrap;
     align-items: flex-end;
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
 }
 .filter-group {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: .32rem;
     flex: 1;
     min-width: 140px;
 }
 .filter-group label {
-    font-size: 0.65rem;
+    font-size: .67rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #6b7280;
+    letter-spacing: .05em;
+    color: #aaa;
 }
 .search-wrapper {
     position: relative;
@@ -150,64 +125,73 @@
 }
 .search-wrapper i {
     position: absolute;
-    left: 0.9rem;
+    left: .85rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--dpink);
-    font-size: 0.85rem;
+    color: #ccc;
+    font-size: .8rem;
+    pointer-events: none;
 }
 .search-input {
     width: 100%;
-    padding: 0.6rem 1rem 0.6rem 2.4rem;
-    border: 1.5px solid var(--border);
+    padding: .6rem .9rem .6rem 2.2rem;
+    border: 1.5px solid #e5e5e5;
     border-radius: 9px;
-    font-size: 0.88rem;
-    background: #f9fafb;
-    color: #111;
+    font-size: .87rem;
+    background: #fafafa;
+    color: #1a1a1a;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all .2s;
+    font-family: inherit;
+    box-sizing: border-box;
 }
 .search-input:focus {
     border-color: var(--dpink);
+    box-shadow: 0 0 0 3px rgba(255,107,157,.1);
     background: #fff;
 }
 .filter-select {
     width: 100%;
-    padding: 0.6rem 1rem;
-    border: 1.5px solid var(--border);
+    padding: .6rem .9rem;
+    border: 1.5px solid #e5e5e5;
     border-radius: 9px;
-    font-size: 0.85rem;
-    background: #f9fafb;
-    color: #111;
+    font-size: .87rem;
+    background: #fafafa;
+    color: #1a1a1a;
     cursor: pointer;
     outline: none;
+    font-family: inherit;
+    box-sizing: border-box;
 }
-.filter-select:focus { border-color: var(--dpink); }
-.filter-actions { display: flex; gap: 0.5rem; align-items: flex-end; }
+.filter-select:focus { border-color: var(--dpink); background: #fff; }
+.filter-actions { display: flex; gap: .5rem; align-items: flex-end; }
 .btn-search {
-    padding: 0.6rem 1.2rem;
+    padding: .62rem 1.1rem;
     border-radius: 9px;
-    font-size: 0.85rem;
+    font-size: .85rem;
     font-weight: 700;
     cursor: pointer;
     border: none;
     background: var(--dpink);
     color: #fff;
-    transition: background 0.2s;
+    transition: all .18s;
     white-space: nowrap;
 }
 .btn-search:hover { background: var(--dpink-hover); }
 .btn-clear {
-    padding: 0.6rem 0.9rem;
+    padding: .62rem .9rem;
     border-radius: 9px;
-    font-size: 0.85rem;
+    font-size: .85rem;
     font-weight: 600;
     cursor: pointer;
     background: transparent;
-    border: 1.5px solid var(--border);
-    color: #6b7280;
+    border: 1.5px solid #e5e5e5;
+    color: #aaa;
     text-decoration: none;
-    transition: all 0.15s;
+    transition: all .15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     white-space: nowrap;
 }
 .btn-clear:hover { border-color: var(--dpink); color: var(--dpink); }
@@ -216,78 +200,82 @@
 .complaints-card {
     background: #fff;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
 }
 .complaints-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.8rem 1.2rem;
-    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.3rem;
+    border-bottom: 1px solid #f3f3f3;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: .5rem;
 }
-.card-title { font-weight: 700; font-size: 0.95rem; color: #1a1a1a; }
-.card-title i { color: var(--dpink); margin-right: 0.5rem; }
+.card-title { font-weight: 700; font-size: .9rem; color: #1a1a1a; }
+.card-title i { color: var(--dpink); margin-right: .4rem; }
 .result-count {
-    font-size: 0.75rem;
-    color: #6b7280;
-    background: #f3f4f6;
-    padding: 0.2rem 0.6rem;
+    font-size: .75rem;
+    color: #aaa;
+    background: #f3f3f3;
+    padding: .2rem .62rem;
     border-radius: 20px;
 }
 
 /* ── Table ── */
 .complaints-table { width: 100%; border-collapse: collapse; }
-.complaints-table thead tr { background: #f9fafb; }
+.complaints-table thead tr { background: #fafafa; }
 .complaints-table thead th {
-    padding: 0.7rem 1rem;
-    font-size: 0.65rem;
+    padding: .75rem .9rem;
+    font-size: .66rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #6b7280;
+    letter-spacing: .06em;
+    color: #bbb;
     text-align: left;
     white-space: nowrap;
     border-bottom: 1px solid var(--border);
 }
 .complaints-table tbody tr {
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #f5f5f5;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background .15s;
 }
 .complaints-table tbody tr:last-child { border-bottom: none; }
-.complaints-table tbody tr:hover { background: #fdf0f5; }
+.complaints-table tbody tr:hover { background: #fdf5fa; }
 .complaints-table td {
-    padding: 0.7rem 1rem;
-    font-size: 0.85rem;
-    color: #374151;
+    padding: .85rem .9rem;
+    font-size: .85rem;
+    color: #444;
     vertical-align: middle;
 }
 
-.client-cell { display: flex; align-items: center; gap: 0.7rem; }
+.client-cell { display: flex; align-items: center; gap: .7rem; }
 .client-avatar {
-    width: 34px; height: 34px;
+    width: 32px; height: 32px;
     border-radius: 50%;
     background: var(--dpink-lt);
     color: var(--dpink);
     font-weight: 800;
-    font-size: 0.85rem;
+    font-size: .8rem;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
-.client-name { font-weight: 600; color: #111827; }
-.client-email { font-size: 0.7rem; color: #9ca3af; }
+.client-name { font-weight: 600; color: #1a1a1a; }
+.client-email { font-size: .7rem; color: #aaa; }
 
 .badge {
-    display: inline-block;
-    padding: 0.2rem 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .28rem;
+    padding: .25rem .7rem;
     border-radius: 20px;
-    font-size: 0.68rem;
+    font-size: .71rem;
     font-weight: 700;
+    white-space: nowrap;
 }
 .badge-pending { background: #fef3c7; color: #92400e; }
 .badge-progress { background: #dbeafe; color: #1e40af; }
@@ -302,18 +290,16 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: .75rem;
     background: #e0f7fa;
     color: #00838f;
     border: none;
     text-decoration: none;
-    transition: all 0.15s;
+    transition: all .15s;
 }
 .btn-view:hover { background: #00838f; color: #fff; }
 
-.empty-state { text-align: center; padding: 3rem 1rem; color: #9ca3af; }
-.empty-state i { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
-.pagination-wrapper { padding: 0.8rem 1.2rem; border-top: 1px solid var(--border); }
+.pagination-wrapper { padding: 1rem 1.3rem; border-top: 1px solid #f3f3f3; }
 
 @media (max-width: 768px) {
     .filter-bar { flex-direction: column; }
@@ -329,55 +315,55 @@
 {{-- ── Page Header ── --}}
 <div class="page-header">
     <div>
-        <h1><i class="fas fa-exclamation-circle"></i> Complaints</h1>
-        <p>{{ $complaints->total() }} total complaints</p>
+        <h1><i class="fas fa-exclamation-circle"></i> Complaints Management</h1>
+        <p>Monitor and resolve client complaints seamlessly</p>
     </div>
 </div>
 
-{{-- ── Stats Row (pastel tiles, same shape/height as the Appointments page) ── --}}
+{{-- ── Stats Row (Dashboard White Cards Style) ── --}}
 <div class="stats-row">
-    <div class="stat-card stat-escalated">
-        <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
-        <div class="stat-info">
-            <div class="stat-value">{{ $stats['escalated'] ?? 0 }}</div>
+    <a href="{{ route('admin.complaints.index', ['status'=>'escalated']) }}" class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
             <div class="stat-label">Escalated</div>
         </div>
-    </div>
-    <div class="stat-card stat-pending">
-        <div class="stat-icon"><i class="fas fa-clock"></i></div>
-        <div class="stat-info">
-            <div class="stat-value">{{ $stats['pending'] ?? 0 }}</div>
+        <div class="stat-value">{{ $stats['escalated'] ?? 0 }}</div>
+    </a>
+    <a href="{{ route('admin.complaints.index', ['status'=>'pending']) }}" class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
             <div class="stat-label">Pending</div>
         </div>
-    </div>
-    <div class="stat-card stat-progress">
-        <div class="stat-icon"><i class="fas fa-spinner"></i></div>
-        <div class="stat-info">
-            <div class="stat-value">{{ $stats['in_progress'] ?? 0 }}</div>
+        <div class="stat-value">{{ $stats['pending'] ?? 0 }}</div>
+    </a>
+    <a href="{{ route('admin.complaints.index', ['status'=>'in_progress']) }}" class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon"><i class="fas fa-spinner"></i></div>
             <div class="stat-label">In Progress</div>
         </div>
-    </div>
-    <div class="stat-card stat-resolved">
-        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-        <div class="stat-info">
-            <div class="stat-value">{{ $stats['resolved'] ?? 0 }}</div>
+        <div class="stat-value">{{ $stats['in_progress'] ?? 0 }}</div>
+    </a>
+    <a href="{{ route('admin.complaints.index', ['status'=>'resolved']) }}" class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
             <div class="stat-label">Resolved</div>
         </div>
-    </div>
-    <div class="stat-card stat-closed">
-        <div class="stat-icon"><i class="fas fa-check-double"></i></div>
-        <div class="stat-info">
-            <div class="stat-value">{{ $stats['closed'] ?? 0 }}</div>
+        <div class="stat-value">{{ $stats['resolved'] ?? 0 }}</div>
+    </a>
+    <a href="{{ route('admin.complaints.index', ['status'=>'closed']) }}" class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon"><i class="fas fa-check-double"></i></div>
             <div class="stat-label">Closed</div>
         </div>
-    </div>
-    <div class="stat-card stat-rejected">
-        <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
-        <div class="stat-info">
-            <div class="stat-value">{{ $stats['rejected'] ?? 0 }}</div>
+        <div class="stat-value">{{ $stats['closed'] ?? 0 }}</div>
+    </a>
+    <a href="{{ route('admin.complaints.index', ['status'=>'rejected']) }}" class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
             <div class="stat-label">Rejected</div>
         </div>
-    </div>
+        <div class="stat-value">{{ $stats['rejected'] ?? 0 }}</div>
+    </a>
 </div>
 
 {{-- ── Filter Bar ── --}}
@@ -390,7 +376,7 @@
     <div class="filter-group">
         <label>Status</label>
         <select name="status" class="filter-select">
-            <option value="">All</option>
+            <option value="">All Status</option>
             <option value="pending" {{ request('status')=='pending' ? 'selected':'' }}>Pending</option>
             <option value="in_progress" {{ request('status')=='in_progress' ? 'selected':'' }}>In Progress</option>
             <option value="resolved" {{ request('status')=='resolved' ? 'selected':'' }}>Resolved</option>
@@ -402,7 +388,7 @@
     <div class="filter-group">
         <label>Type</label>
         <select name="type" class="filter-select">
-            <option value="">All</option>
+            <option value="">All Types</option>
             <option value="service" {{ request('type')=='service' ? 'selected':'' }}>Service</option>
             <option value="staff" {{ request('type')=='staff' ? 'selected':'' }}>Staff</option>
             <option value="payment" {{ request('type')=='payment' ? 'selected':'' }}>Payment</option>
@@ -419,7 +405,7 @@
 </div>
 </form>
 
-{{-- ── Table ── --}}
+{{-- ── Table Card ── --}}
 <div class="complaints-card">
     <div class="complaints-card-header">
         <span class="card-title"><i class="fas fa-list"></i> Complaints List</span>
@@ -441,9 +427,9 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($complaints as $complaint)
+                @forelse($complaints as $i => $complaint)
                 <tr onclick="window.location='{{ route('admin.complaints.show', $complaint->id) }}'">
-                    <td style="color:#9ca3af;">#{{ $complaint->id }}</td>
+                    <td style="color:#bbb;font-size:.78rem;">#{{ $complaint->id }}</td>
                     <td>
                         <div class="client-cell">
                             <div class="client-avatar">{{ strtoupper(substr($complaint->client->name ?? 'N', 0, 1)) }}</div>
@@ -453,20 +439,24 @@
                             </div>
                         </div>
                     </td>
-                    <td>{{ $complaint->salon->name ?? 'N/A' }}</td>
-                    <td>{{ Str::limit($complaint->subject, 30) }}</td>
-                    <td><span style="background:#f3f4f6;padding:2px 10px;border-radius:12px;font-size:0.7rem;">{{ $complaint->type_label }}</span></td>
-                    <td style="font-size:0.8rem;color:#6b7280;">{{ $complaint->created_at->format('d M Y') }}</td>
-                    <td><span class="badge {{ $complaint->status_badge }}">{{ $complaint->status_label }}</span></td>
+                    <td><span style="font-weight:500;color:#1a1a1a;">{{ Str::limit($complaint->salon->name ?? 'N/A', 18) }}</span></td>
+                    <td style="color:#333;font-weight:500;">{{ Str::limit($complaint->subject, 28) }}</td>
+                    <td><span style="background:#f3f3f3;padding:.2rem .62rem;border-radius:12px;font-size:.7rem;font-weight:600;color:#666;">{{ $complaint->type_label }}</span></td>
+                    <td style="font-size:.78rem;color:#777;white-space:nowrap;">{{ $complaint->created_at->format('d M Y') }}</td>
+                    <td><span class="badge badge-{{ $complaint->status }}">{{ $complaint->status_label }}</span></td>
                     <td onclick="event.stopPropagation()">
-                        <a href="{{ route('admin.complaints.show', $complaint->id) }}" class="btn-view"><i class="fas fa-eye"></i></a>
+                        <a href="{{ route('admin.complaints.show', $complaint->id) }}" class="btn-view" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </a>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="padding:3rem 1rem;text-align:center;color:#9ca3af;">
-                        <i class="fas fa-exclamation-circle" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i>
-                        No complaints found.
+                    <td colspan="8">
+                        <div style="text-align:center;padding:3rem 1rem;color:#aaa;">
+                            <i class="fas fa-exclamation-circle" style="font-size:2.2rem;margin-bottom:.7rem;opacity:.3;display:block;"></i>
+                            <p style="font-size:.88rem;margin:0;">No complaints found</p>
+                        </div>
                     </td>
                 </tr>
                 @endforelse

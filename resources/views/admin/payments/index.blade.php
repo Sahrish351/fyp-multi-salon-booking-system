@@ -4,18 +4,18 @@
 @section('content')
 <style>
     :root {
-        --pm-pink:   #FF6B9D;
-        --pm-sage:   #6b8f71;
-        --pm-sage-lt:#f0f5f1;
-        --pm-amber:  #b07d3a;
+        --pm-pink: #FF6B9D;
+        --pm-sage: #6b8f71;
+        --pm-sage-lt: #f0f5f1;
+        --pm-amber: #b07d3a;
         --pm-amber-lt: #fdf6ec;
-        --pm-red:    #b84444;
+        --pm-red: #b84444;
         --pm-red-lt: #fdf0f0;
-        --pm-slate:  #5c7a8a;
-        --pm-slate-lt:#eef3f6;
-        --pm-text:   #2d2d2d;
-        --pm-text-mid:#8a8a8a;
-        --pm-text-lt:#aaa;
+        --pm-slate: #5c7a8a;
+        --pm-slate-lt: #eef3f6;
+        --pm-text: #2d2d2d;
+        --pm-text-mid: #8a8a8a;
+        --pm-text-lt: #aaa;
         --pm-border: #ebebeb;
     }
 
@@ -99,8 +99,12 @@
     }
     .btn-filter-clear:hover { border-color: var(--pm-pink); color: var(--pm-pink); }
 
-    /* Table */
+    /* Table styles */
     .pm-table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .data-table th { padding: 12px 16px; font-size: 0.75rem; text-transform: uppercase; color: var(--pm-text-mid); background: #faf8f6; border-bottom: 1px solid var(--pm-border); }
+    .data-table td { padding: 14px 16px; font-size: 0.88rem; color: var(--pm-text); border-bottom: 1px solid var(--pm-border); }
+    .data-table tr:last-child td { border-bottom: none; }
 
     .badge {
         display: inline-flex;
@@ -111,14 +115,23 @@
         font-weight: 700;
         white-space: nowrap;
     }
-    .badge-success { background: var(--pm-sage-lt);  color: var(--pm-sage); }
+    .badge-success { background: var(--pm-sage-lt); color: var(--pm-sage); }
     .badge-warning { background: var(--pm-amber-lt); color: var(--pm-amber); }
-    .badge-danger  { background: var(--pm-red-lt);   color: var(--pm-red); }
-    .badge-method  { background: var(--pm-slate-lt); color: var(--pm-slate); }
+    .badge-danger { background: var(--pm-red-lt); color: var(--pm-red); }
+    .badge-method { background: var(--pm-slate-lt); color: var(--pm-slate); }
 
-    .pagination-wrapper { margin-top: 18px; }
+    /* Custom Clean Pagination Footer */
+    .pm-pagination-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-top: 1px solid var(--pm-border);
+        flex-wrap: wrap;
+        gap: 15px;
+        background: #fff;
+    }
 
-    /* View button — frozy teal, stays frozy (no hover color change) */
     .btn-view-frozy {
         display: inline-flex;
         align-items: center;
@@ -142,11 +155,11 @@
     </div>
 </div>
 
-{{-- Filter --}}
+{{-- Filter Form --}}
 <div class="pm-filter-card">
     <div class="pm-filter-head"><i class="fas fa-filter"></i> Filter Payments</div>
     <div class="pm-filter-body">
-        <form method="GET" class="pm-filter-row">
+        <form method="GET" action="{{ route('admin.payments.index') }}" class="pm-filter-row">
             <div class="pm-filter-field" style="flex:2 1 220px;">
                 <label class="pm-filter-label">Search</label>
                 <input type="text" name="search" class="pm-filter-input" placeholder="Client name, email, or transaction ID…" value="{{ request('search') }}">
@@ -155,7 +168,7 @@
                 <label class="pm-filter-label">Status</label>
                 <select name="status" class="pm-filter-select">
                     <option value="">All Statuses</option>
-                    <option value="pending"  {{ request('status')=='pending'  ? 'selected' : '' }}>Pending</option>
+                    <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
                     <option value="approved" {{ request('status')=='approved' ? 'selected' : '' }}>Approved</option>
                     <option value="rejected" {{ request('status')=='rejected' ? 'selected' : '' }}>Rejected</option>
                 </select>
@@ -177,10 +190,10 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <span class="card-title">Payments List</span>
-        <span style="font-size:0.75rem; color: var(--pm-text-lt);">{{ $payments->total() }} records</span>
+<div class="card" style="background: #fff; border: 1px solid var(--pm-border); border-radius: 14px; overflow: hidden;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--pm-border);">
+        <span style="font-weight: 700; color: var(--pm-text);">Payments List</span>
+        <span style="font-size:0.75rem; color: var(--pm-text-lt);">Total {{ $payments->total() }} records</span>
     </div>
 
     <div class="pm-table-wrap">
@@ -229,6 +242,36 @@
         </table>
     </div>
 
-    <div class="pagination-wrapper">{{ $payments->links() }}</div>
+    <!-- Custom Pagination Footer -->
+    <div class="pm-pagination-footer">
+        <div style="font-size: 0.85rem; color: var(--pm-text-mid);">
+            Showing <b>{{ $payments->firstItem() ?? 0 }}</b> to <b>{{ $payments->lastItem() ?? 0 }}</b> of <b>{{ $payments->total() }}</b> results
+        </div>
+        
+        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            {{-- Previous Page Link --}}
+            @if ($payments->onFirstPage())
+                <span style="background: #f5f5f5; color: #ccc; border: 1px solid var(--pm-border); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; cursor: not-allowed;">Previous</span>
+            @else
+                <a href="{{ $payments->previousPageUrl() }}" style="background: #fff; color: var(--pm-text); border: 1px solid var(--pm-border); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; text-decoration: none; font-weight: 600;">Previous</a>
+            @endif
+
+            {{-- Page Numbers --}}
+            @foreach ($payments->getUrlRange(1, $payments->lastPage()) as $page => $url)
+                @if ($page == $payments->currentPage())
+                    <span style="background: var(--pm-pink); color: #fff; border: 1px solid var(--pm-pink); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem;">{{ $page }}</span>
+                @else
+                    <a href="{{ $url }}" style="background: #fff; color: var(--pm-text); border: 1px solid var(--pm-border); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; text-decoration: none; font-weight: 600;">{{ $page }}</a>
+                @endif
+            @endforeach
+
+            {{-- Next Page Link --}}
+            @if ($payments->hasMorePages())
+                <a href="{{ $payments->nextPageUrl() }}" style="background: #fff; color: var(--pm-text); border: 1px solid var(--pm-border); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; text-decoration: none; font-weight: 600;">Next</a>
+            @else
+                <span style="background: #f5f5f5; color: #ccc; border: 1px solid var(--pm-border); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; cursor: not-allowed;">Next</span>
+            @endif
+        </div>
+    </div>
 </div>
 @endsection

@@ -4,21 +4,61 @@
 @section('content')
 <style>
     :root {
-        --pm-pink:   #FF6B9D;
-        --pm-green:  #6b8f71;
-        --pm-green-lt:#f0f5f1;
-        --pm-amber:  #b07d3a;
-        --pm-amber-lt:#fdf6ec;
-        --pm-red:    #b84444;
+        --pm-pink: #FF6B9D;
+        --pm-green: #6b8f71;
+        --pm-green-lt: #f0f5f1;
+        --pm-amber: #b07d3a;
+        --pm-amber-lt: #fdf6ec;
+        --pm-red: #b84444;
         --pm-red-lt: #fdf0f0;
-        --pm-text:   #2d2d2d;
-        --pm-text-mid:#8a8a8a;
+        --pm-text: #2d2d2d;
+        --pm-text-mid: #8a8a8a;
         --pm-border: #ede9e4;
     }
 
     .pm-back-row { margin-bottom: 20px; }
 
-    .pm-field-grid { display: flex; flex-wrap: wrap; gap: 22px 26px; padding: 22px; }
+    .btn-outline-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        background: #ffffff;
+        border: 1.5px solid var(--pm-border);
+        border-radius: 9px;
+        color: var(--pm-text) !important;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.15s ease;
+    }
+    .btn-outline-back:hover {
+        border-color: var(--pm-pink);
+        color: var(--pm-pink) !important;
+        background: #fdf0f3;
+    }
+
+    .card {
+        background: #fff;
+        border: 1px solid var(--pm-border);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    .card-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--pm-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .card-title {
+        font-weight: 700;
+        color: var(--pm-text);
+        font-size: 1.05rem;
+    }
+
+    .pm-field-grid { display: flex; flex-wrap: wrap; gap: 24px; padding: 24px; }
     .pm-field { flex: 1 1 220px; }
     .pm-field-full { flex: 1 1 100%; }
 
@@ -29,7 +69,7 @@
     .badge { display: inline-flex; align-items: center; padding: 5px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
     .badge-success { background: var(--pm-green-lt); color: var(--pm-green); }
     .badge-warning { background: var(--pm-amber-lt); color: var(--pm-amber); }
-    .badge-danger  { background: var(--pm-red-lt);   color: var(--pm-red); }
+    .badge-danger { background: var(--pm-red-lt); color: var(--pm-red); }
 
     .pm-screenshot-link {
         display: inline-flex; align-items: center; gap: 8px;
@@ -41,7 +81,7 @@
 </style>
 
 <div class="pm-back-row">
-    <a href="{{ route('admin.payments.index') }}" class="btn-outline">
+    <a href="{{ route('admin.payments.index') }}" class="btn-outline-back">
         <i class="fas fa-arrow-left"></i> Back to Payments
     </a>
 </div>
@@ -105,9 +145,11 @@
         @if($payment->screenshot)
         <div class="pm-field-full">
             <span class="pm-label">Payment Proof</span>
-            <a href="{{ $payment->screenshot_url }}" target="_blank" class="pm-screenshot-link">
-                <i class="fas fa-image"></i> View Screenshot
-            </a>
+            <div style="margin-top: 8px;">
+                <a href="{{ $payment->screenshot_url }}" target="_blank" class="pm-screenshot-link">
+                    <i class="fas fa-image"></i> View Screenshot
+                </a>
+            </div>
         </div>
         @endif
     </div>

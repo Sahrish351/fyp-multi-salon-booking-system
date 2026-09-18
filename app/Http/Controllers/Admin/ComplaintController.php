@@ -46,6 +46,24 @@ class ComplaintController extends Controller
         return view('admin.complaints.show', compact('complaint'));
     }
 
+    public function update(Request $request, Complaint $complaint)
+    {
+        $request->validate([
+            'status' => 'required|string',
+            'resolution_notes' => 'nullable|string',
+        ]);
+
+        $complaint->update([
+            'status' => $request->status,
+            'resolution_notes' => $request->resolution_notes,
+            'admin_actioned_at' => now(),
+            'admin_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('admin.complaints.show', $complaint->id)
+            ->with('success', 'Complaint updated successfully.');
+    }
+
     public function respond(Request $request, Complaint $complaint)
     {
         $request->validate([

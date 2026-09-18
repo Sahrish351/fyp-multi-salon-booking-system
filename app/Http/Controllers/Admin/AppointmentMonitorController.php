@@ -12,12 +12,16 @@ class AppointmentMonitorController extends Controller
     public function index(Request $request)
     {
         $appointments = Appointment::with(['client', 'salon', 'stylist', 'service', 'payment'])
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->date, fn($q) => $q->whereDate('appointment_date', $request->date))
-            ->when($request->search, fn($q) => $q->whereHas('client', fn($q2) =>
-                $q2->where('name', 'like', '%' . $request->search . '%')))
+            ->when($request->filled('status') && $request->status !== 'all', function($q) use ($request) {
+                $q->where('status', $request->status);
+            })
+            ->when($request->filled('date'), fn($q) => $q->whereDate('appointment_date', $request->date))
+            ->when($request->filled('salon_id'), fn($q) => $q->where('salon_id', $request->salon_id))
+            ->when($request->filled('search'), fn($q) => $q->whereHas('client', fn($q2) =>
+                $q2->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('phone', 'like', '%' . $request->search . '%')))
             ->latest()
-            ->paginate(20);
+            ->paginate(10);
             
         return view('admin.appointments.index', compact('appointments'));
     }
@@ -35,8 +39,9 @@ class AppointmentMonitorController extends Controller
     public function export(Request $request)
     {
         $appointments = Appointment::with(['client', 'salon', 'service'])
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->date, fn($q) => $q->whereDate('appointment_date', $request->date))
+            ->when($request->filled('status') && $request->status !== 'all', fn($q) => $q->where('status', $request->status))
+            ->when($request->filled('date'), fn($q) => $q->whereDate('appointment_date', $request->date))
+            ->when($request->filled('salon_id'), fn($q) => $q->where('salon_id', $request->salon_id))
             ->get();
 
         $filename = "appointments_" . date('Y-m-d') . ".csv";
