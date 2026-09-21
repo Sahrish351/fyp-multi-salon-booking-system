@@ -4,361 +4,287 @@
 
 @push('styles')
 <style>
-    .detail-label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: #aaa;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
+    :root { --pk:#FF6B9D; --pk-dark:#E85588; --pk-lt:#fce4ec; --pk-bg:#fff0f7; }
+
+    .al-page { width:0; min-width:100%; max-width:100%; box-sizing:border-box; }
+
+    .al-back {
+        display:inline-flex; align-items:center; gap:8px; padding:.5rem 1.2rem; margin-bottom:1.4rem;
+        border-radius:50px; background:#fff; color:var(--pk); border:1.5px solid var(--pk-lt);
+        font-weight:700; font-size:.84rem; text-decoration:none; transition:all .18s;
+        box-shadow:0 2px 5px rgba(255,107,157,.06);
     }
-    .detail-value {
-        font-size: 0.95rem;
-        color: #333;
-        font-weight: 500;
+    .al-back:hover { background:var(--pk); color:#fff; border-color:var(--pk); transform:translateY(-1px); }
+
+    /* two columns without Bootstrap */
+    .al-layout { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:1.4rem; align-items:start; }
+    @media (max-width: 1000px) { .al-layout { grid-template-columns:minmax(0,1fr); } }
+    .al-side { display:flex; flex-direction:column; gap:1.4rem; }
+
+    .al-card {
+        background:#fff; border:1px solid #eaeaea; border-radius:18px; overflow:hidden;
+        box-shadow:0 4px 15px rgba(0,0,0,.03); min-width:0;
     }
-    .detail-card {
-        background: #f8f9fa;
-        border-radius: 12px;
-        padding: 1rem;
-        margin-top: 0.5rem;
+    .al-card-head {
+        padding:1.05rem 1.4rem; border-bottom:1px solid #f2f2f2; background:#fafbfc;
+        display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;
     }
-    .detail-card pre {
-        margin: 0;
-        font-size: 0.75rem;
-        white-space: pre-wrap;
-        word-break: break-all;
-        max-height: 250px;
-        overflow-y: auto;
+    .al-card-head .t { font-weight:800; font-size:.95rem; color:#1a1a1a; display:inline-flex; align-items:center; gap:8px; }
+    .al-card-head .t i { color:var(--pk); }
+    .al-card-body { padding:1.4rem; }
+
+    .al-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:1.3rem 1.5rem; }
+    @media (max-width: 600px) { .al-grid { grid-template-columns:minmax(0,1fr); } }
+    .al-full { grid-column:1 / -1; }
+
+    .al-lbl { display:flex; align-items:center; gap:6px; font-size:.68rem; font-weight:700; color:#a3a3a3; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+    .al-lbl i { color:var(--pk); }
+    .al-val { font-size:.92rem; color:#222; font-weight:600; word-break:break-word; }
+    .al-mono { font-family:monospace; }
+
+    .al-userbox { display:flex; align-items:center; gap:14px; }
+    .al-avatar-lg { width:54px; height:54px; border-radius:50%; object-fit:cover; border:3px solid var(--pk-lt); flex-shrink:0; }
+    .al-uname { font-size:1.02rem; font-weight:800; color:#111; margin-bottom:4px; }
+    .al-uemail { color:#9ca3af; font-size:.8rem; font-weight:500; margin-top:4px; }
+
+    .al-role { display:inline-block; padding:2px 11px; border-radius:50px; font-size:.62rem; font-weight:700; background:#f1f5f9; color:#475569; }
+    .al-role-admin { background:#fce4ec; color:#E85588; }
+    .al-role-owner, .al-role-salon_owner { background:#e3f2fd; color:#0d47a1; }
+    .al-role-client { background:#e8f5e9; color:#1b5e20; }
+
+    .al-action { display:inline-block; padding:5px 15px; border-radius:50px; font-size:.75rem; font-weight:700; }
+    .al-st { display:inline-block; padding:5px 15px; border-radius:50px; font-size:.75rem; font-weight:700; background:#f1f5f9; color:#475569; }
+    .al-st-success { background:#dcfce7; color:#16a34a; }
+    .al-st-failed  { background:#fee2e2; color:#dc2626; }
+    .al-st-pending { background:#fef3c7; color:#d97706; }
+
+    .al-desc { background:var(--pk-bg); border:1px solid var(--pk-lt); border-radius:14px; padding:1rem 1.2rem; line-height:1.7; font-weight:500; color:#333; font-size:.9rem; }
+
+    .al-divider { border:none; border-top:1px solid #f2f2f2; margin:1.6rem 0; }
+
+    .al-code { border-radius:12px; padding:1rem 1.1rem; background:#f8f9fa; }
+    .al-code pre { margin:0; font-size:.75rem; white-space:pre-wrap; word-break:break-all; max-height:260px; overflow-y:auto; font-family:monospace; }
+    .al-code-old { border-left:4px solid #ef4444; }
+    .al-code-old pre { color:#dc2626; }
+    .al-code-new { border-left:4px solid #22c55e; }
+    .al-code-new pre { color:#16a34a; }
+
+    .al-agent { font-size:.8rem; color:#777; word-break:break-all; background:#f8f9fa; padding:.8rem 1rem; border-radius:10px; line-height:1.6; }
+
+    .al-copy {
+        width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:.75rem 1rem;
+        border-radius:50px; border:none; cursor:pointer; color:#fff; font-weight:700; font-size:.86rem;
+        background:linear-gradient(135deg,var(--pk),var(--pk-dark)); box-shadow:0 4px 14px rgba(255,107,157,.32);
+        transition:all .18s ease; font-family:inherit;
     }
-    .detail-card .old-data {
-        border-left: 3px solid #ef4444;
-        padding-left: 1rem;
+    .al-copy:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(255,107,157,.42); }
+
+    .al-info-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:.75rem 0; border-bottom:1px solid #f4f4f4; }
+    .al-info-row:last-child { border-bottom:none; }
+    .al-info-row .k { color:#888; font-size:.84rem; }
+    .al-info-row .v { color:#222; font-weight:600; font-size:.84rem; text-align:right; }
+
+    /* small message box (replaces SweetAlert, which is not loaded in the layout) */
+    .al-toast {
+        position:fixed; right:24px; bottom:24px; z-index:9999; display:flex; align-items:center; gap:10px;
+        padding:.85rem 1.3rem; border-radius:14px; background:#fff; font-size:.86rem; font-weight:700; color:#222;
+        box-shadow:0 10px 30px rgba(0,0,0,.15); border-left:5px solid #16a34a;
+        opacity:0; transform:translateY(15px); pointer-events:none; transition:all .25s ease;
     }
-    .detail-card .new-data {
-        border-left: 3px solid #22c55e;
-        padding-left: 1rem;
-    }
-    .btn-back {
-        background: #f0f0f0;
-        color: #555;
-        border: none;
-        border-radius: 50px;
-        padding: 8px 20px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        text-decoration: none;
-        transition: all 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .btn-back:hover {
-        background: #e0e0e0;
-        color: #333;
-    }
-    .badge-action {
-        padding: 4px 14px;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    .badge-status-success {
-        background: #dcfce7;
-        color: #16a34a;
-        padding: 4px 14px;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    .badge-status-failed {
-        background: #fee2e2;
-        color: #dc2626;
-        padding: 4px 14px;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    .badge-status-pending {
-        background: #fef3c7;
-        color: #d97706;
-        padding: 4px 14px;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    .role-badge {
-        padding: 2px 10px;
-        border-radius: 50px;
-        font-size: 0.6rem;
-        font-weight: 600;
-    }
-    .role-admin {
-        background: #fce4ec;
-        color: #c2185b;
-    }
-    .role-owner {
-        background: #e3f2fd;
-        color: #0d47a1;
-    }
-    .role-client {
-        background: #e8f5e9;
-        color: #1b5e20;
-    }
-    .btn-outline-pink {
-        background: transparent;
-        color: #E91E8C;
-        border: 1.5px solid #E91E8C;
-        border-radius: 50px;
-        padding: 10px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        transition: all 0.3s;
-        width: 100%;
-        cursor: pointer;
-    }
-    .btn-outline-pink:hover {
-        background: #E91E8C;
-        color: #fff;
-    }
-    .user-avatar-large {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #f0f0f0;
-    }
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-    .info-row:last-child {
-        border-bottom: none;
-    }
-    .info-row .label {
-        color: #888;
-        font-size: 0.85rem;
-    }
-    .info-row .value {
-        color: #333;
-        font-weight: 500;
-        font-size: 0.85rem;
-    }
-    .card {
-        border-radius: 16px;
-        border: 1px solid #f0f0f0;
-        overflow: hidden;
-    }
-    .card-header {
-        background: #fff;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid #f0f0f0;
-    }
-    .card-title {
-        font-weight: 600;
-        color: #333;
-        font-size: 0.95rem;
-    }
+    .al-toast.show { opacity:1; transform:translateY(0); }
+    .al-toast.err { border-left-color:#dc2626; }
+    .al-toast i { color:#16a34a; }
+    .al-toast.err i { color:#dc2626; }
 </style>
 @endpush
 
 @section('content')
+@php
+    $roleKey     = $log->user->role ?? 'client';
+    $status      = $log->status ?? 'success';
+    $roleText    = $log->role_label ?? ucfirst($log->user->role ?? 'Client');
+    $actionColor = $log->action_color ?? '#6b7280';
+    $userName    = $log->user->name ?? 'System';
+    $fmt = fn ($v) => is_string($v) ? $v : json_encode($v, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-{{-- Back Button --}}
-<div class="mb-4">
-    <a href="{{ url('/admin/audit-logs') }}" class="btn-back">
+    $copyData = [
+        'id'          => $log->id,
+        'action'      => $log->action,
+        'user'        => $userName,
+        'role'        => $log->user->role ?? 'N/A',
+        'status'      => $status,
+        'module'      => $log->module ?? 'N/A',
+        'description' => $log->description ?? 'No description',
+        'timestamp'   => $log->created_at->format('d M Y, h:i:s A'),
+        'ip_address'  => $log->ip_address ?? 'N/A',
+        'old_values'  => $log->old_values ?? [],
+        'new_values'  => $log->new_values ?? [],
+    ];
+@endphp
+
+<div class="al-page">
+
+    <a href="{{ route('admin.audit-logs.index') }}" class="al-back">
         <i class="fas fa-arrow-left"></i> Back to Audit Logs
     </a>
-</div>
 
-<div class="row g-4">
-    {{-- Main Details --}}
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span class="card-title">
-                    <i class="fas fa-info-circle me-2" style="color:#E91E8C;"></i>Log Details
-                </span>
-                <span class="badge-action" style="background:{{ $log->action_color ?? '#6b7280' }}20;color:{{ $log->action_color ?? '#6b7280' }};">
-                    {{ ucfirst($log->action) }}
-                </span>
+    <div class="al-layout">
+
+        {{-- MAIN DETAILS --}}
+        <div class="al-card">
+            <div class="al-card-head">
+                <span class="t"><i class="fas fa-info-circle"></i> Log Details</span>
+                <span class="al-action" style="background:{{ $actionColor }}20;color:{{ $actionColor }};">{{ ucfirst($log->action) }}</span>
             </div>
-            <div style="padding:1.5rem;">
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="detail-label"><i class="fas fa-user me-1"></i>User</div>
-                        <div class="detail-value d-flex align-items-center gap-3">
-                            <img src="{{ $log->user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($log->user->name ?? 'System').'&background=E91E8C&color=fff' }}"
-                                 class="user-avatar-large">
+
+            <div class="al-card-body">
+                <div class="al-grid">
+
+                    <div class="al-full">
+                        <div class="al-lbl"><i class="fas fa-user"></i> User</div>
+                        <div class="al-userbox">
+                            <img class="al-avatar-lg"
+                                 src="{{ $log->user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($userName).'&background=FF6B9D&color=fff' }}"
+                                 onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($userName) }}&background=FF6B9D&color=fff';"
+                                 alt="">
                             <div>
-                                <div style="font-weight:600;font-size:1rem;">{{ $log->user->name ?? 'System' }}</div>
-                                <span class="role-badge role-{{ $log->user->role ?? 'client' }}">
-                                    {{ $log->role_label ?? ucfirst($log->user->role ?? 'Client') }}
-                                </span>
-                                <div style="color:#aaa;font-size:0.8rem;">{{ $log->user->email ?? '' }}</div>
+                                <div class="al-uname">{{ $userName }}</div>
+                                <span class="al-role al-role-{{ $roleKey }}">{{ $roleText }}</span>
+                                @if(!empty($log->user->email))
+                                    <div class="al-uemail">{{ $log->user->email }}</div>
+                                @endif
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="detail-label"><i class="fas fa-tag me-1"></i>Module</div>
-                        <div class="detail-value">{{ $log->module ?? '—' }}</div>
+
+                    <div>
+                        <div class="al-lbl"><i class="fas fa-tag"></i> Module</div>
+                        <div class="al-val">{{ $log->module ?? '—' }}</div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="detail-label"><i class="fas fa-circle me-1"></i>Status</div>
-                        <div class="detail-value">
-                            <span class="badge-status-{{ $log->status ?? 'success' }}">
-                                {{ ucfirst($log->status ?? 'Success') }}
-                            </span>
-                        </div>
+
+                    <div>
+                        <div class="al-lbl"><i class="fas fa-circle"></i> Status</div>
+                        <div class="al-val"><span class="al-st al-st-{{ $status }}">{{ ucfirst($status) }}</span></div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="detail-label"><i class="fas fa-clock me-1"></i>Timestamp</div>
-                        <div class="detail-value">{{ $log->created_at->format('d M Y, h:i:s A') }}</div>
+
+                    <div>
+                        <div class="al-lbl"><i class="fas fa-clock"></i> Timestamp</div>
+                        <div class="al-val">{{ $log->created_at->format('d M Y, h:i:s A') }}</div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="detail-label"><i class="fas fa-calendar me-1"></i>Time Ago</div>
-                        <div class="detail-value">{{ $log->created_at->diffForHumans() }}</div>
+
+                    <div>
+                        <div class="al-lbl"><i class="fas fa-calendar"></i> Time Ago</div>
+                        <div class="al-val">{{ $log->created_at->diffForHumans() }}</div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="detail-label"><i class="fas fa-network-wired me-1"></i>IP Address</div>
-                        <div class="detail-value" style="font-family:monospace;">{{ $log->ip_address ?? 'N/A' }}</div>
+
+                    <div class="al-full">
+                        <div class="al-lbl"><i class="fas fa-network-wired"></i> IP Address</div>
+                        <div class="al-val al-mono">{{ $log->ip_address ?? 'N/A' }}</div>
                     </div>
-                    <div class="col-12">
-                        <div class="detail-label"><i class="fas fa-align-left me-1"></i>Description</div>
-                        <div class="detail-value" style="background:#f8f9fa;padding:12px 16px;border-radius:10px;">
-                            {{ $log->description ?? 'No description available' }}
-                        </div>
+
+                    <div class="al-full">
+                        <div class="al-lbl"><i class="fas fa-align-left"></i> Description</div>
+                        <div class="al-desc">{{ $log->description ?? 'No description available' }}</div>
                     </div>
                 </div>
 
-                {{-- Data Changes --}}
+                {{-- Data changes --}}
                 @if(!empty($log->old_values) || !empty($log->new_values))
-                <hr style="margin:1.5rem 0;">
-                <div class="row g-4">
-                    @if(!empty($log->old_values))
-                    <div class="col-md-6">
-                        <div class="detail-label" style="color:#ef4444;"><i class="fas fa-arrow-left me-1"></i>Old Values</div>
-                        <div class="detail-card old-data">
-                            <pre style="color:#dc2626;">{{ json_encode($log->old_values, JSON_PRETTY_PRINT) }}</pre>
-                        </div>
+                    <hr class="al-divider">
+                    <div class="al-grid">
+                        @if(!empty($log->old_values))
+                            <div>
+                                <div class="al-lbl" style="color:#ef4444;"><i class="fas fa-arrow-left" style="color:#ef4444;"></i> Old Values</div>
+                                <div class="al-code al-code-old"><pre>{{ $fmt($log->old_values) }}</pre></div>
+                            </div>
+                        @endif
+                        @if(!empty($log->new_values))
+                            <div>
+                                <div class="al-lbl" style="color:#22c55e;"><i class="fas fa-arrow-right" style="color:#22c55e;"></i> New Values</div>
+                                <div class="al-code al-code-new"><pre>{{ $fmt($log->new_values) }}</pre></div>
+                            </div>
+                        @endif
                     </div>
-                    @endif
-                    @if(!empty($log->new_values))
-                    <div class="col-md-6">
-                        <div class="detail-label" style="color:#22c55e;"><i class="fas fa-arrow-right me-1"></i>New Values</div>
-                        <div class="detail-card new-data">
-                            <pre style="color:#16a34a;">{{ json_encode($log->new_values, JSON_PRETTY_PRINT) }}</pre>
-                        </div>
-                    </div>
-                    @endif
-                </div>
                 @endif
 
-                {{-- User Agent --}}
+                {{-- User agent --}}
                 @if($log->user_agent)
-                <hr style="margin:1.5rem 0;">
-                <div class="detail-label"><i class="fas fa-desktop me-1"></i>User Agent</div>
-                <div class="detail-value" style="font-size:0.8rem;color:#888;word-break:break-all;background:#f8f9fa;padding:10px 14px;border-radius:8px;">
-                    {{ $log->user_agent }}
-                </div>
+                    <hr class="al-divider">
+                    <div class="al-lbl"><i class="fas fa-desktop"></i> User Agent</div>
+                    <div class="al-agent">{{ $log->user_agent }}</div>
                 @endif
             </div>
         </div>
-    </div>
 
-    {{-- Sidebar --}}
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">
-                    <i class="fas fa-bolt me-2" style="color:#E91E8C;"></i>Quick Actions
-                </span>
+        {{-- SIDEBAR --}}
+        <div class="al-side">
+            <div class="al-card">
+                <div class="al-card-head">
+                    <span class="t"><i class="fas fa-bolt"></i> Quick Actions</span>
+                </div>
+                <div class="al-card-body">
+                    <button type="button" class="al-copy" onclick="copyLogDetails()">
+                        <i class="fas fa-copy"></i> Copy Log Details
+                    </button>
+                </div>
             </div>
-            <div style="padding:1.5rem;">
-                <button class="btn-outline-pink" onclick="copyLogDetails()">
-                    <i class="fas fa-copy me-2"></i> Copy Log Details
-                </button>
+
+            <div class="al-card">
+                <div class="al-card-head">
+                    <span class="t"><i class="fas fa-info-circle"></i> Log Info</span>
+                </div>
+                <div class="al-card-body" style="padding-top:.6rem;padding-bottom:.6rem;">
+                    <div class="al-info-row"><span class="k">Log ID</span><span class="v">#{{ $log->id }}</span></div>
+                    <div class="al-info-row"><span class="k">Action</span><span class="v">{{ ucfirst($log->action) }}</span></div>
+                    <div class="al-info-row"><span class="k">User</span><span class="v">{{ $userName }}</span></div>
+                    <div class="al-info-row"><span class="k">Role</span><span class="v">{{ $roleText }}</span></div>
+                    <div class="al-info-row"><span class="k">Status</span><span class="v"><span class="al-st al-st-{{ $status }}" style="font-size:.7rem;padding:3px 12px;">{{ ucfirst($status) }}</span></span></div>
+                    <div class="al-info-row"><span class="k">Time Ago</span><span class="v">{{ $log->created_at->diffForHumans() }}</span></div>
+                </div>
             </div>
         </div>
 
-        <div class="card mt-4">
-            <div class="card-header">
-                <span class="card-title">
-                    <i class="fas fa-info-circle me-2" style="color:#E91E8C;"></i>Log Info
-                </span>
-            </div>
-            <div style="padding:1.25rem;">
-                <div class="info-row">
-                    <span class="label">Log ID</span>
-                    <span class="value">#{{ $log->id }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Action</span>
-                    <span class="value">{{ ucfirst($log->action) }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">User</span>
-                    <span class="value">{{ $log->user->name ?? 'System' }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Role</span>
-                    <span class="value">{{ $log->role_label ?? ucfirst($log->user->role ?? 'Client') }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Status</span>
-                    <span class="value">
-                        <span class="badge-status-{{ $log->status ?? 'success' }}" style="font-size:0.7rem;">
-                            {{ ucfirst($log->status ?? 'Success') }}
-                        </span>
-                    </span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Time Ago</span>
-                    <span class="value">{{ $log->created_at->diffForHumans() }}</span>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
-<script>
-    function copyLogDetails() {
-        const data = {
-            id: {{ $log->id }},
-            action: '{{ $log->action }}',
-            user: '{{ $log->user->name ?? 'System' }}',
-            role: '{{ $log->user->role ?? 'N/A' }}',
-            status: '{{ $log->status ?? 'Success' }}',
-            module: '{{ $log->module ?? 'N/A' }}',
-            description: '{{ $log->description ?? 'No description' }}',
-            timestamp: '{{ $log->created_at->format('d M Y, h:i:s A') }}',
-            ip_address: '{{ $log->ip_address ?? 'N/A' }}',
-            old_values: {!! json_encode($log->old_values ?? []) !!},
-            new_values: {!! json_encode($log->new_values ?? []) !!}
-        };
+<div class="al-toast" id="alToast"><i class="fas fa-check-circle"></i><span id="alToastText"></span></div>
+@endsection
 
-        navigator.clipboard.writeText(JSON.stringify(data, null, 2))
-            .then(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Copied!',
-                    text: 'Log details copied to clipboard',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            })
-            .catch(() => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed',
-                    text: 'Could not copy to clipboard',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            });
+@push('scripts')
+<script>
+    const logData = @json($copyData);
+
+    function alToast(message, isError) {
+        const box  = document.getElementById('alToast');
+        const icon = box.querySelector('i');
+        document.getElementById('alToastText').textContent = message;
+        box.classList.toggle('err', !!isError);
+        icon.className = isError ? 'fas fa-times-circle' : 'fas fa-check-circle';
+        box.classList.add('show');
+        setTimeout(() => box.classList.remove('show'), 2200);
+    }
+
+    function copyLogDetails() {
+        const text = JSON.stringify(logData, null, 2);
+        const ok   = () => alToast('Log details copied to clipboard', false);
+        const fail = () => alToast('Could not copy to clipboard', true);
+
+        function fallbackCopy() {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy') ? ok() : fail(); } catch (e) { fail(); }
+            document.body.removeChild(ta);
+        }
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(ok).catch(fallbackCopy);
+        } else {
+            fallbackCopy();
+        }
     }
 </script>
-
-@endsection
+@endpush

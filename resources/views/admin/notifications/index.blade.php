@@ -70,7 +70,12 @@
 .notif-row.unread { background:#fdf5fa; }
 .notif-row.unread:hover { background:#fbeaf3; }
 
-.notif-icon {
+/* Text area takes all free space, so the action buttons stay at the far right end.
+   (Bootstrap's flex-grow-1 doesn't work here because the layout doesn't load Bootstrap.) */
+.notif-body { flex:1; min-width:0; }
+
+/* Renamed from .notif-icon so it no longer clashes with the topbar bell in layouts/admin.blade.php */
+.notif-row-icon {
     width:46px; height:46px; border-radius:14px; flex-shrink:0;
     display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:#fff;
     box-shadow:0 4px 10px rgba(0,0,0,.12);
@@ -196,8 +201,8 @@
             elseif ($notif->type === \App\Notifications\CustomNotification::class && empty($notif->data['action_url'])) { $iconClass='ic-broadcast'; $icon='fa-bullhorn'; }
         @endphp
         <div class="notif-row {{ !$notif->read_at ? 'unread' : '' }}" onclick="window.location='{{ route('admin.notifications.show', $notif->id) }}'">
-            <div class="notif-icon {{ $iconClass }}"><i class="fas {{ $icon }}"></i></div>
-            <div class="flex-grow-1">
+            <div class="notif-row-icon {{ $iconClass }}"><i class="fas {{ $icon }}"></i></div>
+            <div class="notif-body">
                 <div class="notif-title {{ !$notif->read_at ? 'unread-title' : '' }}">
                     {{ $title }}
                     <span class="notif-type-badge">{{ class_basename($notif->type) }}</span>
