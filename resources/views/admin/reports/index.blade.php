@@ -83,8 +83,8 @@
 
 <div class="pg-hdr">
     <div>
-        <h1><i class="fas fa-chart-line" style="color:var(--pk);margin-right:.5rem;"></i>Reports &amp; Analytics</h1>
-        <p>Generate, filter, preview and export professional analytical business reports instantly.</p>
+        <h1><i class="fas fa-chart-line" style="color:var(--pk);margin-right:.5rem;"></i>Reports</h1>
+        <p>Generate, filter, preview and export professional business reports instantly.</p>
     </div>
 </div>
 

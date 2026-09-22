@@ -3,8 +3,8 @@
  
 @section('content')
  
-{{-- Guard: agar controller kabhi $settings pass na kare to bhi page crash
-     nahi hoga, sab fields apni default value dikha dengi. --}}
+{{-- Guard: if the controller ever fails to pass $settings, the page still won't
+     crash — every field will fall back to its default value. --}}
 @php
     $settings = $settings ?? [];
     $__acctUser = auth()->user();
@@ -80,7 +80,7 @@
     @media (max-width:576px){ .s-card-body { padding: 1.2rem; } }
  
     /* ================= FORM FIELDS ================= */
-    /* Label ab field se clearly separate hai — extra breathing room */
+    /* Label is now clearly separated from field — extra breathing room */
     .settings-label {
         display: block; color: var(--ink-mid); font-weight: 700; font-size: .74rem;
         text-transform: uppercase; letter-spacing: .5px;
@@ -160,7 +160,7 @@
     .account-hero .a-email { color: var(--ink-lt); font-size: .75rem; margin-top: 2px; }
  
     /* ================= GENERAL SETTINGS — own grid, not Bootstrap row/col ================= */
-    /* Isse label/field/button ka gap admin layout ke Bootstrap se conflict nahi karta */
+    /* This keeps the label/field/button gap from conflicting with the admin layout's Bootstrap */
     .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -180,7 +180,7 @@
     <span class="h-icon"><i class="fas fa-cog"></i></span>
     <div>
         <h4>System Settings</h4>
-        <p>Platform configuration aur preferences yahan manage karein</p>
+        <p>Manage platform configuration and preferences here</p>
     </div>
 </div>
  
@@ -201,8 +201,8 @@
 @if(!$__acctUser)
 <div class="alert alert-danger mb-4">
     <i class="fas fa-exclamation-triangle me-2"></i>
-    Aapki login session nahi mil rahi. Account details save karne se pehle please
-    <a href="{{ route('login') }}">dobara login</a> karein.
+    We couldn't find your login session. Please
+    <a href="{{ route('login') }}">log in again</a> before saving account details.
 </div>
 @endif
  
@@ -214,7 +214,7 @@
             <span class="sc-icon icon-globe"><i class="fas fa-globe"></i></span>
             <div class="sc-text">
                 <div class="sc-title">General Settings</div>
-                <div class="sc-desc">Site ki basic details jo publicly dikhengi</div>
+                <div class="sc-desc">Basic site details that will be publicly visible</div>
             </div>
         </div>
         <div class="s-card-body">
@@ -260,7 +260,7 @@
             <div class="s-card-footer">
                 <div class="ft-text">
                     <div class="ft-title"><i class="fas fa-broom me-1" style="color:var(--pk);"></i>Application Cache</div>
-                    <div class="ft-desc">Purana cached data clear karein taake latest changes reflect hon.</div>
+                    <div class="ft-desc">Clear old cached data so the latest changes take effect.</div>
                 </div>
                 <form action="{{ route('admin.system-settings.clear-cache') }}" method="POST" onsubmit="return confirm('Clear application cache?')">
                     @csrf
@@ -276,7 +276,7 @@
             <span class="sc-icon icon-user"><i class="fas fa-user-shield"></i></span>
             <div class="sc-text">
                 <div class="sc-title">Account Details</div>
-                <div class="sc-desc">Apna naam aur email update karein</div>
+                <div class="sc-desc">Update your name and email</div>
             </div>
         </div>
         <div class="s-card-body">
@@ -316,7 +316,7 @@
             <span class="sc-icon icon-lock"><i class="fas fa-lock"></i></span>
             <div class="sc-text">
                 <div class="sc-title">Change Password</div>
-                <div class="sc-desc">Account security update karein</div>
+                <div class="sc-desc">Update your account security</div>
             </div>
         </div>
         <div class="s-card-body">

@@ -295,19 +295,18 @@
     $currentStatus = request('status');
     $hasFilters = request()->filled('search') || request()->filled('status') || request()->filled('date_from') || request()->filled('date_to');
 @endphp
- 
-{{-- ============ PAGE HEADER ============ --}}
+
 <div class="page-header">
     <div>
         <h4>
             <span class="title-icon"><i class="fas fa-envelope"></i></span>
             Contact Messages
         </h4>
-        <p>Customers ke inquiries aur messages yahan manage karein</p>
+        <p>Manage customer inquiries and messages here.</p>
     </div>
 </div>
  
-{{-- ============ STAT CARDS ============ --}}
+
 <div class="stats-row">
     <a href="{{ route('admin.contact-messages.index') }}" class="stat-card total {{ !$currentStatus ? 'active' : '' }}">
         <span class="s-icon"><i class="fas fa-inbox"></i></span>
