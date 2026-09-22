@@ -61,6 +61,17 @@
             flex-direction: column;
             overflow-y: auto;
             z-index: 200;
+
+            /* Scroll still works, the bar itself is just hidden (Firefox) */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        /* Scrollbar hidden (Chrome, Edge, Safari) */
+        .admin-sidebar::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
         }
         
         .sidebar-header {
@@ -69,10 +80,11 @@
         }
         
         .sidebar-header h1 {
-            font-size: 1.6rem;
+            font-size: 1.32rem;
             font-weight: 800;
             color: #fff;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
+            white-space: nowrap;
         }
         
         .sidebar-header p {
@@ -606,15 +618,6 @@
                 </div>
                 <div class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
                     <a href="{{ route('admin.notifications.index') }}"><i class="fas fa-bell"></i> Notifications</a>
-                </div>
-                <div class="nav-item {{ request()->routeIs('admin.audit-logs.*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.audit-logs.index') }}"><i class="fas fa-history"></i> Audit Logs</a>
-                </div>
-                <div class="nav-item {{ request()->routeIs('admin.faqs.*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.faqs.index') }}"><i class="fas fa-question-circle"></i> FAQs</a>
-                </div>
-                <div class="nav-item {{ request()->routeIs('admin.hero-sliders.*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.hero-sliders.index') }}"><i class="fas fa-images"></i> Hero Sliders</a>
                 </div>
                 <div class="nav-item {{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}">
                     <a href="{{ route('admin.contact-messages.index') }}"><i class="fas fa-envelope"></i> Contact Messages</a>
