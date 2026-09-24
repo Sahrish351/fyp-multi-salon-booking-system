@@ -1,15 +1,13 @@
-
 @extends('layouts.client')
 @section('title', 'My Payments — Beauty Blush Salons')
-
+ 
 @push('styles')
 <style>
-    /* Global Font */
+   
     .dashboard-font {
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
     }
-
-    /* ── Stat Cards (Dashboard Match) ── */
+ 
     .stat-card-owner {
         background: #ffffff;
         border: 1px solid #fce4ec;
@@ -60,12 +58,12 @@
         color: #222222;
         line-height: 1;
     }
-
+ 
     .bg-icon-purple { background: linear-gradient(135deg, #8A97E0, #6C7BD1); }
     .bg-icon-teal   { background: linear-gradient(135deg, #4FBE99, #3A9B7A); }
     .bg-icon-orange { background: linear-gradient(135deg, #FF9A54, #E67E36); }
     .bg-icon-red    { background: linear-gradient(135deg, #FF6B6B, #E54B4B); }
-
+ 
     /* ── Sleek Filter Tab Switcher ── */
     .filter-tab-container {
         background: #f8f9fa;
@@ -94,7 +92,7 @@
         color: #FF6B9D;
         background: rgba(255, 107, 157, 0.08);
     }
-
+ 
     /* ── Table & Badges ── */
     .pay-status-chip {
         display: inline-flex; align-items: center; gap: 5px;
@@ -104,7 +102,7 @@
     .pay-status-chip.paid      { background: rgba(34,197,94,0.1);  color: #16a34a; }
     .pay-status-chip.pending   { background: rgba(255,193,7,0.12); color: #b45309; }
     .pay-status-chip.cancelled { background: rgba(239,68,68,0.1);  color: #dc2626; }
-
+ 
     .pay-table {
         width: 100%;
         border-collapse: collapse;
@@ -129,15 +127,37 @@
         vertical-align: middle;
     }
     .pay-table tr:last-child td { border-bottom: none; }
+ 
+    /* Actions column: Resubmit button View ke NEECHE aata hai */
+    .pay-actions-cell { white-space: nowrap; }
+    .pay-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+ 
     .pay-view-btn {
         display: inline-flex; align-items: center; gap: 6px;
         padding: 6px 14px; border-radius: 8px;
         font-size: 0.78rem; font-weight: 600;
         background: #fff0f7; color: #FF6B9D; border: 1px solid #fce4ec;
         text-decoration: none; transition: all 0.2s;
+        white-space: nowrap;
     }
     .pay-view-btn:hover { background: #FF6B9D; color: #fff; }
-
+ 
+    /* Rejected payment ke liye "Resubmit" button */
+    .pay-resubmit-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 8px;
+        font-size: 0.78rem; font-weight: 700;
+        background: #FF6B9D; color: #fff; border: 1px solid #FF6B9D;
+        text-decoration: none; transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .pay-resubmit-btn:hover { background: #e85588; color: #fff; }
+ 
     /* ── Custom Pink Pagination (Appointments Style) ── */
     .custom-pink-pagination-wrap {
         display: flex;
@@ -184,16 +204,16 @@
     }
 </style>
 @endpush
-
+ 
 @section('content')
-
+ 
 <div class="mb-3">
     <h4 class="fw-bold mb-1 dashboard-font" style="color:#333;">
         <i class="fas fa-credit-card me-2" style="color:#FF6B9D;"></i>My Payments
     </h4>
     <p style="color:#aaa;font-size:0.85rem;margin:0;">Track all your appointment payments and their status</p>
 </div>
-
+ 
 {{-- Top Summary Cards (Dashboard Grid Style) --}}
 <div class="row g-3 mb-3">
     <div class="col-12 col-sm-6 col-lg-3">
@@ -235,23 +255,23 @@
                 <i class="fas fa-times-circle"></i>
             </div>
             <div class="card-content">
-                <div class="card-label">Cancelled</div>
+                <div class="card-label">Rejected</div>
                 <div class="card-value">{{ $counts['cancelled'] }}</div>
             </div>
         </div>
     </div>
 </div>
-
+ 
 {{-- Modern Segmented Filter Pills --}}
 <div class="mb-3">
     <div class="filter-tab-container">
         <a href="{{ route('client.payments.index') }}" class="filter-tab-btn {{ !request('status') ? 'active' : '' }}">All</a>
         <a href="{{ route('client.payments.index', ['status' => 'approved']) }}" class="filter-tab-btn {{ request('status') === 'approved' ? 'active' : '' }}">Paid</a>
         <a href="{{ route('client.payments.index', ['status' => 'pending']) }}" class="filter-tab-btn {{ request('status') === 'pending' ? 'active' : '' }}">Pending</a>
-        <a href="{{ route('client.payments.index', ['status' => 'rejected']) }}" class="filter-tab-btn {{ request('status') === 'rejected' ? 'active' : '' }}">Cancelled</a>
+        <a href="{{ route('client.payments.index', ['status' => 'rejected']) }}" class="filter-tab-btn {{ request('status') === 'rejected' ? 'active' : '' }}">Rejected</a>
     </div>
 </div>
-
+ 
 {{-- Payments Table --}}
 <div class="rounded-4 overflow-hidden" style="border:1px solid #fce4ec; background:#fff;">
     <div style="overflow-x:auto;">
@@ -272,9 +292,9 @@
                 @forelse($payments as $payment)
                 @php
                     $statusMap = [
-                        'approved' => ['label' => 'Paid',      'class' => 'paid'],
-                        'pending'  => ['label' => 'Pending',   'class' => 'pending'],
-                        'rejected' => ['label' => 'Cancelled', 'class' => 'cancelled'],
+                        'approved' => ['label' => 'Paid',     'class' => 'paid'],
+                        'pending'  => ['label' => 'Pending',  'class' => 'pending'],
+                        'rejected' => ['label' => 'Rejected', 'class' => 'cancelled'],
                     ];
                     $st = $statusMap[$payment->status] ?? ['label' => ucfirst($payment->status), 'class' => 'pending'];
                 @endphp
@@ -286,10 +306,17 @@
                     <td class="fw-semibold" style="color:#FF6B9D;">Rs. {{ number_format($payment->appointment->advance_amount) }}</td>
                     <td>{{ $payment->created_at->format('d M Y') }}</td>
                     <td><span class="pay-status-chip {{ $st['class'] }}">{{ $st['label'] }}</span></td>
-                    <td>
-                        <a href="{{ route('client.payments.show', $payment->id) }}" class="pay-view-btn">
-                            <i class="fas fa-eye"></i> View
-                        </a>
+                    <td class="pay-actions-cell">
+                        <div class="pay-actions">
+                            <a href="{{ route('client.payments.show', $payment->id) }}" class="pay-view-btn">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            @if($payment->canResubmit())
+                                <a href="{{ route('client.payments.show', $payment->id) }}#resubmitCard" class="pay-resubmit-btn">
+                                    <i class="fas fa-redo"></i> Resubmit
+                                </a>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty
@@ -307,7 +334,7 @@
         </table>
     </div>
 </div>
-
+ 
 {{-- Clean Pink Pagination Controls --}}
 @if($payments->hasPages())
 <div class="custom-pink-pagination-wrap">
@@ -318,7 +345,7 @@
         @else
             <li><a href="{{ $payments->previousPageUrl() }}" rel="prev">&lsaquo;</a></li>
         @endif
-
+ 
         {{-- Page Numbers --}}
         @foreach ($payments->getUrlRange(1, $payments->lastPage()) as $page => $url)
             @if ($page == $payments->currentPage())
@@ -327,7 +354,7 @@
                 <li><a href="{{ $url }}">{{ $page }}</a></li>
             @endif
         @endforeach
-
+ 
         {{-- Next Page Link --}}
         @if ($payments->hasMorePages())
             <li><a href="{{ $payments->nextPageUrl() }}" rel="next">&rsaquo;</a></li>
@@ -337,5 +364,6 @@
     </ul>
 </div>
 @endif
-
+ 
 @endsection
+ 

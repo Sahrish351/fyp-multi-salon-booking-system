@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 // Waitlist expire command — har minute chalta hai
 Schedule::command('waitlist:expire')->everyMinute();
+Schedule::command('appointments:expire-rejected')->everyFifteenMinutes();

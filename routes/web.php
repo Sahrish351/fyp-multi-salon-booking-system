@@ -444,6 +444,7 @@ Route::prefix('client')->name('client.')->middleware(['auth'])->group(function (
     Route::post('/payments', [ClientPaymentController::class, 'store'])->name('payments.store');
     Route::get('/payments/{payment}', [ClientPaymentController::class, 'show'])->name('payments.show');
     Route::get('/payments/{payment}/receipt', [ClientPaymentController::class, 'downloadReceipt'])->name('payments.receipt');
+    Route::post('/payments/{payment}/resubmit', [ClientPaymentController::class, 'resubmit'])->name('payments.resubmit');
 
     // Appointment Management & Reschedule Routes
     Route::get('/appointments', [AppointmentManageController::class, 'index'])->name('appointments.index');

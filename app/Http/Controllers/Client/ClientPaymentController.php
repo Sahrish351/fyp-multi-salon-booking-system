@@ -1,7 +1,7 @@
 <?php
-
+ 
 namespace App\Http\Controllers\Client;
-
+ 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\Appointment;
@@ -10,9 +10,10 @@ use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use App\Mail\OwnerNotificationEmail;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+ 
 class ClientPaymentController extends Controller
 {
     public function index(Request $request)
@@ -20,38 +21,38 @@ class ClientPaymentController extends Controller
         $baseQuery = Payment::whereHas('appointment', function ($q) {
             $q->where('client_id', Auth::id());
         });
-
+ 
         $counts = [
             'total'     => (clone $baseQuery)->count(),
             'paid'      => (clone $baseQuery)->where('status', 'approved')->count(),
             'pending'   => (clone $baseQuery)->where('status', 'pending')->count(),
             'cancelled' => (clone $baseQuery)->where('status', 'rejected')->count(),
         ];
-
+ 
         $query = (clone $baseQuery)
             ->with(['appointment.salon', 'appointment.service'])
             ->latest();
-
+ 
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
-
+ 
         $payments = $query->paginate(15)->withQueryString();
-
+ 
         return view('client.payments.index', compact('payments', 'counts'));
     }
-
+ 
     public function show(Payment $payment)
     {
         if ($payment->appointment->client_id !== Auth::id()) {
             abort(403);
         }
-
+ 
         $payment->load(['appointment.salon', 'appointment.service']);
-
+ 
         return view('client.payments.show', compact('payment'));
     }
-
+ 
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -61,9 +62,9 @@ class ClientPaymentController extends Controller
             'screenshot'     => 'nullable|image|max:2048',
             'sender_number'  => 'nullable|string',
         ]);
-
+ 
         $appointment = Appointment::where('client_id', Auth::id())->findOrFail($validated['appointment_id']);
-
+ 
         $payment = Payment::create([
             'appointment_id'  => $appointment->id,
             'client_id'       => Auth::id(),
@@ -74,16 +75,16 @@ class ClientPaymentController extends Controller
             'transaction_ref' => strtoupper($validated['method']) . '-' . strtoupper(uniqid()),
             'sender_number'   => $validated['sender_number'] ?? null,
         ]);
-
+ 
         if ($request->hasFile('screenshot')) {
             $path = $request->file('screenshot')->store('payments', 'public');
             $payment->update(['screenshot' => $path]);
         }
-
+ 
         try {
             $client = Auth::user();
             
-            // Dashboard Notification
+            
             NotificationHelper::send(
                 $appointment->salon_id,
                 'payment',
@@ -93,13 +94,13 @@ class ClientPaymentController extends Controller
                     'link'    => route('owner.payments.show', $payment->id),
                 ]
             );
-
-            // Fetch Salon with Owner Relationship explicitly
+ 
+        
             $salon = Salon::with('owner')->find($appointment->salon_id);
             
-            // Fallback sequence: Owner Email -> Salon Direct Email -> Mail Config
+           
             $ownerEmail = $salon->owner->email ?? $salon->email ?? config('mail.from.address');
-
+ 
             if ($ownerEmail) {
                 $emailSubject = "💰 New Payment Submitted: " . $payment->transaction_ref;
                 $emailBody = "Client <strong>{$client->name}</strong> ne payment submit ki hai.<br><br>" .
@@ -107,27 +108,101 @@ class ClientPaymentController extends Controller
                              "<strong>Payment Method:</strong> " . ucfirst($validated['method']) . "<br>" .
                              "<strong>Transaction Ref:</strong> {$payment->transaction_ref}<br>" .
                              "<strong>Booking Ref:</strong> {$appointment->booking_ref}";
-
+ 
                 Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
             }
-
+ 
         } catch (\Exception $e) {
             \Log::error('Payment notification/email error: ' . $e->getMessage());
         }
-
+ 
         return redirect()->route('client.payments.index')
             ->with('success', 'Payment submitted successfully! Waiting for approval.');
     }
-
+ 
+   
+    public function resubmit(Request $request, Payment $payment)
+    {
+        
+        if ($payment->appointment->client_id !== Auth::id()) {
+            abort(403);
+        }
+ 
+        
+        if (!$payment->canResubmit()) {
+            return redirect()->route('client.payments.show', $payment->id)
+                ->with('error', 'This payment can no longer be resubmitted.');
+        }
+ 
+        $validated = $request->validate([
+            'method'          => 'required|in:easypaisa,jazzcash,bank',
+            'transaction_ref' => 'required|string|max:100',
+            'sender_number'   => 'required|string|max:20',
+            'screenshot'      => 'required|image|max:5120',
+        ]);
+ 
+       
+        if ($payment->screenshot) {
+            Storage::disk('public')->delete($payment->screenshot);
+        }
+        $path = $request->file('screenshot')->store('payments', 'public');
+ 
+        $payment->update([
+            'method'           => $validated['method'],
+            'transaction_ref'  => $validated['transaction_ref'],
+            'sender_number'    => $validated['sender_number'],
+            'screenshot'       => $path,
+            'status'           => 'pending',
+            'rejection_reason' => null,
+        ]);
+ 
+        $appointment = $payment->appointment;
+ 
+       
+        try {
+            $client = Auth::user();
+ 
+            NotificationHelper::send(
+                $appointment->salon_id,
+                'payment',
+                [
+                    'title'   => '🔁 Payment Re-submitted',
+                    'message' => "{$client->name} has re-submitted the payment of PKR " . number_format($payment->amount) . " via " . ucfirst($validated['method']),
+                    'link'    => route('owner.payments.show', $payment->id),
+                ]
+            );
+ 
+            $salon = Salon::with('owner')->find($appointment->salon_id);
+            $ownerEmail = $salon->owner->email ?? $salon->email ?? config('mail.from.address');
+ 
+            if ($ownerEmail) {
+                $emailSubject = "🔁 Payment Re-submitted: " . $payment->transaction_ref;
+                $emailBody = "Client <strong>{$client->name}</strong> ne rejected payment dobara submit ki hai.<br><br>" .
+                             "<strong>Amount:</strong> PKR " . number_format($payment->amount) . "<br>" .
+                             "<strong>Payment Method:</strong> " . ucfirst($validated['method']) . "<br>" .
+                             "<strong>Transaction Ref:</strong> {$payment->transaction_ref}<br>" .
+                             "<strong>Booking Ref:</strong> {$appointment->booking_ref}";
+ 
+                Mail::to($ownerEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Payment resubmit notification/email error: ' . $e->getMessage());
+        }
+ 
+        return redirect()->route('client.payments.show', $payment->id)
+            ->with('success', 'Payment re-submitted successfully! Waiting for approval.');
+    }
+ 
     public function downloadReceipt(Payment $payment)
     {
         if ($payment->appointment->client_id !== Auth::id()) {
             abort(403);
         }
-
+ 
         $payment->load(['appointment.salon', 'appointment.service']);
-
+ 
         $pdf = Pdf::loadView('client.payments.receipt', compact('payment'));
         return $pdf->download('receipt-' . $payment->id . '.pdf');
     }
 }
+ 
