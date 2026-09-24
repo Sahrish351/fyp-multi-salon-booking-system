@@ -561,6 +561,7 @@
             }
         }
     </style>
+       @include('partials.favicon')
 </head>
 <body>
 <div class="admin-wrapper">

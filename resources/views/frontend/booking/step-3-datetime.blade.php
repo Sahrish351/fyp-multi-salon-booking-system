@@ -97,6 +97,7 @@
         }
         @media(max-width:992px) { .mobile-bar { display: block; } }
     </style>
+    @include('partials.favicon')
 </head>
 <body>
 

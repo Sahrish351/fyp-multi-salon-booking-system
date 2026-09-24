@@ -79,6 +79,7 @@
     }
     .btn-ghost:hover { background: #ebebeb; }
     </style>
+    @include('partials.favicon')
 </head>
 <body>
  

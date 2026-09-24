@@ -120,6 +120,7 @@
             border-radius: 10px;
         }
     </style>
+    @include('partials.favicon')
 </head>
 <body>
     <div class="d-flex align-items-start">

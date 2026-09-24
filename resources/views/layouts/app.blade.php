@@ -21,6 +21,7 @@
     
     @stack('styles')
     @yield('extra-css')
+    @include('partials.favicon')
 </head>
 <body>
 

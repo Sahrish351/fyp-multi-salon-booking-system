@@ -355,6 +355,7 @@
             .continue-btn { padding: 14px 24px; font-size: 0.92rem; }
         }
     </style>
+    @include('partials.favicon')
 </head>
 <body>
 

@@ -4,7 +4,7 @@
  
 @push('styles')
 <style>
-    /* ── Notification row (laptop: pehle jaisa, mobile: responsive) ── */
+    
     .notif-item {
         display: flex;
         align-items: flex-start;
@@ -20,8 +20,8 @@
     }
     .notif-body {
         flex: 1 1 0;
-        min-width: 0;                 /* lamba text container se bahar na jaye */
-        overflow-wrap: anywhere;      /* lambe words bhi toot kar wrap ho jayein */
+        min-width: 0;                 
+        overflow-wrap: anywhere;      
     }
     .notif-dot {
         width: 10px;
@@ -34,7 +34,7 @@
     /* ── Mobile ── */
     @media (max-width: 575.98px) {
         .notif-item {
-            flex-wrap: wrap;          /* View button neeche wali line mein aa jaye */
+            flex-wrap: wrap;          
             gap: 0.6rem 0.75rem;
             padding: 1rem;
         }
@@ -43,7 +43,7 @@
         .notif-dot.read { display: none; }
         .notif-action {
             flex: 0 0 100%;
-            padding-left: calc(38px + 0.75rem);  /* text ke barabar se shuru ho */
+            padding-left: calc(38px + 0.75rem);  
         }
     }
 </style>
@@ -70,16 +70,12 @@
     @endif
 </div>
  
-{{-- ============================================================ --}}
-{{-- Notifications List --}}
-{{-- ============================================================ --}}
+
 <div class="bg-white rounded-4 overflow-hidden" style="border:1px solid #fce4ec;">
     @forelse(Auth::user()->notifications as $notif)
     <div class="notif-item" style="{{ !$notif->read_at ? 'background:#fff8fb;' : '' }}">
         
-        {{-- ============================================================ --}}
-        {{-- Notification Icon - LIGHT PINK --}}
-        {{-- ============================================================ --}}
+        
         <div class="notif-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
             @if($notif->data['icon'] ?? false)
                 <i class="fas {{ $notif->data['icon'] }}" style="color:#FF6B9D;font-size:1rem;"></i>
@@ -88,9 +84,7 @@
             @endif
         </div>
         
-        {{-- ============================================================ --}}
-        {{-- Notification Content --}}
-        {{-- ============================================================ --}}
+       
         <div class="notif-body">
             {{-- Title --}}
             @if($notif->data['title'] ?? false)
@@ -115,18 +109,14 @@
             </div>
         </div>
         
-        {{-- ============================================================ --}}
-        {{-- Unread Indicator - Light Pink Dot --}}
-        {{-- ============================================================ --}}
+        
         @if(!$notif->read_at)
         <div class="notif-dot unread rounded-circle"></div>
         @else
         <div class="notif-dot read"></div>
         @endif
         
-        {{-- ============================================================ --}}
-        {{-- View Action Button (action_url ya link dono chalenge) --}}
-        {{-- ============================================================ --}}
+      
         @if(($notif->data['action_url'] ?? $notif->data['link'] ?? false))
         <div class="notif-action">
             <a href="{{ route('client.notifications.read', $notif->id) }}" class="btn btn-sm rounded-pill" style="background:#fff0f7;color:#FF6B9D;border:1px solid #FF6B9D;font-weight:600;padding:4px 16px;text-decoration:none;transition:all 0.3s;">
@@ -137,9 +127,7 @@
     </div>
     @empty
     
-    {{-- ============================================================ --}}
-    {{-- Empty State --}}
-    {{-- ============================================================ --}}
+    
     <div class="text-center py-5">
         <i class="fas fa-bell-slash fa-4x mb-3" style="color:rgba(255, 107, 157,0.2);"></i>
         <h5 style="color:#333;font-weight:600;">No notifications yet</h5>
@@ -150,9 +138,7 @@
     @endforelse
 </div>
  
-{{-- ============================================================ --}}
-{{-- Pagination (if using pagination) --}}
-{{-- ============================================================ --}}
+
 @if(method_exists(Auth::user()->notifications, 'links') && Auth::user()->notifications->hasPages())
 <div class="mt-4 d-flex justify-content-center">
     {{ Auth::user()->notifications->links() }}

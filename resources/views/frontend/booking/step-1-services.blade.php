@@ -162,6 +162,7 @@
             .left-panel h1 { font-size: 1.8rem; }
         }
     </style>
+    @include('partials.favicon')
 </head>
 <body>
 

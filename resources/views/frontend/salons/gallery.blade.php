@@ -339,6 +339,7 @@
             .counter { font-size: 0.7rem; padding: 4px 14px; }
         }
     </style>
+    @include('partials.favicon')
 </head>
 <body>
  

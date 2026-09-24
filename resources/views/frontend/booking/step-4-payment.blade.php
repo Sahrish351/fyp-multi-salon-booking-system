@@ -170,6 +170,7 @@
 
     .note { font-size: .72rem; color: #aaa; text-align: center; margin-top: 12px; line-height: 1.5; }
     </style>
+    @include('partials.favicon')
 </head>
 <body>
 
