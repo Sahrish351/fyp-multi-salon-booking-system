@@ -568,9 +568,9 @@
    
     <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-header">
-            <h1>Beauty Blush Salons</h1>
-            <p>ADMIN PANEL</p>
-        </div>
+    <h1>{{ \App\Models\Setting::get('site_name', 'Beauty Blush Salons') }}</h1>
+    <p>ADMIN PANEL</p>
+</div>
         
         <nav class="sidebar-nav">
             <div class="nav-group">

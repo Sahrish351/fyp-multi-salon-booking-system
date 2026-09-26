@@ -1,2 +1,4 @@
-*
-!.gitignore
+   *
+   !.gitignore
+   !salon-covers/
+   !salon-covers/**

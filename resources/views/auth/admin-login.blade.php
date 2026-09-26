@@ -1,9 +1,9 @@
 @extends('layouts.auth')
 @section('title', 'Admin Login — Beauty Blush Salons')
-
+ 
 @push('styles')
 <style>
-   
+ 
     .admin-login-page {
         min-height: 100vh;
         background: linear-gradient(160deg, #f8f0f5 0%, #fce4ec 30%, #f3e5f5 60%, #e8eaf6 100%);
@@ -15,7 +15,7 @@
         position: relative;
         overflow: hidden;
     }
-
+ 
     .admin-login-page::before {
         content: '';
         position: absolute;
@@ -27,7 +27,7 @@
         right: -150px;
         pointer-events: none;
     }
-
+ 
     .admin-login-page::after {
         content: '';
         position: absolute;
@@ -39,7 +39,7 @@
         left: -100px;
         pointer-events: none;
     }
-
+ 
     .login-card {
         background: rgba(255,255,255,0.92);
         backdrop-filter: blur(20px);
@@ -56,7 +56,7 @@
         position: relative;
         z-index: 1;
     }
-
+ 
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -67,13 +67,13 @@
             transform: translateY(0) scale(1);
         }
     }
-
+ 
     /* ── Header ── */
     .login-header {
         text-align: center;
         margin-bottom: 1.5rem;
     }
-
+ 
     .login-header .icon-wrapper {
         width: 65px;
         height: 65px;
@@ -86,7 +86,7 @@
         box-shadow: 0 8px 25px rgba(233,30,140,0.2);
         position: relative;
     }
-
+ 
     .login-header .icon-wrapper::after {
         content: '';
         position: absolute;
@@ -96,17 +96,17 @@
         z-index: -1;
         animation: pulseGlow 2s ease-in-out infinite;
     }
-
+ 
     @keyframes pulseGlow {
         0%, 100% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.08); opacity: 0.5; }
     }
-
+ 
     .login-header .icon-wrapper i {
         font-size: 1.6rem;
         color: white;
     }
-
+ 
     .login-header h3 {
         font-family: 'Playfair Display', serif;
         font-size: 1.4rem;
@@ -115,7 +115,7 @@
         margin-bottom: 0.1rem;
         letter-spacing: -0.3px;
     }
-
+ 
     .login-header p {
         color: #8e8e9a;
         font-size: 0.8rem;
@@ -123,7 +123,7 @@
         letter-spacing: 0.2px;
         margin: 0;
     }
-
+ 
     /* ── Alert ── */
     .alert-danger {
         background: rgba(233,30,140,0.05);
@@ -131,23 +131,25 @@
         border-radius: 12px;
         color: #c2185b;
         font-size: 0.78rem;
-        padding: 0.5rem 0.8rem;
+        padding: 0.6rem 0.9rem;
         margin-bottom: 1.2rem;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 0.6rem;
+        line-height: 1.5;
     }
-
+ 
     .alert-danger i {
         font-size: 1rem;
         color: #E91E8C;
+        margin-top: 0.15rem;
     }
-
+ 
     /* ── Form ── */
     .form-group {
         margin-bottom: 0.9rem;
     }
-
+ 
     .form-group label {
         font-weight: 600;
         color: #1a1a2e;
@@ -156,11 +158,11 @@
         font-size: 0.8rem;
         letter-spacing: 0.2px;
     }
-
+ 
     .input-wrapper {
         position: relative;
     }
-
+ 
     .input-wrapper i.input-icon {
         position: absolute;
         left: 0.9rem;
@@ -171,7 +173,7 @@
         transition: color 0.3s ease;
         z-index: 2;
     }
-
+ 
     .input-wrapper .form-control {
         width: 100%;
         padding: 0.7rem 1rem 0.7rem 2.6rem;
@@ -182,23 +184,23 @@
         background: rgba(255,255,255,0.8);
         color: #1a1a2e;
     }
-
+ 
     .input-wrapper .form-control:focus {
         border-color: #E91E8C;
         box-shadow: 0 0 0 3px rgba(233,30,140,0.06);
         outline: none;
         background: #ffffff;
     }
-
+ 
     .input-wrapper .form-control:focus ~ i.input-icon {
         color: #E91E8C;
     }
-
+ 
     .input-wrapper .form-control::placeholder {
         color: #b0b0b8;
         font-size: 0.8rem;
     }
-
+ 
     .password-toggle {
         position: absolute;
         right: 0.9rem;
@@ -213,12 +215,12 @@
         transition: all 0.3s ease;
         border-radius: 50%;
     }
-
+ 
     .password-toggle:hover {
         color: #E91E8C;
         background: rgba(233,30,140,0.05);
     }
-
+ 
     /* ── Checkbox ── */
     .checkbox-group {
         display: flex;
@@ -228,14 +230,14 @@
         gap: 0.5rem;
         flex-wrap: nowrap;
     }
-
+ 
     .checkbox-group .left {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         flex-shrink: 0;
     }
-
+ 
     .checkbox-group input[type="checkbox"] {
         width: 1rem;
         height: 1rem;
@@ -245,7 +247,7 @@
         transition: all 0.3s ease;
         flex-shrink: 0;
     }
-
+ 
     .checkbox-group label {
         color: #6c757d;
         font-size: 0.8rem;
@@ -254,7 +256,7 @@
         font-weight: 500;
         white-space: nowrap;
     }
-
+ 
     .forgot-link {
         color: #8e8e9a;
         text-decoration: none;
@@ -265,7 +267,7 @@
         white-space: nowrap;
         flex-shrink: 0;
     }
-
+ 
     .forgot-link::after {
         content: '';
         position: absolute;
@@ -276,15 +278,15 @@
         background: #E91E8C;
         transition: width 0.3s ease;
     }
-
+ 
     .forgot-link:hover {
         color: #E91E8C;
     }
-
+ 
     .forgot-link:hover::after {
         width: 100%;
     }
-
+ 
     /* ── Login Button ── */
     .btn-login {
         width: 100%;
@@ -304,20 +306,20 @@
         letter-spacing: 0.3px;
         box-shadow: 0 4px 15px rgba(233,30,140,0.15);
     }
-
+ 
     .btn-login:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(233,30,140,0.25);
     }
-
+ 
     .btn-login:active {
         transform: translateY(0);
     }
-
+ 
     .btn-login i {
         font-size: 0.9rem;
     }
-
+ 
     /* ── Back Link ── */
     .back-link {
         text-align: center;
@@ -325,7 +327,7 @@
         padding-top: 0.8rem;
         border-top: 1px solid rgba(0,0,0,0.04);
     }
-
+ 
     .back-link a {
         color: #8e8e9a;
         text-decoration: none;
@@ -337,7 +339,7 @@
         gap: 0.4rem;
         position: relative;
     }
-
+ 
     .back-link a::after {
         content: '';
         position: absolute;
@@ -348,17 +350,17 @@
         background: #E91E8C;
         transition: width 0.3s ease;
     }
-
+ 
     .back-link a:hover {
         color: #E91E8C;
     }
-
+ 
     .back-link a:hover::after {
         width: 100%;
     }
-
+ 
     /* ── Responsive ── */
-
+ 
     /* Tablet */
     @media (max-width: 992px) {
         .login-card {
@@ -366,65 +368,65 @@
             max-width: 400px;
         }
     }
-
+ 
     /* Mobile */
     @media (max-width: 768px) {
         .admin-login-page {
             padding: 1rem;
         }
-
+ 
         .login-card {
             padding: 2rem 1.5rem 1.4rem;
             border-radius: 28px;
             max-width: 100%;
         }
-
+ 
         .login-header .icon-wrapper {
             width: 65px;
             height: 65px;
         }
-
+ 
         .login-header .icon-wrapper i {
             font-size: 1.8rem;
         }
-
+ 
         .login-header h3 {
             font-size: 1.5rem;
         }
-
+ 
         .login-header p {
             font-size: 0.85rem;
         }
-
+ 
         .login-header {
             margin-bottom: 1.5rem;
         }
-
+ 
         .form-group {
             margin-bottom: 1rem;
         }
-
+ 
         .form-group label {
             font-size: 0.85rem;
         }
-
+ 
         .input-wrapper .form-control {
             padding: 0.85rem 1rem 0.85rem 2.8rem;
             font-size: 0.9rem;
             border-radius: 14px;
         }
-
+ 
         .input-wrapper i.input-icon {
             font-size: 0.95rem;
             left: 0.9rem;
         }
-
+ 
         .btn-login {
             padding: 0.85rem;
             font-size: 0.95rem;
             border-radius: 14px;
         }
-
+ 
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -432,36 +434,36 @@
             gap: 0.5rem;
             flex-wrap: nowrap;
         }
-
+ 
         .checkbox-group .left {
             flex-shrink: 0;
         }
-
+ 
         .checkbox-group label {
             font-size: 0.85rem;
             white-space: nowrap;
         }
-
+ 
         .checkbox-group input[type="checkbox"] {
             width: 1.1rem;
             height: 1.1rem;
         }
-
+ 
         .forgot-link {
             font-size: 0.85rem;
             flex-shrink: 0;
             white-space: nowrap;
         }
-
+ 
         .back-link a {
             font-size: 0.85rem;
         }
-
+ 
         .back-link {
             margin-top: 1.5rem;
             padding-top: 1rem;
         }
-
+ 
         .alert-danger {
             font-size: 0.85rem;
             padding: 0.7rem 0.9rem;
@@ -469,77 +471,77 @@
             margin-bottom: 1.5rem;
         }
     }
-
+ 
     /* Small Mobile */
     @media (max-width: 400px) {
         .login-card {
             padding: 1.5rem 1.2rem 1.2rem;
             border-radius: 24px;
         }
-
+ 
         .login-header .icon-wrapper {
             width: 55px;
             height: 55px;
         }
-
+ 
         .login-header .icon-wrapper i {
             font-size: 1.5rem;
         }
-
+ 
         .login-header h3 {
             font-size: 1.3rem;
         }
-
+ 
         .login-header p {
             font-size: 0.8rem;
         }
-
+ 
         .login-header {
             margin-bottom: 1.2rem;
         }
-
+ 
         .form-group {
             margin-bottom: 0.8rem;
         }
-
+ 
         .form-group label {
             font-size: 0.8rem;
         }
-
+ 
         .input-wrapper .form-control {
             padding: 0.75rem 0.9rem 0.75rem 2.4rem;
             font-size: 0.85rem;
             border-radius: 12px;
         }
-
+ 
         .input-wrapper i.input-icon {
             font-size: 0.85rem;
             left: 0.8rem;
         }
-
+ 
         .btn-login {
             padding: 0.75rem;
             font-size: 0.88rem;
             border-radius: 12px;
         }
-
+ 
         .checkbox-group label {
             font-size: 0.78rem;
         }
-
+ 
         .forgot-link {
             font-size: 0.78rem;
         }
-
+ 
         .back-link a {
             font-size: 0.78rem;
         }
-
+ 
         .back-link {
             margin-top: 1.2rem;
             padding-top: 0.8rem;
         }
-
+ 
         .alert-danger {
             font-size: 0.78rem;
             padding: 0.5rem 0.7rem;
@@ -548,7 +550,7 @@
     }
 </style>
 @endpush
-
+ 
 @section('content')
 <div class="admin-login-page">
     <div class="login-card">
@@ -559,24 +561,24 @@
             <h3>Admin Login</h3>
             <p>Secure platform access</p>
         </div>
-
-                @if(session('error'))
+ 
+        @if(session('error'))
             <div class="alert-danger">
                 <i class="fas fa-exclamation-circle"></i>
-                {{ session('error') }}
+                <span>{{ session('error') }}</span>
             </div>
         @endif
-
+ 
         @if ($errors->any())
             <div class="alert-danger">
                 <i class="fas fa-exclamation-circle"></i>
-                {{ $errors->first() }}
+                <span>{{ $errors->first() }}</span>
             </div>
         @endif
-
+ 
         <form action="{{ route('admin.login.submit') }}" method="POST">
             @csrf
-
+ 
             <div class="form-group">
                 <label>Admin Email</label>
                 <div class="input-wrapper">
@@ -584,7 +586,7 @@
                     <input type="email" name="email" class="form-control" placeholder="admin@glamora.com" required autofocus>
                 </div>
             </div>
-
+ 
             <div class="form-group">
                 <label>Password</label>
                 <div class="input-wrapper">
@@ -595,20 +597,20 @@
                     </button>
                 </div>
             </div>
-
+ 
             <div class="checkbox-group">
                 <div class="left">
                     <input type="checkbox" name="remember" id="remember">
                     <label for="remember">Remember me</label>
                 </div>
-                <a href="#" class="forgot-link">Forgot Password?</a>
+                <a href="{{ route('password.request') }}" class="forgot-link">Forgot Password?</a>
             </div>
-
+ 
             <button type="submit" class="btn-login">
                 <i class="fas fa-sign-in-alt"></i> Login as Admin
             </button>
         </form>
-
+ 
         <div class="back-link">
             <a href="{{ route('select.login') }}">
                 <i class="fas fa-arrow-left"></i> Back to login options
@@ -616,7 +618,7 @@
         </div>
     </div>
 </div>
-
+ 
 <script>
 function togglePassword() {
     const password = document.getElementById('password');
@@ -634,3 +636,4 @@ function togglePassword() {
 }
 </script>
 @endsection
+ 

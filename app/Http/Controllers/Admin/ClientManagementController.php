@@ -52,8 +52,18 @@ class ClientManagementController extends Controller
 
     public function toggleStatus(User $user)
     {
-        $user->update(['is_active' => !$user->is_active]);
-        $msg = $user->is_active ? 'Client activated.' : 'Client suspended.';
+        $newStatus = !$user->is_active;
+
+        $updateData = ['is_active' => $newStatus];
+
+        // ✅ Jab admin account ko activate kare, failed attempts counter bhi reset karo
+        if ($newStatus) {
+            $updateData['failed_login_attempts'] = 0;
+        }
+
+        $user->update($updateData);
+
+        $msg = $newStatus ? 'Client activated.' : 'Client suspended.';
         return back()->with('success', $msg);
     }
 

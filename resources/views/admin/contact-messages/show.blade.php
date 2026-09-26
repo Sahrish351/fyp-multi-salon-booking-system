@@ -1,7 +1,7 @@
 @extends('layouts.admin')
- 
+
 @section('title', 'Message Details — Beauty Blush Salons')
- 
+
 @push('styles')
 <style>
     :root {
@@ -16,7 +16,7 @@
         --paper: #fcfcfc;
         --blue: #2563a8;
     }
- 
+
     /* ================= TOP BAR ================= */
     .back-link {
         display: inline-flex; align-items: center; gap: 8px;
@@ -24,7 +24,7 @@
         font-size: .85rem; font-weight: 500; transition: all .2s;
     }
     .back-link:hover { color: var(--pk); transform: translateX(-3px); }
- 
+
     .msg-page-title {
         font-family: 'Playfair Display', serif;
         font-size: 1.5rem; font-weight: 700; color: var(--ink);
@@ -36,13 +36,13 @@
         color: #fff; display: inline-flex; align-items: center; justify-content: center;
         font-size: .95rem; box-shadow: 0 6px 16px rgba(255,107,157,.3);
     }
- 
+
     /* ================= MAIN CARD ================= */
     .detail-card {
         background: #fff; border-radius: 18px; border: 1px solid var(--line);
         overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.03);
     }
- 
+
     .msg-toolbar {
         padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--line);
         display: flex; align-items: flex-start; justify-content: space-between;
@@ -59,7 +59,7 @@
         font-size: .76rem; color: var(--ink-lt);
     }
     .msg-toolbar .sub-meta i { margin-right: 4px; }
- 
+
     /* Status badge */
     .status-badge {
         padding: 4px 13px; border-radius: 50px; font-size: .7rem; font-weight: 700;
@@ -72,7 +72,7 @@
     .status-badge.replied  { background: #eaf1fb; color: var(--blue); }
     .status-badge.spam     { background: #fef3c7; color: #d97706; }
     .status-badge.archived { background: #f3f4f6; color: #6b7280; }
- 
+
     /* Icon buttons */
     .icon-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .icon-actions form { margin: 0; display: inline-flex; }
@@ -87,13 +87,13 @@
         background: var(--pk-lt); border-color: var(--pk); color: var(--pk-dark);
         transform: translateY(-1px);
     }
- 
+
     /* ================= THREAD ================= */
     .detail-card .card-body { padding: 1.6rem; }
- 
+
     .thread-item { display: flex; gap: 14px; margin-bottom: 20px; }
     .thread-item.outgoing { flex-direction: row-reverse; }
- 
+
     .t-avatar {
         width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
         background: linear-gradient(135deg, var(--pk), var(--pk-dark));
@@ -104,16 +104,16 @@
         background: linear-gradient(135deg, #60a5fa, var(--blue));
         box-shadow: 0 3px 8px rgba(37,99,235,.2); font-size: .85rem;
     }
- 
+
     .t-content { flex: 1; min-width: 0; max-width: 92%; }
     .thread-item.outgoing .t-content { display: flex; flex-direction: column; align-items: flex-end; }
- 
+
     .t-head {
         display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;
     }
     .t-head .who { font-weight: 700; color: var(--ink); font-size: .88rem; }
     .t-head .when { color: var(--ink-lt); font-size: .72rem; }
- 
+
     .bubble {
         padding: 1rem 1.25rem; border-radius: 4px 16px 16px 16px;
         background: var(--paper); border: 1px solid var(--line);
@@ -125,7 +125,7 @@
         background: #f3f8fe; border: 1px solid #dbe8f8; border-right: 3px solid var(--blue);
         border-radius: 16px 4px 16px 16px;
     }
- 
+
     /* ================= REPLY FORM ================= */
     .reply-section {
         margin-top: 8px; padding: 1.3rem; border-radius: 16px;
@@ -138,7 +138,7 @@
         display: flex; align-items: center; gap: 8px;
     }
     .reply-label i { color: var(--pk); }
- 
+
     .quick-replies { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
     .chip {
         background: #fff; border: 1.5px solid var(--pk-lt); color: var(--ink-mid);
@@ -146,7 +146,7 @@
         cursor: pointer; transition: all .18s;
     }
     .chip:hover { background: var(--pk-lt); border-color: var(--pk); color: var(--pk-dark); }
- 
+
     .reply-textarea {
         border-radius: 12px; border: 1.5px solid var(--line);
         padding: 13px 16px; font-size: .88rem; width: 100%; resize: vertical;
@@ -159,12 +159,12 @@
     .reply-textarea.is-invalid { border-color: #ef4444; }
     .reply-textarea::placeholder { color: #bbb; }
     .field-error { color: #dc2626; font-size: .75rem; margin-top: 6px; }
- 
+
     .reply-actions {
         display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap;
     }
     .char-count { margin-left: auto; font-size: .72rem; color: var(--ink-lt); }
- 
+
     .btn-sm-pink {
         background: linear-gradient(135deg, var(--pk), var(--pk-dark)); color: #fff;
         border: none; border-radius: 10px; padding: 9px 20px; font-weight: 600;
@@ -172,7 +172,7 @@
         display: inline-flex; align-items: center; gap: 8px; text-decoration: none; width: auto;
     }
     .btn-sm-pink:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255,107,157,.35); color: #fff; }
- 
+
     .btn-sm-outline {
         background: #fff; color: var(--ink-mid); border: 1.5px solid var(--line);
         border-radius: 10px; padding: 9px 18px; font-weight: 600; font-size: .8rem;
@@ -180,7 +180,7 @@
         display: inline-flex; align-items: center; gap: 8px; text-decoration: none; width: auto;
     }
     .btn-sm-outline:hover { background: var(--pk-lt); border-color: var(--pk); color: var(--pk-dark); }
- 
+
     /* ================= SIDEBAR ================= */
     .sidebar-stack { display: flex; flex-direction: column; gap: 18px; }
     .sidebar-card {
@@ -194,7 +194,7 @@
     }
     .sidebar-card .side-head i { color: var(--pk); }
     .sidebar-card .side-body { padding: 1.1rem 1.3rem; }
- 
+
     /* Contact card */
     .contact-hero { text-align: center; padding: 1.4rem 1.3rem 1.2rem; }
     .contact-hero .big-avatar {
@@ -208,7 +208,7 @@
     .contact-hero .c-phone { color: var(--ink-lt); font-size: .78rem; margin-top: 5px; }
     .contact-hero .c-phone i { margin-right: 5px; color: var(--pk); }
     .contact-btns { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
- 
+
     .info-item {
         display: flex; justify-content: space-between; align-items: center;
         padding: 9px 0; border-bottom: 1px solid #f4f4f4; gap: 10px;
@@ -217,12 +217,32 @@
     .info-item:first-child { padding-top: 0; }
     .info-item .label { color: var(--ink-lt); font-size: .76rem; }
     .info-item .value { color: var(--ink); font-weight: 600; font-size: .82rem; text-align: right; }
- 
+
     .prio { padding: 2px 10px; border-radius: 50px; font-size: .7rem; font-weight: 700; }
     .prio.high   { background: #fdecec; color: #c0392b; }
     .prio.medium { background: #fdf3dc; color: #a3720e; }
     .prio.low    { background: #eaf7ee; color: #1e8449; }
- 
+
+    /* ================= SIDE-BY-SIDE ROW (Message Info + Quick Actions) ================= */
+    .sidebar-row {
+        display: flex;
+        gap: 14px;
+        align-items: stretch; /* dono cards ki height barabar rakhta hai */
+    }
+    .sidebar-row .sidebar-card {
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar-row .side-body {
+        flex: 1;
+    }
+
+    @media (max-width: 576px) {
+        .sidebar-row { flex-direction: column; }
+    }
+
     @media (max-width: 768px) {
         .msg-toolbar { flex-direction: column; }
         .detail-card .card-body { padding: 1.1rem; }
@@ -232,9 +252,9 @@
     }
 </style>
 @endpush
- 
+
 @section('content')
- 
+
 @php
     $status = $message->status;
     $statusMap = [
@@ -248,7 +268,7 @@
     $statusClass = array_key_exists($status, $statusMap) ? $status : 'read';
     $firstName = explode(' ', trim($message->name))[0];
 @endphp
- 
+
 <div class="mb-4">
     <a href="{{ route('admin.contact-messages.index') }}" class="back-link">
         <i class="fas fa-arrow-left"></i> Back to Messages
@@ -258,13 +278,12 @@
         Message Details
     </h4>
 </div>
- 
+
 <div class="row g-4">
- 
-    {{-- ================= MAIN ================= --}}
+
     <div class="col-lg-8">
         <div class="detail-card">
- 
+
             {{-- Toolbar --}}
             <div class="msg-toolbar">
                 <div class="left">
@@ -277,7 +296,7 @@
                         <span><i class="fas fa-clock"></i>{{ $message->created_at->diffForHumans() }}</span>
                     </div>
                 </div>
- 
+
                 <div class="icon-actions">
                     @if($status === 'read')
                     <form action="{{ route('admin.contact-messages.mark-unread', $message->id) }}" method="POST">
@@ -287,11 +306,11 @@
                         </button>
                     </form>
                     @endif
- 
+
                     <a href="mailto:{{ $message->email }}?subject={{ rawurlencode('Re: ' . $message->subject) }}" class="icon-btn" title="Open in Email">
                         <i class="fas fa-envelope"></i>
                     </a>
- 
+
                     <form action="{{ route('admin.contact-messages.destroy', $message->id) }}" method="POST"
                           onsubmit="return confirm('Delete this message?')">
                         @csrf
@@ -302,9 +321,9 @@
                     </form>
                 </div>
             </div>
- 
+
             <div class="card-body">
- 
+
                 {{-- Incoming message --}}
                 <div class="thread-item">
                     <div class="t-avatar">{{ strtoupper(substr($message->name, 0, 1)) }}</div>
@@ -316,7 +335,7 @@
                         <p class="bubble">{{ $message->message }}</p>
                     </div>
                 </div>
- 
+
                 {{-- Existing reply --}}
                 @if($message->reply)
                 <div class="thread-item outgoing">
@@ -332,124 +351,125 @@
                     </div>
                 </div>
                 @endif
- 
+
                 {{-- Reply form --}}
                 <div class="reply-section" id="reply">
                     <div class="reply-label">
                         <i class="fas fa-reply"></i>
                         {{ $message->reply ? 'Send Another Reply' : 'Reply to ' . $firstName }}
                     </div>
- 
+
                     <div class="quick-replies">
                         <button type="button" class="chip" data-reply="Hi {{ $firstName }}, thank you for contacting Beauty Blush Salons! We have received your message and will get back to you shortly.">Thank you</button>
                         <button type="button" class="chip" data-reply="Hi {{ $firstName }}, thanks for reaching out. Could you please share a few more details so we can assist you better?">Need more info</button>
                         <button type="button" class="chip" data-reply="Hi {{ $firstName }}, you can book your appointment directly from our website by choosing your preferred salon, service, and time slot. Let us know if you need any help!">Booking help</button>
                     </div>
- 
+
                     <form action="{{ route('admin.contact-messages.reply', $message->id) }}" method="POST">
                         @csrf
                         <textarea name="reply" id="replyBox" maxlength="2000"
                                   class="reply-textarea @error('reply') is-invalid @enderror"
-                                  rows="5" placeholder="Apna reply yahan likhein...">{{ old('reply') }}</textarea>
+                                  rows="5" placeholder="Type your reply here...">{{ old('reply') }}</textarea>
                         @error('reply')
                         <div class="field-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
                         @enderror
- 
+
                         <div class="reply-actions">
                             <button type="submit" class="btn-sm-pink">
                                 <i class="fas fa-paper-plane"></i> Send Reply
                             </button>
-                            <a href="mailto:{{ $message->email }}?subject={{ rawurlencode('Re: ' . $message->subject) }}" class="btn-sm-outline" target="_blank">
-                                <i class="fas fa-envelope"></i> Email Client
-                            </a>
                             <span class="char-count"><span id="charNow">0</span> / 2000</span>
                         </div>
                     </form>
                 </div>
- 
+
             </div>
         </div>
     </div>
- 
-    {{-- ================= SIDEBAR ================= --}}
+
     <div class="col-lg-4">
-        <div class="sidebar-stack">
- 
-            {{-- Contact --}}
-            <div class="sidebar-card">
-                <div class="contact-hero">
-                    <div class="big-avatar">{{ strtoupper(substr($message->name, 0, 1)) }}</div>
-                    <div class="c-name">{{ $message->name }}</div>
-                    <div class="c-email">{{ $message->email }}</div>
-                    @if($message->phone)
-                    <div class="c-phone"><i class="fas fa-phone"></i>{{ $message->phone }}</div>
-                    @endif
-                    <div class="contact-btns">
-                        <a href="mailto:{{ $message->email }}" class="icon-btn" title="Email"><i class="fas fa-envelope"></i></a>
-                        @if($message->phone)
-                        <a href="tel:{{ preg_replace('/[^\d+]/', '', $message->phone) }}" class="icon-btn" title="Call"><i class="fas fa-phone"></i></a>
+        <div class="sidebar-stack" style="margin-top: 18px;">
+
+            {{-- Message Info + Quick Actions side by side --}}
+            <div class="sidebar-row">
+
+                {{-- Info --}}
+                <div class="sidebar-card">
+                    <div class="side-head"><i class="fas fa-info-circle"></i> Message Info</div>
+                    <div class="side-body">
+                        <div class="info-item">
+                            <span class="label">ID</span>
+                            <span class="value">#{{ $message->id }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Status</span>
+                            <span class="value">
+                                <span class="status-badge {{ $statusClass }}">{{ $statusInfo['label'] }}</span>
+                            </span>
+                        </div>
+                        @if($message->priority)
+                        <div class="info-item">
+                            <span class="label">Priority</span>
+                            <span class="value">
+                                <span class="prio {{ in_array($message->priority, ['high','medium']) ? $message->priority : 'low' }}">
+                                    {{ ucfirst($message->priority) }}
+                                </span>
+                            </span>
+                        </div>
+                        @endif
+                        <div class="info-item">
+                            <span class="label">Received</span>
+                            <span class="value">{{ $message->created_at->format('d M Y') }}</span>
+                        </div>
+                        @if($message->replied_at)
+                        <div class="info-item">
+                            <span class="label">Replied</span>
+                            <span class="value">{{ $message->replied_at->format('d M Y') }}</span>
+                        </div>
+                        @endif
+                        @if($message->ip_address)
+                        <div class="info-item">
+                            <span class="label">IP Address</span>
+                            <span class="value">{{ $message->ip_address }}</span>
+                        </div>
                         @endif
                     </div>
                 </div>
-            </div>
- 
-            {{-- Info --}}
-            <div class="sidebar-card">
-                <div class="side-head"><i class="fas fa-info-circle"></i> Message Info</div>
-                <div class="side-body">
-                    <div class="info-item">
-                        <span class="label">ID</span>
-                        <span class="value">#{{ $message->id }}</span>
+
+                {{-- Quick Actions --}}
+                <div class="sidebar-card">
+                    <div class="side-head"><i class="fas fa-user-check"></i> Find Account</div>
+                    <div class="side-body">
+                        <p style="font-size: .78rem; color: var(--ink-lt); margin: 0 0 12px;">
+                            If this ticket is about an account unblock, search this email ({{ $message->email }}) in Clients or Owners:
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <a href="{{ route('admin.clients.index', ['search' => $message->email]) }}" class="btn-sm-outline" style="justify-content: center;">
+                                <i class="fas fa-user"></i> Find in Clients
+                            </a>
+                            <a href="{{ route('admin.owners.index', ['search' => $message->email]) }}" class="btn-sm-outline" style="justify-content: center;">
+                                <i class="fas fa-store"></i> Find in Owners
+                            </a>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <span class="label">Status</span>
-                        <span class="value">
-                            <span class="status-badge {{ $statusClass }}">{{ $statusInfo['label'] }}</span>
-                        </span>
-                    </div>
-                    @if($message->priority)
-                    <div class="info-item">
-                        <span class="label">Priority</span>
-                        <span class="value">
-                            <span class="prio {{ in_array($message->priority, ['high','medium']) ? $message->priority : 'low' }}">
-                                {{ ucfirst($message->priority) }}
-                            </span>
-                        </span>
-                    </div>
-                    @endif
-                    <div class="info-item">
-                        <span class="label">Received</span>
-                        <span class="value">{{ $message->created_at->format('d M Y') }}</span>
-                    </div>
-                    @if($message->replied_at)
-                    <div class="info-item">
-                        <span class="label">Replied</span>
-                        <span class="value">{{ $message->replied_at->format('d M Y') }}</span>
-                    </div>
-                    @endif
-                    @if($message->ip_address)
-                    <div class="info-item">
-                        <span class="label">IP Address</span>
-                        <span class="value">{{ $message->ip_address }}</span>
-                    </div>
-                    @endif
                 </div>
+
             </div>
- 
+
         </div>
     </div>
 </div>
- 
+
 <script>
     (function () {
         var box = document.getElementById('replyBox');
         var counter = document.getElementById('charNow');
         if (!box) return;
- 
+
         function updateCount() { counter.textContent = box.value.length; }
         box.addEventListener('input', updateCount);
         updateCount();
- 
+
         document.querySelectorAll('.chip[data-reply]').forEach(function (chip) {
             chip.addEventListener('click', function () {
                 box.value = chip.getAttribute('data-reply');
@@ -459,5 +479,5 @@
         });
     })();
 </script>
- 
+
 @endsection

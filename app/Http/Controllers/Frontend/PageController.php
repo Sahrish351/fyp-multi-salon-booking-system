@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Salon;
 use App\Models\User;
 use App\Models\Appointment;
+use App\Models\ContactMessage;
+use App\Mail\AdminNewSupportTicketMail;
+use App\Helpers\NotificationHelper;
+use Illuminate\Support\Facades\Mail;
 
 class PageController extends Controller
 {
@@ -55,7 +59,6 @@ class PageController extends Controller
         return view('frontend.pages.support');
     }
 
-    // ✅ YEH METHOD ADD KARO
     public function supportSubmit(Request $request)
     {
         $request->validate([
@@ -65,6 +68,36 @@ class PageController extends Controller
             'category' => 'required|string|max:100',
             'message' => 'required|string|min:10|max:1000',
         ]);
+
+        // ✅ Support ticket ko contact_messages table mein save karo
+        $ticket = ContactMessage::create([
+            'name'       => $request->name,
+            'email'      => $request->email,
+            'phone'      => $request->phone,
+            'subject'    => 'Support Ticket: ' . $request->category,
+            'message'    => $request->message,
+            'priority'   => 'high',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        // ✅ Har admin ko email + in-app notification bhejo
+        $admins = User::where('role', 'admin')->get();
+
+        foreach ($admins as $admin) {
+            Mail::to($admin->email)->send(new AdminNewSupportTicketMail($ticket));
+
+            NotificationHelper::sendToUser(
+                $admin->id,
+                0,
+                'new_support_ticket',
+                [
+                    'title' => 'New Support Ticket',
+                    'message' => $ticket->name . ': ' . $request->category,
+                    'link' => route('admin.contact-messages.show', $ticket->id),
+                ]
+            );
+        }
 
         return redirect()->back()->with('success', 'Your ticket has been submitted successfully! We will get back to you within 24 hours.');
     }
