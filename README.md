@@ -3,7 +3,7 @@
 # Beauty Blush Salons
 
 A salon booking platform where many salons run on one system.
-Final-year project by Sahrish.
+Final-year project by Sahrish and Mah Noor.
 
 </div>
 
