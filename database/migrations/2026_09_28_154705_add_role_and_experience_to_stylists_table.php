@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('stylists', function (Blueprint $table) {
+            if (!Schema::hasColumn('stylists', 'role')) {
+                $table->string('role')->nullable()->after('name');
+            }
+            if (!Schema::hasColumn('stylists', 'experience_years')) {
+                $table->unsignedInteger('experience_years')->default(0)->after('bio');
+            }
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('stylists', function (Blueprint $table) {
+            if (Schema::hasColumn('stylists', 'role')) {
+                $table->dropColumn('role');
+            }
+            if (Schema::hasColumn('stylists', 'experience_years')) {
+                $table->dropColumn('experience_years');
+            }
+        });
+    }
+};

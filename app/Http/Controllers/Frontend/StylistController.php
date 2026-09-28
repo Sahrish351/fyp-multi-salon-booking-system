@@ -7,24 +7,21 @@ use App\Models\Salon;
 use App\Models\Stylist;
 use App\Models\Review;
 use App\Models\Appointment;
-use Illuminate\Http\Request;
 
 class StylistController extends Controller
 {
     public function profile($salonSlug, $stylistId)
     {
-        // Get salon
         $salon = Salon::where('slug', $salonSlug)
             ->where('status', 'approved')
             ->firstOrFail();
 
-        // Get stylist
         $stylist = Stylist::where('id', $stylistId)
             ->where('salon_id', $salon->id)
             ->where('is_active', true)
             ->firstOrFail();
 
-        // Reviews
+        // Reviews (sirf approved)
         $reviewsCount = Review::where('stylist_id', $stylist->id)
             ->where('is_approved', true)
             ->count();
@@ -35,20 +32,20 @@ class StylistController extends Controller
 
         $recentReviews = Review::where('stylist_id', $stylist->id)
             ->where('is_approved', true)
-            ->with('client')
+            ->with(['client', 'user'])
             ->latest()
             ->take(5)
             ->get();
 
-        // Total appointments
         $totalAppointments = Appointment::where('stylist_id', $stylist->id)
             ->whereIn('status', ['confirmed', 'completed'])
             ->count();
 
-        // ✅ FIX: Yeh line sahi hai (salon->services)
-        $services = $salon->services()->where('is_active', true)->take(10)->get();
+        $services = $stylist->services()
+            ->where('services.is_active', true)
+            ->orderBy('services.name')
+            ->get();
 
-        // Similar stylists
         $similarStylists = Stylist::where('salon_id', $salon->id)
             ->where('id', '!=', $stylist->id)
             ->where('is_active', true)

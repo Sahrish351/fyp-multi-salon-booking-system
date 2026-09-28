@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
 use App\Helpers\NotificationHelper;
+use App\Mail\OwnerNotificationEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ComplaintController extends Controller
 {
@@ -77,7 +79,10 @@ class ComplaintController extends Controller
             'status'            => 'closed',
         ]);
 
+        // Client ko dashboard notification + email
         try {
+            $complaint->loadMissing(['client', 'salon']);
+
             NotificationHelper::sendToUser(
                 $complaint->client_id,
                 $complaint->salon_id,
@@ -88,8 +93,22 @@ class ComplaintController extends Controller
                     'link'    => route('client.complaints.show', $complaint->id),
                 ]
             );
+
+            $clientEmail = $complaint->client->email ?? null;
+
+            if ($clientEmail) {
+                $emailSubject = "Admin Response to Your Escalated Complaint: #" . $complaint->id;
+                $emailBody = "Hello " . $complaint->client->name . ",<br><br>" .
+                             "Our admin team has reviewed your escalated complaint and provided a response.<br><br>" .
+                             "<strong>Complaint:</strong> {$complaint->subject}<br>" .
+                             "<strong>Salon:</strong> " . ($complaint->salon->name ?? '-') . "<br>" .
+                             "<strong>Admin's Response:</strong><br>{$request->admin_response}<br><br>" .
+                             "This complaint has now been closed. Please log in to your dashboard for full details.";
+
+                Mail::to($clientEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            }
         } catch (\Exception $e) {
-            Log::warning('Admin complaint respond notification failed: ' . $e->getMessage());
+            Log::warning('Admin complaint respond notification/email failed: ' . $e->getMessage());
         }
 
         return redirect()->route('admin.complaints.show', $complaint->id)
@@ -104,7 +123,10 @@ class ComplaintController extends Controller
             'status'            => 'closed',
         ]);
 
+        // Client ko dashboard notification + email
         try {
+            $complaint->loadMissing(['client', 'salon']);
+
             NotificationHelper::sendToUser(
                 $complaint->client_id,
                 $complaint->salon_id,
@@ -115,8 +137,21 @@ class ComplaintController extends Controller
                     'link'    => route('client.complaints.show', $complaint->id),
                 ]
             );
+
+            $clientEmail = $complaint->client->email ?? null;
+
+            if ($clientEmail) {
+                $emailSubject = "Your Complaint Has Been Closed: #" . $complaint->id;
+                $emailBody = "Hello " . $complaint->client->name . ",<br><br>" .
+                             "Our admin team has reviewed your escalated complaint and closed it.<br><br>" .
+                             "<strong>Complaint:</strong> {$complaint->subject}<br>" .
+                             "<strong>Salon:</strong> " . ($complaint->salon->name ?? '-') . "<br><br>" .
+                             "If you have any further questions, please contact our support team.";
+
+                Mail::to($clientEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            }
         } catch (\Exception $e) {
-            Log::warning('Admin complaint close notification failed: ' . $e->getMessage());
+            Log::warning('Admin complaint close notification/email failed: ' . $e->getMessage());
         }
 
         return redirect()->route('admin.complaints.index')

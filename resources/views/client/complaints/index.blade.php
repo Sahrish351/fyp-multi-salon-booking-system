@@ -15,9 +15,7 @@
         --pk-muted: #9ca3af;
     }
 
-    /* ============================================ */
-    /* Page Header Styles */
-    /* ============================================ */
+    
     .page-header {
         display: flex;
         justify-content: space-between;
@@ -42,9 +40,7 @@
         margin: 0;
     }
 
-    /* ============================================ */
-    /* New Complaint Button - Dark Pink */
-    /* ============================================ */
+  
     .btn-new {
         background: var(--pk);
         color: #fff;
@@ -65,9 +61,7 @@
         color: #fff;
     }
 
-    /* ============================================ */
-    /* Status Tabs Styles */
-    /* ============================================ */
+   
     .status-tabs {
         display: flex;
         gap: 8px;
@@ -95,9 +89,7 @@
         color: var(--pk);
     }
 
-    /* ============================================ */
-    /* Complaint Card Styles */
-    /* ============================================ */
+   
     .complaint-card {
         background: #fff;
         border: 1px solid var(--pk-light);
@@ -120,10 +112,7 @@
         flex: 1;
     }
     
-    /* ============================================ */
-    /* Priority Icon Box - Dark Pink Circle */
-    /* Exactly like Show Page */
-    /* ============================================ */
+ 
     .complaint-card .icon-box {
         width: 48px;
         height: 48px;
@@ -192,10 +181,12 @@
         text-transform: capitalize;
         display: inline-block;
     }
-    .status-open { background: #fee2e2; color: #dc2626; }
-    .status-in_review { background: #fef3c7; color: #d97706; }
+    .status-pending { background: #fee2e2; color: #dc2626; }
+    .status-in_progress { background: #fef3c7; color: #d97706; }
     .status-resolved { background: #d1fae5; color: #059669; }
     .status-closed { background: #f3f4f6; color: #6b7280; }
+    .status-escalated { background: #fee2e2; color: #dc2626; }
+    .status-rejected { background: #f3f4f6; color: #6b7280; }
 
     .complaint-card .actions {
         display: flex;
@@ -266,9 +257,7 @@
         color: var(--pk);
     }
 
-    /* ============================================ */
-    /* Empty State Styles */
-    /* ============================================ */
+    
     .empty-state {
         text-align: center;
         padding: 4rem 2rem;
@@ -296,16 +285,12 @@
         font-size: 0.95rem;
     }
 
-    /* ============================================ */
-    /* Complaint Icon - Dark Pink */
-    /* ============================================ */
+   
     .complaint-icon {
         color: #FF6B9D;
     }
 
-    /* ============================================ */
-    /* Responsive Styles */
-    /* ============================================ */
+   
     @media (max-width: 768px) {
         .complaint-card {
             padding: 1rem;
@@ -332,9 +317,6 @@
 
 @section('content')
 
-{{-- ============================================ --}}
-{{-- Page Header --}}
-{{-- ============================================ --}}
 <div class="page-header">
     <div>
         <h4><i class="fas fa-exclamation-circle"></i>My Complaints</h4>
@@ -345,12 +327,18 @@
     </a>
 </div>
 
-{{-- ============================================ --}}
-{{-- Status Tabs --}}
-{{-- ============================================ --}}
+
 <div class="status-tabs">
     @php
-        $tabs = ['all' => 'All', 'open' => 'Open', 'in_review' => 'In Review', 'resolved' => 'Resolved', 'closed' => 'Closed'];
+        $tabs = [
+            'all' => 'All',
+            'pending' => 'Pending',
+            'in_progress' => 'In Progress',
+            'resolved' => 'Resolved',
+            'escalated' => 'Escalated',
+            'closed' => 'Closed',
+            'rejected' => 'Rejected',
+        ];
         $current = request('status', 'all');
     @endphp
     @foreach($tabs as $val => $lbl)
@@ -361,9 +349,7 @@
     @endforeach
 </div>
 
-{{-- ============================================ --}}
-{{-- Complaints List --}}
-{{-- ============================================ --}}
+
 <div class="row g-4">
     @forelse($complaints as $complaint)
     <div class="col-12">
@@ -371,9 +357,7 @@
 
             <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
 
-                {{-- ============================================ --}}
-                {{-- Left Side - Complaint Info --}}
-                {{-- ============================================ --}}
+                
                 <div class="card-left">
                     {{-- Priority Icon - Dark Pink Circle --}}
                     @php
@@ -396,19 +380,19 @@
                     </div>
                 </div>
 
-                {{-- ============================================ --}}
-                {{-- Right Side - Status & Actions --}}
-                {{-- ============================================ --}}
+                
                 <div class="right-section">
                     {{-- Status Badge --}}
                     @php
                         $statusLabels = [
-                            'open' => ['label' => 'Open', 'class' => 'status-open'],
-                            'in_review' => ['label' => 'In Review', 'class' => 'status-in_review'],
+                            'pending' => ['label' => 'Pending', 'class' => 'status-pending'],
+                            'in_progress' => ['label' => 'In Progress', 'class' => 'status-in_progress'],
                             'resolved' => ['label' => 'Resolved', 'class' => 'status-resolved'],
                             'closed' => ['label' => 'Closed', 'class' => 'status-closed'],
+                            'escalated' => ['label' => 'Escalated', 'class' => 'status-escalated'],
+                            'rejected' => ['label' => 'Rejected', 'class' => 'status-rejected'],
                         ];
-                        $st = $statusLabels[$complaint->status] ?? ['label' => ucfirst($complaint->status), 'class' => 'status-open'];
+                        $st = $statusLabels[$complaint->status] ?? ['label' => ucfirst($complaint->status), 'class' => 'status-pending'];
                     @endphp
                     <span class="status-badge {{ $st['class'] }}">{{ $st['label'] }}</span>
 
@@ -425,19 +409,19 @@
                             <i class="fas fa-eye"></i> View
                         </a>
 
-                        {{-- Edit Button - Only if status is 'open' --}}
-                        @if($complaint->status === 'open')
+                        {{-- Edit Button - Only if status is 'pending' --}}
+                        @if($complaint->status === 'pending')
                             <a href="{{ route('client.complaints.edit', $complaint->id) }}" class="btn-action edit">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
                         @else
-                            <span class="btn-action disabled" title="Cannot edit while in review or resolved">
+                            <span class="btn-action disabled" title="Cannot edit once the owner has started reviewing this complaint">
                                 <i class="fas fa-edit"></i> Edit
                             </span>
                         @endif
 
-                        {{-- Delete Button - Only if status is 'open' --}}
-                        @if($complaint->status === 'open')
+                        {{-- Delete Button - Only if status is 'pending' --}}
+                        @if($complaint->status === 'pending')
                             <form action="{{ route('client.complaints.destroy', $complaint->id) }}" method="POST" style="display:inline;" 
                                   onsubmit="return confirm('Are you sure you want to withdraw this complaint? This cannot be undone.')">
                                 @csrf
@@ -447,7 +431,7 @@
                                 </button>
                             </form>
                         @else
-                            <span class="btn-action disabled" title="Cannot delete while in review or resolved">
+                            <span class="btn-action disabled" title="Cannot delete once the owner has started reviewing this complaint">
                                 <i class="fas fa-trash"></i> Delete
                             </span>
                         @endif
@@ -457,16 +441,12 @@
         </div>
     </div>
     @empty
-    {{-- ============================================ --}}
-    {{-- Empty State - No Complaints --}}
-    {{-- ============================================ --}}
+   
     <div class="col-12">
         <div class="empty-state">
-            {{-- Complaint Icon - Dark Pink --}}
             <i class="fas fa-exclamation-circle empty-icon"></i>
             <h5>No complaints filed</h5>
             <p>We hope everything has been perfect for you!</p>
-            {{-- Dark Pink Button --}}
             <a href="{{ route('client.complaints.create') }}" class="btn-new" style="display:inline-flex;">
                 <i class="fas fa-plus me-1"></i>File a Complaint
             </a>
@@ -475,9 +455,6 @@
     @endforelse
 </div>
 
-{{-- ============================================ --}}
-{{-- Pagination --}}
-{{-- ============================================ --}}
 @if($complaints->hasPages())
 <div class="mt-4 d-flex justify-content-center">
     {{ $complaints->links() }}

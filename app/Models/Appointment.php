@@ -25,7 +25,7 @@ class Appointment extends Model
  
     public function client() { return $this->belongsTo(User::class, 'client_id'); }
     public function salon() { return $this->belongsTo(Salon::class); }
-    public function stylist() { return $this->belongsTo(Stylist::class); }
+    public function stylist() { return $this->belongsTo(Stylist::class)->withTrashed(); }
     public function service() { return $this->belongsTo(Service::class); }
     public function timeSlot() { return $this->belongsTo(TimeSlot::class); }
     public function waitlist() { return $this->belongsTo(Waitlist::class); }

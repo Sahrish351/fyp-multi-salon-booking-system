@@ -15,11 +15,11 @@ class OwnerTimeSlotController extends Controller
 {
     private array $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-    // Helper method to resolve salon ID dynamic way se
+    // Logged-in owner ka salon ID nikalta hai
     private function getSalonId()
     {
         $user = auth()->user();
-        
+
         if (!empty($user->salon_id)) {
             return $user->salon_id;
         }
@@ -28,12 +28,12 @@ class OwnerTimeSlotController extends Controller
             return $user->salon->id;
         }
 
-        $salon = Salon::where('owner_id', $user->id)->first();
-        if ($salon) {
-            return $salon->id;
-        }
+        $salonId = Salon::where('owner_id', $user->id)->value('id');
 
-        return 1; // Fallback ID
+        // Salon na mile to Salon 1 par mat jao, access band karo
+        abort_if(!$salonId, 403, 'No salon linked to this account.');
+
+        return $salonId;
     }
 
     public function index(Request $request)
@@ -74,6 +74,8 @@ class OwnerTimeSlotController extends Controller
                 'endDate' => $endDate,
             ]);
 
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e; // 403 wagera ko dobara throw karo
         } catch (\Exception $e) {
             Log::error('TimeSlots Index Error: ' . $e->getMessage());
             return redirect()->back()
@@ -124,6 +126,11 @@ class OwnerTimeSlotController extends Controller
 
                 foreach ($weekDays as $dayName) {
                     $dayIndex = array_search($dayName, $this->days);
+
+                    if ($dayIndex === false) {
+                        continue; // ghalat din ka naam ignore karo
+                    }
+
                     $slotDate = $currentDate->copy()->addDays($dayIndex);
 
                     $time = $start->copy();
@@ -131,9 +138,10 @@ class OwnerTimeSlotController extends Controller
                         $startTime = $time->format('H:i:s');
                         $endTime = $time->copy()->addMinutes($interval)->format('H:i:s');
 
-                        $slot = TimeSlot::updateOrCreate(
+                        // firstOrCreate: purani slot (booked/locked) ko nahi chhedta
+                        $slot = TimeSlot::firstOrCreate(
                             [
-                                'stylist_id' => $request->stylist_id,
+                                'stylist_id' => $stylist->id,
                                 'slot_date' => $slotDate->format('Y-m-d'),
                                 'start_time' => $startTime,
                             ],
@@ -154,9 +162,11 @@ class OwnerTimeSlotController extends Controller
             }
 
             return redirect()
-                ->route('owner.time-slots.index', ['stylist' => $request->stylist_id])
+                ->route('owner.time-slots.index', ['stylist' => $stylist->id])
                 ->with('success', $createdCount . ' time slots generated successfully!');
 
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('TimeSlots Generate Error: ' . $e->getMessage());
             return redirect()->back()
@@ -169,8 +179,7 @@ class OwnerTimeSlotController extends Controller
         try {
             $salonId = $this->getSalonId();
 
-            $slot = TimeSlot::where('salon_id', $salonId)
-                ->find($timeSlot);
+            $slot = TimeSlot::where('salon_id', $salonId)->find($timeSlot);
 
             if (!$slot) {
                 if ($request->wantsJson()) {
@@ -179,20 +188,32 @@ class OwnerTimeSlotController extends Controller
                 return back()->with('error', 'Slot not found.');
             }
 
-            $newStatus = $slot->status === 'available' ? 'locked' : 'available';
-            $slot->status = $newStatus;
+            // Booked slot ko owner change nahi kar sakta
+            if (!in_array($slot->status, ['available', 'locked'])) {
+                $msg = 'This slot is ' . $slot->status . ' and cannot be changed.';
+                if ($request->wantsJson()) {
+                    return response()->json(['success' => false, 'message' => $msg], 422);
+                }
+                return back()->with('error', $msg);
+            }
+
+            $slot->status = $slot->status === 'available' ? 'locked' : 'available';
             $slot->save();
+
+            $msg = 'Slot ' . ($slot->status === 'available' ? 'activated' : 'locked') . ' successfully!';
 
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'status' => $slot->status,
-                    'message' => 'Slot ' . ($slot->status === 'available' ? 'activated' : 'locked') . ' successfully!'
+                    'message' => $msg,
                 ]);
             }
 
-            return back()->with('success', 'Slot ' . ($slot->status === 'available' ? 'activated' : 'locked') . ' successfully!');
+            return back()->with('success', $msg);
 
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('TimeSlots Toggle Error: ' . $e->getMessage());
             if ($request->wantsJson()) {

@@ -88,9 +88,7 @@
                 </div>
             </div>
 
-            {{-- ============================================ --}}
-            {{-- ✅ OWNER REPLY - YEH ADD KIYA HAI --}}
-            {{-- ============================================ --}}
+            
             @if($complaint->owner_reply)
                 <div class="d-flex gap-3 mb-4">
                     <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width:40px;height:40px;background:linear-gradient(135deg,#E85588,#E85588);font-size:0.8rem;">
@@ -130,22 +128,32 @@
             </div>
             @endforeach
 
-            {{-- Client Action Buttons --}}
-            @if($complaint->canClientAccept())
-                <div class="p-3 rounded-3 text-center" style="background:#f0fff4;border:1px solid #bbf7d0;">
-                    <p class="fw-bold mb-2" style="color:#16a34a;">Complaint has been resolved by the Owner.</p>
-                    <p class="text-muted small">Are you satisfied with the resolution?</p>
+            
+            @if(in_array($complaint->status, ['resolved', 'rejected']))
+                <div class="p-3 rounded-3 text-center" style="background:{{ $complaint->status === 'resolved' ? '#f0fff4' : '#fff7ed' }};border:1px solid {{ $complaint->status === 'resolved' ? '#bbf7d0' : '#fed7aa' }};">
+
+                    @if($complaint->status === 'resolved')
+                        <p class="fw-bold mb-2" style="color:#16a34a;">Complaint has been resolved by the Owner.</p>
+                        <p class="text-muted small">Are you satisfied with the resolution?</p>
+                    @else
+                        <p class="fw-bold mb-2" style="color:#c2410c;">Complaint has been rejected by the Owner.</p>
+                        @if($complaint->rejection_reason)
+                            <p class="text-muted small mb-2">Reason: {{ $complaint->rejection_reason }}</p>
+                        @endif
+                        <p class="text-muted small">If you're satisfied with this decision, you can close the complaint. Otherwise, you can escalate it to admin.</p>
+                    @endif
+
                     <div class="d-flex justify-content-center gap-3">
                         <form action="{{ route('client.complaints.accept', $complaint->id) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;border-radius:50px;padding:8px 25px;font-weight:600;">
-                                <i class="fas fa-check me-2"></i> Yes, Accept
+                                <i class="fas fa-check me-2"></i> {{ $complaint->status === 'resolved' ? 'Yes, Accept' : 'Accept & Close' }}
                             </button>
                         </form>
                         <form action="{{ route('client.complaints.escalate', $complaint->id) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:50px;padding:8px 25px;font-weight:600;">
-                                <i class="fas fa-exclamation-triangle me-2"></i> No, Escalate
+                                <i class="fas fa-exclamation-triangle me-2"></i> Escalate to Admin
                             </button>
                         </form>
                     </div>
@@ -161,15 +169,6 @@
             @if($complaint->status == 'escalated')
                 <div class="p-3 rounded-3" style="background:#fef3c7;border:1px solid #fcd34d;">
                     <p class="text-warning fw-bold mb-0"><i class="fas fa-exclamation-triangle me-2"></i>This complaint has been <strong>Escalated</strong> to Admin.</p>
-                </div>
-            @endif
-
-            @if($complaint->status == 'rejected')
-                <div class="p-3 rounded-3" style="background:#fee2e2;border:1px solid #fca5a5;">
-                    <p class="text-danger fw-bold mb-0"><i class="fas fa-times-circle me-2"></i>This complaint has been <strong>Rejected</strong>.</p>
-                    @if($complaint->rejection_reason)
-                        <p class="text-muted small mt-1 mb-0">Reason: {{ $complaint->rejection_reason }}</p>
-                    @endif
                 </div>
             @endif
 

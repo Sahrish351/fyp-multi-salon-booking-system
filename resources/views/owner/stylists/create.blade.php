@@ -4,7 +4,7 @@
 
 @section('content')
 
-    {{-- ===== ERROR MESSAGES ===== --}}
+    
     @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -112,12 +112,9 @@
                             <label class="form-label-custom">Specialization</label>
                             <select name="specialization" class="form-select input-custom @error('specialization') is-invalid @enderror">
                                 <option value="">Select specialization</option>
-                                <option value="Hair Styling" {{ old('specialization') == 'Hair Styling' ? 'selected' : '' }}>Hair Styling</option>
-                                <option value="Barber" {{ old('specialization') == 'Barber' ? 'selected' : '' }}>Barber</option>
-                                <option value="Nail Care" {{ old('specialization') == 'Nail Care' ? 'selected' : '' }}>Nail Care</option>
-                                <option value="Facial" {{ old('specialization') == 'Facial' ? 'selected' : '' }}>Facial</option>
-                                <option value="Spa & Massage" {{ old('specialization') == 'Spa & Massage' ? 'selected' : '' }}>Spa & Massage</option>
-                                <option value="Makeup" {{ old('specialization') == 'Makeup' ? 'selected' : '' }}>Makeup</option>
+                                @foreach (['Hair Styling', 'Barber', 'Nail Care', 'Facial', 'Spa & Massage', 'Makeup', 'Bridal'] as $spec)
+                                    <option value="{{ $spec }}" {{ old('specialization') == $spec ? 'selected' : '' }}>{{ $spec }}</option>
+                                @endforeach
                             </select>
                             @error('specialization')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -142,6 +139,39 @@
                             @enderror
                         </div>
 
+                       
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label-custom mb-0">
+                                    Services offered
+                                    <span class="text-muted">(jo services ye team member karta hai)</span>
+                                </label>
+                                @if ($services->isNotEmpty())
+                                    <button type="button" class="select-all-link" id="toggleAllServices">Select all</button>
+                                @endif
+                            </div>
+
+                            @if ($services->isEmpty())
+                                <div class="services-empty">
+                                    Abhi is salon mein koi active service nahi hai. Pehle Services page se services add karo.
+                                </div>
+                            @else
+                                <div class="services-grid">
+                                    @foreach ($services as $service)
+                                        <label class="service-check">
+                                            <input type="checkbox" name="services[]" value="{{ $service->id }}"
+                                                   {{ in_array($service->id, old('services', [])) ? 'checked' : '' }}>
+                                            <span class="sc-name">{{ $service->name }}</span>
+                                            <span class="sc-price">Rs. {{ number_format($service->price) }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            @endif
+                            @error('services.*')
+                                <div class="text-danger mt-1" style="font-size:12px;">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                     </div>
 
                     <div class="d-flex gap-3 mt-4">
@@ -162,7 +192,7 @@
 
 @section('extra-css')
 <style>
-    /* ===== PAGE HEADER ===== */
+   
     .page-header h2 {
         font-size: 1.5rem;
         font-weight: 700;
@@ -174,7 +204,7 @@
         margin-bottom: 0;
     }
 
-    /* ===== BACK BUTTON ===== */
+   
     .btn-back {
         background: #fff;
         border: 1px solid #f0e8ed;
@@ -194,7 +224,7 @@
         color: #E85588;
     }
 
-    /* ===== ALERTS ===== */
+  
     .alert {
         border-radius: 12px;
         border: none;
@@ -209,7 +239,7 @@
         margin-bottom: 0;
     }
 
-    /* ===== PANEL CARD ===== */
+   
     .panel-card {
         background: #fff;
         border-radius: 16px;
@@ -229,7 +259,7 @@
         flex-shrink: 0;
     }
 
-    /* ===== STYLIST PHOTO ===== */
+  
     .stylist-photo-box {
         width: 150px;
         height: 150px;
@@ -253,7 +283,7 @@
         margin-bottom: 0;
     }
 
-    /* ===== CHANGE PHOTO BUTTON - PINK ===== */
+   
     .btn-change-logo {
         background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
         color: #ffffff !important;
@@ -274,7 +304,7 @@
         color: #ffffff !important;
     }
 
-    /* ===== FORM ===== */
+   
     .form-label-custom {
         display: block;
         font-size: 13.5px;
@@ -310,9 +340,64 @@
         margin-top: 4px;
     }
 
-    /* ============================================================
-       SAVE/ADD BUTTON - PINK
-       ============================================================ */
+    
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .service-check {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #fcf6f9;
+        border: 1px solid #f0e8ed;
+        border-radius: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        margin: 0;
+    }
+    .service-check:hover { border-color: #E85588; }
+    .service-check input {
+        accent-color: #E85588;
+        width: 17px;
+        height: 17px;
+        flex-shrink: 0;
+        cursor: pointer;
+    }
+    .service-check .sc-name {
+        flex: 1;
+        font-size: 14px;
+        font-weight: 600;
+        color: #2d1f2c;
+    }
+    .service-check .sc-price {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #D9A441;
+        white-space: nowrap;
+    }
+    .services-empty {
+        background: #fcf6f9;
+        border: 1px dashed #f0d8e0;
+        border-radius: 10px;
+        padding: 14px;
+        font-size: 13.5px;
+        color: #8a7a88;
+    }
+    .select-all-link {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #E85588;
+        cursor: pointer;
+    }
+    .select-all-link:hover { text-decoration: underline; }
+
+   
     .btn-save-changes {
         background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
         color: #ffffff !important;
@@ -332,9 +417,7 @@
         color: #ffffff !important;
     }
 
-    /* ============================================================
-       CANCEL BUTTON - PINK OUTLINE
-       ============================================================ */
+  
     .btn-cancel-modal {
         background: #fff;
         border: 1.5px solid #FF6B9D;
@@ -353,9 +436,7 @@
         border-color: #E85588;
     }
 
-    /* ============================================================
-       RESPONSIVE
-       ============================================================ */
+    
     @media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -381,6 +462,9 @@
         .panel-card {
             height: auto !important;
         }
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 @endsection
@@ -399,6 +483,17 @@
                 };
                 reader.readAsDataURL(this.files[0]);
             }
+        });
+    }
+
+   
+    const toggleAll = document.getElementById('toggleAllServices');
+    if (toggleAll) {
+        toggleAll.addEventListener('click', function () {
+            const boxes = document.querySelectorAll('input[name="services[]"]');
+            const allChecked = Array.from(boxes).every(b => b.checked);
+            boxes.forEach(b => b.checked = !allChecked);
+            this.textContent = allChecked ? 'Select all' : 'Clear all';
         });
     }
 </script>

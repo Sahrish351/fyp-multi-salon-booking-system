@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Complaint;
 use App\Models\Salon;
 use App\Helpers\NotificationHelper;
+use App\Mail\OwnerNotificationEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
 class OwnerComplaintController extends Controller
@@ -82,8 +84,10 @@ class OwnerComplaintController extends Controller
             'status' => 'in_progress',
         ]);
 
-        // ✅ Client ko notification
+        // Client ko dashboard notification + email
         try {
+            $complaint->loadMissing('client');
+
             NotificationHelper::sendToUser(
                 $complaint->client_id,
                 $salon->id,
@@ -94,8 +98,22 @@ class OwnerComplaintController extends Controller
                     'link' => route('client.complaints.show', $complaint->id),
                 ]
             );
+
+            $clientEmail = $complaint->client->email ?? null;
+
+            if ($clientEmail) {
+                $emailSubject = "Update on Your Complaint #" . $complaint->id;
+                $emailBody = "Hello " . $complaint->client->name . ",<br><br>" .
+                             "The salon owner has replied to your complaint.<br><br>" .
+                             "<strong>Complaint:</strong> {$complaint->subject}<br>" .
+                             "<strong>Salon:</strong> {$salon->name}<br>" .
+                             "<strong>Owner's Reply:</strong><br>{$request->owner_reply}<br><br>" .
+                             "Please log in to your dashboard to view the full conversation and next steps.";
+
+                Mail::to($clientEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            }
         } catch (\Exception $e) {
-            Log::warning('Complaint reply notification failed: ' . $e->getMessage());
+            Log::warning('Complaint reply notification/email failed: ' . $e->getMessage());
         }
 
         return redirect()->route('owner.complaints.show', $complaint->id)
@@ -132,8 +150,10 @@ class OwnerComplaintController extends Controller
 
         $complaint->update(['status' => 'resolved']);
 
-        // ✅ Client ko notification
+        // Client ko dashboard notification + email
         try {
+            $complaint->loadMissing('client');
+
             NotificationHelper::sendToUser(
                 $complaint->client_id,
                 $salon->id,
@@ -144,8 +164,22 @@ class OwnerComplaintController extends Controller
                     'link' => route('client.complaints.show', $complaint->id),
                 ]
             );
+
+            $clientEmail = $complaint->client->email ?? null;
+
+            if ($clientEmail) {
+                $emailSubject = "Your Complaint Has Been Resolved: #" . $complaint->id;
+                $emailBody = "Hello " . $complaint->client->name . ",<br><br>" .
+                             "The salon owner has marked your complaint as resolved.<br><br>" .
+                             "<strong>Complaint:</strong> {$complaint->subject}<br>" .
+                             "<strong>Salon:</strong> {$salon->name}<br><br>" .
+                             "Please log in to your account to review the resolution. You can either accept it and close the complaint, " .
+                             "or escalate it to our admin team if you are not satisfied.";
+
+                Mail::to($clientEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            }
         } catch (\Exception $e) {
-            Log::warning('Complaint resolve notification failed: ' . $e->getMessage());
+            Log::warning('Complaint resolve notification/email failed: ' . $e->getMessage());
         }
 
         return redirect()->route('owner.complaints.show', $complaint->id)
@@ -169,8 +203,10 @@ class OwnerComplaintController extends Controller
             'rejected_at' => now(),
         ]);
 
-        // ✅ Client ko notification
+        // Client ko dashboard notification + email
         try {
+            $complaint->loadMissing('client');
+
             NotificationHelper::sendToUser(
                 $complaint->client_id,
                 $salon->id,
@@ -181,8 +217,22 @@ class OwnerComplaintController extends Controller
                     'link' => route('client.complaints.show', $complaint->id),
                 ]
             );
+
+            $clientEmail = $complaint->client->email ?? null;
+
+            if ($clientEmail) {
+                $emailSubject = "Your Complaint Was Rejected: #" . $complaint->id;
+                $emailBody = "Hello " . $complaint->client->name . ",<br><br>" .
+                             "The salon owner has reviewed and rejected your complaint.<br><br>" .
+                             "<strong>Complaint:</strong> {$complaint->subject}<br>" .
+                             "<strong>Salon:</strong> {$salon->name}<br>" .
+                             "<strong>Reason:</strong> {$request->rejection_reason}<br><br>" .
+                             "If you believe this decision is incorrect, you can escalate this complaint to our admin team from your dashboard.";
+
+                Mail::to($clientEmail)->send(new OwnerNotificationEmail($emailSubject, $emailBody));
+            }
         } catch (\Exception $e) {
-            Log::warning('Complaint reject notification failed: ' . $e->getMessage());
+            Log::warning('Complaint reject notification/email failed: ' . $e->getMessage());
         }
 
         return redirect()->route('owner.complaints.show', $complaint->id)

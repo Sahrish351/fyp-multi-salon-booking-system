@@ -5,37 +5,46 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Models\Stylist;
 use App\Models\Salon;
+use App\Models\Service;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OwnerStylistController extends Controller
 {
-    // Common Helper Function: Logged-in Owner ka Salon ID nikalne ke liye
+    // Logged-in owner ka salon ID nikalta hai
     private function getSalonId()
     {
         $user = auth()->user();
-        
-        // Pehle check karein agar user par direct salon_id hai
+
         if (!empty($user->salon_id)) {
             return $user->salon_id;
         }
 
-        // Agar user relationship se salon juda hai
         if (method_exists($user, 'salon') && $user->salon) {
             return $user->salon->id;
         }
 
-        // Dropdown/Fallback: Owner ID se Salon table me search karein
-        $salon = Salon::where('owner_id', $user->id)->first();
-        if ($salon) {
-            return $salon->id;
-        }
+        $salonId = Salon::where('owner_id', $user->id)->value('id');
 
-        // Fallback to Salon 1 if nothing found
-        return 1;
+        // Salon na mile to Salon 1 par mat jao, access band karo
+        abort_if(!$salonId, 403, 'No salon linked to this account.');
+
+        return $salonId;
+    }
+
+    // Form mein dikhane ke liye is salon ki active services
+    private function salonServices($salonId)
+    {
+        return Service::where('salon_id', $salonId)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'price']);
     }
 
     public function index(Request $request)
@@ -62,13 +71,15 @@ class OwnerStylistController extends Controller
                         'rating' => $stylist->rating ?? 4.5,
                         'clients' => $clientsCount,
                         'revenue' => $revenue,
-                        'photo_url' => $stylist->photo ? asset('storage/' . $stylist->photo) : null,
-                        'status' => $stylist->status ?? 'Active',
+                        'photo_url' => $stylist->avatar ? asset('storage/' . $stylist->avatar) : null,
+                        'status' => $stylist->status ?? 'active',
                     ];
                 });
 
             return view('owner.stylists.index', compact('stylists'));
 
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Stylist Index Error: ' . $e->getMessage());
             return view('owner.stylists.index', ['stylists' => collect([])])
@@ -78,7 +89,11 @@ class OwnerStylistController extends Controller
 
     public function create()
     {
-        return view('owner.stylists.create');
+        $salonId = $this->getSalonId();
+
+        return view('owner.stylists.create', [
+            'services' => $this->salonServices($salonId),
+        ]);
     }
 
     public function store(Request $request)
@@ -89,13 +104,22 @@ class OwnerStylistController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'role' => 'nullable|string|max:255',
-                'email' => 'nullable|email|unique:stylists,email',
+                'email' => [
+                    'nullable', 'email',
+                    Rule::unique('stylists', 'email')->whereNull('deleted_at'),
+                ],
                 'phone' => 'nullable|string|max:20',
                 'specialization' => 'nullable|string',
                 'experience_years' => 'nullable|integer|min:0',
                 'bio' => 'nullable|string',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'status' => 'nullable|in:Active,Inactive,active,inactive',
+                'services' => 'nullable|array',
+                'services.*' => [
+                    Rule::exists('services', 'id')
+                        ->where('salon_id', $salonId)
+                        ->whereNull('deleted_at'),
+                ],
             ]);
 
             if ($validator->fails()) {
@@ -104,29 +128,36 @@ class OwnerStylistController extends Controller
                     ->withInput();
             }
 
-            $photoPath = null;
+            $avatarPath = null;
             if ($request->hasFile('photo')) {
-                $photoPath = $request->file('photo')->store('stylists', 'public');
+                $avatarPath = $request->file('photo')->store('stylists', 'public');
             }
 
-            Stylist::create([
+            $status = strtolower($request->status ?? 'active');
+
+            $stylist = Stylist::create([
                 'salon_id' => $salonId,
                 'name' => $request->name,
                 'role' => $request->role ?? 'Stylist',
-                'email' => $request->email ?? null,
-                'phone' => $request->phone ?? '',
+                'email' => $request->email,
+                'phone' => $request->phone,
                 'specializations' => $request->specialization ?? $request->role ?? 'Hair & Beauty',
-                'specialization' => $request->specialization ?? $request->role ?? 'Hair & Beauty',
                 'experience_years' => $request->experience_years ?? 0,
                 'bio' => $request->bio,
-                'photo' => $photoPath,
-                'status' => $request->status ?? 'active',
+                'avatar' => $avatarPath,
+                'status' => $status,
+                'is_active' => $status === 'active',
                 'rating' => 5.0,
             ]);
+
+            // Chuni hui services save karo
+            $stylist->services()->sync($request->input('services', []));
 
             return redirect()->route('owner.stylists.index')
                 ->with('success', 'Team member "' . $request->name . '" added successfully!');
 
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Stylist Store Error: ' . $e->getMessage());
             return redirect()->back()
@@ -166,7 +197,7 @@ class OwnerStylistController extends Controller
                     return [
                         'client' => $appt->client->name ?? 'N/A',
                         'service' => $appt->service->name ?? 'N/A',
-                        'date' => $appt->appointment_date ? date('M d, Y', strtotime($appt->appointment_date)) : 'N/A',
+                        'date' => $appt->appointment_date ? $appt->appointment_date->format('M d, Y') : 'N/A',
                         'status' => ucfirst($appt->status ?? 'pending'),
                     ];
                 });
@@ -178,11 +209,11 @@ class OwnerStylistController extends Controller
                 'rating' => $stylist->rating ?? 4.5,
                 'clients' => $clientsCount,
                 'revenue' => $revenue,
-                'photo_url' => $stylist->photo ? asset('storage/' . $stylist->photo) : null,
-                'status' => $stylist->status ?? 'Active',
+                'photo_url' => $stylist->avatar ? asset('storage/' . $stylist->avatar) : null,
+                'status' => $stylist->status ?? 'active',
                 'email' => $stylist->email,
                 'phone' => $stylist->phone,
-                'specialization' => $stylist->specialization ?? 'General',
+                'specialization' => $stylist->specializations ?? 'General',
                 'experience_years' => $stylist->experience_years ?? 0,
                 'bio' => $stylist->bio,
                 'total_appointments' => $appointmentsCount,
@@ -193,6 +224,8 @@ class OwnerStylistController extends Controller
                 'recentAppointments' => $recentAppointments,
             ]);
 
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Stylist Show Error: ' . $e->getMessage());
             return redirect()->route('owner.stylists.index')
@@ -215,18 +248,24 @@ class OwnerStylistController extends Controller
             $stylistData = [
                 'id' => $stylist->id,
                 'name' => $stylist->name,
-                'role' => $stylist->role ?? 'Stylist',
+                'role' => $stylist->role ?? '',
                 'email' => $stylist->email,
                 'phone' => $stylist->phone,
-                'specialization' => $stylist->specialization ?? '',
+                'specialization' => $stylist->specializations ?? '',
                 'experience_years' => $stylist->experience_years ?? 0,
                 'bio' => $stylist->bio,
-                'photo_url' => $stylist->photo ? asset('storage/' . $stylist->photo) : null,
-                'status' => $stylist->status ?? 'Active',
+                'photo_url' => $stylist->avatar ? asset('storage/' . $stylist->avatar) : null,
+                'status' => $stylist->status ?? 'active',
             ];
 
-            return view('owner.stylists.edit', ['stylist' => $stylistData]);
+            return view('owner.stylists.edit', [
+                'stylist' => $stylistData,
+                'services' => $this->salonServices($salonId),
+                'selectedServiceIds' => $stylist->services()->pluck('services.id')->all(),
+            ]);
 
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Stylist Edit Error: ' . $e->getMessage());
             return redirect()->route('owner.stylists.index')
@@ -249,13 +288,22 @@ class OwnerStylistController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'role' => 'nullable|string|max:255',
-                'email' => 'nullable|email|unique:stylists,email,' . $id,
+                'email' => [
+                    'nullable', 'email',
+                    Rule::unique('stylists', 'email')->ignore($stylist->id)->whereNull('deleted_at'),
+                ],
                 'phone' => 'nullable|string|max:20',
                 'specialization' => 'nullable|string',
                 'experience_years' => 'nullable|integer|min:0',
                 'bio' => 'nullable|string',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'status' => 'nullable|in:Active,Inactive,active,inactive',
+                'services' => 'nullable|array',
+                'services.*' => [
+                    Rule::exists('services', 'id')
+                        ->where('salon_id', $salonId)
+                        ->whereNull('deleted_at'),
+                ],
             ]);
 
             if ($validator->fails()) {
@@ -265,26 +313,33 @@ class OwnerStylistController extends Controller
             }
 
             if ($request->hasFile('photo')) {
-                if ($stylist->photo && Storage::disk('public')->exists($stylist->photo)) {
-                    Storage::disk('public')->delete($stylist->photo);
+                if ($stylist->avatar && Storage::disk('public')->exists($stylist->avatar)) {
+                    Storage::disk('public')->delete($stylist->avatar);
                 }
-                $photoPath = $request->file('photo')->store('stylists', 'public');
-                $stylist->photo = $photoPath;
+                $stylist->avatar = $request->file('photo')->store('stylists', 'public');
             }
+
+            $status = strtolower($request->status ?? $stylist->status ?? 'active');
 
             $stylist->name = $request->name;
             $stylist->role = $request->role ?? $stylist->role;
-            $stylist->email = $request->email ?? null;
+            $stylist->email = $request->email;
             $stylist->phone = $request->phone;
-            $stylist->specialization = $request->specialization;
+            $stylist->specializations = $request->specialization;
             $stylist->experience_years = $request->experience_years ?? 0;
             $stylist->bio = $request->bio;
-            $stylist->status = $request->status ?? $stylist->status;
+            $stylist->status = $status;
+            $stylist->is_active = $status === 'active';
             $stylist->save();
+
+            // Services update karo (jo uncheck hui wo hat jayengi)
+            $stylist->services()->sync($request->input('services', []));
 
             return redirect()->route('owner.stylists.index')
                 ->with('success', 'Team member "' . $stylist->name . '" updated successfully!');
 
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Stylist Update Error: ' . $e->getMessage());
             return redirect()->back()
@@ -305,16 +360,29 @@ class OwnerStylistController extends Controller
                     ->with('error', 'Team member not found.');
             }
 
-            if ($stylist->photo && Storage::disk('public')->exists($stylist->photo)) {
-                Storage::disk('public')->delete($stylist->photo);
+            // Upcoming active appointments hon to delete na karne do
+            $hasUpcoming = Appointment::where('stylist_id', $stylist->id)
+                ->whereDate('appointment_date', '>=', now()->toDateString())
+                ->whereNotIn('status', ['completed', 'cancelled', 'no_show'])
+                ->exists();
+
+            if ($hasUpcoming) {
+                return redirect()->route('owner.stylists.index')
+                    ->with('error', 'This stylist has upcoming appointments. Cancel or complete them first.');
             }
 
             $stylistName = $stylist->name;
-            $stylist->delete();
+
+            // Model ka deleting event khali time slots bhi delete kar deta hai
+            DB::transaction(function () use ($stylist) {
+                $stylist->delete();
+            });
 
             return redirect()->route('owner.stylists.index')
                 ->with('success', 'Team member "' . $stylistName . '" removed successfully!');
 
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Stylist Destroy Error: ' . $e->getMessage());
             return redirect()->route('owner.stylists.index')
@@ -348,6 +416,8 @@ class OwnerStylistController extends Controller
 
             return view('owner.stylists.availability', ['stylist' => $stylist]);
 
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Stylist Availability Error: ' . $e->getMessage());
             return redirect()->route('owner.stylists.index')

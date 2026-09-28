@@ -484,6 +484,7 @@ Route::get('/complaints/{complaint}/edit', [ClientComplaintController::class, 'e
 Route::put('/complaints/{complaint}', [ClientComplaintController::class, 'update'])->name('complaints.update');
 Route::post('/complaints/{complaint}/accept', [ClientComplaintController::class, 'acceptResolution'])->name('complaints.accept');
 Route::post('/complaints/{complaint}/escalate', [ClientComplaintController::class, 'escalate'])->name('complaints.escalate');
+Route::delete('/complaints/{complaint}', [ClientComplaintController::class, 'destroy'])->name('complaints.destroy');
 
     // Notification Routes
     Route::get('/notifications', [ClientNotificationController::class, 'index'])->name('notifications.index');

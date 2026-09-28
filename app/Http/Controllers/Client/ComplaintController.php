@@ -100,16 +100,16 @@ class ComplaintController extends Controller
                 : null;
 
             $complaint = Complaint::create([
-    'client_id'      => $clientId,
-    'salon_id'       => $appointment->salon_id,
-    'appointment_id' => $appointment->id,
-    'owner_id'       => $appointment->salon->owner_id ?? null,
-    'type'           => $request->type,
-    'subject'        => $subject,
-    'description'    => $request->description,
-    'image'          => $imagePath,
-    'status'         => 'pending',
-]);
+                'client_id'      => $clientId,
+                'salon_id'       => $appointment->salon_id,
+                'appointment_id' => $appointment->id,
+                'owner_id'       => $appointment->salon->owner_id ?? null,
+                'type'           => $request->type,
+                'subject'        => $subject,
+                'description'    => $request->description,
+                'image'          => $imagePath,
+                'status'         => 'pending',
+            ]);
 
             try {
                 $client = Auth::user();
@@ -214,6 +214,24 @@ class ComplaintController extends Controller
             ->with('success', 'Complaint updated successfully.');
     }
 
+   
+    public function destroy(Complaint $complaint)
+    {
+        if ($complaint->client_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($complaint->status !== 'pending') {
+            return redirect()->route('client.complaints.index')
+                ->with('error', 'You can only withdraw a complaint while it is still pending.');
+        }
+
+        $complaint->delete(); 
+
+        return redirect()->route('client.complaints.index')
+            ->with('success', 'Complaint withdrawn successfully.');
+    }
+
     public function acceptResolution(Complaint $complaint)
     {
         if ($complaint->client_id !== Auth::id()) {
@@ -223,6 +241,8 @@ class ComplaintController extends Controller
         if (method_exists($complaint, 'canClientAccept') && !$complaint->canClientAccept()) {
             return redirect()->back()->with('error', 'You cannot accept this resolution.');
         }
+
+        $wasRejected = $complaint->status === 'rejected';
 
         $complaint->update([
             'client_action'      => 'accept',
@@ -238,7 +258,7 @@ class ComplaintController extends Controller
                 'complaint',
                 [
                     'title'   => '✅ Complaint Resolved',
-                    'message' => $client->name . ' accepted the resolution for complaint #' . $complaint->id,
+                    'message' => $client->name . ' accepted the ' . ($wasRejected ? 'rejection' : 'resolution') . ' for complaint #' . $complaint->id,
                     'link'    => route('owner.complaints.show', $complaint->id),
                 ]
             );
@@ -247,8 +267,8 @@ class ComplaintController extends Controller
             $ownerEmail = $salon->owner->email ?? config('mail.from.address');
 
             if ($ownerEmail) {
-                $emailSubject = "Complaint Resolved: #" . $complaint->id;
-                $emailBody = "The client has accepted your resolution for the following complaint.<br><br>" .
+                $emailSubject = "Complaint Closed by Client: #" . $complaint->id;
+                $emailBody = "The client has accepted your " . ($wasRejected ? 'rejection' : 'resolution') . " for the following complaint.<br><br>" .
                              "<strong>Client:</strong> {$client->name}<br>" .
                              "<strong>Complaint #:</strong> {$complaint->id}<br><br>" .
                              "This complaint has now been officially marked as <strong>Closed</strong>.";
@@ -282,7 +302,6 @@ class ComplaintController extends Controller
 
         $client = Auth::user();
 
-        // Dashboard notification (bell icon) — visible in the admin panel
         try {
             app(AdminNotificationController::class)->notifyAdmins(
                 'New Escalated Complaint',
@@ -293,12 +312,12 @@ class ComplaintController extends Controller
             Log::warning('Complaint escalate admin notification failed: ' . $e->getMessage());
         }
 
-        // Email — sent to every admin
+        
         try {
             $admins = User::where('role', 'admin')->get();
 
             $emailSubject = "Complaint Escalated: #" . $complaint->id;
-            $emailBody = "A client was not satisfied with the salon owner's resolution and has escalated their complaint for admin review.<br><br>" .
+            $emailBody = "A client was not satisfied with the salon owner's response and has escalated their complaint for admin review.<br><br>" .
                          "<strong>Client:</strong> {$client->name}<br>" .
                          "<strong>Subject:</strong> {$complaint->subject}<br>" .
                          "<strong>Complaint #:</strong> {$complaint->id}<br><br>" .

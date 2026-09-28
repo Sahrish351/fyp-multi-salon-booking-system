@@ -30,7 +30,7 @@ class Complaint extends Model
         'rejected_at',
     ];
 
-    // ✅ STATUS CONSTANTS
+    
     const STATUS_PENDING = 'pending';
     const STATUS_IN_PROGRESS = 'in_progress';
     const STATUS_RESOLVED = 'resolved';
@@ -38,18 +38,18 @@ class Complaint extends Model
     const STATUS_ESCALATED = 'escalated';
     const STATUS_REJECTED = 'rejected';
 
-    // ✅ TYPE CONSTANTS
+   
     const TYPE_SERVICE = 'service';
     const TYPE_STAFF = 'staff';
     const TYPE_PAYMENT = 'payment';
     const TYPE_PRODUCT = 'product';
     const TYPE_OTHER = 'other';
 
-    // ✅ CLIENT ACTIONS
+    
     const CLIENT_ACTION_ACCEPT = 'accept';
     const CLIENT_ACTION_ESCALATE = 'escalate';
 
-    // Relationships
+   
     public function client()
     {
         return $this->belongsTo(User::class, 'client_id');
@@ -80,7 +80,7 @@ class Complaint extends Model
         return $this->hasMany(ComplaintReply::class);
     }
 
-    // ✅ SCOPES
+   
     public function scopePending($query)
     {
         return $query->where('status', self::STATUS_PENDING);
@@ -121,7 +121,7 @@ class Complaint extends Model
         return $query->where('client_id', $clientId);
     }
 
-    // ✅ HELPER METHODS
+ 
     public function getStatusBadgeAttribute()
     {
         $badges = [
@@ -172,7 +172,7 @@ class Complaint extends Model
         return $icons[$this->type] ?? 'bi-question-circle-fill';
     }
 
-    // ✅ STATUS CHECK METHODS
+   
     public function isPending()
     {
         return $this->status === self::STATUS_PENDING;
@@ -203,19 +203,23 @@ class Complaint extends Model
         return $this->status === self::STATUS_REJECTED;
     }
 
-    // ✅ CAN METHODS
+    
     public function canClientAccept()
     {
-        return $this->status === self::STATUS_RESOLVED && is_null($this->client_action);
+        return in_array($this->status, [self::STATUS_RESOLVED, self::STATUS_REJECTED])
+            && is_null($this->client_action);
     }
 
+   
     public function canClientEscalate()
     {
-        return $this->status === self::STATUS_RESOLVED && is_null($this->client_action);
+        return in_array($this->status, [self::STATUS_RESOLVED, self::STATUS_REJECTED])
+            && is_null($this->client_action);
     }
 
     public function isClientActionPending()
     {
-        return $this->status === self::STATUS_RESOLVED && is_null($this->client_action);
+        return in_array($this->status, [self::STATUS_RESOLVED, self::STATUS_REJECTED])
+            && is_null($this->client_action);
     }
 }
