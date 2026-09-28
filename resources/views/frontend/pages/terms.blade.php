@@ -239,11 +239,11 @@
                     <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 12px;">
                         <div style="display: flex; align-items: center; gap: 10px; background: #FFF9FC; padding: 12px 20px; border-radius: 12px; border: 1px solid #FFE8F0;">
                             <i class="fas fa-envelope" style="color: #EC4899;"></i>
-                            <span style="font-size: 14px; color: #555;">legal@beautyblush.pk</span>
+                            <span style="font-size: 14px; color: #555;">beautyblushsalons@gmail.com</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px; background: #FFF9FC; padding: 12px 20px; border-radius: 12px; border: 1px solid #FFE8F0;">
                             <i class="fas fa-phone" style="color: #EC4899;"></i>
-                            <span style="font-size: 14px; color: #555;">+92 300 1234567</span>
+                            <span style="font-size: 14px; color: #555;">+92 306 9734142</span>
                         </div>
                     </div>
                 </div>

@@ -19,11 +19,11 @@
                 </p>
                 <p style="color:#888; font-size:0.78rem;">
                     <i class="fas fa-phone" style="color:#E91E8C; margin-right:8px; width:16px;"></i>
-                    <a href="tel:+923001234567" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">+92 300 1234567</a>
+                    <a href="tel:+923069734142" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">+92 306 9734142</a>
                 </p>
                 <p style="color:#888; font-size:0.78rem;">
                     <i class="fas fa-envelope" style="color:#E91E8C; margin-right:8px; width:16px;"></i>
-                    <a href="mailto:hello@beautyblush.pk" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">hello@beautyblush.pk</a>
+                    <a href="mailto:beautyblushsalons@gmail.com" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">beautyblushsalons@gmail.com</a>
                 </p>
             </div>
 

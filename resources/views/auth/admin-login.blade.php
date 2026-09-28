@@ -287,7 +287,7 @@
         width: 100%;
     }
  
-    /* ── Login Button ── */
+    
     .btn-login {
         width: 100%;
         padding: 0.7rem;
@@ -320,7 +320,7 @@
         font-size: 0.9rem;
     }
  
-    /* ── Back Link ── */
+   
     .back-link {
         text-align: center;
         margin-top: 1.2rem;
@@ -359,9 +359,7 @@
         width: 100%;
     }
  
-    /* ── Responsive ── */
- 
-    /* Tablet */
+    
     @media (max-width: 992px) {
         .login-card {
             padding: 1.8rem 1.8rem 1.4rem;
@@ -369,7 +367,7 @@
         }
     }
  
-    /* Mobile */
+  
     @media (max-width: 768px) {
         .admin-login-page {
             padding: 1rem;
@@ -472,7 +470,7 @@
         }
     }
  
-    /* Small Mobile */
+   
     @media (max-width: 400px) {
         .login-card {
             padding: 1.5rem 1.2rem 1.2rem;
