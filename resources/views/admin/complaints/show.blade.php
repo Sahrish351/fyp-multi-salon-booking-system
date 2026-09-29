@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title', 'Complaint Details - Admin')
-
+ 
 @push('styles')
 <style>
     :root { 
@@ -85,6 +85,14 @@
         font-size: .75rem;
         font-weight: 700;
     }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-in_progress { background: #dbeafe; color: #1e40af; }
+    .badge-resolved { background: #d1fae5; color: #065f46; }
+    .badge-closed { background: #e5e7eb; color: #4b5563; }
+    .badge-escalated { background: #fee2e2; color: #991b1b; }
+    .badge-rejected { background: #fdecea; color: #c0392b; }
+    .badge-awaiting_owner { background: #dbeafe; color: #1e40af; }
+    .badge-owner_replied_admin { background: #d1fae5; color: #065f46; }
     .form-group {
         display: flex;
         flex-direction: column;
@@ -140,22 +148,27 @@
     }
 </style>
 @endpush
-
+ 
 @section('content')
-
+ 
 <a href="{{ route('admin.complaints.index') }}" class="btn-back">
     <i class="fas fa-arrow-left"></i> Back to Complaints
 </a>
-
+ 
 {{-- Alerts --}}
 @if(session('success'))
 <div style="background:#eaf3eb;border:1px solid #a8d5b0;color:#2d6a35;border-radius:10px;padding:.8rem 1.1rem;margin-bottom:1.2rem;font-size:.87rem;display:flex;align-items:center;gap:.5rem;">
     <i class="fas fa-check-circle"></i> {{ session('success') }}
 </div>
 @endif
-
+@if(session('error'))
+<div style="background:#fdecea;border:1px solid #f5c2c0;color:#a12a2a;border-radius:10px;padding:.8rem 1.1rem;margin-bottom:1.2rem;font-size:.87rem;display:flex;align-items:center;gap:.5rem;">
+    <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+</div>
+@endif
+ 
 <div class="complaint-layout">
-
+ 
     {{-- LEFT COLUMN --}}
     <div>
         {{-- Complaint Overview Card --}}
@@ -185,19 +198,75 @@
                         <div class="info-val">{{ $complaint->created_at->format('d M Y, h:i A') }}</div>
                     </div>
                 </div>
-
+ 
                 <div style="margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid #f3f3f3;">
                     <span class="info-lbl">Subject</span>
                     <div style="font-weight:700;font-size:1.05rem;color:#1a1a1a;margin-top:.2rem;">{{ $complaint->subject }}</div>
                 </div>
-
+ 
                 <div style="margin-top:1.2rem;padding:1.1rem;background:#faf8f6;border-radius:10px;border-left:3px solid var(--dpink);">
                     <span class="info-lbl" style="margin-bottom:.35rem;">Detailed Description</span>
                     <p style="margin:0;font-size:.9rem;color:#333;line-height:1.7;">{{ $complaint->description }}</p>
                 </div>
+ 
+                @if($complaint->owner_reply)
+                <div style="margin-top:1.2rem;padding:1.1rem;background:#fdf6f9;border-radius:10px;border-left:3px solid #E85588;">
+                    <span class="info-lbl" style="margin-bottom:.35rem;">Owner's Original Reply to Client</span>
+                    <p style="margin:0;font-size:.9rem;color:#333;line-height:1.7;">{{ $complaint->owner_reply }}</p>
+                </div>
+                @endif
+ 
+                @if($complaint->rejection_reason)
+                <div style="margin-top:1.2rem;padding:1.1rem;background:#fdf3ea;border-radius:10px;border-left:3px solid #d97706;">
+                    <span class="info-lbl" style="margin-bottom:.35rem;">Owner's Rejection Reason</span>
+                    <p style="margin:0;font-size:.9rem;color:#7c4a03;line-height:1.7;">{{ $complaint->rejection_reason }}</p>
+                </div>
+                @endif
+ 
+                @if($complaint->escalation_reason)
+                <div style="margin-top:1.2rem;padding:1.1rem;background:#fef2f2;border-radius:10px;border-left:3px solid #dc2626;">
+                    <span class="info-lbl" style="margin-bottom:.35rem;">Why Client Escalated</span>
+                    <p style="margin:0;font-size:.9rem;color:#7f1d1d;line-height:1.7;">{{ $complaint->escalation_reason }}</p>
+                </div>
+                @endif
             </div>
         </div>
-
+ 
+        {{-- Discussion with Owner (Ask Owner + Statement) --}}
+        @if($complaint->admin_question)
+        <div class="dcard">
+            <div class="dcard-head">
+                <i class="fas fa-comments"></i>
+                <span class="dcard-title">Discussion with Owner</span>
+            </div>
+            <div class="dcard-body">
+                <div style="padding:1.1rem;background:#eff6ff;border-radius:10px;border-left:3px solid #2563eb;margin-bottom:1rem;">
+                    <span class="info-lbl" style="margin-bottom:.35rem;">Your Question to Owner</span>
+                    <p style="margin:0;font-size:.9rem;color:#1e3a8a;line-height:1.7;">{{ $complaint->admin_question }}</p>
+                    <div style="font-size:.72rem;color:#3b82f6;margin-top:.5rem;font-weight:600;">
+                        Sent: {{ optional($complaint->admin_question_at)->format('d M Y, h:i A') }}
+                        @if($complaint->owner_deadline_at)
+                            &nbsp;|&nbsp; Deadline: {{ $complaint->owner_deadline_at->format('d M Y, h:i A') }}
+                            @if(method_exists($complaint, 'isOverdue') && $complaint->isOverdue())
+                                <span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:10px;margin-left:6px;">OVERDUE</span>
+                            @endif
+                        @endif
+                    </div>
+                </div>
+ 
+                @if($complaint->owner_statement)
+                <div style="padding:1.1rem;background:#f0fdf4;border-radius:10px;border-left:3px solid #16a34a;">
+                    <span class="info-lbl" style="margin-bottom:.35rem;">Owner's Statement</span>
+                    <p style="margin:0;font-size:.9rem;color:#14532d;line-height:1.7;">{{ $complaint->owner_statement }}</p>
+                    <div style="font-size:.72rem;color:#16a34a;margin-top:.5rem;font-weight:600;">Received: {{ optional($complaint->owner_statement_at)->format('d M Y, h:i A') }}</div>
+                </div>
+                @else
+                <p style="color:#9a9a9a;font-size:.85rem;margin:0;"><i class="fas fa-hourglass-half"></i>&nbsp; Waiting for owner's statement...</p>
+                @endif
+            </div>
+        </div>
+        @endif
+ 
         {{-- Previous Admin Response Section (if exists) --}}
         @if($complaint->admin_response)
         <div class="dcard">
@@ -213,7 +282,7 @@
             </div>
         </div>
         @endif
-
+ 
         {{-- Resolution Notes Section (if any) --}}
         @if($complaint->resolution_notes)
         <div class="dcard">
@@ -229,9 +298,56 @@
         </div>
         @endif
     </div>
-
-    {{-- RIGHT COLUMN (Status Update, Admin Reply & Actions) --}}
+ 
+    {{-- RIGHT COLUMN (Status Update, Ask Owner, Admin Reply & Actions) --}}
     <div>
+        {{-- Current Status Card --}}
+        <div class="dcard">
+            <div class="dcard-head">
+                <i class="fas fa-sliders-h"></i>
+                <span class="dcard-title">Complaint Status</span>
+            </div>
+            <div class="dcard-body">
+                <div style="margin-bottom:0;text-align:center;padding:1.1rem;background:#faf8f6;border-radius:10px;border:1px solid #f0f0f0;">
+                    <span class="info-lbl" style="margin-bottom:.3rem;">Current Status</span>
+                    <span class="badge-status badge-{{ $complaint->status }}" style="font-size:.85rem;margin-top:.2rem;">
+                        {{ $complaint->status_label }}
+                    </span>
+                </div>
+            </div>
+        </div>
+ 
+        {{-- Ask Owner Card (only when escalated) --}}
+        @if(method_exists($complaint, 'canAdminAskOwner') && $complaint->canAdminAskOwner())
+        <div class="dcard">
+            <div class="dcard-head">
+                <i class="fas fa-comment-dots"></i>
+                <span class="dcard-title">Ask Owner First</span>
+            </div>
+            <div class="dcard-body">
+                <p style="font-size:.83rem;color:#888;margin-bottom:1rem;">Before deciding, you can ask the owner for their side of the story.</p>
+                <form action="{{ route('admin.complaints.ask-owner', $complaint->id) }}" method="POST">
+                    @csrf
+                    <div class="form-group">
+                        <label>Question to Owner</label>
+                        <textarea name="admin_question" class="form-control" rows="3" placeholder="What would you like to ask the owner?" required minlength="5"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Response Deadline</label>
+                        <select name="deadline_hours" class="form-control" required>
+                            <option value="24">24 hours</option>
+                            <option value="48" selected>48 hours</option>
+                            <option value="72">72 hours</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit" style="background:#2563eb;">
+                        <i class="fas fa-paper-plane" style="margin-right:.4rem;"></i> Send to Owner
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endif
+ 
         {{-- Status Update Card --}}
         <div class="dcard">
             <div class="dcard-head">
@@ -239,14 +355,6 @@
                 <span class="dcard-title">Update Status</span>
             </div>
             <div class="dcard-body">
-                <div style="margin-bottom:1.2rem;text-align:center;padding:1.1rem;background:#faf8f6;border-radius:10px;border:1px solid #f0f0f0;">
-                    <span class="info-lbl" style="margin-bottom:.3rem;">Current Status</span>
-                    <span class="badge-status badge-{{ $complaint->status }}" style="font-size:.85rem;margin-top:.2rem;">
-                        {{ $complaint->status_label }}
-                    </span>
-                </div>
-
-                {{-- Status Update Form --}}
                 <form action="{{ route('admin.complaints.update', $complaint->id) }}" method="POST">
                     @csrf @method('PUT')
                     
@@ -258,22 +366,24 @@
                             <option value="resolved" {{ $complaint->status=='resolved' ? 'selected':'' }}>Resolved</option>
                             <option value="closed" {{ $complaint->status=='closed' ? 'selected':'' }}>Closed</option>
                             <option value="escalated" {{ $complaint->status=='escalated' ? 'selected':'' }}>Escalated</option>
+                            <option value="awaiting_owner" {{ $complaint->status=='awaiting_owner' ? 'selected':'' }}>Awaiting Owner</option>
+                            <option value="owner_replied_admin" {{ $complaint->status=='owner_replied_admin' ? 'selected':'' }}>Owner Replied</option>
                             <option value="rejected" {{ $complaint->status=='rejected' ? 'selected':'' }}>Rejected</option>
                         </select>
                     </div>
-
+ 
                     <div class="form-group">
                         <label>Resolution Notes</label>
                         <textarea name="resolution_notes" class="form-control" rows="3" placeholder="Add resolution notes...">{{ old('resolution_notes', $complaint->resolution_notes) }}</textarea>
                     </div>
-
+ 
                     <button type="submit" class="btn-submit">
                         <i class="fas fa-save" style="margin-right:.4rem;"></i> Update Status
                     </button>
                 </form>
             </div>
         </div>
-
+ 
         {{-- Admin Reply & Direct Close Card --}}
         <div class="dcard">
             <div class="dcard-head">
@@ -291,9 +401,9 @@
                         <i class="fas fa-paper-plane" style="margin-right:.4rem;"></i> Send Reply & Close
                     </button>
                 </form>
-
+ 
                 <hr style="border:0;border-top:1px solid #f3f3f3;margin:1rem 0;">
-
+ 
                 <form action="{{ route('admin.complaints.close', $complaint->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to close this complaint?');">
                     @csrf
                     <button type="submit" class="btn-submit" style="background:#d32f2f;">
@@ -302,7 +412,7 @@
                 </form>
             </div>
         </div>
-
+ 
         {{-- Meta Information Card --}}
         <div class="dcard">
             <div class="dcard-head">
@@ -324,7 +434,8 @@
             </div>
         </div>
     </div>
-
+ 
 </div>
-
+ 
 @endsection
+ 

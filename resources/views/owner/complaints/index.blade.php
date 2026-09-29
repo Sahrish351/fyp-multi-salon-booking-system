@@ -1,9 +1,9 @@
 @extends('layouts.owner')
-
+ 
 @section('title', 'Complaints')
-
+ 
 @section('content')
-
+ 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i>
@@ -11,7 +11,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-
+ 
     @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -19,15 +19,15 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-
+ 
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <h2>Complaints</h2>
             <p>Manage customer complaints and feedback</p>
         </div>
     </div>
-
-    <!-- 4 STATS CARDS -->
+ 
+    <!-- STATS CARDS -->
     <div class="row g-3 mb-4">
         <div class="col-md-3">
             <div class="stat-card-sm">
@@ -38,7 +38,7 @@
                 </div>
             </div>
         </div>
-
+ 
         <div class="col-md-3">
             <div class="stat-card-sm">
                 <div class="stat-icon icon-pending"><i class="bi bi-clock-fill"></i></div>
@@ -48,17 +48,7 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="stat-card-sm">
-                <div class="stat-icon icon-progress"><i class="bi bi-arrow-repeat"></i></div>
-                <div>
-                    <div class="stat-label-sm">In Progress</div>
-                    <div class="stat-value-sm">{{ $counts['in_progress'] ?? 0 }}</div>
-                </div>
-            </div>
-        </div>
-
+ 
         <div class="col-md-3">
             <div class="stat-card-sm">
                 <div class="stat-icon icon-resolved"><i class="bi bi-check-circle-fill"></i></div>
@@ -68,8 +58,18 @@
                 </div>
             </div>
         </div>
+ 
+        <div class="col-md-3">
+            <div class="stat-card-sm">
+                <div class="stat-icon icon-awaiting"><i class="bi bi-hourglass-split"></i></div>
+                <div>
+                    <div class="stat-label-sm">Admin Needs Reply</div>
+                    <div class="stat-value-sm">{{ $counts['awaiting_owner'] ?? 0 }}</div>
+                </div>
+            </div>
+        </div>
     </div>
-
+ 
     <!-- SEARCH & FILTERS -->
     <div class="panel-card panel-card-auto mb-4">
         <div class="row g-2 align-items-center">
@@ -87,7 +87,7 @@
             </div>
         </div>
     </div>
-
+ 
     <!-- COMPLAINTS TABLE -->
     <div class="panel-card panel-card-auto">
         <div class="table-responsive">
@@ -112,6 +112,8 @@
                             'closed' => 'badge-closed',
                             'escalated' => 'badge-escalated',
                             'rejected' => 'badge-rejected',
+                            'awaiting_owner' => 'badge-awaiting_owner',
+                            'owner_replied_admin' => 'badge-owner_replied_admin',
                         ];
                         $statusDisplay = [
                             'pending' => 'Pending',
@@ -120,9 +122,11 @@
                             'closed' => 'Closed',
                             'escalated' => 'Escalated',
                             'rejected' => 'Rejected',
+                            'awaiting_owner' => 'Admin Needs Your Reply',
+                            'owner_replied_admin' => 'Sent to Admin',
                         ];
                     @endphp
-
+ 
                     @forelse($complaints as $complaint)
                         <tr class="complaint-row"
                             data-client="{{ strtolower($complaint->client->name ?? '') }}"
@@ -169,16 +173,16 @@
                     @endforelse
                 </tbody>
             </table>
-
+ 
             <div id="noComplaintsFound" class="text-center py-5" style="display:none;">
                 <i class="bi bi-emoji-frown" style="font-size:36px; color:#F08FB4;"></i>
                 <p class="mt-2 mb-0" style="color:#6B4F62;">No complaints found matching your search.</p>
             </div>
         </div>
     </div>
-
+ 
 @endsection
-
+ 
 @push('modals')
     <!-- FILTERS MODAL -->
     <div class="modal fade" id="filtersModal" tabindex="-1" aria-hidden="true">
@@ -198,6 +202,8 @@
                             <option value="resolved">Resolved</option>
                             <option value="closed">Closed</option>
                             <option value="escalated">Escalated</option>
+                            <option value="awaiting_owner">Admin Needs Your Reply</option>
+                            <option value="owner_replied_admin">Sent to Admin</option>
                             <option value="rejected">Rejected</option>
                         </select>
                     </div>
@@ -221,7 +227,7 @@
         </div>
     </div>
 @endpush
-
+ 
 @section('extra-css')
 <style>
     .page-header h2 {
@@ -234,9 +240,9 @@
         color: #8a7a88;
         margin-bottom: 0;
     }
-
+ 
     .panel-card-auto { height: auto; }
-
+ 
     .stat-card-sm {
         background: #fff;
         border-radius: 14px;
@@ -264,15 +270,16 @@
         justify-content: center;
         color: #fff;
     }
-
+ 
     .icon-total { background: linear-gradient(135deg, #9B6FD1, #7E56B0); }
     .icon-pending { background: linear-gradient(135deg, #E08A2C, #C47620); }
     .icon-progress { background: linear-gradient(135deg, #4A7FE0, #3568C4); }
     .icon-resolved { background: linear-gradient(135deg, #2EAE7D, #1E8E64); }
-
+    .icon-awaiting { background: linear-gradient(135deg, #3568C4, #1e40af); }
+ 
     .stat-label-sm { font-size: 13.5px; color: #8a7a88; margin-bottom: 2px; }
     .stat-value-sm { font-size: 22px; font-weight: 700; color: #2d1f2c; }
-
+ 
     .search-input-wrap {
         display: flex;
         align-items: center;
@@ -282,13 +289,13 @@
         padding: 0 16px;
         transition: all 0.2s ease;
     }
-
+ 
     .search-input-wrap i {
         color: #b09aa8;
         font-size: 18px;
         margin-right: 12px;
     }
-
+ 
     .search-input-wrap .search-input {
         border: none !important;
         background: transparent !important;
@@ -298,17 +305,17 @@
         color: #2d1f2c;
         width: 100%;
     }
-
+ 
     .search-input-wrap .search-input::placeholder {
         color: #b09aa8;
     }
-
+ 
     .search-input-wrap:focus-within {
         border-color: #E85588;
         background: #fff;
         box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15);
     }
-
+ 
     .btn-filters {
         background: #fff;
         border: 1.5px solid #FF6B9D !important;
@@ -327,9 +334,9 @@
         color: #ffffff !important;
         border-color: #E85588 !important;
     }
-
+ 
     .cell-sub { font-size: 12.5px; color: #8a7a88; }
-
+ 
     .badge-type {
         display: inline-block;
         padding: 4px 12px;
@@ -341,7 +348,7 @@
         border: 1px solid #f0e8ed;
     }
     .badge-type i { color: #E85588; }
-
+ 
     .badge-status {
         display: inline-block;
         padding: 4px 14px;
@@ -357,7 +364,9 @@
     .badge-closed { background: #F3F4F6; color: #6B7280; }
     .badge-escalated { background: #FCE4EC; color: #D45482; }
     .badge-rejected { background: #FEE2E2; color: #DC2626; }
-
+    .badge-awaiting_owner { background: #E8F0FE; color: #3568C4; }
+    .badge-owner_replied_admin { background: #E8F5ED; color: #1E8E64; }
+ 
     .action-icons { display: flex; gap: 8px; }
     .action-btn {
         width: 34px;
@@ -374,7 +383,7 @@
     }
     .view-btn { background: #F0E8FD; color: #7E56B0; }
     .view-btn:hover { background: #7E56B0; color: #fff; }
-
+ 
     .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: #4a3a48; margin-bottom: 6px; }
     .input-custom {
         background: #fcf6f9 !important;
@@ -391,7 +400,7 @@
         box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15) !important;
         outline: none;
     }
-
+ 
     .modal-content-custom { border-radius: 16px; border: none; overflow: hidden; }
     .modal-header-custom {
         background: #fcf6f9;
@@ -401,7 +410,7 @@
     .modal-header-custom .modal-title { font-weight: 700; color: #2d1f2c; }
     .modal-body { padding: 22px 24px; }
     .modal-footer-custom { border-top: 1px solid #f5eef2; padding: 16px 24px; }
-
+ 
     .btn-cancel-modal {
         background: #fff;
         border: 1.5px solid #FF6B9D;
@@ -416,7 +425,7 @@
         color: #ffffff !important;
         border-color: #E85588;
     }
-
+ 
     .btn-save-changes {
         background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
         color: #ffffff !important;
@@ -431,7 +440,7 @@
         box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
         color: #ffffff !important;
     }
-
+ 
     .table-custom {
         width: 100%;
         border-collapse: collapse;
@@ -453,14 +462,14 @@
         border-bottom: 1px solid #f5eef2;
         vertical-align: middle;
     }
-    .table-custom tbody tr:last-child td {
+    .table-custom tbody tr:last-child {
         border-bottom: none;
     }
     .table-custom tbody tr:hover {
         background: #fcf6f9;
     }
     .cell-name { font-weight: 600; color: #2d1f2c; }
-
+ 
     .alert {
         border-radius: 12px;
         border: none;
@@ -468,7 +477,7 @@
     }
     .alert-success { background: #E8F5E9; color: #1B5E20; }
     .alert-danger { background: #FCE4EC; color: #880E4F; }
-
+ 
     @media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -486,20 +495,20 @@
     }
 </style>
 @endsection
-
+ 
 @section('extra-js')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('complaintSearchInput');
         const rows = document.querySelectorAll('.complaint-row');
         const noResults = document.getElementById('noComplaintsFound');
-
+ 
         function applySearchAndFilters() {
             const term = (searchInput.value || '').toLowerCase().trim();
             const statusFilter = document.getElementById('filterStatus')?.value || '';
             const typeFilter = document.getElementById('filterType')?.value || '';
             let visibleCount = 0;
-
+ 
             rows.forEach(row => {
                 const matchesSearch = row.dataset.client.includes(term) || row.dataset.subject.includes(term);
                 const matchesStatus = !statusFilter || row.dataset.status === statusFilter;
@@ -508,23 +517,23 @@
                 row.style.display = show ? '' : 'none';
                 if (show) visibleCount++;
             });
-
+ 
             if (noResults) {
                 noResults.style.display = visibleCount === 0 ? 'block' : 'none';
             }
         }
-
+ 
         if (searchInput) {
             searchInput.addEventListener('input', applySearchAndFilters);
         }
-
+ 
         const applyFiltersBtn = document.getElementById('applyFiltersBtn');
         const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-
+ 
         if (applyFiltersBtn) {
             applyFiltersBtn.addEventListener('click', applySearchAndFilters);
         }
-
+ 
         if (clearFiltersBtn) {
             clearFiltersBtn.addEventListener('click', function() {
                 document.getElementById('filterStatus').value = '';
@@ -532,7 +541,7 @@
                 applySearchAndFilters();
             });
         }
-
+ 
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(function(alert) {
             setTimeout(function() {
@@ -545,3 +554,4 @@
     });
 </script>
 @endsection
+ 

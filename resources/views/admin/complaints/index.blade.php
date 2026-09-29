@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title', 'Complaints - Admin')
-
+ 
 @push('styles')
 <style>
 :root {
@@ -9,8 +9,7 @@
     --dpink-lt: #fce4ec;
     --border: #ebebeb;
 }
-
-/* ── Page Header ── */
+ 
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -27,8 +26,8 @@
 }
 .page-header h1 i { color: var(--dpink); margin-right: 0.5rem; }
 .page-header p { margin: 0; color: #9a9a9a; font-size: .86rem; }
-
-/* ── Dashboard-style White Summary Tiles ── */
+ 
+ 
 .stats-row {
     display: flex;
     flex-wrap: wrap;
@@ -86,12 +85,12 @@
     color: #1a1a1a;
     line-height: 1;
 }
-
+ 
 @media (max-width: 700px) {
     .stat-card { flex: 1 1 calc(50% - .5rem); min-width: calc(50% - .5rem); }
 }
-
-/* ── Filter Bar ── */
+ 
+ 
 .filter-bar {
     background: #fff;
     border: 1px solid var(--border);
@@ -195,8 +194,8 @@
     white-space: nowrap;
 }
 .btn-clear:hover { border-color: var(--dpink); color: var(--dpink); }
-
-/* ── Table Card ── */
+ 
+ 
 .complaints-card {
     background: #fff;
     border: 1px solid var(--border);
@@ -222,8 +221,8 @@
     padding: .2rem .62rem;
     border-radius: 20px;
 }
-
-/* ── Table ── */
+ 
+ 
 .complaints-table { width: 100%; border-collapse: collapse; }
 .complaints-table thead tr { background: #fafafa; }
 .complaints-table thead th {
@@ -250,7 +249,7 @@
     color: #444;
     vertical-align: middle;
 }
-
+ 
 .client-cell { display: flex; align-items: center; gap: .7rem; }
 .client-avatar {
     width: 32px; height: 32px;
@@ -266,7 +265,7 @@
 }
 .client-name { font-weight: 600; color: #1a1a1a; }
 .client-email { font-size: .7rem; color: #aaa; }
-
+ 
 .badge {
     display: inline-flex;
     align-items: center;
@@ -283,7 +282,9 @@
 .badge-closed { background: #e5e7eb; color: #4b5563; }
 .badge-escalated { background: #fee2e2; color: #991b1b; }
 .badge-rejected { background: #fdecea; color: #c0392b; }
-
+.badge-awaiting_owner { background: #dbeafe; color: #1e40af; }
+.badge-owner_replied_admin { background: #d1fae5; color: #065f46; }
+ 
 .btn-view {
     width: 30px; height: 30px;
     border-radius: 8px;
@@ -298,9 +299,9 @@
     transition: all .15s;
 }
 .btn-view:hover { background: #00838f; color: #fff; }
-
+ 
 .pagination-wrapper { padding: 1rem 1.3rem; border-top: 1px solid #f3f3f3; }
-
+ 
 @media (max-width: 768px) {
     .filter-bar { flex-direction: column; }
     .search-wrapper, .filter-group { min-width: 100%; }
@@ -309,18 +310,18 @@
 }
 </style>
 @endpush
-
+ 
 @section('content')
-
-{{-- ── Page Header ── --}}
+ 
+ 
 <div class="page-header">
     <div>
         <h1><i class="fas fa-exclamation-circle"></i> Complaints Management</h1>
         <p>Monitor and resolve client complaints seamlessly</p>
     </div>
 </div>
-
-{{-- ── Stats Row (Dashboard White Cards Style) ── --}}
+ 
+{{-- ── Stats Row (4 important cards only) ── --}}
 <div class="stats-row">
     <a href="{{ route('admin.complaints.index', ['status'=>'escalated']) }}" class="stat-card">
         <div class="stat-top">
@@ -329,26 +330,19 @@
         </div>
         <div class="stat-value">{{ $stats['escalated'] ?? 0 }}</div>
     </a>
-    <a href="{{ route('admin.complaints.index', ['status'=>'pending']) }}" class="stat-card">
+    <a href="{{ route('admin.complaints.index', ['status'=>'awaiting_owner']) }}" class="stat-card">
         <div class="stat-top">
-            <div class="stat-icon"><i class="fas fa-clock"></i></div>
-            <div class="stat-label">Pending</div>
+            <div class="stat-icon"><i class="fas fa-comment-dots"></i></div>
+            <div class="stat-label">Awaiting Owner</div>
         </div>
-        <div class="stat-value">{{ $stats['pending'] ?? 0 }}</div>
+        <div class="stat-value">{{ $stats['awaiting_owner'] ?? 0 }}</div>
     </a>
-    <a href="{{ route('admin.complaints.index', ['status'=>'in_progress']) }}" class="stat-card">
+    <a href="{{ route('admin.complaints.index', ['status'=>'owner_replied_admin']) }}" class="stat-card">
         <div class="stat-top">
-            <div class="stat-icon"><i class="fas fa-spinner"></i></div>
-            <div class="stat-label">In Progress</div>
+            <div class="stat-icon"><i class="fas fa-reply"></i></div>
+            <div class="stat-label">Owner Replied</div>
         </div>
-        <div class="stat-value">{{ $stats['in_progress'] ?? 0 }}</div>
-    </a>
-    <a href="{{ route('admin.complaints.index', ['status'=>'resolved']) }}" class="stat-card">
-        <div class="stat-top">
-            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-            <div class="stat-label">Resolved</div>
-        </div>
-        <div class="stat-value">{{ $stats['resolved'] ?? 0 }}</div>
+        <div class="stat-value">{{ $stats['owner_replied_admin'] ?? 0 }}</div>
     </a>
     <a href="{{ route('admin.complaints.index', ['status'=>'closed']) }}" class="stat-card">
         <div class="stat-top">
@@ -357,15 +351,8 @@
         </div>
         <div class="stat-value">{{ $stats['closed'] ?? 0 }}</div>
     </a>
-    <a href="{{ route('admin.complaints.index', ['status'=>'rejected']) }}" class="stat-card">
-        <div class="stat-top">
-            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
-            <div class="stat-label">Rejected</div>
-        </div>
-        <div class="stat-value">{{ $stats['rejected'] ?? 0 }}</div>
-    </a>
 </div>
-
+ 
 {{-- ── Filter Bar ── --}}
 <form method="GET" action="{{ route('admin.complaints.index') }}">
 <div class="filter-bar">
@@ -382,6 +369,8 @@
             <option value="resolved" {{ request('status')=='resolved' ? 'selected':'' }}>Resolved</option>
             <option value="closed" {{ request('status')=='closed' ? 'selected':'' }}>Closed</option>
             <option value="escalated" {{ request('status')=='escalated' ? 'selected':'' }}>Escalated</option>
+            <option value="awaiting_owner" {{ request('status')=='awaiting_owner' ? 'selected':'' }}>Awaiting Owner</option>
+            <option value="owner_replied_admin" {{ request('status')=='owner_replied_admin' ? 'selected':'' }}>Owner Replied</option>
             <option value="rejected" {{ request('status')=='rejected' ? 'selected':'' }}>Rejected</option>
         </select>
     </div>
@@ -404,14 +393,14 @@
     </div>
 </div>
 </form>
-
+ 
 {{-- ── Table Card ── --}}
 <div class="complaints-card">
     <div class="complaints-card-header">
         <span class="card-title"><i class="fas fa-list"></i> Complaints List</span>
         <span class="result-count">{{ $complaints->total() }} records</span>
     </div>
-
+ 
     <div style="overflow-x:auto;">
         <table class="complaints-table">
             <thead>
@@ -443,7 +432,12 @@
                     <td style="color:#333;font-weight:500;">{{ Str::limit($complaint->subject, 28) }}</td>
                     <td><span style="background:#f3f3f3;padding:.2rem .62rem;border-radius:12px;font-size:.7rem;font-weight:600;color:#666;">{{ $complaint->type_label }}</span></td>
                     <td style="font-size:.78rem;color:#777;white-space:nowrap;">{{ $complaint->created_at->format('d M Y') }}</td>
-                    <td><span class="badge badge-{{ $complaint->status }}">{{ $complaint->status_label }}</span></td>
+                    <td>
+                        <span class="badge badge-{{ $complaint->status }}">{{ $complaint->status_label }}</span>
+                        @if(method_exists($complaint, 'isOverdue') && $complaint->isOverdue())
+                            <span class="badge badge-escalated" style="margin-left:4px;">Overdue</span>
+                        @endif
+                    </td>
                     <td onclick="event.stopPropagation()">
                         <a href="{{ route('admin.complaints.show', $complaint->id) }}" class="btn-view" title="View Details">
                             <i class="fas fa-eye"></i>
@@ -463,12 +457,13 @@
             </tbody>
         </table>
     </div>
-
+ 
     @if($complaints->hasPages())
     <div class="pagination-wrapper">
         {{ $complaints->appends(request()->query())->links() }}
     </div>
     @endif
 </div>
-
+ 
 @endsection
+</document_content>

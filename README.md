@@ -154,6 +154,4 @@ For Google and Facebook login, you also need to add your own client ID and secre
 
 This is an academic project made for my final year. It is not licensed for commercial use.
 
-## Author
 
-Sahrish, final-year student.

@@ -962,14 +962,14 @@
                     <a href="tel:+923069734142" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">+92 306 9734142</a>
                 </p>
                 
-                <!-- Email -->
+                
                 <p style="color:#888; font-size:0.78rem; display:flex; align-items:center; gap:8px;">
                     <i class="fas fa-envelope" style="color:#E91E8C; width:16px; text-align:center;"></i>
-                    <a href="mailto:beautyblushsalons@gmail.com" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">"beautyblushsalons@gmail.com" </a>
+                    <a href="mailto:beautyblushsalons@gmail.com" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">beautyblushsalons@gmail.com</a>
                 </p>
             </div>
  
-            <!-- Quick Links -->
+           
             <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
                 <h6 class="fw-bold mb-4" style="color:#E91E8C; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Quick Links</h6>
                 <ul class="list-unstyled">

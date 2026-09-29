@@ -1,7 +1,7 @@
 @extends('layouts.client')
-
+ 
 @section('title', 'My Complaints — Beauty Blush Salons')
-
+ 
 @push('styles')
 <style>
     :root {
@@ -14,7 +14,7 @@
         --pk-success: #22c55e;
         --pk-muted: #9ca3af;
     }
-
+ 
     
     .page-header {
         display: flex;
@@ -39,7 +39,7 @@
         font-size: 0.85rem;
         margin: 0;
     }
-
+ 
   
     .btn-new {
         background: var(--pk);
@@ -60,7 +60,7 @@
         box-shadow: 0 6px 20px rgba(255, 107, 157,0.3);
         color: #fff;
     }
-
+ 
    
     .status-tabs {
         display: flex;
@@ -88,7 +88,7 @@
         border-color: var(--pk);
         color: var(--pk);
     }
-
+ 
    
     .complaint-card {
         background: #fff;
@@ -141,7 +141,7 @@
         color: #059669;
         border: 2px solid #a7f3d0;
     }
-
+ 
     .complaint-card .info h5 {
         font-weight: 700;
         font-size: 0.95rem;
@@ -165,7 +165,7 @@
         margin-top: 6px;
         line-height: 1.5;
     }
-
+ 
     .complaint-card .right-section {
         display: flex;
         align-items: flex-end;
@@ -187,7 +187,9 @@
     .status-closed { background: #f3f4f6; color: #6b7280; }
     .status-escalated { background: #fee2e2; color: #dc2626; }
     .status-rejected { background: #f3f4f6; color: #6b7280; }
-
+    .status-awaiting_owner { background: #dbeafe; color: #1e40af; }
+    .status-owner_replied_admin { background: #d1fae5; color: #065f46; }
+ 
     .complaint-card .actions {
         display: flex;
         gap: 6px;
@@ -245,7 +247,7 @@
         color: #9ca3af;
         transform: none;
     }
-
+ 
     .complaint-card .replies-count {
         font-size: 0.7rem;
         color: #aaa;
@@ -256,7 +258,7 @@
     .complaint-card .replies-count i {
         color: var(--pk);
     }
-
+ 
     
     .empty-state {
         text-align: center;
@@ -284,12 +286,12 @@
         margin: 0 auto 1rem;
         font-size: 0.95rem;
     }
-
+ 
    
     .complaint-icon {
         color: #FF6B9D;
     }
-
+ 
    
     @media (max-width: 768px) {
         .complaint-card {
@@ -314,9 +316,9 @@
     }
 </style>
 @endpush
-
+ 
 @section('content')
-
+ 
 <div class="page-header">
     <div>
         <h4><i class="fas fa-exclamation-circle"></i>My Complaints</h4>
@@ -326,8 +328,8 @@
         <i class="fas fa-plus me-1"></i>File New Complaint
     </a>
 </div>
-
-
+ 
+ 
 <div class="status-tabs">
     @php
         $tabs = [
@@ -348,15 +350,15 @@
         </a>
     @endforeach
 </div>
-
-
+ 
+ 
 <div class="row g-4">
     @forelse($complaints as $complaint)
     <div class="col-12">
         <div class="complaint-card">
-
+ 
             <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
-
+ 
                 
                 <div class="card-left">
                     {{-- Priority Icon - Dark Pink Circle --}}
@@ -367,7 +369,7 @@
                     <div class="icon-box {{ $priorityClass }}">
                         <i class="fas {{ $priorityIcon }}"></i>
                     </div>
-
+ 
                     {{-- Complaint Details --}}
                     <div class="info">
                         <h5>{{ $complaint->subject }}</h5>
@@ -379,7 +381,7 @@
                         <div class="description">{{ Str::limit($complaint->description, 120) }}</div>
                     </div>
                 </div>
-
+ 
                 
                 <div class="right-section">
                     {{-- Status Badge --}}
@@ -391,24 +393,26 @@
                             'closed' => ['label' => 'Closed', 'class' => 'status-closed'],
                             'escalated' => ['label' => 'Escalated', 'class' => 'status-escalated'],
                             'rejected' => ['label' => 'Rejected', 'class' => 'status-rejected'],
+                            'awaiting_owner' => ['label' => 'Admin Reviewing', 'class' => 'status-awaiting_owner'],
+                            'owner_replied_admin' => ['label' => 'Admin Reviewing', 'class' => 'status-owner_replied_admin'],
                         ];
                         $st = $statusLabels[$complaint->status] ?? ['label' => ucfirst($complaint->status), 'class' => 'status-pending'];
                     @endphp
                     <span class="status-badge {{ $st['class'] }}">{{ $st['label'] }}</span>
-
+ 
                     {{-- Replies Count --}}
                     <div class="replies-count">
                         <i class="fas fa-comment"></i>
                         {{ $complaint->replies->count() }} replies
                     </div>
-
+ 
                     {{-- Action Buttons --}}
                     <div class="actions">
                         {{-- View Button --}}
                         <a href="{{ route('client.complaints.show', $complaint->id) }}" class="btn-action view">
                             <i class="fas fa-eye"></i> View
                         </a>
-
+ 
                         {{-- Edit Button - Only if status is 'pending' --}}
                         @if($complaint->status === 'pending')
                             <a href="{{ route('client.complaints.edit', $complaint->id) }}" class="btn-action edit">
@@ -419,7 +423,7 @@
                                 <i class="fas fa-edit"></i> Edit
                             </span>
                         @endif
-
+ 
                         {{-- Delete Button - Only if status is 'pending' --}}
                         @if($complaint->status === 'pending')
                             <form action="{{ route('client.complaints.destroy', $complaint->id) }}" method="POST" style="display:inline;" 
@@ -454,11 +458,12 @@
     </div>
     @endforelse
 </div>
-
+ 
 @if($complaints->hasPages())
 <div class="mt-4 d-flex justify-content-center">
     {{ $complaints->links() }}
 </div>
 @endif
-
+ 
 @endsection
+ 

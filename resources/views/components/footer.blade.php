@@ -11,7 +11,7 @@
                 </h3>
                 <p style="color:#777; line-height:1.8; font-size:0.88rem;">
                     Pakistan's premium multi-salon booking platform. Discover top salons,
-                    book appointments, and experience beauty like never before.
+                    book appointments and experience beauty like never before.
                 </p>
                 <p style="color:#888; font-size:0.78rem; margin-top:10px;">
                     <i class="fas fa-map-marker-alt" style="color:#E91E8C; margin-right:8px; width:16px;"></i>

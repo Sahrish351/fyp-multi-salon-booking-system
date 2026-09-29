@@ -1,9 +1,9 @@
 @extends('layouts.owner')
-
+ 
 @section('title', 'Complaint #' . $complaint->id)
-
+ 
 @section('content')
-
+ 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i>
@@ -11,7 +11,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-
+ 
     @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -19,7 +19,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-
+ 
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <h2>Complaint #{{ $complaint->id }}</h2>
@@ -29,12 +29,12 @@
             <i class="bi bi-arrow-left me-2"></i> Back to Complaints
         </a>
     </div>
-
+ 
     <div class="row g-4">
-
+ 
         {{-- LEFT COLUMN --}}
         <div class="col-lg-8">
-
+ 
             {{-- Complaint Details --}}
             <div class="panel-card mb-4">
                 <div class="d-flex justify-content-between align-items-start">
@@ -50,12 +50,12 @@
                     </div>
                     <span class="badge-status {{ $complaint->status_badge }} fs-6">{{ $complaint->status_label }}</span>
                 </div>
-
+ 
                 <hr>
-
+ 
                 <h6 class="fw-bold">Description</h6>
                 <p>{{ $complaint->description }}</p>
-
+ 
                 @if($complaint->image)
                     <div class="mt-3">
                         <h6 class="fw-bold">Attachment</h6>
@@ -64,7 +64,7 @@
                         </a>
                     </div>
                 @endif
-
+ 
                 @if($complaint->rejection_reason)
                     <div class="mt-4 p-3 bg-danger bg-opacity-10 rounded border border-danger">
                         <h6 class="fw-bold text-danger">
@@ -73,7 +73,16 @@
                         <p class="mb-0">{{ $complaint->rejection_reason }}</p>
                     </div>
                 @endif
-
+ 
+                @if($complaint->escalation_reason)
+                    <div class="mt-4 p-3 rounded border" style="background:rgba(220,38,38,0.07);border-color:#f3b9b9 !important;">
+                        <h6 class="fw-bold" style="color:#991b1b;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Why Client Escalated
+                        </h6>
+                        <p class="mb-0">{{ $complaint->escalation_reason }}</p>
+                    </div>
+                @endif
+ 
                 @if($complaint->admin_response)
                     <div class="mt-4 p-3 bg-warning bg-opacity-10 rounded border border-warning">
                         <h6 class="fw-bold">
@@ -84,11 +93,48 @@
                     </div>
                 @endif
             </div>
-
+ 
+            {{-- Admin's Question / Discussion Card --}}
+            @if($complaint->admin_question)
+            <div class="panel-card mb-4">
+                <h6 class="fw-bold"><i class="bi bi-shield-fill me-2" style="color:#4A7FE0;"></i> Admin's Question</h6>
+                <div class="p-3 rounded-3 mb-3" style="background:#E8F0FE;border:1px solid #cfe0fb;">
+                    <p class="mb-1" style="color:#1e3a8a;">{{ $complaint->admin_question }}</p>
+                    <small class="text-muted">
+                        Asked: {{ optional($complaint->admin_question_at)->format('M d, Y h:i A') }}
+                        @if($complaint->owner_deadline_at)
+                            <br>Please reply before: <strong>{{ $complaint->owner_deadline_at->format('M d, Y h:i A') }}</strong>
+                            @if(method_exists($complaint, 'isOverdue') && $complaint->isOverdue())
+                                <span class="badge-status badge-escalated ms-1">OVERDUE</span>
+                            @endif
+                        @endif
+                    </small>
+                </div>
+ 
+                @if($complaint->owner_statement)
+                    <div class="p-3 rounded-3" style="background:#E8F5ED;border:1px solid #cdeedb;">
+                        <p class="mb-1" style="color:#14532d;">{{ $complaint->owner_statement }}</p>
+                        <small class="text-muted">Sent: {{ optional($complaint->owner_statement_at)->format('M d, Y h:i A') }}</small>
+                    </div>
+                @elseif(method_exists($complaint, 'canOwnerReplyToAdmin') && $complaint->canOwnerReplyToAdmin())
+                    <form action="{{ route('owner.complaints.reply-to-admin', $complaint->id) }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label-custom">Your Statement to Admin</label>
+                            <textarea name="owner_statement" class="form-control input-custom" rows="4" placeholder="Explain your side to admin..." required minlength="5"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-progress">
+                            <i class="bi bi-send me-2"></i> Send Statement to Admin
+                        </button>
+                    </form>
+                @endif
+            </div>
+            @endif
+ 
             {{-- Owner Reply Section --}}
             <div class="panel-card mb-4">
                 <h6 class="fw-bold"><i class="bi bi-chat-fill me-2" style="color:#E85588;"></i> Your Reply</h6>
-
+ 
                 @if($complaint->owner_reply)
                     <div class="p-3 bg-light rounded">
                         <p class="mb-0">{{ $complaint->owner_reply }}</p>
@@ -97,8 +143,8 @@
                 @else
                     <p class="text-muted">No reply yet.</p>
                 @endif
-
-                @if($complaint->status != 'closed' && $complaint->status != 'rejected' && $complaint->status != 'escalated')
+ 
+                @if($complaint->status != 'closed' && $complaint->status != 'rejected' && $complaint->status != 'escalated' && $complaint->status != 'awaiting_owner' && $complaint->status != 'owner_replied_admin')
                     <form action="{{ route('owner.complaints.reply', $complaint->id) }}" method="POST" class="mt-3">
                         @csrf
                         <div class="mb-3">
@@ -111,16 +157,16 @@
                     </form>
                 @endif
             </div>
-
+ 
         </div>
-
+ 
         {{-- RIGHT COLUMN --}}
         <div class="col-lg-4">
-
+ 
             {{-- Actions --}}
             <div class="panel-card mb-4">
                 <h6 class="fw-bold"><i class="bi bi-gear-fill me-2" style="color:#E85588;"></i> Actions</h6>
-
+ 
                 @if($complaint->isPending())
                     <form action="{{ route('owner.complaints.in-progress', $complaint->id) }}" method="POST" class="mb-2">
                         @csrf
@@ -129,7 +175,7 @@
                         </button>
                     </form>
                 @endif
-
+ 
                 @if($complaint->isInProgress())
                     <form action="{{ route('owner.complaints.resolve', $complaint->id) }}" method="POST" class="mb-2">
                         @csrf
@@ -138,27 +184,41 @@
                         </button>
                     </form>
                 @endif
-
+ 
                 @if($complaint->isPending() || $complaint->isInProgress())
                     <button type="button" class="btn btn-reject-pay w-100" data-bs-toggle="modal" data-bs-target="#rejectModal">
                         <i class="bi bi-x-circle me-2"></i> Reject Complaint
                     </button>
                 @endif
-
+ 
                 @if($complaint->status == 'escalated')
                     <div class="alert alert-warning mt-2">
                         <i class="bi bi-exclamation-triangle me-2"></i>
                         This complaint has been escalated to Admin.
                     </div>
                 @endif
-
+ 
+                @if($complaint->status == 'awaiting_owner')
+                    <div class="alert" style="background:#E8F0FE;color:#1e40af;border:1px solid #cfe0fb;">
+                        <i class="bi bi-hourglass-split me-2"></i>
+                        Admin is waiting for your statement. Please reply above.
+                    </div>
+                @endif
+ 
+                @if($complaint->status == 'owner_replied_admin')
+                    <div class="alert" style="background:#E8F5ED;color:#1E8E64;border:1px solid #cdeedb;">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Your statement has been sent. Admin will give a final decision soon.
+                    </div>
+                @endif
+ 
                 @if($complaint->status == 'closed')
                     <div class="alert alert-success mt-2">
                         <i class="bi bi-check-circle me-2"></i>
                         This complaint is closed.
                     </div>
                 @endif
-
+ 
                 @if($complaint->status == 'rejected')
                     <div class="alert alert-danger mt-2">
                         <i class="bi bi-x-circle me-2"></i>
@@ -166,7 +226,7 @@
                     </div>
                 @endif
             </div>
-
+ 
             {{-- Status Timeline --}}
             <div class="panel-card">
                 <h6 class="fw-bold"><i class="bi bi-clock-history me-2" style="color:#E85588;"></i> Status Timeline</h6>
@@ -175,49 +235,65 @@
                         <i class="bi bi-check-circle-fill text-success me-2"></i>
                         Submitted ({{ $complaint->created_at->format('M d, Y h:i A') }})
                     </li>
-
+ 
                     @if($complaint->owner_replied_at)
                         <li class="mb-2">
                             <i class="bi bi-check-circle-fill text-info me-2"></i>
                             Owner Replied ({{ \Carbon\Carbon::parse($complaint->owner_replied_at)->format('M d, Y h:i A') }})
                         </li>
                     @endif
-
+ 
                     @if($complaint->status == 'in_progress' || $complaint->status == 'resolved' || $complaint->status == 'closed')
                         <li class="mb-2">
                             <i class="bi bi-check-circle-fill text-info me-2"></i>
                             In Progress
                         </li>
                     @endif
-
+ 
                     @if($complaint->status == 'resolved' || $complaint->status == 'closed')
                         <li class="mb-2">
                             <i class="bi bi-check-circle-fill text-primary me-2"></i>
                             Resolved
                         </li>
                     @endif
-
+ 
                     @if($complaint->client_action == 'accept')
                         <li class="mb-2">
                             <i class="bi bi-check-circle-fill text-success me-2"></i>
                             Client Accepted ({{ $complaint->client_actioned_at ? \Carbon\Carbon::parse($complaint->client_actioned_at)->format('M d, Y h:i A') : 'N/A' }})
                         </li>
                     @endif
-
+ 
+                    @if($complaint->status == 'escalated' || $complaint->status == 'awaiting_owner' || $complaint->status == 'owner_replied_admin' || $complaint->status == 'closed')
+                        @if($complaint->client_action == 'escalate')
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle-fill text-danger me-2"></i>
+                            Escalated to Admin ({{ $complaint->client_actioned_at ? \Carbon\Carbon::parse($complaint->client_actioned_at)->format('M d, Y h:i A') : 'N/A' }})
+                        </li>
+                        @endif
+                    @endif
+ 
+                    @if($complaint->admin_question_at)
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle-fill text-info me-2"></i>
+                            Admin Asked for Your Statement ({{ \Carbon\Carbon::parse($complaint->admin_question_at)->format('M d, Y h:i A') }})
+                        </li>
+                    @endif
+ 
+                    @if($complaint->owner_statement_at)
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            You Replied to Admin ({{ \Carbon\Carbon::parse($complaint->owner_statement_at)->format('M d, Y h:i A') }})
+                        </li>
+                    @endif
+ 
                     @if($complaint->status == 'closed')
                         <li class="mb-2">
                             <i class="bi bi-check-circle-fill text-success me-2"></i>
                             Closed
                         </li>
                     @endif
-
-                    @if($complaint->status == 'escalated')
-                        <li class="mb-2">
-                            <i class="bi bi-check-circle-fill text-danger me-2"></i>
-                            Escalated to Admin ({{ $complaint->client_actioned_at ? \Carbon\Carbon::parse($complaint->client_actioned_at)->format('M d, Y h:i A') : 'N/A' }})
-                        </li>
-                    @endif
-
+ 
                     @if($complaint->status == 'rejected')
                         <li class="mb-2">
                             <i class="bi bi-x-circle-fill text-danger me-2"></i>
@@ -226,13 +302,13 @@
                     @endif
                 </ul>
             </div>
-
+ 
         </div>
-
+ 
     </div>
-
+ 
 @endsection
-
+ 
 @push('modals')
     {{-- Reject Modal --}}
     <div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
@@ -257,7 +333,7 @@
         </div>
     </div>
 @endpush
-
+ 
 @section('extra-css')
 <style>
     .page-header h2 {
@@ -270,7 +346,7 @@
         color: #8a7a88;
         margin-bottom: 0;
     }
-
+ 
     .btn-back {
         background: #fff;
         border: 1px solid #f0e8ed;
@@ -289,7 +365,7 @@
         border-color: #E85588;
         color: #E85588;
     }
-
+ 
     .panel-card {
         background: #fff;
         border-radius: 16px;
@@ -298,7 +374,7 @@
         border: 1px solid #f0e8ed;
         height: auto !important;
     }
-
+ 
     .badge-status {
         display: inline-block;
         padding: 4px 14px;
@@ -314,7 +390,9 @@
     .badge-closed { background: #F3F4F6; color: #6B7280; }
     .badge-escalated { background: #FCE4EC; color: #D45482; }
     .badge-rejected { background: #FEE2E2; color: #DC2626; }
-
+    .badge-awaiting_owner { background: #E8F0FE; color: #3568C4; }
+    .badge-owner_replied_admin { background: #E8F5ED; color: #1E8E64; }
+ 
     .form-label-custom {
         display: block;
         font-size: 13.5px;
@@ -337,7 +415,7 @@
         box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15) !important;
         outline: none;
     }
-
+ 
     .btn-save-changes {
         background: linear-gradient(135deg, #FF6B9D, #E85588) !important;
         color: #ffffff !important;
@@ -352,7 +430,7 @@
         box-shadow: 0 4px 14px rgba(232, 85, 136, 0.35);
         color: #ffffff !important;
     }
-
+ 
     .btn-progress {
         background: linear-gradient(135deg, #4A7FE0, #3568C4) !important;
         color: #ffffff !important;
@@ -367,7 +445,7 @@
         box-shadow: 0 4px 14px rgba(74, 127, 224, 0.35);
         color: #ffffff !important;
     }
-
+ 
     .btn-resolve {
         background: linear-gradient(135deg, #2EAE7D, #1E8E64) !important;
         color: #ffffff !important;
@@ -382,7 +460,7 @@
         box-shadow: 0 4px 14px rgba(46, 174, 125, 0.35);
         color: #ffffff !important;
     }
-
+ 
     .btn-reject-pay {
         background: #FCE4EC;
         color: #E14D6A;
@@ -399,7 +477,7 @@
         background: #E14D6A;
         color: #fff;
     }
-
+ 
     .btn-cancel-modal {
         background: #fff;
         border: 1.5px solid #FF6B9D;
@@ -414,7 +492,7 @@
         color: #ffffff !important;
         border-color: #E85588;
     }
-
+ 
     .modal-content-custom {
         border-radius: 16px;
         border: none;
@@ -435,7 +513,7 @@
         padding: 16px 24px;
         gap: 10px;
     }
-
+ 
     .timeline {
         padding-left: 0;
     }
@@ -448,7 +526,7 @@
     .timeline li:last-child {
         border-bottom: none;
     }
-
+ 
     .alert {
         border-radius: 12px;
         border: none;
@@ -457,7 +535,7 @@
     .alert-success { background: #E8F5E9; color: #1B5E20; }
     .alert-danger { background: #FCE4EC; color: #880E4F; }
     .alert-warning { background: #FDF6E8; color: #856404; }
-
+ 
     @media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -470,3 +548,4 @@
     }
 </style>
 @endsection
+ 

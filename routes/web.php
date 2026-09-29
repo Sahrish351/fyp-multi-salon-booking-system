@@ -263,7 +263,8 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/complaints', [AdminComplaintController::class, 'index'])->name('complaints.index');
 Route::get('/complaints/{complaint}', [AdminComplaintController::class, 'show'])->name('complaints.show');
-Route::put('/complaints/{complaint}', [AdminComplaintController::class, 'update'])->name('complaints.update'); // <-- Yeh line yahan add karein
+Route::put('/complaints/{complaint}', [AdminComplaintController::class, 'update'])->name('complaints.update');
+Route::post('/complaints/{complaint}/ask-owner', [AdminComplaintController::class, 'askOwner'])->name('complaints.ask-owner');
 Route::post('/complaints/{complaint}/respond', [AdminComplaintController::class, 'respond'])->name('complaints.respond');
 Route::post('/complaints/{complaint}/close', [AdminComplaintController::class, 'close'])->name('complaints.close');
 
@@ -412,12 +413,14 @@ Route::post('/complaints/{complaint}/close', [AdminComplaintController::class, '
         Route::post('/notifications/{id}/read', [OwnerNotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/notifications/read-all', [OwnerNotificationController::class, 'markAllRead'])->name('notifications.read-all');
 
-        Route::get('/complaints', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'index'])->name('complaints.index');
-        Route::get('/complaints/{complaint}', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'show'])->name('complaints.show');
-        Route::post('/complaints/{complaint}/reply', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'reply'])->name('complaints.reply');
-        Route::post('/complaints/{complaint}/in-progress', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'markInProgress'])->name('complaints.in-progress');
-        Route::post('/complaints/{complaint}/resolve', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'resolve'])->name('complaints.resolve');
-        Route::post('/complaints/{complaint}/reject', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'reject'])->name('complaints.reject');
+Route::get('/complaints', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'index'])->name('complaints.index');
+Route::get('/complaints/{complaint}', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'show'])->name('complaints.show');
+Route::post('/complaints/{complaint}/reply', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'reply'])->name('complaints.reply');
+Route::post('/complaints/{complaint}/reply-to-admin', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'replyToAdmin'])->name('complaints.reply-to-admin');
+Route::post('/complaints/{complaint}/in-progress', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'markInProgress'])->name('complaints.in-progress');
+Route::post('/complaints/{complaint}/resolve', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'resolve'])->name('complaints.resolve');
+Route::post('/complaints/{complaint}/reject', [App\Http\Controllers\Owner\OwnerComplaintController::class, 'reject'])->name('complaints.reject');
+
 
         Route::get('/reports', [OwnerReportController::class, 'index'])->name('reports.index');
         Route::post('/reports/export', [OwnerReportController::class, 'export'])->name('reports.export');
@@ -425,9 +428,9 @@ Route::post('/complaints/{complaint}/close', [AdminComplaintController::class, '
 
         Route::get('/analytics', [OwnerAnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/analytics/revenue', [OwnerAnalyticsController::class, 'revenue'])->name('analytics.revenue');
-    }); // ✅ OWNER ROUTES CLOSED
+    }); // OWNER ROUTES CLOSED
 
-   // ========================================================
+// ========================================================
 // CLIENT ROUTES
 // ========================================================
 Route::prefix('client')->name('client.')->middleware(['auth'])->group(function () {
