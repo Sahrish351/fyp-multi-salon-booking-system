@@ -73,7 +73,7 @@
 <div>
     <div class="page-header">
         <h1>Enterprise Command Center</h1>
-        <p>Real-time Glamora salon network oversight and operational intelligence.</p>
+        <p>Real-time Beauty Blush salons network oversight and operational intelligence.</p>
     </div>
 
     @php
