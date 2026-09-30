@@ -2,136 +2,16 @@
 @section('title', $salon->name . ' — Beauty Blush Salons')
 @section('description', $salon->description ?? 'Book appointments at '.$salon->name.' on Beauty Blush Salons.')
  
-{{-- CHANGE 1: this tells layouts/guest.blade.php to hide its own Home/Services/About/Contact navbar
-     (requires the small @unless edit in guest.blade.php — see chat instructions) --}}
-@section('hideMainNav', true)
- 
 @push('styles')
 <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; -webkit-font-smoothing: antialiased; }
     a { text-decoration: none; color: inherit; }
  
-    .g-nav {
-        background: #fff;
-        border-bottom: 1px solid #ebebeb;
-        padding: 0 32px;
-        height: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-    }
-    .g-nav .brand {
-        font-size: 1.5rem;
-        font-weight: 900;
-        letter-spacing: -1px;
-        background: linear-gradient(135deg, #E91E8C, #9333ea);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        display: inline-block;
-        padding-right: 6px;
-    }
-    .nav-search-pill {
-        display: flex;
-        align-items: center;
-        background: #f5f5f5;
-        border-radius: 50px;
-        padding: 6px 6px 6px 18px;
-        gap: 0;
-        flex: 1;
-        max-width: 560px;
-        margin: 0 24px;
-        border: 1px solid #e8e8e8;
-        transition: box-shadow .2s;
-    }
-    .nav-search-pill:focus-within { box-shadow: 0 0 0 2px #1a1a1a; background: #fff; }
-    .nav-search-pill input {
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 0.85rem;
-        color: #1a1a1a;
-        flex: 1;
-        min-width: 0;
-    }
-    .nav-search-pill input::placeholder { color: #999; }
-    .nav-search-pill .ns-divider { width: 1px; height: 20px; background: #d8d8d8; margin: 0 12px; flex-shrink: 0; }
-    .nav-search-pill .ns-icon { color: #999; font-size: 0.82rem; margin-right: 6px; flex-shrink: 0; }
-    .btn-ns-search {
-        background: #1a1a1a;
-        color: #fff;
-        border: none;
-        border-radius: 50px;
-        width: 38px;
-        height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.85rem;
-        cursor: pointer;
-        flex-shrink: 0;
-        transition: background .15s;
-    }
-    .btn-ns-search:hover { background: #E91E8C; }
-    .g-nav .nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .btn-nav-menu {
-        background: #fff;
-        border: 1.5px solid #e0e0e0;
-        color: #1a1a1a;
-        font-size: 0.82rem;
-        font-weight: 600;
-        padding: 8px 16px;
-        border-radius: 50px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: all .15s;
-    }
-    .btn-nav-menu:hover { border-color: #1a1a1a; }
-    .btn-nav-ghost {
-        background: transparent;
-        border: none;
-        color: #1a1a1a;
-        font-size: 0.88rem;
-        font-weight: 600;
-        padding: 8px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background .15s;
-    }
-    .btn-nav-ghost:hover { background: #f5f5f5; }
-    .btn-nav-outline {
-        background: #fff;
-        border: 1.5px solid #1a1a1a;
-        color: #1a1a1a;
-        font-size: 0.88rem;
-        font-weight: 700;
-        padding: 8px 18px;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: all .15s;
-        display: inline-block;
-    }
-    .btn-nav-outline:hover { background: #1a1a1a; color: #fff; }
- 
-    .breadcrumb-bar {
-        padding: 14px 32px;
-        font-size: 0.82rem;
-        color: #888;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        border-bottom: 1px solid #f5f5f5;
-    }
-    .breadcrumb-bar a { color: #888; transition: color .15s; }
-    .breadcrumb-bar a:hover { color: #1a1a1a; }
-    .breadcrumb-bar .sep { color: #ccc; }
-    .breadcrumb-bar .current { color: #1a1a1a; font-weight: 500; }
+   
+    :root { --nav-h: 82px; }
+    @media (max-width: 991.98px) { :root { --nav-h: 70px; } }
+    @media (max-width: 576px) { :root { --nav-h: 64px; } }
  
     .detail-wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
     @media(max-width:576px) { .detail-wrap { padding: 0 16px; } }
@@ -249,7 +129,7 @@
         border-bottom: 1px solid #e8e8e8;
         margin-bottom: 32px;
         position: sticky;
-        top: 64px;
+        top: var(--nav-h);
         background: #fff;
         z-index: 100;
         padding: 0;
@@ -273,7 +153,7 @@
     .salon-tab:hover { color: #1a1a1a; }
     .salon-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
  
-    .page-section { margin-bottom: 56px; scroll-margin-top: 130px; }
+    .page-section { margin-bottom: 56px; scroll-margin-top: calc(var(--nav-h) + 66px); }
     .page-section:last-child { margin-bottom: 0; }
     .page-section h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 16px; }
  
@@ -406,10 +286,10 @@
     .big-rating .br-count { font-size: 0.85rem; color: #888; }
  
     /* ABOUT SECTION - FIXED LAYOUT */
-    .about-section p { 
-        font-size: 0.9rem; 
-        color: #555; 
-        line-height: 1.8; 
+    .about-section p {
+        font-size: 0.9rem;
+        color: #555;
+        line-height: 1.8;
         margin-bottom: 24px;
         font-family: 'Inter', sans-serif;
     }
@@ -434,9 +314,9 @@
         gap: 8px;
         cursor: pointer;
     }
-    .address-line { 
-        font-size: 0.88rem; 
-        color: #555; 
+    .address-line {
+        font-size: 0.88rem;
+        color: #555;
         margin-bottom: 24px;
         font-family: 'Inter', sans-serif;
     }
@@ -586,7 +466,7 @@
         border-radius: 20px;
         padding: 26px;
         position: sticky;
-        top: 80px;
+        top: calc(var(--nav-h) + 18px);
         box-shadow: 0 8px 30px rgba(0,0,0,0.05);
     }
     .booking-sidebar .bs-name { font-size: 1.4rem; font-weight: 800; color: #1a1a1a; letter-spacing: -0.3px; margin-bottom: 12px; line-height: 1.2; }
@@ -686,14 +566,8 @@
     .photo-modal-close { position: absolute; top: -40px; right: 0; color: #fff; font-size: 1.4rem; cursor: pointer; background: none; border: none; }
  
     @media (max-width: 768px) {
-        .g-nav { padding: 0 16px; height: 56px; }
-        .g-nav .brand { font-size: 1.1rem; }
-        .btn-nav-ghost, .btn-nav-outline { font-size: 0.75rem; padding: 6px 12px; }
-        .btn-nav-menu { font-size: 0.75rem; padding: 6px 10px; }
-        .breadcrumb-bar { padding: 10px 16px; font-size: 0.7rem; }
         .detail-wrap { padding: 0 12px; }
         .content-grid { padding: 20px 0 40px; gap: 30px; }
-        .salon-tabs { top: 56px; }
         .salon-tab { padding: 10px 14px; font-size: 0.78rem; }
         .photo-grid { height: auto; }
         .photo-grid .main-photo { grid-row: auto; height: 280px; }
@@ -714,70 +588,14 @@
         .team-grid { grid-template-columns: repeat(2, 1fr); }
         .nearby-grid { grid-template-columns: 1fr; }
         .other-biz-grid { grid-template-columns: repeat(2,1fr); }
-        .g-nav .brand { font-size: 0.95rem; }
-        .btn-nav-ghost, .btn-nav-outline { font-size: 0.65rem; padding: 4px 10px; }
-        .btn-nav-menu { font-size: 0.65rem; padding: 4px 8px; }
         .booking-sidebar { padding: 16px; }
         .booking-sidebar .bs-name { font-size: 1.1rem; }
         .bs-info-row .bs-info-text { font-size: 0.78rem; }
-        .breadcrumb-bar { flex-wrap: wrap; gap: 4px; }
     }
 </style>
 @endpush
  
 @section('content')
- 
-<nav class="g-nav">
-    <a href="{{ route('home') }}" class="brand" style="flex-shrink:0;">Beauty Blush Salons</a>
- 
-    <form action="{{ route('salons.index') }}" method="GET" class="nav-search-pill d-none d-md-flex">
-        <i class="fas fa-search ns-icon" style="color:#999;"></i>
-        <input type="text" name="search" placeholder="All treatments">
-        <div class="ns-divider"></div>
-        <i class="fas fa-map-marker-alt ns-icon" style="color:#E91E8C;"></i>
-        <input type="text" name="city" placeholder="Current location">
-        <div class="ns-divider"></div>
-        <i class="fas fa-calendar ns-icon"></i>
-        <input type="text" placeholder="Any time">
-        <button type="submit" class="btn-ns-search"><i class="fas fa-search"></i></button>
-    </form>
- 
-    <div class="nav-right">
-        @auth
-            @if(Auth::user()->isAdmin())
-                <a href="{{ route('admin.dashboard') }}" class="btn-nav-ghost d-none d-md-block">Dashboard</a>
-            @elseif(Auth::user()->isOwner())
-                <a href="{{ route('owner.dashboard') }}" class="btn-nav-ghost d-none d-md-block">My Salons</a>
-            @else
-                <a href="{{ route('client.dashboard') }}" class="btn-nav-ghost d-none d-md-block">My Account</a>
-            @endif
-        @else
-            <a href="{{ route('login') }}" class="btn-nav-ghost d-none d-md-block">Log in</a>
-            <a href="{{ route('register.owner') }}" class="btn-nav-outline d-none d-md-block">List your business</a>
-        @endauth
-        <button class="btn-nav-menu" onclick="toggleMobileMenu()">
-            Menu <i class="fas fa-bars"></i>
-        </button>
-    </div>
-</nav>
- 
-<div id="mobileMenu" style="display:none;position:fixed;top:64px;left:0;right:0;background:#fff;z-index:999;border-bottom:1px solid #f0f0f0;box-shadow:0 8px 30px rgba(0,0,0,0.1);">
-    <div style="padding:1rem;">
-        @foreach([['Home','home'],['Find a salon','salons.index'],['Services','services.index'],['About','about'],['Contact','contact'],['List your business','register.owner']] as [$label,$route])
-        <a href="{{ route($route) }}" style="display:block;padding:12px 0;font-size:0.92rem;font-weight:600;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">{{ $label }}</a>
-        @endforeach
-    </div>
-</div>
- 
-<div class="breadcrumb-bar">
-    <a href="{{ route('home') }}">Home</a>
-    <span class="sep">·</span>
-    <a href="{{ route('salons.index') }}">Salons</a>
-    <span class="sep">·</span>
-    <a href="{{ route('salons.index', ['city' => $salon->city]) }}">{{ $salon->city }}</a>
-    <span class="sep">·</span>
-    <span class="current">{{ $salon->name }}</span>
-</div>
  
 <div class="detail-wrap">
  
@@ -1032,12 +850,12 @@
                                 $mapEmbedLocation = urlencode($salon->name . ', ' . $salon->address . ', ' . $salon->city . ', Pakistan');
                             }
                         @endphp
-                        <iframe 
-                            width="100%" 
-                            height="100%" 
-                            style="border:0;" 
-                            loading="lazy" 
-                            allowfullscreen 
+                        <iframe
+                            width="100%"
+                            height="100%"
+                            style="border:0;"
+                            loading="lazy"
+                            allowfullscreen
                             src="https://maps.google.com/maps?q={{ $mapEmbedLocation }}&t=&z=15&ie=UTF8&iwloc=&output=embed">
                         </iframe>
                     </div>
@@ -1262,9 +1080,23 @@
     </div>
 </div>
  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+@endsection
+ 
+@push('scripts')
+{{-- Bootstrap JS layout (layouts/guest) pehle hi load karta hai, isliye yahan dobara load NAHI kiya --}}
 <script>
 const sectionIds = ['services','team','reviews','about','features'];
+ 
+// Shared navbar ki real height CSS variable me set karta hai (sticky tabs/sidebar sahi jagah rahein)
+function syncNavHeight() {
+    const nav = document.querySelector('nav.navbar');
+    if (nav) {
+        document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+    }
+}
+syncNavHeight();
+window.addEventListener('load', syncNavHeight);
+window.addEventListener('resize', syncNavHeight);
  
 function scrollToSection(section) {
     const el = document.getElementById('section-' + section);
@@ -1274,7 +1106,9 @@ function scrollToSection(section) {
 }
  
 function setActiveTabFromScroll() {
-    const tabsBarHeight = document.getElementById('salonTabs').offsetHeight + 70;
+    const nav = document.querySelector('nav.navbar');
+    const navHeight = nav ? nav.offsetHeight : 70;
+    const tabsBarHeight = document.getElementById('salonTabs').offsetHeight + navHeight;
     let current = sectionIds[0];
     for (const id of sectionIds) {
         const el = document.getElementById('section-' + id);
@@ -1311,19 +1145,6 @@ function closePhoto() {
     document.getElementById('photoModal').classList.remove('show');
     document.body.style.overflow = '';
 }
- 
-function toggleMobileMenu() {
-    const menu = document.getElementById('mobileMenu');
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
- 
-document.addEventListener('click', e => {
-    const menu = document.getElementById('mobileMenu');
-    if (!e.target.closest('nav') && !e.target.closest('#mobileMenu')) {
-        menu.style.display = 'none';
-    }
-});
 </script>
- 
-@endsection
+@endpush
  

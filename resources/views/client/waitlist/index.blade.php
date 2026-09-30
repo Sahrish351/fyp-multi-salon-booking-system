@@ -1,7 +1,6 @@
-
 @extends('layouts.client')
 @section('title', 'My Waitlist — Beauty Blush Salons')
-
+ 
 @push('styles')
 <style>
 .waitlist-card {
@@ -79,11 +78,57 @@
 }
 .btn-decline:hover { background: #fff5f5; border-color: #fca5a5; }
 .empty-state { text-align: center; padding: 4rem 2rem; background: #fff; border-radius: 20px; border: 2px dashed #fce4ec; }
+ 
+/* ===== Pagination (matches Payments page style) ===== */
+.wl-pagination { margin-top: 2rem; }
+.wl-pagination nav { width: 100%; }
+.wl-pagination nav > div { justify-content: center !important; }
+.wl-pagination p.small { display: none !important; }   /* hides "Showing 1 to 15 of 16 results" */
+.wl-pagination .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+}
+.wl-pagination .page-item { list-style: none; }
+.wl-pagination .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 10px !important;
+    background: #f3f4f6;
+    color: #555;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .2s;
+    box-shadow: none;
+}
+.wl-pagination .page-link:hover {
+    background: #ffe3ef;
+    color: #FF6B9D;
+}
+.wl-pagination .page-item.active .page-link {
+    background: #FF6B9D;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.35);
+}
+.wl-pagination .page-item.disabled .page-link {
+    background: #f9fafb;
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
 </style>
 @endpush
-
+ 
 @section('content')
-
+ 
 {{-- Page Header --}}
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
@@ -99,7 +144,7 @@
         <i class="fas fa-search me-1"></i>Find More Salons
     </a>
 </div>
-
+ 
 {{-- Status Tabs --}}
 <div class="d-flex gap-2 mb-4 flex-wrap">
     @foreach(['all'=>'All','waiting'=>'Waiting','notified'=>'Notified','accepted'=>'Accepted','expired'=>'Expired'] as $val=>$lbl)
@@ -116,7 +161,7 @@
     </a>
     @endforeach
 </div>
-
+ 
 {{-- Notified Alert --}}
 @php $notifiedItems = $waitlists->where('status','notified'); @endphp
 @if($notifiedItems->count() > 0)
@@ -134,21 +179,21 @@
     </div>
 </div>
 @endif
-
+ 
 {{-- Waitlist Items --}}
 <div class="row g-4">
     @forelse($waitlists as $wl)
     <div class="col-lg-6">
         <div class="waitlist-card">
-
+ 
             {{-- Header --}}
             <div class="d-flex align-items-start gap-3 mb-3">
                 <div class="position-badge">#{{ $wl->position }}</div>
                 <div class="flex-grow-1">
-                    <h6 class="fw-bold mb-1" style="color:#333;font-size:0.95rem;">{{ $wl->salon->name }}</h6>
+                    <h6 class="fw-bold mb-1" style="color:#333;font-size:0.95rem;">{{ $wl->salon?->name ?? 'Salon unavailable' }}</h6>
                     <div style="color:#888;font-size:0.8rem;">
                         <i class="fas fa-map-marker-alt me-1" style="color:#FF6B9D;font-size:0.72rem;"></i>
-                        {{ $wl->salon->area ? $wl->salon->area.', ' : '' }}{{ $wl->salon->city }}
+                        {{ $wl->salon?->area ? $wl->salon->area.', ' : '' }}{{ $wl->salon?->city }}
                     </div>
                 </div>
                 {{-- Status Badge --}}
@@ -165,19 +210,19 @@
                     {{ $wsc[1] }}
                 </span>
             </div>
-
+ 
             {{-- Info Pills --}}
             <div class="row g-2 mb-3">
                 <div class="col-6">
                     <div class="info-pill">
                         <div class="pill-label"><i class="fas fa-spa me-1" style="color:#FF6B9D;"></i>Service</div>
-                        <div class="pill-value">{{ Str::limit($wl->service->name, 20) }}</div>
+                        <div class="pill-value">{{ Str::limit($wl->service?->name ?? 'Service unavailable', 20) }}</div>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="info-pill">
                         <div class="pill-label"><i class="fas fa-user-circle me-1" style="color:#C9A96E;"></i>Stylist</div>
-                        <div class="pill-value">{{ $wl->stylist->name }}</div>
+                        <div class="pill-value">{{ $wl->stylist?->name ?? 'Stylist unavailable' }}</div>
                     </div>
                 </div>
                 <div class="col-6">
@@ -190,7 +235,6 @@
                     <div class="info-pill">
                         <div class="pill-label"><i class="fas fa-clock me-1" style="color:#8b5cf6;"></i>Time Slot</div>
                         <div class="pill-value">
-                            {{-- ✅ FIX: Null safe check for timeSlot --}}
                             @if($wl->timeSlot && $wl->timeSlot->start_time)
                                 {{ \Carbon\Carbon::parse($wl->timeSlot->start_time)->format('h:i A') }}
                             @else
@@ -200,13 +244,13 @@
                     </div>
                 </div>
             </div>
-
+ 
             {{-- Price Info --}}
             <div class="d-flex align-items-center justify-content-between mb-3 p-2 rounded-3" style="background:#fff5f9;">
                 <div style="color:#888;font-size:0.8rem;">Service Price</div>
-                <div style="color:#FF6B9D;font-weight:700;font-size:0.95rem;">Rs. {{ number_format($wl->service->price) }}</div>
+                <div style="color:#FF6B9D;font-weight:700;font-size:0.95rem;">Rs. {{ number_format($wl->service?->price ?? 0) }}</div>
             </div>
-
+ 
             {{-- Notified Action Buttons --}}
             @if($wl->status === 'notified')
             <div class="notified-banner mb-3">
@@ -216,7 +260,7 @@
                 <p style="color:#555;font-size:0.78rem;margin:0;line-height:1.6;">
                     This slot has been reserved for you. Accept within
                     @if($wl->expires_at)
-                    <strong style="color:#ef4444;">{{ \Carbon\Carbon::now()->diffInMinutes($wl->expires_at) }} minutes</strong>
+                    <strong style="color:#ef4444;">{{ max(0, (int) ceil(now()->diffInMinutes($wl->expires_at, false))) }} minutes</strong>
                     @else
                     <strong style="color:#ef4444;">20 minutes</strong>
                     @endif
@@ -242,7 +286,7 @@
                     </button>
                 </form>
             </div>
-
+ 
             {{-- Waiting Status --}}
             @elseif($wl->status === 'waiting')
             <div class="d-flex align-items-center justify-content-between">
@@ -253,8 +297,8 @@
                     <i class="fas fa-users me-1"></i>Position #{{ $wl->position }} in queue
                 </div>
             </div>
-
-            {{-- Accepted Status (FIXED FORM ROUTE HERE) --}}
+ 
+            {{-- Accepted Status --}}
             @elseif($wl->status === 'accepted')
             <div class="p-3 rounded-3" style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);">
                 <div class="d-flex align-items-center gap-2 mb-1">
@@ -263,17 +307,16 @@
                 </div>
                 <p style="color:#555;font-size:0.78rem;margin:0;">
                     You accepted this slot on {{ $wl->responded_at?->format('d M Y, h:i A') ?? 'Recently' }}.
-                    Click below to complete your booking.
+                    Your appointment has been created.
                 </p>
-                <form action="{{ route('client.waitlist.accept', $wl->id) }}" method="POST" class="mt-2">
-                    @csrf
-                    <button type="submit" class="btn btn-sm rounded-3 fw-semibold text-white"
-                            style="background:linear-gradient(135deg,#22c55e,#16a34a);border:none;font-size:0.8rem;">
-                        <i class="fas fa-calendar-plus me-1"></i>Complete Booking
-                    </button>
-                </form>
+                {{-- Link only (a POST to accept again would create a duplicate appointment) --}}
+                <a href="{{ route('client.appointments.index') }}"
+                   class="btn btn-sm rounded-3 fw-semibold text-white mt-2"
+                   style="background:linear-gradient(135deg,#22c55e,#16a34a);border:none;font-size:0.8rem;">
+                    <i class="fas fa-calendar-check me-1"></i>View My Appointments
+                </a>
             </div>
-
+ 
             {{-- Expired/Declined --}}
             @elseif(in_array($wl->status, ['expired','rejected']))
             <div class="p-3 rounded-3" style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.1);">
@@ -284,7 +327,7 @@
                 <div style="color:#aaa;font-size:0.75rem;margin-top:4px;">{{ $wl->responded_at?->diffForHumans() ?? $wl->updated_at->diffForHumans() }}</div>
             </div>
             @endif
-
+ 
         </div>
     </div>
     @empty
@@ -306,13 +349,16 @@
     </div>
     @endforelse
 </div>
-
+ 
+{{-- Pagination --}}
 @if($waitlists->hasPages())
-<div class="mt-4">{{ $waitlists->links() }}</div>
+<div class="wl-pagination">
+    {{ $waitlists->withQueryString()->links('pagination::bootstrap-5') }}
+</div>
 @endif
-
+ 
 @endsection
-
+ 
 @push('scripts')
 <script>
 // Countdown timers for notified waitlists
@@ -340,3 +386,4 @@
 @endforeach
 </script>
 @endpush
+ 

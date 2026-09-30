@@ -2,6 +2,7 @@
  
 namespace App\Models;
  
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
  
@@ -37,6 +38,22 @@ class Appointment extends Model
     public function isConfirmed(): bool { return $this->status === 'confirmed'; }
     public function isCancelled(): bool { return $this->status === 'cancelled'; }
     public function isCompleted(): bool { return $this->status === 'completed'; }
+ 
+    public function hasPassed(): bool
+    {
+        if (!$this->appointment_date) {
+            return false;
+        }
+ 
+        $date = Carbon::parse($this->appointment_date)->toDateString();
+ 
+        $time = $this->start_time;
+        if ($this->waitlist_id || !$time || $time === '00:00:00') {
+            $time = '23:59:59';
+        }
+ 
+        return Carbon::parse($date . ' ' . $time)->isPast();
+    }
  
     public static function generateRef(): string
     {

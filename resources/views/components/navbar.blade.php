@@ -1,6 +1,7 @@
 <nav class="navbar navbar-expand-lg sticky-top" style="background: rgba(255,255,255,0.97); backdrop-filter: blur(10px); border-bottom: 1px solid #fce4ec; z-index: 999; box-shadow: 0 2px 20px rgba(233,30,140,0.06);">
-    <div class="container">
-        
+    {{-- container -> container-fluid: logo ab home page ki tarah left edge ke qareeb hai --}}
+    <div class="container-fluid nav-inner">
+ 
         <a class="navbar-brand" href="{{ route('home') }}" style="display:flex; align-items:center; text-decoration:none; transition: all 0.3s ease; padding:4px 0;">
             <img src="{{ asset('images/full-logo.png') }}" alt="Beauty Blush Salons" class="brand-logo-img">
         </a>
@@ -12,7 +13,7 @@
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav mx-auto gap-1">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}" 
+                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}"
                        style="font-weight:500; font-size:0.92rem; color:#444; transition: all 0.3s ease; position:relative; padding:10px 18px; border-radius:8px;">
                         Home
                         <span class="nav-underline"></span>
@@ -53,6 +54,23 @@
  
 <style>
 
+.navbar .nav-inner {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+@media (max-width: 991.98px) {
+    .navbar .nav-inner {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+@media (max-width: 576px) {
+    .navbar .nav-inner {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+ 
 .navbar .nav-link {
     position: relative;
     text-decoration: none;
@@ -97,12 +115,10 @@
     display: block;
 }
  
-
 .navbar-brand:hover {
     transform: scale(1.02);
 }
  
-
 @media (max-width: 991.98px) {
     .navbar .nav-link {
         padding: 12px 20px !important;
@@ -135,3 +151,4 @@
     }
 }
 </style>
+ 

@@ -67,12 +67,11 @@ class OwnerServiceController extends Controller
  
             $categories = Category::where('salon_id', $salon->id)->orderBy('name')->get();
  
+            // Ab default categories khud nahi banengi.
+            // Owner ko pehle apni category add karni hogi.
             if ($categories->isEmpty()) {
-                $defaultCategories = ['Hair Styling', 'Nail Care', 'Facial', 'Spa', 'Makeup', 'Body Treatment'];
-                foreach ($defaultCategories as $catName) {
-                    Category::create(['salon_id' => $salon->id, 'name' => $catName, 'is_active' => true]);
-                }
-                $categories = Category::where('salon_id', $salon->id)->orderBy('name')->get();
+                return redirect()->route('owner.categories.create')
+                    ->with('error', 'Please create a category first before adding a service.');
             }
  
             return view('owner.services.create', compact('categories', 'salon'));

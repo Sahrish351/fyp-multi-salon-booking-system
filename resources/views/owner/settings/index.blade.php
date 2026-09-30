@@ -438,29 +438,36 @@
     }
  
     /* ============================================================
-       TOGGLE SWITCH - PINK
+       TOGGLE SWITCH - PINK (mobile style: white circle + pink track)
     ============================================================ */
     .form-switch .form-check-input {
+        --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
         width: 50px;
         height: 26px;
-        background-color: #e0d8dd;
+        background-color: #d9d0d6;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: left center;
+        background-size: contain;
         border: none;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: background-color 0.3s ease, background-position 0.3s ease;
         border-radius: 13px;
         box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
     }
-    .form-switch .form-check-input:checked {
-        background: linear-gradient(135deg, #FF6B9D, #E85588);
-        border-color: #E85588;
-        box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.2);
-    }
     .form-switch .form-check-input:focus {
+        --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
         box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.15);
         border-color: #E85588;
     }
-    .form-switch .form-check-input:checked::after {
-        transform: translateX(24px);
+    .form-switch .form-check-input:checked {
+        --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
+        background-color: #E85588;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
+        background-position: right center;
+        border-color: #E85588;
+        box-shadow: 0 0 0 3px rgba(232, 85, 136, 0.2);
     }
  
     /* ============================================================

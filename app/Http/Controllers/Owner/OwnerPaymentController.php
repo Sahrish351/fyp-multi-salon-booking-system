@@ -253,6 +253,17 @@ class OwnerPaymentController extends Controller
         $newStatus     = $validated['status'];
         $statusChanged = $oldStatus !== $newStatus;
  
+        
+        if ($newStatus === 'approved' && $statusChanged) {
+            $appointmentToCheck = $paymentModel->appointment;
+ 
+            if ($appointmentToCheck && $appointmentToCheck->hasPassed()) {
+                return back()
+                    ->withInput()
+                    ->with('error', 'This appointment date has already passed, so the payment cannot be approved.');
+            }
+        }
+ 
         $reason = $newStatus === 'rejected'
             ? trim((string) ($validated['rejection_reason'] ?? ''))
             : null;
@@ -283,7 +294,7 @@ class OwnerPaymentController extends Controller
                     }
                 }
  
-                // Client ko in-app notification (sendToUser: user_id, salon_id, type, data)
+               
                 try {
                     if ($clientId) {
                         NotificationHelper::sendToUser($clientId, $salon->id, 'payment_approved', [
@@ -307,7 +318,7 @@ class OwnerPaymentController extends Controller
                     }
                 }
  
-                // Client ko in-app notification (sendToUser: user_id, salon_id, type, data)
+              
                 try {
                     if ($clientId) {
                         NotificationHelper::sendToUser($clientId, $salon->id, 'payment_rejected', [
@@ -372,6 +383,11 @@ class OwnerPaymentController extends Controller
             return redirect()->route('owner.payments.index')->with('error', 'Payment not found.');
         }
  
+      
+        if ($paymentModel->appointment && $paymentModel->appointment->hasPassed()) {
+            return back()->with('error', 'This appointment date has already passed, so the payment cannot be approved.');
+        }
+ 
         $paymentModel->update(['status' => 'approved']);
  
         if ($paymentModel->appointment) {
@@ -390,7 +406,7 @@ class OwnerPaymentController extends Controller
             }
         }
  
-        // Client ko in-app notification (sendToUser: user_id, salon_id, type, data)
+    
         try {
             $clientId = $paymentModel->client_id ?? ($paymentModel->appointment->client_id ?? null);
             if ($clientId) {
@@ -461,7 +477,7 @@ class OwnerPaymentController extends Controller
             }
         }
  
-        // Client ko in-app notification (sendToUser: user_id, salon_id, type, data)
+       
         try {
             $clientId = $paymentModel->client_id ?? ($paymentModel->appointment->client_id ?? null);
             if ($clientId) {
@@ -515,3 +531,4 @@ class OwnerPaymentController extends Controller
             ->header('Content-Disposition', 'attachment; filename="payments-' . now()->format('Y-m-d') . '.csv"');
     }
 }
+ 
