@@ -8,6 +8,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Waitlist expire command — har minute chalta hai
+
 Schedule::command('waitlist:expire')->everyMinute();
 Schedule::command('appointments:expire-rejected')->everyFifteenMinutes();
+Schedule::command('appointments:send-reminders')->everyFiveMinutes();

@@ -3,11 +3,11 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Carbon\Carbon;
 
-class AppointmentReminderNotification extends Notification implements ShouldQueue
+class AppointmentReminderNotification extends Notification
 {
     use Queueable;
 
@@ -22,37 +22,30 @@ class AppointmentReminderNotification extends Notification implements ShouldQueu
 
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['mail'];
     }
 
     public function toMail($notifiable)
     {
-        $salonName = $this->appointment->salon->name ?? 'Our Salon';
-        $serviceName = $this->appointment->service->name ?? 'Requested Service';
-        $time = date('h:i A', strtotime($this->appointment->appointment_time));
-        $date = date('M d, Y', strtotime($this->appointment->appointment_date));
+        $a       = $this->appointment;
+        $salon   = $a->salon->name ?? 'Our Salon';
+        $service = $a->service->name ?? 'your service';
+        $date    = Carbon::parse($a->appointment_date)->format('M d, Y');
+        $time    = Carbon::parse($a->start_time)->format('h:i A');
 
         if ($this->type === '1_day') {
-            $subject = "Reminder: Appointment Tomorrow at {$salonName}";
-            $message = "This is a reminder for your upcoming appointment tomorrow ({$date}) at {$time} for {$serviceName}.";
+            $subject = "Reminder: Your appointment is tomorrow at {$salon}";
+            $line    = "This is a reminder that your appointment for {$service} is tomorrow, {$date} at {$time}.";
         } else {
-            $subject = "Reminder: Appointment in 2 Hours at {$salonName}";
-            $message = "Your appointment is scheduled today at {$time} for {$serviceName}. Please arrive on time!";
+            $subject = "Reminder: Your appointment is in 2 hours at {$salon}";
+            $line    = "Your appointment for {$service} is today at {$time}, which is in about 2 hours. Please arrive on time!";
         }
 
         return (new MailMessage)
             ->subject($subject)
-            ->greeting("Hello " . $notifiable->name . ",")
-            ->line($message)
+            ->greeting('Hello ' . $notifiable->name . ',')
+            ->line($line)
+            ->line("Booking Ref: {$a->booking_ref}")
             ->line('Thank you for choosing us!');
-    }
-
-    public function toArray($notifiable)
-    {
-        return [
-            'appointment_id' => $this->appointment->id,
-            'type'           => $this->type,
-            'message'        => $this->type === '1_day' ? 'Reminder: Appointment Tomorrow' : 'Reminder: Appointment in 2 Hours',
-        ];
     }
 }

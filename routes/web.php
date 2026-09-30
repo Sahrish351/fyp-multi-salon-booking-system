@@ -90,6 +90,18 @@ Route::get('/support', [PageController::class, 'support'])->name('support');
 Route::post('/support', [PageController::class, 'supportSubmit'])->name('support.submit');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
 
+// Demo videos (public)
+Route::get('/demo/{type}', function ($type) {
+    abort_unless(in_array($type, ['owner', 'client']), 404);
+
+    $videos = [
+        'owner'  => 'YOUR_OWNER_VIDEO_ID',
+        'client' => 'YOUR_CLIENT_VIDEO_ID',
+    ];
+
+    return view('demo-video', ['type' => $type, 'videoId' => $videos[$type]]);
+})->name('demo.video');
+
 // Legal Pages
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');

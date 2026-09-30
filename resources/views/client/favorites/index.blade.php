@@ -1,4 +1,3 @@
-
 @extends('layouts.client')
 @section('title', 'Saved Salons — Beauty Blush Salons')
 @section('content')
@@ -18,7 +17,7 @@
     <div class="col-lg-4 col-md-6">
         <div class="bg-white rounded-4 overflow-hidden" style="border:1px solid #fce4ec;transition:all .3s;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 15px 40px rgba(255, 107, 157,0.15)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
             <div style="height:180px;overflow:hidden;position:relative;">
-                <img src="{{ $salon->cover_url }}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=60'">
+                <img src="{{ $salon->cover_image ?? 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=60' }}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=60'">
                 <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.5),transparent);"></div>
                 <form action="{{ route('client.favorites.toggle',$salon->id) }}" method="POST" style="position:absolute;top:12px;right:12px;">
                     @csrf

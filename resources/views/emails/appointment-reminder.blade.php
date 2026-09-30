@@ -10,19 +10,23 @@
 <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f4f7; padding: 40px 0;">
     <tr>
         <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" style="background: #ffffff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); padding: 40px; border: 1px solid #fce4ec;">
+            <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background: #ffffff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); padding: 40px; border: 1px solid #fce4ec;">
 
-                <!-- Header -->
+                
                 <tr>
                     <td align="center" style="padding-bottom: 30px;">
-                        <div style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); display: inline-flex; align-items: center; justify-content: center; font-size: 32px; color: #fff;">
-                            ⏰
+                        <div style="width: 70px; height: 70px; line-height: 70px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); text-align: center; font-size: 32px; color: #fff; margin: 0 auto;">
+                            &#9200;
                         </div>
-                        <h1 style="font-family: 'Playfair Display', serif; color: #2d1f2c; font-size: 28px; margin: 16px 0 8px; font-weight: 700;">
+                        <h1 style="font-family: 'Playfair Display', Georgia, serif; color: #2d1f2c; font-size: 28px; margin: 16px 0 8px; font-weight: 700;">
                             Appointment Reminder
                         </h1>
                         <p style="color: #8a7a88; font-size: 16px; margin: 0;">
-                            Your appointment at {{ $salon->name }} is in 2 hours!
+                            @if($type === '1_day')
+                                Your appointment at {{ $salon->name }} is tomorrow!
+                            @else
+                                Your appointment at {{ $salon->name }} is in 2 hours!
+                            @endif
                         </p>
                     </td>
                 </tr>
@@ -33,10 +37,23 @@
                     </td>
                 </tr>
 
+               
+                <tr>
+                    <td style="padding: 0 0 24px; color: #2d1f2c; font-size: 15px; line-height: 1.6;">
+                        Dear <strong>{{ $client->name }}</strong>,<br>
+                        @if($type === '1_day')
+                            This is a friendly reminder that you have an appointment scheduled for tomorrow. We look forward to seeing you.
+                        @else
+                            This is a friendly reminder that your appointment starts in approximately 2 hours. We look forward to seeing you.
+                        @endif
+                    </td>
+                </tr>
+
+               
                 <tr>
                     <td>
                         <h3 style="color: #2d1f2c; font-size: 18px; margin: 0 0 16px; font-weight: 700;">
-                            📋 Booking Details
+                            Booking Details
                         </h3>
                         <table width="100%" cellpadding="0" cellspacing="0" style="background: #fcf9fc; border-radius: 12px; padding: 16px 20px; border: 1px solid #f0eef0;">
                             <tr>
@@ -54,7 +71,7 @@
                                 <td style="padding: 8px 0; color: #2d1f2c; font-weight: 600; font-size: 14px;">{{ $appointment->stylist->name ?? 'N/A' }}</td>
                             </tr>
                             <tr>
-                                <td style="padding: 8px 0; color: #8a7a88; font-size: 14px;">Date & Time</td>
+                                <td style="padding: 8px 0; color: #8a7a88; font-size: 14px;">Date &amp; Time</td>
                                 <td style="padding: 8px 0; color: #2d1f2c; font-weight: 600; font-size: 14px;">
                                     {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('l, F d, Y') }}<br>
                                     <strong style="color: #E91E8C; font-size: 18px;">
@@ -72,11 +89,12 @@
                     </td>
                 </tr>
 
+             
                 <tr>
                     <td style="padding-top: 30px; text-align: center;">
                         <div style="background: #fef2f2; border-radius: 12px; padding: 16px; border: 1px solid #fce4ec;">
                             <p style="color: #dc2626; font-size: 14px; font-weight: 600; margin: 0;">
-                                ⚠️ Please arrive 10 minutes early for your appointment.
+                                Please arrive 10 minutes early for your appointment.
                             </p>
                             <p style="color: #8a7a88; font-size: 13px; margin: 4px 0 0;">
                                 If you need to reschedule, please contact us as soon as possible.
@@ -85,11 +103,15 @@
                     </td>
                 </tr>
 
+               
                 <tr>
                     <td style="padding-top: 30px; text-align: center;">
                         <hr style="border: none; border-top: 2px solid #fce4ec; margin-bottom: 20px;">
                         <p style="color: #8a7a88; font-size: 13px; margin: 0;">
-                            📞 {{ $salon->phone ?? 'N/A' }} &nbsp;|&nbsp; ✉️ <a href="mailto:{{ $salon->email }}" style="color: #E91E8C; text-decoration: none;">{{ $salon->email }}</a>
+                            Phone: {{ $salon->phone ?? 'N/A' }}
+                            @if(!empty($salon->email))
+                                &nbsp;|&nbsp; Email: <a href="mailto:{{ $salon->email }}" style="color: #E91E8C; text-decoration: none;">{{ $salon->email }}</a>
+                            @endif
                         </p>
                         <p style="color: #b0a5ae; font-size: 12px; margin: 8px 0 0;">
                             &copy; {{ date('Y') }} {{ $salon->name }}. All rights reserved.

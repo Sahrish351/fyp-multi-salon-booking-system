@@ -6,28 +6,33 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
 class AppointmentReminderMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
 
     public $appointment;
     public $client;
     public $salon;
+    public $type; 
 
-    public function __construct($appointment, $client, $salon)
+    public function __construct($appointment, $client, $salon, $type = '2_hours')
     {
         $this->appointment = $appointment;
-        $this->client = $client;
-        $this->salon = $salon;
+        $this->client      = $client;
+        $this->salon       = $salon;
+        $this->type        = $type;
     }
 
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: '⏰ Appointment Reminder - ' . $this->salon->name,
-        );
+        $salonName = $this->salon->name ?? 'Beauty Blush Salons';
+
+        $subject = $this->type === '1_day'
+            ? "Appointment Reminder: Tomorrow at {$salonName}"
+            : "Appointment Reminder: In 2 Hours at {$salonName}";
+
+        return new Envelope(subject: $subject);
     }
 
     public function content(): Content

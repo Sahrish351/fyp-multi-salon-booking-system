@@ -420,9 +420,27 @@
     .biz-sec .eyebrow { color: #E91E8C; }
     .biz-sec h2 { font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 12px; line-height: 1.25; }
     .biz-sec p { color: #aaa; font-size: 0.88rem; margin-bottom: 22px; line-height: 1.6; max-width: 440px; }
-    .btn-biz { background: #fff; color: #1a1a1a; border-radius: 50px; padding: 13px 30px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s ease; }
+    .biz-btns { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+    .btn-biz {
+      background: #fff; color: #1a1a1a; border-radius: 50px;
+      padding: 10px 22px; font-size: 0.85rem; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.25s ease;
+    }
     .btn-biz:hover { background: #E91E8C; color: #fff; transform: translateY(-2px); }
+
+    .btn-demo {
+      background: #fde7f3; color: #E91E8C; border-radius: 50px;
+      padding: 10px 22px; font-size: 0.85rem; font-weight: 700;
+      border: 1.5px solid #f5b8d8;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.25s ease;
+    }
+    .btn-demo:hover { background: #E91E8C; border-color: #E91E8C; color: #fff; transform: translateY(-2px); }
+
     .biz-perks { display: flex; flex-direction: column; gap: 14px; }
+
     .biz-perk {
       display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 16px 18px;
@@ -534,7 +552,7 @@
     @media(min-width:992px) { .cat-grid { grid-template-columns: repeat(8,1fr); gap: 30px 20px; } }
     @media(min-width:768px) { .cat-sec { padding: 80px 32px; } .cat-tile .cat-icon { width: 92px; height: 92px; } .cat-tile .cat-icon i { font-size: 1.6rem; } .cat-tile span { font-size: 0.88rem; } }
  
-    /* ── Why Choose Us (light theme so it reads as a distinct section from the dark Stats block) ── */
+    
     .trust-sec { background: #fff; padding: 50px 16px; }
     .trust-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 1000px; margin: 0 auto; }
     .trust-card { background: #fdf5fb; border: 1px solid #f2d9e8; border-radius: 18px; padding: 24px 16px; text-align: center; transition: transform .25s ease, box-shadow .25s ease; }
@@ -588,7 +606,7 @@
   </div>
 </nav>
  
-<!-- ===== HERO ===== -->
+
 <section class="hero">
   <h1>Book premium beauty services</h1>
   <p>Discover top-rated salons, bridal studios, nail artists and beauty experts trusted by thousands across Pakistan</p>
@@ -662,7 +680,7 @@
   <p class="hero-count"><strong>{{ number_format($totalBookings ?? 0) }}</strong> appointments booked today</p>
 </section>
  
-<!-- ===== RECOMMENDED ===== -->
+
 <section class="g-section" style="background:#fff;padding-top:20px;">
   <div class="g-section-head">
     <h2>Recommended</h2>
@@ -699,8 +717,7 @@
     <button class="slider-arrow-btn right" onclick="slide('rec',1)"><i class="fas fa-chevron-right"></i></button>
   </div>
 </section>
- 
-<!-- ===== NEW TO BEAUTY BLUSH ===== -->
+
 <section class="g-section" style="background:linear-gradient(180deg,#fff 0%,#fdf5fb 100%);">
   <div class="g-section-head">
     <h2>New to Beauty Blush</h2>
@@ -731,7 +748,7 @@
   </div>
 </section>
  
-<!-- ===== TRENDING ===== -->
+
 <section class="g-section" style="background:#fff;">
   <div class="g-section-head">
     <h2>Trending</h2>
@@ -765,7 +782,7 @@
   </div>
 </section>
  
-<!-- ═══════════════════ NEW: HOW IT WORKS ═══════════════════ -->
+
 <section class="how-sec">
   <div class="section-title-center reveal-up">
     <span class="eyebrow">Simple &amp; Fast</span>
@@ -789,12 +806,17 @@
       <div class="how-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
       <div class="how-step-num">STEP 03</div>
       <h3>Enjoy &amp; Review</h3>
-      <p>Walk in, get pampered, and share your experience with the community.</p>
+      <p>Walk in, get pampered and share your experience with the community.</p>
     </div>
   </div>
+
+    <div style="text-align:center;margin-top:32px;">
+    <p style="font-size:0.85rem;color:#888;margin-bottom:12px;">Not sure how to book? Watch a quick demo.</p>
+        <a href="{{ route('demo.video', 'client') }}" class="btn-demo"><i class="fas fa-circle-play"></i> Watch how to book</a>
+  </div>
 </section>
- 
-<!-- ═══════════════════ NEW: POPULAR CATEGORIES ═══════════════════ -->
+
+
 <section class="cat-sec">
   <div class="section-title-center reveal-up">
     <span class="eyebrow">Browse</span>
@@ -813,7 +835,7 @@
   </div>
 </section>
  
-<!-- ===== REVIEWS ===== -->
+
 <section class="g-section" style="background:#fff;">
   <div class="g-section-head">
     <h2>Reviews</h2>
@@ -862,7 +884,7 @@
   </div>
 </section>
  
-<!-- ===== STATS ===== -->
+
 <section class="stats-sec">
   <h2 class="st-title">The top-rated destination for beauty in Pakistan</h2>
   <p class="st-sub">One platform. Trusted by the best in the beauty industry.</p>
@@ -875,7 +897,7 @@
   </div>
 </section>
  
-<!-- ═══════════════════ NEW: WHY CHOOSE US ═══════════════════ -->
+
 <section class="trust-sec">
   <div class="section-title-center reveal-up">
     <span class="eyebrow">Why Beauty Blush</span>
@@ -890,7 +912,7 @@
   </div>
 </section>
  
-<!-- ===== BROWSE BY CITY ===== -->
+
 <section class="city-sec">
   <h2>Browse by City</h2>
   <div class="city-tabs">
@@ -907,14 +929,17 @@
   </div>
 </section>
  
-<!-- ===== GROW YOUR BUSINESS ===== -->
+
 <section class="biz-sec">
   <div class="biz-inner">
     <div>
       <span class="eyebrow">For Salon Owners</span>
       <h2>Grow your salon business with Beauty Blush</h2>
       <p>Join thousands of salon owners across Pakistan who manage bookings, payments, and clients from one beautiful dashboard. Completely free to register.</p>
-      <a href="{{ route('register.owner') }}" class="btn-biz">List your business — it's free <i class="fas fa-arrow-right"></i></a>
+        <div class="biz-btns">
+        <a href="{{ route('register.owner') }}" class="btn-biz">List your business</a>
+        <a href="{{ route('demo.video', 'owner') }}" class="btn-demo"><i class="fas fa-circle-play"></i> Demo Video</a>
+      </div>
     </div>
     <div class="biz-perks">
       <div class="biz-perk">
@@ -933,12 +958,12 @@
   </div>
 </section>
  
-<!-- ===== FOOTER ===== -->
+
 <footer style="background: #f8f5f7; color: #555; padding-top: 60px; border-top: 1px solid #f0e8ed;">
     <div class="container">
         <div class="row g-4">
  
-            <!-- Brand Column -->
+            
             <div class="col-lg-3 col-md-6">
                 <h3 class="fw-bold mb-3" style="font-family:'Playfair Display',serif; font-size:1.6rem; margin-top:0; padding-top:0;">
                     <span style="color:#E91E8C;">Beauty</span>
@@ -950,13 +975,13 @@
                     book appointments, and experience beauty like never before.
                 </p>
                 
-                <!-- Address -->
+                
                 <p style="color:#888; font-size:0.78rem; margin-top:10px; display:flex; align-items:center; gap:8px;">
                     <i class="fas fa-map-marker-alt" style="color:#E91E8C; width:16px; text-align:center;"></i>
                     <span>Gulberg III, Lahore, Pakistan</span>
                 </p>
                 
-                <!-- Phone -->
+              
                 <p style="color:#888; font-size:0.78rem; margin-bottom:4px; display:flex; align-items:center; gap:8px;">
                     <i class="fas fa-phone" style="color:#E91E8C; width:16px; text-align:center;"></i>
                     <a href="tel:+923069734142" style="color:#888; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#E91E8C'" onmouseout="this.style.color='#888'">+92 306 9734142</a>
@@ -981,7 +1006,6 @@
                 </ul>
             </div>
  
-            <!-- For Business -->
             <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
                 <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">For Business</h6>
                 <ul class="list-unstyled">
@@ -993,7 +1017,7 @@
                 </ul>
             </div>
  
-            <!-- Follow Us -->
+          
             <div class="col-lg-2 col-md-6" style="padding-top: 8px;">
                 <h6 class="fw-bold mb-4" style="color:#E91E8C; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Follow Us</h6>
                 <ul class="list-unstyled" style="display:flex; flex-direction:column; gap:6px;">
@@ -1005,7 +1029,7 @@
                 </ul>
             </div>
  
-            <!-- Legal -->
+         
             <div class="col-lg-3 col-md-6" style="padding-top: 8px;">
                 <h6 class="fw-bold mb-4" style="color:#C9A96E; letter-spacing:1px; text-transform:uppercase; font-size:0.78rem; margin-top:0; padding-top:0;">Legal</h6>
                 <ul class="list-unstyled">
@@ -1020,7 +1044,7 @@
         </div>
     </div>
  
-    <!-- Footer Bottom -->
+    
     <div style="border-top: 1px solid #f0e8ed; margin-top: 40px; padding: 20px 0;">
         <div class="container">
             <p style="text-align:center; color:#aaa; font-size:0.82rem; margin:0; letter-spacing:0.5px;">
