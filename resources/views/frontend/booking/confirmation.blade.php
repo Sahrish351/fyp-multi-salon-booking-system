@@ -10,7 +10,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
         font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #fdf2f8 0%, #faf5ff 100%);
+        background: linear-gradient(135deg, #fff5f9 0%, #fce4ec 100%);
         min-height: 100vh;
         display: flex; align-items: center; justify-content: center;
         padding: 40px 20px;
@@ -21,19 +21,19 @@
     .success-card {
         background: #fff; border-radius: 26px; padding: 46px 40px;
         max-width: 520px; width: 100%; text-align: center;
-        box-shadow: 0 24px 70px rgba(147,51,234,0.14); position: relative; z-index: 1;
+        box-shadow: 0 24px 70px rgba(255,107,157,0.18); position: relative; z-index: 1;
     }
     @media(max-width:560px){ .success-card { padding: 32px 22px; } }
  
     .success-icon {
         width: 86px; height: 86px;
-        background: linear-gradient(135deg, #E91E8C, #9333ea);
+        background: linear-gradient(135deg, #FF6B9D, #E85588);
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         margin: 0 auto 22px;
         animation: pop .5s ease;
         font-size: 2.1rem; color: #fff;
-        box-shadow: 0 12px 30px rgba(147,51,234,0.3);
+        box-shadow: 0 12px 30px rgba(232,85,136,0.35);
     }
     @keyframes pop { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
  
@@ -41,14 +41,14 @@
     .success-sub { color: #888; font-size: .88rem; margin-bottom: 18px; line-height: 1.6; }
  
     .booking-id {
-        background: #fdf2f8; border: 1.5px dashed #E91E8C; border-radius: 12px;
+        background: #fff5f9; border: 1.5px dashed #FF6B9D; border-radius: 12px;
         padding: 11px 22px; display: inline-block; margin-bottom: 24px;
         font-size: .85rem; color: #888;
     }
-    .booking-id strong { color: #E91E8C; font-size: 1rem; }
+    .booking-id strong { color: #E85588; font-size: 1rem; }
  
-    .detail-grid { background: #faf8fb; border-radius: 16px; padding: 20px; text-align: left; margin-bottom: 20px; }
-    .detail-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid #f0eaf0; font-size: .87rem; gap: 12px; }
+    .detail-grid { background: #fff8fb; border-radius: 16px; padding: 20px; text-align: left; margin-bottom: 20px; }
+    .detail-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid #f7e3ec; font-size: .87rem; gap: 12px; }
     .detail-item:last-child { border-bottom: none; }
     .detail-item span:first-child { color: #999; flex-shrink: 0; }
     .detail-item span:last-child { font-weight: 700; color: #1a1a1a; text-align: right; }
@@ -68,16 +68,16 @@
  
     .action-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn-primary {
-        background: linear-gradient(135deg, #E91E8C, #9333ea); color: #fff;
+        background: linear-gradient(135deg, #FF6B9D, #E85588); color: #fff;
         border-radius: 50px; padding: 13px 24px; font-weight: 700; font-size: .88rem;
         text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all .2s;
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(147,51,234,0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(232,85,136,0.35); }
     .btn-ghost {
-        background: #f5f5f5; color: #555; border-radius: 50px; padding: 13px 24px;
+        background: #fdeef4; color: #b0537a; border-radius: 50px; padding: 13px 24px;
         font-weight: 700; font-size: .88rem; text-decoration: none; transition: all .15s;
     }
-    .btn-ghost:hover { background: #ebebeb; }
+    .btn-ghost:hover { background: #fadce8; }
     </style>
     @include('partials.favicon')
 </head>
@@ -174,7 +174,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
  
 const pieces = [];
-const colors = ['#E91E8C', '#9333ea', '#f4a0b5', '#c084fc', '#fbbf24', '#34d399'];
+const colors = ['#FF6B9D', '#E85588', '#f4a0b5', '#ffc2d6', '#fbbf24', '#34d399'];
 for (let i = 0; i < 120; i++) {
     pieces.push({
         x: Math.random() * canvas.width,
@@ -208,3 +208,4 @@ setTimeout(() => { cancelAnimationFrame(frame); ctx.clearRect(0, 0, canvas.width
 </script>
 </body>
 </html>
+ 
