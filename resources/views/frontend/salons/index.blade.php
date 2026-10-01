@@ -1,261 +1,276 @@
 @extends('layouts.guest')
-@section('title', 'Services — Beauty Blush Salons')
+@section('title', 'Find Best Salons - Beauty Blush Salons')
  
 @push('styles')
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Plus Jakarta Sans', sans-serif; color: #1e1e24; background: #fdfafc; -webkit-font-smoothing: antialiased; }
-  a { text-decoration: none; color: inherit; }
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 50%;
+    }
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -10%;
+        width: 200px;
+        height: 200px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+    }
+    .hero-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        font-family: 'Playfair Display', serif;
+        position: relative;
+        z-index: 1;
+    }
+    .hero-section p {
+        color: rgba(255,255,255,0.9);
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+    }
  
-  /* ── HERO SECTION ── */
-  .hero-wrapper {
-    background: radial-gradient(circle at 50% 20%, #fde6f4 0%, #fcf7fa 60%, #ffffff 100%);
-    padding: 60px 20px 50px; text-align: center; border-bottom: 1px solid #f2e2ee;
-  }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(233,30,140,0.08); color: #E91E8C; border: 1px solid rgba(233,30,140,0.2);
-    font-size: 0.78rem; font-weight: 700; padding: 6px 16px; border-radius: 30px; margin-bottom: 16px;
-    letter-spacing: 0.5px; text-transform: uppercase;
-  }
-  .hero-title {
-    font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 800;
-    color: #1e1e24; margin-bottom: 12px; line-height: 1.2;
-  }
-  .hero-subtitle { font-size: 1.05rem; color: #666; max-width: 620px; margin: 0 auto 28px; font-weight: 400; line-height: 1.6; }
+    .filter-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-top: -2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        position: relative;
+        z-index: 2;
+    }
+    .filter-card .form-control,
+    .filter-card .form-select {
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    .filter-card .form-control:focus,
+    .filter-card .form-select:focus {
+        border-color: #E91E8C;
+        box-shadow: 0 0 0 3px rgba(233,30,140,0.1);
+    }
+    .btn-filter {
+        background: linear-gradient(135deg, #E91E8C, #c2185b);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(233,30,140,0.3);
+    }
  
-  .grand-search-box {
-    max-width: 580px; margin: 0 auto; background: #ffffff;
-    border: 1px solid #ebcce2; border-radius: 50px; padding: 6px 8px 6px 20px;
-    box-shadow: 0 10px 30px rgba(233,30,140,0.08); display: flex; align-items: center; gap: 10px;
-  }
-  .search-field { flex: 1; display: flex; align-items: center; gap: 10px; }
-  .search-field i { color: #E91E8C; font-size: 1.1rem; }
-  .search-field input {
-    border: none; outline: none; width: 100%; font-size: 0.95rem; color: #222;
-    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; background: transparent;
-  }
-  .btn-search-action {
-    background: linear-gradient(135deg, #E91E8C 0%, #d81b7d 100%); color: #ffffff;
-    border: none; border-radius: 40px; padding: 12px 28px; font-weight: 700;
-    font-size: 0.9rem; display: flex; align-items: center; gap: 8px;
-    cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 15px rgba(233,30,140,0.25);
-  }
-  .btn-search-action:hover { transform: scale(1.02); }
+    .salons-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
  
-  /* ── FILTER CHIPS ── */
-  .filter-sec { padding: 30px 20px 10px; max-width: 1240px; margin: 0 auto; }
-  .chips-container { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 6px; justify-content: center; flex-wrap: wrap; }
-  .chips-container::-webkit-scrollbar { display: none; }
-  .chip-item {
-    white-space: nowrap; border: 1px solid #e3d5e0; background: #ffffff; border-radius: 25px;
-    padding: 8px 20px; font-size: 0.85rem; font-weight: 600; color: #555; transition: all 0.2s; cursor: pointer;
-  }
-  .chip-item.active, .chip-item:hover {
-    background: #E91E8C; color: #fff; border-color: #E91E8C; box-shadow: 0 4px 14px rgba(233,30,140,0.2);
-  }
+    .salon-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .salon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(233,30,140,0.15);
+    }
  
-  /* ── SERVICE GRID ── */
-  .services-sec { padding: 25px 20px 60px; max-width: 1240px; margin: 0 auto; }
-  .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
+    .salon-image {
+        height: 200px;
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: #f0f0f0;
+    }
+    .salon-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .salon-card:hover .salon-image img { transform: scale(1.05); }
  
-  .svc-card-modern {
-    background: #ffffff; border: 1px solid #f0e2ed; border-radius: 18px;
-    padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
-    position: relative; transition: all 0.25s ease; box-shadow: 0 3px 12px rgba(0,0,0,0.02);
-  }
-  .svc-card-modern:hover {
-    transform: translateY(-4px); border-color: #E91E8C;
-    box-shadow: 0 12px 24px rgba(233,30,140,0.1);
-  }
+    .salon-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(5px);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
  
-  .svc-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
-  .svc-icon-box {
-    width: 48px; height: 48px; border-radius: 14px; background: #fdf2f9;
-    display: flex; align-items: center; justify-content: center; border: 1px solid #f7d5eb; flex-shrink: 0;
-  }
-  .svc-icon-box i { font-size: 1.3rem; color: #E91E8C; }
+    .salon-content {
+        padding: 1.2rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .salon-name { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.3rem; }
+    .salon-location { font-size: 0.8rem; color: #E91E8C; margin-bottom: 0.8rem; }
+    .salon-location i { margin-right: 0.3rem; }
+    .salon-desc { font-size: 0.8rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem; flex: 1; }
+    .salon-rating { font-size: 0.8rem; color: #1a1a1a; font-weight: 700; margin-bottom: 0.6rem; }
+    .salon-rating .star { color: #ffc107; }
  
-  .svc-badge {
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-    color: #C9A96E; background: #fffdf9; border: 1px solid #f3e6cf; padding: 4px 10px; border-radius: 20px;
-  }
+    .btn-view {
+        background: #fdf2f8;
+        color: #E91E8C;
+        border: none;
+        border-radius: 50px;
+        padding: 0.3rem 1.2rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+        text-align: center;
+        text-decoration: none;
+        width: auto;
+        margin-top: auto;
+    }
+    .btn-view:hover { background: #E91E8C; color: white; }
  
-  .svc-body { margin-bottom: 14px; }
-  .svc-title { font-size: 1.08rem; font-weight: 600; color: #1e1e24; margin-bottom: 6px; line-height: 1.35; }
-  .svc-meta-info { display: flex; align-items: center; gap: 14px; font-size: 0.82rem; color: #666; font-weight: 500; }
-  .svc-meta-info i { color: #E91E8C; margin-right: 3px; }
+    .result-count { font-size: 0.9rem; color: #64748b; margin-bottom: 1rem; padding-left: 0.5rem; }
  
-  .svc-footer {
-    border-top: 1px solid #f6ecf4; padding-top: 14px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .svc-price-label { font-size: 0.7rem; color: #888; font-weight: 500; display: block; }
-  .svc-price-val { font-size: 1.15rem; font-weight: 800; color: #E91E8C; }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        grid-column: 1 / -1;
+    }
+    .empty-state i { font-size: 3rem; color: #e8e8e8; margin-bottom: 16px; display: block; }
+    .empty-state h5 { font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+    .empty-state p { color: #888; font-size: 0.88rem; }
  
-  .btn-book-outline {
-    background: #ffffff; color: #E91E8C; border: 1.5px solid #E91E8C;
-    font-size: 0.82rem; font-weight: 700; padding: 7px 16px; border-radius: 50px;
-    transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 5px;
-  }
-  .svc-card-modern:hover .btn-book-outline {
-    background: linear-gradient(135deg, #E91E8C, #d81b7d); color: #ffffff; border-color: transparent;
-    box-shadow: 0 4px 12px rgba(233,30,140,0.25);
-  }
+    @media (max-width: 992px) {
+        .salons-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+    }
+    @media (max-width: 576px) {
+        .salons-grid { grid-template-columns: 1fr; gap: 1rem; }
+        .hero-section h1 { font-size: 1.8rem; }
+    }
 </style>
 @endpush
  
 @section('content')
  
-<!-- HERO SECTION -->
-<section class="hero-wrapper">
-  <div class="hero-badge"><i class="fas fa-sparkles"></i> Premium Treatments</div>
-  <h1 class="hero-title">Discover Exclusive Treatments</h1>
-  <p class="hero-subtitle">Find top luxury beauty treatments, relaxing massages, and professional styling across all our salons.</p>
- 
-  <div class="grand-search-box">
-    <div class="search-field">
-      <i class="fas fa-search"></i>
-      <input type="text" id="searchInput" onkeyup="filterServices()" placeholder="Search treatment name e.g., Massage, Facial...">
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1>Find Your Perfect Salon</h1>
+                <p class="mt-3">Discover the best salons in your city. Book appointments with top-rated professionals.</p>
+            </div>
+        </div>
     </div>
-    <button class="btn-search-action" type="button" onclick="filterServices()">
-      <i class="fas fa-arrow-right"></i>
-      <span>Search</span>
-    </button>
-  </div>
 </section>
  
-<!-- CATEGORY FILTER CHIPS -->
-<section class="filter-sec">
-  <div class="chips-container" id="categoryChips">
-    <span class="chip-item active" onclick="filterCategory('all', this)">All Services ({{ $services->count() }})</span>
+<div class="container">
  
-    @foreach($categories as $cat)
-      @if(!empty(trim($cat->name)))
-        <span class="chip-item" onclick="filterCategory('{{ strtolower(trim($cat->name)) }}', this)">{{ $cat->name }}</span>
-      @endif
-    @endforeach
-  </div>
-</section>
- 
-<!-- SERVICES GRID -->
-<section class="services-sec">
-  <div class="svc-grid" id="servicesGrid">
-    @forelse($services as $svc)
-      @php
-        $catName = strtolower(trim($svc->category->name ?? ''));
-        $titleName = strtolower(trim($svc->name ?? ''));
-        $combined = $catName . ' ' . $titleName;
- 
-        $icon = 'fa-sparkles';
-        if (str_contains($combined, 'massage')) $icon = 'fa-spa';
-        elseif (str_contains($combined, 'spa') || str_contains($combined, 'body')) $icon = 'fa-hot-tub-person';
-        elseif (str_contains($combined, 'hair cut') || str_contains($combined, 'trim')) $icon = 'fa-scissors';
-        elseif (str_contains($combined, 'hair') || str_contains($combined, 'dye')) $icon = 'fa-spray-can-sparkles';
-        elseif (str_contains($combined, 'nail') || str_contains($combined, 'mani') || str_contains($combined, 'pedi')) $icon = 'fa-hand-sparkles';
-        elseif (str_contains($combined, 'facial') || str_contains($combined, 'skin') || str_contains($combined, 'clean') || str_contains($combined, 'hydra')) $icon = 'fa-wand-magic-sparkles';
-        elseif (str_contains($combined, 'wax') || str_contains($combined, 'thread')) $icon = 'fa-feather-pointed';
-        elseif (str_contains($combined, 'makeup') || str_contains($combined, 'bridal')) $icon = 'fa-eye';
-      @endphp
- 
-      <div class="svc-card-modern service-item" data-cat-name="{{ $catName }}" data-name="{{ $titleName }}">
-        <div>
-          <div class="svc-header">
-            <div class="svc-icon-box">
-              <i class="fas {{ !empty($svc->category->icon) ? $svc->category->icon : $icon }}"></i>
+    {{-- Filter form --}}
+    <div class="filter-card">
+        <form method="GET" action="{{ route('salons.index') }}" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="🔍 Search by salon name..." value="{{ request('search') }}">
             </div>
-            <span class="svc-badge">{{ $svc->category->name ?? 'Service' }}</span>
-          </div>
- 
-          <div class="svc-body">
-            <h3 class="svc-title">{{ $svc->name }}</h3>
-            <div class="svc-meta-info">
-              <span><i class="far fa-clock"></i> {{ $svc->duration ?? '30 mins' }}</span>
-              <span><i class="fas fa-store"></i> {{ $svc->salon->name ?? 'Beauty Salon' }}</span>
+            <div class="col-md-3">
+                <select name="city" class="form-select">
+                    <option value="">📍 All Cities</option>
+                    @foreach($cities as $cityOption)
+                    <option value="{{ $cityOption }}" {{ request('city') === $cityOption ? 'selected' : '' }}>{{ $cityOption }}</option>
+                    @endforeach
+                </select>
             </div>
-          </div>
-        </div>
+            <div class="col-md-3">
+                <select name="category" class="form-select">
+                    <option value="">📂 All Categories</option>
+                    @foreach($categories as $cat)
+                    <option value="{{ $cat->slug }}" {{ request('category') === $cat->slug ? 'selected' : '' }}>{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn-filter">
+                    <i class="fas fa-search me-1"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
  
-        <div class="svc-footer">
-          <div>
-            <span class="svc-price-label">Price</span>
-            <span class="svc-price-val">Rs. {{ number_format($svc->price) }}</span>
-          </div>
+    <div class="result-count">
+        <i class="fas fa-store me-1"></i> <strong>{{ $salons->total() }}</strong> premium salon{{ $salons->total() === 1 ? '' : 's' }} found
+    </div>
  
-          @auth
-            @if(Auth::user()->isOwner())
-              @if(isset($userSalon) && $userSalon)
-                {{-- Logged-in Owner hamesha apne salon page par jaye ga --}}
-                <a href="{{ route('salons.show', $userSalon->slug) }}" class="btn-book-outline">
-                  <i class="fas fa-calendar-check me-1"></i> Book Now
+    {{-- ✅ FIXED: cover_url se cover_image kiya gaya --}}
+    <div class="salons-grid">
+        @forelse($salons as $salon)
+        <div class="salon-card">
+            <div class="salon-image">
+                <img src="{{ $salon->cover_image ?? 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500' }}"
+                     alt="{{ $salon->name }}"
+                     onerror="this.src='https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500'">
+                <div class="salon-badge"><i class="fas fa-map-marker-alt me-1"></i>{{ $salon->city }}</div>
+            </div>
+            <div class="salon-content">
+                <h3 class="salon-name">{{ $salon->name }}</h3>
+                <div class="salon-location"><i class="fas fa-location-dot"></i> {{ $salon->address }}, {{ $salon->city }}</div>
+                <div class="salon-rating">
+                    <span class="star"><i class="fas fa-star"></i></span>
+                    {{ number_format($salon->rating, 1) }}
+                    <span style="color:#aaa;font-weight:400;">({{ $salon->reviews->count() }} reviews)</span>
+                </div>
+                <p class="salon-desc">{{ Str::limit($salon->description ?? 'Premium salon offering professional beauty services with experienced staff.', 110) }}</p>
+                <a href="{{ route('salons.show', $salon->slug) }}" class="btn-view">
+                    View Details →
                 </a>
-              @else
-                <a href="{{ route('owner.dashboard') }}" class="btn-book-outline">
-                  <i class="fas fa-store me-1"></i> My Dashboard
-                </a>
-              @endif
-            @else
-              {{-- Client ke liye relevant service salon page --}}
-              <a href="{{ route('salons.show', $svc->salon->slug ?? 'salon') }}" class="btn-book-outline">
-                <i class="fas fa-calendar-check me-1"></i> Book Now
-              </a>
-            @endif
-          @else
-            <a href="{{ route('login') }}" class="btn-book-outline">
-              <i class="fas fa-sign-in-alt me-1"></i> Book Now
-            </a>
-          @endauth
+            </div>
         </div>
-      </div>
-    @empty
-      <div class="text-center py-5 w-100" style="grid-column: 1 / -1;">
-        <i class="fas fa-concierge-bell fa-3x text-muted mb-3"></i>
-        <h4 class="fw-bold">No Services Available</h4>
-      </div>
-    @endforelse
-  </div>
+        @empty
+        <div class="empty-state">
+            <i class="fas fa-store-slash"></i>
+            <h5>No salons found</h5>
+            <p>Try adjusting your search filters, or check back soon as more salons join Beauty Blush Salons.</p>
+        </div>
+        @endforelse
+    </div>
  
-  <div id="noResults" class="text-center py-5 w-100" style="display: none; grid-column: 1 / -1;">
-    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-    <h4 class="fw-bold">No Matching Service Found</h4>
-  </div>
-</section>
+    {{-- Pagination --}}
+    @if($salons->hasPages())
+    <div class="d-flex justify-content-center mt-5 mb-4">
+        {{ $salons->links() }}
+    </div>
+    @endif
+ 
+</div>
  
 @endsection
- 
-@push('scripts')
-<script>
-  let activeCat = 'all';
- 
-  function filterCategory(catName, element) {
-    activeCat = catName.toLowerCase().trim();
-    document.querySelectorAll('#categoryChips .chip-item').forEach(chip => chip.classList.remove('active'));
-    element.classList.add('active');
-    filterServices();
-  }
- 
-  function filterServices() {
-    const query = document.getElementById('searchInput').value.toLowerCase().trim();
-    const items = document.querySelectorAll('.service-item');
-    let visibleCount = 0;
- 
-    items.forEach(item => {
-      const itemCatName = (item.getAttribute('data-cat-name') || '').toLowerCase().trim();
-      const itemName = (item.getAttribute('data-name') || '').toLowerCase().trim();
- 
-      const matchesCat = (activeCat === 'all' || itemCatName === activeCat);
-      const matchesSearch = query === '' || itemName.includes(query) || itemCatName.includes(query);
- 
-      if (matchesCat && matchesSearch) {
-        item.style.display = 'flex';
-        visibleCount++;
-      } else {
-        item.style.display = 'none';
-      }
-    });
- 
-    document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
-  }
-</script>
-@endpush

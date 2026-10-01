@@ -1,14 +1,14 @@
 @extends('layouts.guest')
 @section('title', $stylist->name . ' — Beauty Blush Salons')
- 
+
 @push('styles')
 <style>
     /* Sab styles .stylist-page ke andar hain, taake website ke navbar/footer par asar na pade */
     .stylist-page { background: #f8f7fa; color: #1a1a1a; font-family: 'Poppins', sans-serif; }
     .stylist-page a { text-decoration: none; }
- 
+
     .stylist-wrap { max-width: 1200px; margin: 0 auto; padding: 24px 20px 80px; }
- 
+
     .advance-banner {
         background: linear-gradient(135deg, #fdf5fb, #fff5f7);
         border: 1px solid #f2d9e8; border-radius: 14px;
@@ -21,7 +21,7 @@
         background: #dcfce7; color: #166534; font-weight: 700;
         font-size: 0.7rem; padding: 3px 12px; border-radius: 50px; white-space: nowrap;
     }
- 
+
     .stylist-card {
         background: #fff; border-radius: 20px; border: 1px solid #f0e8ed;
         padding: 28px 32px; margin-bottom: 16px;
@@ -29,7 +29,7 @@
         flex-wrap: wrap; gap: 20px; box-shadow: 0 2px 20px rgba(0,0,0,0.03);
     }
     .stylist-left { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
- 
+
     /* Photo aur placeholder (dashboard jaisa pink circle + icon) */
     .stylist-avatar {
         width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
@@ -40,7 +40,7 @@
         display: flex; align-items: center; justify-content: center;
         color: #fff; font-size: 40px;
     }
- 
+
     .stylist-name { font-size: 1.6rem; font-weight: 800; margin: 0 0 2px; }
     .stylist-role { font-size: 0.95rem; color: #555; font-weight: 600; margin-bottom: 2px; }
     .stylist-spec { font-size: 0.82rem; color: #888; margin-bottom: 6px; }
@@ -48,17 +48,17 @@
     .stylist-meta .star { color: #ffc107; font-weight: 700; }
     .stylist-meta .rev-count { color: #E91E8C; font-weight: 600; }
     .stylist-meta .salon-link { color: #1a1a1a; font-weight: 600; }
- 
+
     .btn-book-main {
         background: #1a1a1a; color: #fff; border-radius: 50px;
         padding: 12px 28px; font-weight: 700; font-size: 0.9rem;
         transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
     }
     .btn-book-main:hover { background: #E91E8C; color: #fff; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(233,30,140,0.25); }
- 
+
     .profile-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
     @media (max-width: 992px) { .profile-grid { grid-template-columns: 1fr; gap: 14px; } }
- 
+
     .section-box {
         background: #fff; border: 1px solid #f0e8ed; border-radius: 18px;
         padding: 20px 24px; margin-bottom: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.02);
@@ -68,7 +68,7 @@
         border-bottom: 2px solid #f0e8ed; display: flex; justify-content: space-between; align-items: center;
     }
     .section-title i { color: #E91E8C; margin-right: 6px; }
- 
+
     .service-item {
         background: #faf8fb; border: 1px solid #e8e8e8; border-radius: 12px;
         padding: 14px 18px; margin-bottom: 8px;
@@ -87,7 +87,7 @@
     }
     .btn-svc-book:hover { background: #E91E8C; color: #fff; }
     .view-all-services { display: inline-block; margin-top: 6px; color: #E91E8C; font-weight: 600; font-size: 0.82rem; }
- 
+
     .review-card { padding: 12px 0; border-bottom: 1px solid #f5f5f5; }
     .review-card:last-child { border-bottom: none; padding-bottom: 0; }
     .rc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
@@ -95,7 +95,7 @@
     .rc-stars { color: #ffc107; font-size: 0.85rem; letter-spacing: 1px; }
     .rc-text { font-size: 0.84rem; color: #555; line-height: 1.6; margin: 0; }
     .rc-date { font-size: 0.72rem; color: #aaa; margin-top: 4px; }
- 
+
     .salon-info-box {
         background: #fff; border: 1px solid #f0e8ed; border-radius: 18px;
         padding: 20px 22px; position: sticky; top: 100px; box-shadow: 0 2px 16px rgba(0,0,0,0.02);
@@ -105,9 +105,9 @@
     .si-row { display: flex; align-items: flex-start; gap: 12px; font-size: 0.82rem; color: #555; margin-bottom: 12px; }
     .si-row i { color: #E91E8C; margin-top: 2px; width: 18px; font-size: 0.85rem; }
     .si-row strong { color: #1a1a1a; font-size: 0.8rem; display: block; margin-bottom: 1px; }
- 
+
     .about-text { font-size: 0.88rem; color: #555; line-height: 1.7; margin: 0; }
- 
+
     @media (max-width: 768px) {
         .stylist-wrap { padding: 16px 12px 80px; }
         .stylist-card { padding: 18px 16px; }
@@ -129,12 +129,12 @@
     }
 </style>
 @endpush
- 
+
 @section('content')
 <div class="stylist-page">
- 
+
     <div class="stylist-wrap">
- 
+
         {{-- Advance policy --}}
         <div class="advance-banner">
             <div>
@@ -143,7 +143,7 @@
             </div>
             <span class="advance-badge">✓ Confirmed Booking</span>
         </div>
- 
+
         {{-- Stylist header --}}
         <div class="stylist-card">
             <div class="stylist-left">
@@ -152,7 +152,7 @@
                 @else
                     <div class="stylist-avatar stylist-avatar-placeholder"><i class="fas fa-user"></i></div>
                 @endif
- 
+
                 <div>
                     <h1 class="stylist-name">{{ $stylist->name }}</h1>
                     @if ($stylist->role)
@@ -171,19 +171,19 @@
                     </div>
                 </div>
             </div>
- 
+
             <div>
                 <a href="{{ route('booking.step1', $salon->id) }}?stylist_id={{ $stylist->id }}" class="btn-book-main">
                     <i class="fas fa-calendar-check"></i> Book with {{ \Illuminate\Support\Str::words($stylist->name, 1, '') }}
                 </a>
             </div>
         </div>
- 
+
         <div class="profile-grid">
- 
+
             {{-- Left column --}}
             <div>
- 
+
                 {{-- About --}}
                 <div class="section-box">
                     <h3 class="section-title"><span><i class="fas fa-user-circle"></i> About Stylist</span></h3>
@@ -191,14 +191,14 @@
                         {{ $stylist->bio ?: ($stylist->name . ' is a professional beauty artist at ' . $salon->name . ' specializing in ' . ($stylist->specializations ?: 'hair styling, cuts and treatments') . '.') }}
                     </p>
                 </div>
- 
+
                 {{-- Services --}}
                 <div class="section-box">
                     <h3 class="section-title">
                         <span><i class="fas fa-scissors"></i> Services & Pricing</span>
                         <span style="font-size:0.7rem; color:#888; font-weight:normal;">Rs. 100 advance deposit</span>
                     </h3>
- 
+
                     @forelse ($services as $service)
                         <div class="service-item">
                             <div>
@@ -216,16 +216,16 @@
                     @empty
                         <p style="font-size:0.85rem; color:#888; margin:0;">No services available right now.</p>
                     @endforelse
- 
+
                 </div>
- 
+
                 {{-- Reviews (asli, database se) --}}
                 <div class="section-box">
                     <h3 class="section-title">
                         <span><i class="fas fa-star" style="color:#f59e0b;"></i> Client Reviews</span>
                         <span style="font-size:0.75rem; color:#888; font-weight:normal;">{{ $reviewsCount }} total</span>
                     </h3>
- 
+
                     @forelse ($recentReviews as $review)
                         @php
                             $parts = explode(' ', trim($review->reviewer_name));
@@ -251,13 +251,13 @@
                         <p style="font-size:0.85rem; color:#888; margin:0;">No reviews yet. Book an appointment and be the first to review!</p>
                     @endforelse
                 </div>
- 
+
             </div>
- 
+
             {{-- Right sidebar --}}
             <div class="salon-info-box">
                 <h4><i class="fas fa-store"></i> Salon Location & Info</h4>
- 
+
                 <div class="si-row">
                     <i class="fas fa-map-marker-alt"></i>
                     <div>
@@ -265,7 +265,7 @@
                         <div style="font-size:0.78rem; color:#777;">{{ $salon->address }}, {{ $salon->city }}</div>
                     </div>
                 </div>
- 
+
                 <div class="si-row">
                     <i class="far fa-clock"></i>
                     <div>
@@ -276,7 +276,7 @@
                         </div>
                     </div>
                 </div>
- 
+
                 <div class="si-row">
                     <i class="fas fa-money-bill-wave"></i>
                     <div>
@@ -284,7 +284,7 @@
                         <div style="font-size:0.78rem; color:#777;">Rs. 100 Advance via EasyPaisa / JazzCash. Remaining at salon via Cash/Card.</div>
                     </div>
                 </div>
- 
+
                 @if ($salon->phone)
                     <div class="si-row">
                         <i class="fas fa-phone"></i>
@@ -294,16 +294,15 @@
                         </div>
                     </div>
                 @endif
- 
+
                 <div style="margin-top:18px;">
                     <a href="{{ route('booking.step1', $salon->id) }}?stylist_id={{ $stylist->id }}" class="btn-book-main" style="width:100%; justify-content:center;">
                         <i class="fas fa-calendar-check"></i> Book Appointment Now
                     </a>
                 </div>
             </div>
- 
+
         </div>
     </div>
 </div>
 @endsection
- 

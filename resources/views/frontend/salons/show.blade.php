@@ -1,21 +1,24 @@
 @extends('layouts.guest')
 @section('title', $salon->name . ' — Beauty Blush Salons')
 @section('description', $salon->description ?? 'Book appointments at '.$salon->name.' on Beauty Blush Salons.')
- 
+
 @push('styles')
 <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; -webkit-font-smoothing: antialiased; }
-    a { text-decoration: none; color: inherit; }
- 
-   
-    :root { --nav-h: 82px; }
-    @media (max-width: 991.98px) { :root { --nav-h: 70px; } }
-    @media (max-width: 576px) { :root { --nav-h: 64px; } }
- 
+    /* Shared navbar ki height (sticky tabs / sidebar ke offset ke liye) */
+    :root { --site-nav-h: 84px; }
+    @media (max-width: 991.98px) { :root { --site-nav-h: 70px; } }
+    @media (max-width: 576px)    { :root { --site-nav-h: 64px; } }
+
+    /* Reset sirf is page ke content par (shared navbar / footer par nahi).
+       :where() use kiya hai taake reset ki priority zero rahe aur
+       button ke colors (white text) overwrite na hon */
+    :where(.detail-wrap, .detail-wrap *, .detail-wrap *::before, .detail-wrap *::after) { box-sizing: border-box; margin: 0; padding: 0; }
+    .detail-wrap { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; -webkit-font-smoothing: antialiased; }
+        :where(.detail-wrap) a { text-decoration: none; color: inherit; }
+
     .detail-wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
     @media(max-width:576px) { .detail-wrap { padding: 0 16px; } }
- 
+
     .salon-header { padding: 24px 0 16px; }
     .salon-title {
         font-size: clamp(1.6rem, 3vw, 2.2rem);
@@ -76,7 +79,7 @@
     }
     .btn-icon-round:hover { border-color: #1a1a1a; color: #1a1a1a; }
     .btn-icon-round.liked i { color: #E91E8C; }
- 
+
     .photo-grid {
         display: grid;
         grid-template-columns: 2fr 1fr;
@@ -113,7 +116,7 @@
         z-index: 2;
     }
     .see-all-photos:hover { background: #fff; border-color: #1a1a1a; }
- 
+
     .content-grid {
         display: grid;
         grid-template-columns: 1fr 340px;
@@ -121,7 +124,7 @@
         padding: 32px 0 60px;
     }
     @media(max-width:992px) { .content-grid { grid-template-columns: 1fr; } }
- 
+
     .salon-tabs {
         display: flex;
         align-items: center;
@@ -129,7 +132,7 @@
         border-bottom: 1px solid #e8e8e8;
         margin-bottom: 32px;
         position: sticky;
-        top: var(--nav-h);
+        top: var(--site-nav-h);
         background: #fff;
         z-index: 100;
         padding: 0;
@@ -152,11 +155,11 @@
     }
     .salon-tab:hover { color: #1a1a1a; }
     .salon-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
- 
-    .page-section { margin-bottom: 56px; scroll-margin-top: calc(var(--nav-h) + 66px); }
+
+    .page-section { margin-bottom: 56px; scroll-margin-top: calc(var(--site-nav-h) + 60px); }
     .page-section:last-child { margin-bottom: 0; }
     .page-section h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 16px; }
- 
+
     .services-cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
     .svc-cat-btn {
         border: 1.5px solid #e0e0e0;
@@ -170,7 +173,7 @@
         transition: all .15s;
     }
     .svc-cat-btn.active, .svc-cat-btn:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
- 
+
     /* SERVICES - PINK HOVER EFFECTS */
     .service-list { display: flex; flex-direction: column; gap: 0; }
     .service-row {
@@ -234,7 +237,7 @@
         color: #fff !important;
         box-shadow: 0 4px 20px rgba(233,30,140,0.25) !important;
     }
- 
+
     .team-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -260,7 +263,7 @@
     .team-member .tm-rating i { color: #ffc107; font-size: 0.72rem; }
     .team-member .tm-name { font-size: 0.88rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2px; }
     .team-member .tm-role { font-size: 0.78rem; color: #888; }
- 
+
     .review-item { border: 1px solid #f0f0f0; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
     .review-item .ri-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
     .review-item .ri-av {
@@ -284,8 +287,8 @@
     .big-rating .br-num { font-size: 3rem; font-weight: 900; color: #1a1a1a; line-height: 1; }
     .big-rating .br-stars { color: #ffc107; font-size: 1.5rem; }
     .big-rating .br-count { font-size: 0.85rem; color: #888; }
- 
-    /* ABOUT SECTION - FIXED LAYOUT */
+
+    /* ABOUT SECTION */
     .about-section p {
         font-size: 0.9rem;
         color: #555;
@@ -322,8 +325,8 @@
     }
     .address-line a { color: #E91E8C; font-weight: 600; }
     .address-line a:hover { text-decoration: underline; }
- 
-    /* HOURS & INFO GRID - FIXED SPACING */
+
+    /* HOURS & INFO GRID */
     .hours-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -342,7 +345,7 @@
             gap: 32px;
         }
     }
- 
+
     .hours-table h4 {
         font-size: 1rem;
         font-weight: 700;
@@ -352,7 +355,7 @@
         border-bottom: 2px solid #f0e8ed;
         font-family: 'Inter', sans-serif;
     }
- 
+
     .hour-row {
         display: flex;
         align-items: center;
@@ -392,7 +395,7 @@
         font-weight: 700;
         color: #E91E8C;
     }
- 
+
     .add-info {
         padding-left: 0;
     }
@@ -438,7 +441,7 @@
     .nearby-card .nc-body { padding: 10px; }
     .nearby-card .nc-name { font-size: 0.85rem; font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
     .nearby-card .nc-meta { font-size: 0.75rem; color: #888; }
- 
+
     .other-biz-section h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 16px; }
     .other-biz-btn {
         background: #1a1a1a;
@@ -459,14 +462,14 @@
     @media(max-width:576px) { .other-biz-grid { grid-template-columns: repeat(2,1fr); } }
     .other-biz-grid a { font-size: 0.82rem; color: #555; display: block; padding: 4px 0; transition: color .15s; }
     .other-biz-grid a:hover { color: #E91E8C; }
- 
+
     .booking-sidebar {
         background: #fff;
         border: 1.5px solid #e8e8e8;
         border-radius: 20px;
         padding: 26px;
         position: sticky;
-        top: calc(var(--nav-h) + 18px);
+        top: calc(var(--site-nav-h) + 20px);
         box-shadow: 0 8px 30px rgba(0,0,0,0.05);
     }
     .booking-sidebar .bs-name { font-size: 1.4rem; font-weight: 800; color: #1a1a1a; letter-spacing: -0.3px; margin-bottom: 12px; line-height: 1.2; }
@@ -504,9 +507,9 @@
         box-shadow: 0 4px 14px rgba(0,0,0,0.12);
     }
     .btn-book-now:hover { background: #E91E8C; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(233,30,140,0.25); }
- 
+
     .bs-divider { height: 1px; background: #f0f0f0; margin: 4px 0 18px; }
- 
+
     .bs-info-row {
         display: flex;
         align-items: flex-start;
@@ -558,13 +561,13 @@
     .bs-hours-expand.show { display: block; }
     .bs-hours-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; color: #666; }
     .bs-hours-row.today { font-weight: 700; color: #1a1a1a; }
- 
+
     .photo-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center; }
     .photo-modal.show { display: flex; }
     .photo-modal-inner { max-width: 90vw; max-height: 90vh; position: relative; }
     .photo-modal-inner img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 12px; }
     .photo-modal-close { position: absolute; top: -40px; right: 0; color: #fff; font-size: 1.4rem; cursor: pointer; background: none; border: none; }
- 
+
     @media (max-width: 768px) {
         .detail-wrap { padding: 0 12px; }
         .content-grid { padding: 20px 0 40px; gap: 30px; }
@@ -594,11 +597,11 @@
     }
 </style>
 @endpush
- 
+
 @section('content')
- 
+
 <div class="detail-wrap">
- 
+
     {{-- SALON HEADER --}}
     <div class="salon-header">
         <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
@@ -624,7 +627,7 @@
                         $openTime = $salon->open_time ? \Carbon\Carbon::parse($salon->open_time) : null;
                         $closeTime = $salon->close_time ? \Carbon\Carbon::parse($salon->close_time) : null;
                         $isOpen = $openTime && $closeTime && $now->format('H:i') >= $openTime->format('H:i') && $now->format('H:i') <= $closeTime->format('H:i');
- 
+
                         $hasCoords = !empty($salon->latitude) && !empty($salon->longitude);
                         if ($hasCoords) {
                             $mapsUrl = "https://www.google.com/maps/search/?api=1&query={$salon->latitude},{$salon->longitude}";
@@ -671,18 +674,20 @@
             </div>
         </div>
     </div>
- 
+
     @php
         // Local storage path ho ya poora URL (Unsplash waghera), dono ke liye sahi <img> src banata hai
-        function resolveShowImage($path, $fallback) {
-            if (!$path) return $fallback;
-            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-                return $path;
+        if (!function_exists('resolveShowImage')) {
+            function resolveShowImage($path, $fallback) {
+                if (!$path) return $fallback;
+                if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+                    return $path;
+                }
+                return asset('storage/' . ltrim($path, '/'));
             }
-            return asset('storage/' . ltrim($path, '/'));
         }
     @endphp
- 
+
     {{-- PHOTO GRID --}}
     <div class="photo-grid" id="photoGrid">
         <div class="main-photo" onclick="openPhoto('{{ $salon->cover_image }}')">
@@ -690,14 +695,14 @@
                  onerror="this.src='https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80'">
         </div>
         @php
-            // Fixed "first 2" ki jagah RANDOM 2 images (har salon apni hi gallery se, bridal-only issue khatam)
+            // Fixed "first 2" ki jagah RANDOM 2 images (har salon apni hi gallery se)
             $sideImages = $salon->gallery->count() >= 2
                 ? $salon->gallery->random(2)->values()
                 : $salon->gallery->values();
- 
+
             $sidePhoto1 = $sideImages->get(0);
             $sidePhoto2 = $sideImages->get(1);
- 
+
             $sidePhoto1Url = resolveShowImage($sidePhoto1?->image_path, $salon->cover_image);
             $sidePhoto2Url = resolveShowImage($sidePhoto2?->image_path, $salon->cover_image);
         @endphp
@@ -715,10 +720,10 @@
             </a>
         </div>
     </div>
- 
+
     {{-- CONTENT GRID --}}
     <div class="content-grid">
- 
+
         {{-- LEFT --}}
         <div>
             <div class="salon-tabs" id="salonTabs">
@@ -728,11 +733,11 @@
                 <button class="salon-tab" data-section="about" onclick="scrollToSection('about')">About</button>
                 <button class="salon-tab" data-section="features" onclick="scrollToSection('features')">Features</button>
             </div>
- 
+
             {{-- SERVICES --}}
             <div id="section-services" class="page-section">
                 <h3>Services</h3>
- 
+
                 @php $serviceCategories = $salon->services->groupBy('category.name'); @endphp
                 <div class="services-cat-tabs">
                     <button class="svc-cat-btn active" onclick="filterServiceCat('all',this)">All</button>
@@ -742,7 +747,7 @@
                     </button>
                     @endforeach
                 </div>
- 
+
                 <div class="service-list">
                     @forelse($salon->services->where('is_active',true) as $service)
                     <div class="service-row" data-cat="{{ Str::slug($service->category->name ?? 'general') }}">
@@ -758,7 +763,7 @@
                     @endforelse
                 </div>
             </div>
- 
+
             {{-- TEAM --}}
             <div id="section-team" class="page-section">
                 <div class="d-flex align-items-center justify-content-between mb-4">
@@ -787,7 +792,7 @@
                     @endforelse
                 </div>
             </div>
- 
+
             {{-- REVIEWS --}}
             <div id="section-reviews" class="page-section">
                 <h3>Reviews</h3>
@@ -802,7 +807,7 @@
                         <div class="br-count">{{ $salon->total_reviews * 10 + 250 }} reviews</div>
                     </div>
                 </div>
- 
+
                 @forelse($salon->reviews->where('is_approved',true)->take(6) as $review)
                 <div class="review-item">
                     <div class="ri-header">
@@ -834,13 +839,13 @@
                 </div>
                 @endforelse
             </div>
- 
+
             {{-- ABOUT --}}
             <div id="section-about" class="page-section">
                 <div class="about-section">
                     <h3>About</h3>
                     <p>{{ $salon->description ?? 'Welcome to '.$salon->name.'. We are dedicated to providing top-quality beauty services in '.$salon->city.'. Our experienced team of stylists and beauty experts are here to give you the best experience possible. Book your appointment today!' }}</p>
- 
+
                     {{-- MAP EMBED INTEGRATION --}}
                     <div class="map-placeholder">
                         @php
@@ -859,12 +864,12 @@
                             src="https://maps.google.com/maps?q={{ $mapEmbedLocation }}&t=&z=15&ie=UTF8&iwloc=&output=embed">
                         </iframe>
                     </div>
- 
+
                     <p class="address-line">
                         {{ $salon->address }}, {{ $salon->city }}, Pakistan
                         <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="directions-link"> Get directions</a>
                     </p>
- 
+
                     {{-- HOURS & INFO GRID --}}
                     <div class="hours-grid">
                         {{-- LEFT: Opening Times --}}
@@ -893,7 +898,7 @@
                             </div>
                             @endforeach
                         </div>
- 
+
                         {{-- RIGHT: Additional Information --}}
                         <div class="add-info">
                             <h4>Additional information</h4>
@@ -923,7 +928,7 @@
                             @endif
                         </div>
                     </div>
- 
+
                     @if(isset($similarSalons) && $similarSalons->count())
                     <div class="nearby-section" style="margin-top:32px;padding-top:32px;border-top:1px solid #f0f0f0;">
                         <h3>Venues nearby</h3>
@@ -947,7 +952,7 @@
                         </div>
                     </div>
                     @endif
- 
+
                     <div class="other-biz-section" style="margin-top:32px;padding-top:32px;border-top:1px solid #f0f0f0;">
                         <h3>Other services in {{ $salon->city }}</h3>
                         <a href="{{ route('salons.index',['city'=>$salon->city]) }}" class="other-biz-btn">
@@ -961,11 +966,11 @@
                     </div>
                 </div>
             </div>
- 
+
             {{-- FEATURES --}}
             <div id="section-features" class="page-section">
                 <h3>Salon Features</h3>
- 
+
                 <div style="display:flex;flex-direction:column;gap:16px;">
                     @foreach([
                         ['fa-wifi', 'Free Wi-Fi', 'Stay connected while you wait'],
@@ -987,14 +992,14 @@
                     @endforeach
                 </div>
             </div>
- 
+
         </div>{{-- end left --}}
- 
+
         {{-- RIGHT --}}
         <div class="d-none d-lg-block">
             <div class="booking-sidebar">
                 <div class="bs-name">{{ $salon->name }}</div>
- 
+
                 <div class="bs-rating">
                     <span class="num">{{ number_format($salon->rating,1) }}</span>
                     <span class="stars">
@@ -1002,17 +1007,17 @@
                     </span>
                     <span class="count" onclick="scrollToSection('reviews')">({{ $salon->total_reviews * 10 + 250 }})</span>
                 </div>
- 
+
                 @if($salon->is_featured)
                 <div class="bs-featured">Featured</div>
                 @endif
- 
+
                 <a href="{{ route('booking.step1', $salon->id) }}" class="btn-book-now">
                     Book now
                 </a>
- 
+
                 <div class="bs-divider"></div>
- 
+
                 <div class="bs-info-row" onclick="toggleHours()">
                     <div class="bs-icon-circle"><i class="fas fa-clock"></i></div>
                     <div class="bs-info-text">
@@ -1036,7 +1041,7 @@
                     </div>
                     @endforeach
                 </div>
- 
+
                 <div class="bs-info-row">
                     <div class="bs-icon-circle"><i class="fas fa-map-marker-alt"></i></div>
                     <div class="bs-info-text">
@@ -1046,7 +1051,7 @@
                         <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="directions-link">Get directions</a>
                     </div>
                 </div>
- 
+
                 @if($salon->paymentDetails->count())
                 <div class="bs-info-row" style="margin-bottom:0;">
                     <div class="bs-icon-circle"><i class="fas fa-mobile-alt"></i></div>
@@ -1060,18 +1065,18 @@
                 @endif
             </div>
         </div>
- 
+
     </div>{{-- end content-grid --}}
- 
+
     {{-- Mobile Book Now --}}
     <div class="d-lg-none" style="position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid #f0f0f0;z-index:500;">
         <a href="{{ route('booking.step1', $salon->id) }}" style="display:block;text-align:center;background:#1a1a1a;color:#fff;border-radius:12px;padding:14px;font-size:1rem;font-weight:700;">
             Book now
         </a>
     </div>
- 
+
 </div>{{-- end detail-wrap --}}
- 
+
 {{-- Photo Modal --}}
 <div class="photo-modal" id="photoModal" onclick="closePhoto()">
     <div class="photo-modal-inner" onclick="event.stopPropagation()">
@@ -1079,36 +1084,25 @@
         <img id="modalImg" src="" alt="">
     </div>
 </div>
- 
-@endsection
- 
-@push('scripts')
-{{-- Bootstrap JS layout (layouts/guest) pehle hi load karta hai, isliye yahan dobara load NAHI kiya --}}
+
+{{-- Bootstrap JS layout (guest.blade.php) already load karta hai, yahan dobara nahi chahiye --}}
 <script>
 const sectionIds = ['services','team','reviews','about','features'];
- 
-// Shared navbar ki real height CSS variable me set karta hai (sticky tabs/sidebar sahi jagah rahein)
-function syncNavHeight() {
-    const nav = document.querySelector('nav.navbar');
-    if (nav) {
-        document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
-    }
+
+function siteNavHeight() {
+    const nav = document.querySelector('.navbar');
+    return nav ? nav.offsetHeight : 0;
 }
-syncNavHeight();
-window.addEventListener('load', syncNavHeight);
-window.addEventListener('resize', syncNavHeight);
- 
+
 function scrollToSection(section) {
     const el = document.getElementById('section-' + section);
     if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
- 
+
 function setActiveTabFromScroll() {
-    const nav = document.querySelector('nav.navbar');
-    const navHeight = nav ? nav.offsetHeight : 70;
-    const tabsBarHeight = document.getElementById('salonTabs').offsetHeight + navHeight;
+    const tabsBarHeight = document.getElementById('salonTabs').offsetHeight + siteNavHeight() + 6;
     let current = sectionIds[0];
     for (const id of sectionIds) {
         const el = document.getElementById('section-' + id);
@@ -1120,9 +1114,9 @@ function setActiveTabFromScroll() {
         btn.classList.toggle('active', btn.dataset.section === current);
     });
 }
- 
+
 window.addEventListener('scroll', setActiveTabFromScroll, { passive: true });
- 
+
 function filterServiceCat(cat, btn) {
     document.querySelectorAll('.svc-cat-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -1130,12 +1124,12 @@ function filterServiceCat(cat, btn) {
         row.style.display = (cat === 'all' || row.dataset.cat === cat) ? 'flex' : 'none';
     });
 }
- 
+
 function toggleHours() {
     const panel = document.getElementById('bsHoursPanel');
     panel.classList.toggle('show');
 }
- 
+
 function openPhoto(url) {
     document.getElementById('modalImg').src = url;
     document.getElementById('photoModal').classList.add('show');
@@ -1146,5 +1140,5 @@ function closePhoto() {
     document.body.style.overflow = '';
 }
 </script>
-@endpush
- 
+
+@endsection

@@ -22,7 +22,7 @@
                 <div class="stat-icon icon-green"><i class="bi bi-currency-dollar"></i></div>
                 <div>
                     <div class="stat-label-sm">Total Revenue</div>
-                    <div class="stat-value-sm">${{ number_format($stats['total_revenue'] ?? 45280) }}</div>
+                    <div class="stat-value-sm">PKR {{ number_format($stats['total_revenue'] ?? 45280) }}</div>
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@
                 <div class="stat-icon icon-blue"><i class="bi bi-credit-card-fill"></i></div>
                 <div>
                     <div class="stat-label-sm">Completed</div>
-                    <div class="stat-value-sm">${{ number_format($stats['completed'] ?? 42860) }}</div>
+                    <div class="stat-value-sm">{{ number_format($stats['completed'] ?? 0) }}</div>
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
                 <div class="stat-icon icon-amber"><i class="bi bi-exclamation-circle-fill"></i></div>
                 <div>
                     <div class="stat-label-sm">Pending</div>
-                    <div class="stat-value-sm">${{ number_format($stats['pending'] ?? 2420) }}</div>
+                    <div class="stat-value-sm">PKR {{ number_format($stats['pending'] ?? 2420) }}</div>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
                 <div class="stat-icon icon-gold"><i class="bi bi-graph-up-arrow"></i></div>
                 <div>
                     <div class="stat-label-sm">Today's Total</div>
-                    <div class="stat-value-sm">${{ number_format($stats['today_total'] ?? 2840) }}</div>
+                    <div class="stat-value-sm">PKR {{ number_format($stats['today_total'] ?? 2840) }}</div>
                 </div>
             </div>
         </div>
@@ -120,7 +120,7 @@
                                 <div class="cell-sub">{{ $payment['client_email'] }}</div>
                             </td>
                             <td>{{ $payment['service'] }}</td>
-                            <td class="amount-gold">${{ $payment['amount'] }}</td>
+                            <td class="amount-gold">PKR {{ $payment['amount'] }}</td>
                             <td>{{ $payment['method'] }}</td>
                             <td>
                                 <div class="cell-name">{{ $payment['date'] }}</div>
