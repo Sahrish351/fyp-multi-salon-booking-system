@@ -528,3 +528,51 @@ Route::get('/cron/run-schedule/{token}', function (string $token) {
     return response('OK ' . now()->toDateTimeString(), 200);
 });
 
+Route::get('/fix-gallery/{token}', function ($token) {
+    $secret = config('services.cron_token');
+    abort_unless($secret && hash_equals($secret, $token), 403);
+
+    // 1) Broken (purani local storage wali) photos hatao
+    $deleted = \DB::table('galleries')
+        ->whereNull('deleted_at')
+        ->where('image_path', 'not like', 'http%')
+        ->update(['deleted_at' => now()]);
+
+    // 2) Jo photos chal rahi hain, unmein se 6 uthao
+    $pool = \DB::table('galleries')
+        ->whereNull('deleted_at')
+        ->where('image_path', 'like', 'http%')
+        ->distinct()
+        ->limit(6)
+        ->pluck('image_path');
+
+    // 3) Har salon ko wo photos laga do (agar pehle se na hon)
+    $added = 0;
+    foreach (\App\Models\Salon::pluck('id') as $salonId) {
+        $order = (int) \DB::table('galleries')->where('salon_id', $salonId)->max('sort_order');
+        foreach ($pool as $url) {
+            $exists = \DB::table('galleries')
+                ->where('salon_id', $salonId)
+                ->where('image_path', $url)
+                ->whereNull('deleted_at')
+                ->exists();
+            if ($exists) continue;
+
+            \DB::table('galleries')->insert([
+                'salon_id'    => $salonId,
+                'category_id' => null,
+                'image_path'  => $url,
+                'caption'     => null,
+                'sort_order'  => ++$order,
+                'views'       => 0,
+                'is_active'   => 1,
+                'created_at'  => now(),
+                'updated_at'  => now(),
+                'deleted_at'  => null,
+            ]);
+            $added++;
+        }
+    }
+
+    return "Broken photos removed: $deleted | New photos added: $added";
+});
