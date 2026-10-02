@@ -43,7 +43,11 @@ class PublicSalonController extends Controller
             },
             'stylists.availabilities',
             'gallery' => function($q) {
-                $q->where('is_active', true)->orderBy('sort_order');
+                // Sirf wohi photos jo delete nahi hui aur jinka link chalta hai (http/https)
+                $q->where('is_active', true)
+                  ->whereNull('deleted_at')
+                  ->where('image_path', 'like', 'http%')
+                  ->orderBy('sort_order');
             },
             'reviews' => function($q) {
                 $q->where('is_approved', true)->latest()->limit(5);
@@ -53,21 +57,21 @@ class PublicSalonController extends Controller
             },
         ])->where('slug', $slug)->where('status', 'approved')->firstOrFail();
 
-        // ✅ FIX: total_reviews properly calculate karein
+        //  FIX: total_reviews properly calculate karein
         $totalReviews = Review::where('salon_id', $salon->id)
             ->where('is_approved', true)
             ->count();
 
-        // ✅ FIX: rating calculate karein
+        //  FIX: rating calculate karein
         $ratingAvg = Review::where('salon_id', $salon->id)
             ->where('is_approved', true)
             ->avg('rating') ?? 0;
 
-        // ✅ FIX: Dynamically assign to salon object
+        //  FIX: Dynamically assign to salon object
         $salon->total_reviews = $totalReviews;
         $salon->rating = round($ratingAvg, 1) ?: 4.5;
 
-        $isFavorite = Auth::check() 
+        $isFavorite = Auth::check()
             ? Auth::user()->favorites()->where('salon_id', $salon->id)->exists()
             : false;
 
@@ -101,9 +105,13 @@ class PublicSalonController extends Controller
     public function gallery($slug)
     {
         $salon = Salon::with(['gallery' => function($q) {
-            $q->where('is_active', true)->orderBy('sort_order', 'asc');
+            
+            $q->where('is_active', true)
+              ->whereNull('deleted_at')
+              ->where('image_path', 'like', 'http%')
+              ->orderBy('sort_order', 'asc');
         }])->where('slug', $slug)->where('status', 'approved')->firstOrFail();
-        
+
         return view('frontend.salons.gallery', compact('salon'));
     }
 }
