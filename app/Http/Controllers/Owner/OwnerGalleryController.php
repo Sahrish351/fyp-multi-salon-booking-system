@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Salon;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,18 @@ class OwnerGalleryController extends Controller
     private function getOwnerSalon()
     {
         return Salon::where('owner_id', auth()->id())->first();
+    }
+
+    // Cloudinary ka poora URL ho ya purana local path, dono ke liye sahi URL banata hai
+    private function imageUrl($path)
+    {
+        if (empty($path)) {
+            return null;
+        }
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+        return asset('storage/' . ltrim($path, '/'));
     }
 
     public function index(Request $request)
@@ -33,10 +46,7 @@ class OwnerGalleryController extends Controller
                 ->get();
 
             $photos = $photosRaw->map(function ($p) {
-                $url = null;
-                if (!empty($p->image_path)) {
-                    $url = asset('storage/' . $p->image_path);
-                }
+                $url = $this->imageUrl($p->image_path);
 
                 $categoryName = 'hair';
                 if (!empty($p->category_id)) {
@@ -56,12 +66,12 @@ class OwnerGalleryController extends Controller
 
             $totalPhotos = count($photos);
             $totalViews  = array_sum(array_column($photos, 'views'));
-            
+
             // Gallery page ke fixed tabs (Hair, Nails, Facial, Spa, Makeup)
             $defaultCategories = ['hair', 'nails', 'facial', 'spa', 'makeup'];
-            
+
             // Photo categories aur default tabs ko combine karke unique count nikalna
-            $photoCategories = array_column($photos, 'category');
+            $photoCategories  = array_column($photos, 'category');
             $uniqueCategories = count(array_unique(array_merge($defaultCategories, $photoCategories)));
 
             return view('owner.gallery.index', compact(
@@ -102,7 +112,13 @@ class OwnerGalleryController extends Controller
                 'category' => 'nullable|string',
             ]);
 
-            $path = $request->file('image')->store('gallery', 'public');
+            // Image Cloudinary par upload hogi, wapas poora https URL milega
+            $cloudinary = new Cloudinary(config('services.cloudinary.url'));
+            $uploaded = $cloudinary->uploadApi()->upload(
+                $request->file('image')->getRealPath(),
+                ['folder' => 'gallery']
+            );
+            $path = $uploaded['secure_url'];
 
             $categoryId = null;
             if ($request->filled('category')) {
@@ -210,7 +226,9 @@ class OwnerGalleryController extends Controller
                     ->with('error', 'Photo not found.');
             }
 
-            if (!empty($photo->image_path) && Storage::disk('public')->exists($photo->image_path)) {
+            // Sirf purani local files delete hongi; Cloudinary wale URL ko chhedna nahi
+            $isUrl = str_starts_with($photo->image_path ?? '', 'http');
+            if (!$isUrl && !empty($photo->image_path) && Storage::disk('public')->exists($photo->image_path)) {
                 Storage::disk('public')->delete($photo->image_path);
             }
 

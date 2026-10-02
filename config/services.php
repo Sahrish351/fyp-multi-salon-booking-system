@@ -68,5 +68,10 @@ return [
 
     // ============ CRON TOKEN (Render scheduler ke liye) ============
     'cron_token' => env('CRON_TOKEN'),
+    
+
+    'cloudinary' => [
+        'url' => env('CLOUDINARY_URL'),
+    ],
 
 ];
