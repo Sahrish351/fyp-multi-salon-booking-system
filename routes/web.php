@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Artisan;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -514,5 +515,16 @@ Route::delete('/complaints/{complaint}', [ClientComplaintController::class, 'des
 
 Route::get('/test-complaint', function () {
     return 'Test route is working!';
+});
+
+
+Route::get('/cron/run-schedule/{token}', function (string $token) {
+    $secret = config('services.cron_token');
+
+    abort_if(empty($secret) || ! hash_equals($secret, $token), 404);
+
+    Artisan::call('schedule:run');
+
+    return response('OK ' . now()->toDateTimeString(), 200);
 });
 

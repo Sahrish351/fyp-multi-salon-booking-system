@@ -66,4 +66,7 @@ return [
         'key' => env('GEMINI_API_KEY'),
     ],
 
+    // ============ CRON TOKEN (Render scheduler ke liye) ============
+    'cron_token' => env('CRON_TOKEN'),
+
 ];
