@@ -1,10 +1,9 @@
-
 @extends('layouts.owner')
-
+ 
 @section('title', 'New Appointment')
-
+ 
 @section('content')
-
+ 
    
     <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
@@ -15,17 +14,17 @@
             <i class="bi bi-arrow-left me-2"></i> Back to Appointments
         </a>
     </div>
-
+ 
     <form action="{{ route('owner.appointments.store') }}" method="POST">
         @csrf
-
+ 
         <div class="row g-4">
-
+ 
           
             <div class="col-lg-6">
                 <div class="panel-card">
                     <div class="panel-title">Client Information</div>
-
+ 
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label-custom">Client Name</label>
@@ -45,12 +44,12 @@
                     </div>
                 </div>
             </div>
-
+ 
           
             <div class="col-lg-6">
                 <div class="panel-card">
                     <div class="panel-title">Appointment Details</div>
-
+ 
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label-custom">Service</label>
@@ -85,12 +84,12 @@
                     </div>
                 </div>
             </div>
-
+ 
            
             <div class="col-12">
                 <div class="panel-card">
                     <div class="panel-title">Payment &amp; Notes</div>
-
+ 
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label-custom">Price ($)</label>
@@ -110,7 +109,7 @@
                                       placeholder="Any special requests or notes for this appointment..."></textarea>
                         </div>
                     </div>
-
+ 
                     <div class="d-flex gap-3 mt-4">
                         <button type="submit" class="btn btn-save-changes">
                             <i class="bi bi-check-circle-fill me-2"></i> Book Appointment
@@ -119,13 +118,13 @@
                     </div>
                 </div>
             </div>
-
+ 
         </div>
-
+ 
     </form>
-
+ 
 @endsection
-
+ 
 @section('extra-css')
 <style>
     .btn-back {
@@ -134,7 +133,7 @@
         display: inline-flex; align-items: center; transition: all 0.18s ease;
     }
     .btn-back:hover { background: var(--blush-50); color: var(--plum-900); }
-
+ 
     .form-label-custom { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink-700); margin-bottom: 6px; }
     .input-custom {
         background: var(--blush-50) !important; border: 1px solid var(--blush-200) !important;
@@ -142,14 +141,29 @@
         font-size: 14.5px; padding: 11px 14px !important;
     }
     .input-custom:focus { background: #fff !important; border-color: var(--rose-400) !important; box-shadow: 0 0 0 3px rgba(240, 143, 180, 0.2) !important; outline: none; }
-
+ 
+    /* Book Appointment button - same look as "New Appointment" button */
     .btn-save-changes {
-        background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-        color: var(--plum-900); font-weight: 700; padding: 11px 26px; border-radius: 10px; border: none;
-        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, #ff6b9d 0%, #f0508a 100%) !important;
+        color: #fff !important;
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 11px 26px;
+        border-radius: 10px;
+        border: none !important;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 6px 16px rgba(240, 80, 138, 0.3);
+        transition: all 0.18s ease;
     }
-    .btn-save-changes:hover { color: var(--plum-900); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 164, 65, 0.4); }
-
+    .btn-save-changes:hover,
+    .btn-save-changes:focus {
+        color: #fff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(240, 80, 138, 0.45);
+    }
+    .btn-save-changes:active { transform: translateY(0); }
+ 
     .btn-cancel-modal {
         background: var(--white); border: 1px solid var(--blush-200); color: var(--ink-700);
         font-weight: 600; padding: 11px 26px; border-radius: 10px; display: inline-flex; align-items: center;
@@ -157,3 +171,4 @@
     .btn-cancel-modal:hover { background: var(--blush-50); color: var(--ink-900); }
 </style>
 @endsection
+ 

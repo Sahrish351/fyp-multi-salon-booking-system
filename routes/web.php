@@ -95,8 +95,8 @@ Route::get('/demo/{type}', function ($type) {
     abort_unless(in_array($type, ['owner', 'client']), 404);
 
     $videos = [
-        'owner'  => 'YOUR_OWNER_VIDEO_ID',
-        'client' => 'YOUR_CLIENT_VIDEO_ID',
+        'owner'  => 'vZNma2tAUiA',
+        'client' => '9-KZjjstksM',
     ];
 
     return view('demo-video', ['type' => $type, 'videoId' => $videos[$type]]);
