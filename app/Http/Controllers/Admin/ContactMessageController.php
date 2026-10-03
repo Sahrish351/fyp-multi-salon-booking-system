@@ -27,7 +27,7 @@ class ContactMessageController extends Controller
             ->latest()
             ->paginate(20);
 
-        // ✅ Counts for header stats
+        //  Counts for header stats
         $unreadCount = ContactMessage::where('status', 'unread')->count();
         $readCount = ContactMessage::where('status', 'read')->count();
         $repliedCount = ContactMessage::where('status', 'replied')->count();
@@ -40,7 +40,7 @@ class ContactMessageController extends Controller
     {
         $message = ContactMessage::findOrFail($id);
 
-        // ✅ Mark as read if unread
+        //  Mark as read if unread
         if ($message->status === 'unread') {
             $message->update([
                 'status' => 'read',

@@ -71,7 +71,7 @@ class NotificationHelper
         try { 
             return DB::table('notifications') 
                 ->where('salon_id', $salonId) 
-                ->where('notifiable_type', 'App\\Models\\Salon') // 👈 Sirf Salon ki count karega
+                ->where('notifiable_type', 'App\\Models\\Salon') 
                 ->whereNull('read_at') 
                 ->whereNull('deleted_at') 
                 ->count(); 

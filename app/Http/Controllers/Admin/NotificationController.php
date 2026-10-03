@@ -12,10 +12,7 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        // ✅ FIXED: guard against a missing/expired session. Without this,
-        // hitting this route while logged out (or under the wrong guard)
-        // crashes with "Call to a member function notifications() on null"
-        // instead of sending the person to log in.
+        
         $user = Auth::user();
         if (!$user) {
             return redirect()->route('login')->with('error', 'Please log in to view notifications.');
@@ -108,17 +105,7 @@ class NotificationController extends Controller
         return back()->with('success', 'Notification deleted successfully.');
     }
 
-    /**
-     * ── Reusable helper — call this from ANY other controller to notify
-     * every admin at once. This is what wires up the actual notification
-     * triggers (new salon request, new complaint, new contact message,
-     * salon approved/rejected, etc). See the accompanying guide for
-     * exactly where to call this from in each of those controllers.
-     *
-     * Usage from anywhere else in the app:
-     *   app(\App\Http\Controllers\Admin\NotificationController::class)
-     *       ->notifyAdmins('New Complaint', 'A client filed a complaint against XYZ Salon.', route('admin.complaints.index'));
-     */
+  
     public function notifyAdmins(string $title, string $message, ?string $actionUrl = null): void
     {
         $admins = User::where('role', 'admin')->get();

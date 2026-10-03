@@ -32,7 +32,7 @@
       box-shadow: 0 2px 20px rgba(233,30,140,0.06);
     }
     .g-nav .brand { display: flex; align-items: center; gap: 8px; }
-
+ 
   .g-nav .brand .brand-logo-img {
   height: 52px;
   width: auto;
@@ -421,7 +421,7 @@
     .biz-sec h2 { font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 12px; line-height: 1.25; }
     .biz-sec p { color: #aaa; font-size: 0.88rem; margin-bottom: 22px; line-height: 1.6; max-width: 440px; }
     .biz-btns { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-
+ 
     .btn-biz {
       background: #fff; color: #1a1a1a; border-radius: 50px;
       padding: 10px 22px; font-size: 0.85rem; font-weight: 700;
@@ -429,7 +429,7 @@
       transition: all 0.25s ease;
     }
     .btn-biz:hover { background: #E91E8C; color: #fff; transform: translateY(-2px); }
-
+ 
     .btn-demo {
       background: #fde7f3; color: #E91E8C; border-radius: 50px;
       padding: 10px 22px; font-size: 0.85rem; font-weight: 700;
@@ -438,9 +438,9 @@
       transition: all 0.25s ease;
     }
     .btn-demo:hover { background: #E91E8C; border-color: #E91E8C; color: #fff; transform: translateY(-2px); }
-
+ 
     .biz-perks { display: flex; flex-direction: column; gap: 14px; }
-
+ 
     .biz-perk {
       display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 16px 18px;
@@ -566,7 +566,7 @@
  
 <body>
  
-
+ 
 <nav class="g-nav">
   <a href="{{ route('home') }}" class="brand">
     <img src="{{ asset('images/full-logo.png') }}" alt="Beauty Blush Salons" class="brand-logo-img">
@@ -606,7 +606,7 @@
   </div>
 </nav>
  
-
+ 
 <section class="hero">
   <h1>Book premium beauty services</h1>
   <p>Discover top-rated salons, bridal studios, nail artists and beauty experts trusted by thousands across Pakistan</p>
@@ -680,7 +680,7 @@
   <p class="hero-count"><strong>{{ number_format($totalBookings ?? 0) }}</strong> appointments booked today</p>
 </section>
  
-
+ 
 <section class="g-section" style="background:#fff;padding-top:20px;">
   <div class="g-section-head">
     <h2>Recommended</h2>
@@ -690,8 +690,11 @@
     <button class="slider-arrow-btn left" onclick="slide('rec',-1)"><i class="fas fa-chevron-left"></i></button>
     <div class="slider-scroll-area" id="slider-rec">
       <div class="slider-track">
-        @php $ratings = [5.0, 4.9, 4.8, 4.7]; @endphp
         @forelse(($featuredSalons ?? collect())->take(4) as $index => $salon)
+        @php
+          $rc  = $salon->reviews()->count();
+          $avg = $rc > 0 ? round($salon->reviews()->avg('rating'), 1) : null;
+        @endphp
         <a href="{{ route('salons.show', $salon->slug) }}" class="salon-card">
           <div class="sc-img">
             <img src="{{ $salon->cover_image ?? asset('storage/images/salon1.jpg') }}" alt="{{ $salon->name }}" loading="lazy">
@@ -699,11 +702,16 @@
           </div>
           <div class="sc-body">
             <div class="sc-name-row">
-              <div class="sc-name">{{ $salon->name ?? 'Beauty Blush Elite' }} <i class="fas fa-check-circle vc"></i></div>
-              <div class="sc-rating-inline"><i class="fas fa-star star"></i> {{ $ratings[$index % count($ratings)] }}</div>
+              <div class="sc-name">{{ $salon->name }} <i class="fas fa-check-circle vc"></i></div>
+              @if($avg)
+                <div class="sc-rating-inline"><i class="fas fa-star star"></i> {{ number_format($avg, 1) }}</div>
+              @endif
             </div>
-            <div class="sc-addr">{{ $salon->address ?? 'Main Boulevard Gulberg, Lahore' }}</div>
-            <div class="sc-meta">{{ $salon->services->first()?->category?->name ?? 'Luxury Salon' }} · {{ rand(50,300) }} reviews</div>
+            <div class="sc-addr">{{ $salon->address }}</div>
+            <div class="sc-meta">
+              {{ $salon->services->first()?->category?->name ?? 'Salon' }} ·
+              {{ $rc > 0 ? $rc . ' reviews' : 'No reviews yet' }}
+            </div>
           </div>
         </a>
         @empty
@@ -717,7 +725,7 @@
     <button class="slider-arrow-btn right" onclick="slide('rec',1)"><i class="fas fa-chevron-right"></i></button>
   </div>
 </section>
-
+ 
 <section class="g-section" style="background:linear-gradient(180deg,#fff 0%,#fdf5fb 100%);">
   <div class="g-section-head">
     <h2>New to Beauty Blush</h2>
@@ -728,12 +736,13 @@
     <div class="slider-scroll-area" id="slider-newto">
       <div class="slider-track">
         @forelse(($newSalons ?? collect())->take(4) as $index => $salon)
+        @php $rc = $salon->reviews()->count(); @endphp
         <a href="{{ route('salons.show', $salon->slug) }}" class="salon-card">
           <div class="sc-img"><img src="{{ $salon->cover_image ?? asset('storage/images/salon1.jpg') }}" alt="{{ $salon->name }}" loading="lazy"></div>
           <div class="sc-body">
-            <div class="sc-name-row"><div class="sc-name">{{ $salon->name ?? 'New Style Studio' }} <i class="fas fa-check-circle vc"></i></div></div>
-            <div class="sc-addr">{{ $salon->address ?? 'Johar Town, Lahore' }}</div>
-            <div class="sc-meta">New · {{ rand(10,100) }} reviews</div>
+            <div class="sc-name-row"><div class="sc-name">{{ $salon->name }} <i class="fas fa-check-circle vc"></i></div></div>
+            <div class="sc-addr">{{ $salon->address }}</div>
+            <div class="sc-meta">New · {{ $rc > 0 ? $rc . ' reviews' : 'No reviews yet' }}</div>
           </div>
         </a>
         @empty
@@ -748,7 +757,7 @@
   </div>
 </section>
  
-
+ 
 <section class="g-section" style="background:#fff;">
   <div class="g-section-head">
     <h2>Trending</h2>
@@ -759,15 +768,21 @@
     <div class="slider-scroll-area" id="slider-trending">
       <div class="slider-track">
         @forelse(($topRatedSalons ?? collect())->take(4) as $index => $salon)
+        @php
+          $rc  = $salon->reviews()->count();
+          $avg = $rc > 0 ? round($salon->reviews()->avg('rating'), 1) : null;
+        @endphp
         <a href="{{ route('salons.show', $salon->slug) }}" class="salon-card">
           <div class="sc-img"><img src="{{ $salon->cover_image ?? asset('storage/images/salon1.jpg') }}" alt="{{ $salon->name }}" loading="lazy"></div>
           <div class="sc-body">
             <div class="sc-name-row">
-              <div class="sc-name">{{ $salon->name ?? 'Trending Now' }} <i class="fas fa-check-circle vc"></i></div>
-              <div class="sc-rating-inline"><i class="fas fa-star star"></i> {{ number_format($salon->rating ?? 4.8, 1) }}</div>
+              <div class="sc-name">{{ $salon->name }} <i class="fas fa-check-circle vc"></i></div>
+              @if($avg)
+                <div class="sc-rating-inline"><i class="fas fa-star star"></i> {{ number_format($avg, 1) }}</div>
+              @endif
             </div>
-            <div class="sc-addr">{{ $salon->address ?? 'Liberty Market, Lahore' }}</div>
-            <div class="sc-meta">{{ rand(100,500) }} reviews</div>
+            <div class="sc-addr">{{ $salon->address }}</div>
+            <div class="sc-meta">{{ $rc > 0 ? $rc . ' reviews' : 'No reviews yet' }}</div>
           </div>
         </a>
         @empty
@@ -782,7 +797,7 @@
   </div>
 </section>
  
-
+ 
 <section class="how-sec">
   <div class="section-title-center reveal-up">
     <span class="eyebrow">Simple &amp; Fast</span>
@@ -809,14 +824,14 @@
       <p>Walk in, get pampered and share your experience with the community.</p>
     </div>
   </div>
-
+ 
     <div style="text-align:center;margin-top:32px;">
     <p style="font-size:0.85rem;color:#888;margin-bottom:12px;">Not sure how to book? Watch a quick demo.</p>
         <a href="{{ route('demo.video', 'client') }}" class="btn-demo"><i class="fas fa-circle-play"></i> Watch how to book</a>
   </div>
 </section>
-
-
+ 
+ 
 <section class="cat-sec">
   <div class="section-title-center reveal-up">
     <span class="eyebrow">Browse</span>
@@ -835,7 +850,7 @@
   </div>
 </section>
  
-
+ 
 <section class="g-section" style="background:#fff;">
   <div class="g-section-head">
     <h2>Reviews</h2>
@@ -884,7 +899,7 @@
   </div>
 </section>
  
-
+ 
 <section class="stats-sec">
   <h2 class="st-title">The top-rated destination for beauty in Pakistan</h2>
   <p class="st-sub">One platform. Trusted by the best in the beauty industry.</p>
@@ -897,7 +912,7 @@
   </div>
 </section>
  
-
+ 
 <section class="trust-sec">
   <div class="section-title-center reveal-up">
     <span class="eyebrow">Why Beauty Blush</span>
@@ -912,7 +927,7 @@
   </div>
 </section>
  
-
+ 
 <section class="city-sec">
   <h2>Browse by City</h2>
   <div class="city-tabs">
@@ -929,7 +944,7 @@
   </div>
 </section>
  
-
+ 
 <section class="biz-sec">
   <div class="biz-inner">
     <div>
@@ -958,7 +973,7 @@
   </div>
 </section>
  
-
+ 
 <footer style="background: #f8f5f7; color: #555; padding-top: 60px; border-top: 1px solid #f0e8ed;">
     <div class="container">
         <div class="row g-4">
@@ -1229,3 +1244,12 @@
 @include('partials.chatbot-widget')
 </body>
 </html>
+ 
+
+
+
+
+
+
+
+

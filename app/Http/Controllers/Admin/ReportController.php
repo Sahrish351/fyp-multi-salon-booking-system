@@ -18,9 +18,7 @@ use Carbon\Carbon;
 
 class ReportController extends Controller
 {
-    /**
-     * Exactly the 7 reports requested — no more, no less.
-     */
+   
     protected array $reportTypes = [
         'appointments' => ['label' => 'Booking Report',   'icon' => 'fa-calendar-check',    'color' => 'pk'],
         'payments'     => ['label' => 'Payment Report',   'icon' => 'fa-credit-card',       'color' => 'teal'],
@@ -110,11 +108,7 @@ class ReportController extends Controller
         };
     }
 
-    // =====================================================================
-    // 1. BOOKING REPORT
-    // Summary: Total / Pending / Confirmed / Completed / Cancelled / Waitlist
-    // Columns: Booking Date, Salon Name, Client Name, Service Name (+ ID, Amount, Status)
-    // =====================================================================
+    
     private function buildBookingReport(Carbon $from, Carbon $to, ?string $search): array
     {
         $columns = [
@@ -169,11 +163,7 @@ class ReportController extends Controller
         ];
     }
 
-    // =====================================================================
-    // 2. PAYMENT REPORT
-    // Summary: Total / Successful / Pending / Rejected
-    // Columns: Payment Method, Amount, Payment Date, Client Name, Salon Name (+ ID)
-    // =====================================================================
+    
     private function buildPaymentReport(Carbon $from, Carbon $to, ?string $search): array
     {
         $columns = [
@@ -220,11 +210,7 @@ class ReportController extends Controller
         ];
     }
 
-    // =====================================================================
-    // 3. REVENUE REPORT
-    // Summary: Total Revenue / Monthly Revenue / Daily Revenue
-    // Table: Revenue by Salon (grouped)
-    // =====================================================================
+    
     private function buildRevenueReport(Carbon $from, Carbon $to): array
     {
         $columns = [
@@ -263,11 +249,7 @@ class ReportController extends Controller
         ];
     }
 
-    // =====================================================================
-    // 4. COMPLAINT REPORT
-    // Summary: Total / Pending / Under Review / Resolved / Rejected
-    // Columns: Client Name, Salon Name, Complaint Category, Complaint Date (+ ID, Subject)
-    // =====================================================================
+    
     private function buildComplaintReport(Carbon $from, Carbon $to, ?string $search): array
     {
         $columns = [
@@ -322,11 +304,7 @@ class ReportController extends Controller
         ];
     }
 
-    // =====================================================================
-    // 5. SALON REPORT
-    // Summary: Total / Active / Pending / Blocked Salons
-    // Columns: Salon Name, Owner Name, Total Services, Total Bookings, Total Revenue, Rating
-    // =====================================================================
+ 
     private function buildSalonReport(Carbon $from, Carbon $to, ?string $search): array
     {
         $columns = [
@@ -377,11 +355,7 @@ class ReportController extends Controller
         ];
     }
 
-    // =====================================================================
-    // 6. CLIENT REPORT
-    // Summary: Total / Active / Blocked Clients
-    // Columns: Client Name, Total Bookings, Completed, Cancelled, Total Spent, Reviews, Complaints
-    // =====================================================================
+    
     private function buildClientReport(Carbon $from, Carbon $to, ?string $search): array
     {
         $columns = [
@@ -398,12 +372,7 @@ class ReportController extends Controller
             ['key' => 'complaints',     'label' => 'Total Complaints'],
         ];
 
-        // NOTE: no date-range filter here on purpose. The summary counts
-        // below (Total/Active/Blocked Clients) are all-time totals, so the
-        // table needs to list ALL matching clients too — otherwise the
-        // numbers at the top and the rows in the table disagree (e.g.
-        // "5 Active Clients" but an empty table because none of them
-        // happened to register within the selected date range).
+        
         $base = User::query();
         $roleColumn = $this->detectRoleColumn();
         if ($roleColumn) {
@@ -470,11 +439,7 @@ class ReportController extends Controller
         ];
     }
 
-    // =====================================================================
-    // 7. OWNER REPORT
-    // Summary: Total / Active / Pending / Blocked Owners
-    // Columns (per salon owned): Owner Name, Salon Name, Total Services, Total Bookings, Total Revenue, Total Reviews
-    // =====================================================================
+    
     private function buildOwnerReport(Carbon $from, Carbon $to, ?string $search): array
     {
         $columns = [
@@ -524,13 +489,7 @@ class ReportController extends Controller
         ];
     }
 
-    /**
-     * Auto-detect which column on `users` distinguishes client/owner/admin,
-     * since different projects name this differently. Tries the common
-     * conventions in order and uses whichever actually exists — this is
-     * safer than assuming 'role' and silently counting everyone as both
-     * a client AND an owner if that guess is wrong.
-     */
+   
     private function detectRoleColumn(): ?string
     {
         foreach (['role', 'user_type', 'account_type', 'type'] as $candidate) {
@@ -541,11 +500,7 @@ class ReportController extends Controller
         return null;
     }
 
-    // =====================================================================
-    // Helpers — flexible status counting so this works whichever exact
-    // status values your `salons` / `users` tables actually use, instead
-    // of assuming one spelling and silently showing 0 for everything.
-    // =====================================================================
+    
     private function salonStatusCounts(): array
     {
         $total   = Salon::count();

@@ -66,7 +66,7 @@ class ReviewManagementController extends Controller
             'is_flagged'  => false,
         ]);
 
-        // ✅ Notification – simple message (ya hata sakti hain)
+        //  Notification – simple message (ya hata sakti hain)
         try {
             $review->client->notify(new \App\Notifications\AppointmentUpdateNotification(
                 $review->appointment,

@@ -10,7 +10,6 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
 class OwnerClientController extends Controller
@@ -18,6 +17,32 @@ class OwnerClientController extends Controller
     private function getOwnerSalon()
     {
         return Salon::where('owner_id', auth()->id())->first();
+    }
+
+    /**
+     * Sirf is salon ke clients:
+     * - jinki is salon mein appointment ho, ya
+     * - jinki is salon mein payment ho, ya
+     * - jinhein is salon ke owner ne add kiya ho
+     */
+    private function salonClientsQuery(Salon $salon)
+    {
+        return User::where('role', 'client')->where(function ($q) use ($salon) {
+            $q->where('added_by_salon_id', $salon->id)
+              ->orWhereIn('id', Appointment::where('salon_id', $salon->id)->select('client_id'))
+              ->orWhereIn('id', Payment::where('salon_id', $salon->id)->select('client_id'));
+        });
+    }
+
+    private function resolveStatus($user, $totalVisits, $totalSpent)
+    {
+        $status = $user->status ?? 'New';
+        if ($status == 'New' && ($totalVisits >= 10 || $totalSpent >= 50000)) {
+            $status = 'VIP';
+        } elseif ($status == 'New' && $totalVisits >= 3) {
+            $status = 'Regular';
+        }
+        return $status;
     }
 
     public function index(Request $request)
@@ -29,13 +54,12 @@ class OwnerClientController extends Controller
                     ->with('error', 'Please create your salon first.');
             }
 
-            // ✅ SAB CLIENTS LEKAR AO (JO ROLE = CLIENT HAIN)
-            $clientsRaw = User::where('role', 'client')
+            // ✅ Sirf is salon ke clients
+            $clientsRaw = $this->salonClientsQuery($salon)
                 ->orderBy('name')
                 ->get();
 
             $clients = $clientsRaw->map(function ($user) use ($salon) {
-                // Appointments count
                 $appointments = Appointment::where('salon_id', $salon->id)
                     ->where('client_id', $user->id)
                     ->orderBy('appointment_date', 'desc')
@@ -43,7 +67,6 @@ class OwnerClientController extends Controller
 
                 $totalVisits = $appointments->count();
 
-                // Total spent
                 $totalSpent = Payment::where('salon_id', $salon->id)
                     ->where('client_id', $user->id)
                     ->where('status', 'approved')
@@ -54,13 +77,7 @@ class OwnerClientController extends Controller
                     ? Carbon::parse($lastAppt->appointment_date)->format('M d, Y')
                     : 'N/A';
 
-                // Status logic
-                $status = $user->status ?? 'New';
-                if ($status == 'New' && ($totalVisits >= 10 || $totalSpent >= 50000)) {
-                    $status = 'VIP';
-                } elseif ($status == 'New' && $totalVisits >= 3) {
-                    $status = 'Regular';
-                }
+                $status = $this->resolveStatus($user, $totalVisits, $totalSpent);
 
                 return [
                     'id'            => $user->id,
@@ -77,7 +94,6 @@ class OwnerClientController extends Controller
                 ];
             });
 
-            // Stats
             $stats = [
                 'total'          => $clients->count(),
                 'vip'            => $clients->where('status', 'VIP')->count(),
@@ -110,6 +126,12 @@ class OwnerClientController extends Controller
     public function store(Request $request)
     {
         try {
+            $salon = $this->getOwnerSalon();
+            if (!$salon) {
+                return redirect()->route('owner.salons.create')
+                    ->with('error', 'Please create your salon first.');
+            }
+
             $request->validate([
                 'name'  => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
@@ -117,20 +139,23 @@ class OwnerClientController extends Controller
             ]);
 
             $user = User::create([
-                'name'     => $request->name,
-                'email'    => $request->email,
-                'phone'    => $request->phone ?? null,
-                'password' => Hash::make('Welcome@123'),
-                'role'     => 'client',
-                'is_active' => true,
-                // ✅ STATUS AUR NOTES SAVE KARO
-                'status'   => $request->status ?? 'New',
-                'notes'    => $request->notes ?? null,
+                'name'              => $request->name,
+                'email'             => $request->email,
+                'phone'             => $request->phone ?? null,
+                'password'          => Hash::make('Welcome@123'),
+                'role'              => 'client',
+                'is_active'         => true,
+                'status'            => $request->status ?? 'New',
+                'notes'             => $request->notes ?? null,
+                // ✅ Is salon se link karo
+                'added_by_salon_id' => $salon->id,
             ]);
 
             return redirect()->route('owner.clients.index')
                 ->with('success', 'Client "' . $user->name . '" added! Default password: Welcome@123');
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e; // validation errors form mein normal show hon
         } catch (\Exception $e) {
             Log::error('Client Store Error: ' . $e->getMessage());
             return redirect()->back()
@@ -143,7 +168,13 @@ class OwnerClientController extends Controller
     {
         try {
             $salon = $this->getOwnerSalon();
-            $user  = User::findOrFail($id);
+            if (!$salon) {
+                return redirect()->route('owner.salons.create')
+                    ->with('error', 'Please create your salon first.');
+            }
+
+            // ✅ Sirf is salon ka client
+            $user = $this->salonClientsQuery($salon)->findOrFail($id);
 
             $appointments = Appointment::where('salon_id', $salon->id)
                 ->where('client_id', $user->id)
@@ -158,14 +189,7 @@ class OwnerClientController extends Controller
                 ->sum('amount');
 
             $lastAppt = $appointments->first();
-            
-            // ✅ STATUS LOGIC
-            $status = $user->status ?? 'New';
-            if ($status == 'New' && ($totalVisits >= 10 || $totalSpent >= 50000)) {
-                $status = 'VIP';
-            } elseif ($status == 'New' && $totalVisits >= 3) {
-                $status = 'Regular';
-            }
+            $status   = $this->resolveStatus($user, $totalVisits, $totalSpent);
 
             $client = [
                 'id'            => $user->id,
@@ -198,14 +222,19 @@ class OwnerClientController extends Controller
         } catch (\Exception $e) {
             Log::error('Client Show Error: ' . $e->getMessage());
             return redirect()->route('owner.clients.index')
-                ->with('error', 'Client not found: ' . $e->getMessage());
+                ->with('error', 'Client not found.');
         }
     }
 
     public function edit($id)
     {
         try {
-            $user = User::findOrFail($id);
+            $salon = $this->getOwnerSalon();
+            if (!$salon) {
+                return redirect()->route('owner.salons.create');
+            }
+
+            $user = $this->salonClientsQuery($salon)->findOrFail($id);
 
             $client = [
                 'id'            => $user->id,
@@ -228,18 +257,23 @@ class OwnerClientController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $user = User::findOrFail($id);
+            $salon = $this->getOwnerSalon();
+            if (!$salon) {
+                return redirect()->route('owner.salons.create');
+            }
+
+            $user = $this->salonClientsQuery($salon)->findOrFail($id);
 
             $request->validate([
                 'name'  => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $id,
+                'email' => 'required|email|unique:users,email,' . $user->id,
                 'phone' => 'nullable|string|max:20',
             ]);
 
             $user->update([
-                'name'  => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone ?? $user->phone,
+                'name'   => $request->name,
+                'email'  => $request->email,
+                'phone'  => $request->phone ?? $user->phone,
                 'status' => $request->status ?? $user->status,
                 'notes'  => $request->notes ?? $user->notes,
             ]);
@@ -247,6 +281,8 @@ class OwnerClientController extends Controller
             return redirect()->route('owner.clients.index')
                 ->with('success', 'Client "' . $user->name . '" updated successfully!');
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Client Update Error: ' . $e->getMessage());
             return redirect()->back()
@@ -258,7 +294,24 @@ class OwnerClientController extends Controller
     public function destroy($id)
     {
         try {
-            $user = User::findOrFail($id);
+            $salon = $this->getOwnerSalon();
+            if (!$salon) {
+                return redirect()->route('owner.salons.create');
+            }
+
+            $user = $this->salonClientsQuery($salon)->findOrFail($id);
+
+            //  Sirf wahi client delete ho jo is salon ne khud add kiya ho
+            // aur jiska kisi salon mein koi record na ho
+            $addedByThisSalon = $user->added_by_salon_id == $salon->id;
+            $hasRecords = Appointment::where('client_id', $user->id)->exists()
+                || Payment::where('client_id', $user->id)->exists();
+
+            if (!$addedByThisSalon || $hasRecords) {
+                return redirect()->route('owner.clients.index')
+                    ->with('error', 'This client has appointments/payments or registered on their own, so it cannot be deleted.');
+            }
+
             $name = $user->name;
             $user->delete();
 
@@ -266,6 +319,7 @@ class OwnerClientController extends Controller
                 ->with('success', 'Client "' . $name . '" removed.');
 
         } catch (\Exception $e) {
+            Log::error('Client Delete Error: ' . $e->getMessage());
             return redirect()->route('owner.clients.index')
                 ->with('error', 'Unable to delete client.');
         }
@@ -274,10 +328,13 @@ class OwnerClientController extends Controller
     public function export(Request $request)
     {
         try {
-            $salon     = $this->getOwnerSalon();
-            
-            // ✅ SAB CLIENTS EXPORT KARO
-            $clients   = User::where('role', 'client')
+            $salon = $this->getOwnerSalon();
+            if (!$salon) {
+                return redirect()->route('owner.salons.create');
+            }
+
+            //  Sirf is salon ke clients export hon
+            $clients = $this->salonClientsQuery($salon)
                 ->orderBy('name')
                 ->get();
 

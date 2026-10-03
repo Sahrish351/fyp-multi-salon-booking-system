@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class SocialLoginController extends Controller
 {
-    // ==================== GOOGLE LOGIN ====================
+    
     
     public function redirectToGoogle()
     {
@@ -58,7 +58,7 @@ class SocialLoginController extends Controller
             
             Auth::login($user);
             
-            // ✅ DIRECT CLIENT DASHBOARD PE REDIRECT
+            //  DIRECT CLIENT DASHBOARD PE REDIRECT
             return redirect('/client/dashboard');
             
         } catch (\Exception $e) {
@@ -66,7 +66,7 @@ class SocialLoginController extends Controller
         }
     }
 
-    // ==================== FACEBOOK LOGIN ====================
+    
     
     public function redirectToFacebook()
     {
